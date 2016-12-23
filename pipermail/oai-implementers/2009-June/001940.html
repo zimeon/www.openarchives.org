@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%20for%0A%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="001943.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache</H1>
+    <B>Fridman, Rozita</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%20for%0A%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To="
+       TITLE="[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache">Rozita.Fridman at FIZ-Karlsruhe.DE
+       </A><BR>
+    <I>Tue Jun  2 07:37:01 EDT 2009</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="001943.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1940">[ date ]</a>
+              <a href="thread.html#1940">[ thread ]</a>
+              <a href="subject.html#1940">[ subject ]</a>
+              <a href="author.html#1940">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello all,
+
+we developed an OAI-Provider for Escidoc repositories.
+Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+cache to reduce a response time. Escidoc repositories intend to contain
+multiple millions of objects. The Escidoc-Core framework only requires
+that objects metadata stored in a Escidoc repository are well formed
+xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+is essential to ensure validness of metadata in OAI-PMH response and an
+acceptable response time. 
+
+But the current OAI-PMH protocol specification doesn't account for some
+issues, caused by the employment of a cache.
+ 
+The main problem is a time lag between a harvester request and a last
+cache update:
+A harvester asks the OAI-Provider for all records that have changed
+between T0 and T2 in the underlying repository. The last cache update
+was at T1.The harvester gets records that have changed between T0 and
+T1, but assumes that it got all changes between T0 and T2. Therefore in
+the next request it asks for records that have changed between T2 and T3
+and is missing all changes between T1 and T2. If cache update interval
+is long and the next cache update takes place after T3, the harvester is
+also missing all changes between T2 and T3 and so on.
+   
+One proposal would be to put a date stamp of the last cache update into
+the OAI-PMH response, in order to inform a harvester about possibly
+missed records. 
+
+Does anybody face the same problem? What do you think about it? Maybe
+there are better solutions for this problem?
+
+The other issue is that depending on the OAI-Provider implementation a
+cache may be in an inconsistent state while a cache update process is
+running. Are there means in the OAI-PMH protocol to respond to harvester
+requests during a cache update? A possible solution would be to respond
+with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+specification), but the problem is to specify Retry-After period. A
+duration of the cache update is not constant, it depends on the changes
+in the repository.
+
+Thanks a lot,
+Rozita
+
+
+
+-------------- next part --------------
+
+
+-------------------------------------------------------
+
+Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH. 
+Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. 
+Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="001943.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1940">[ date ]</a>
+              <a href="thread.html#1940">[ thread ]</a>
+              <a href="subject.html#1940">[ subject ]</a>
+              <a href="author.html#1940">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

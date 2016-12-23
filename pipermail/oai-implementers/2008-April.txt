@@ -1,0 +1,2159 @@
+From jfenton at emory.edu  Tue Apr  1 10:43:15 2008
+From: jfenton at emory.edu (Kyle Fenton)
+Date: Tue Apr  1 12:11:23 2008
+Subject: [OAI-implementers] metadata formats - supporting multiple versions
+In-Reply-To: <47F0ECFD.3080507@hulmail.harvard.edu>
+References: <89D12171D3EA6E48900F2B7BF14864EA12CA44946E@iu-mssg-mbx06.ads.iu.edu>
+	<47F0ECFD.3080507@hulmail.harvard.edu>
+Message-ID: <02374468-9932-40DA-9460-916CE15FB50B@emory.edu>
+
+This line of inquiry is very intriguing to me also.   If I wanted to  
+server out more domain specific data types (EAD, DDI, TEI) and/or just  
+the metadata headers from those formats I haven't found any reference  
+examples to know how to form a metadataPrefix that others share as  
+well (oai_ead-h ?).   I've long wished there were a central online  
+registry of existing metadataPrefixes, schemas, and metadataNamespaces  
+for repository interoperability.   Versioning of schemas adds another  
+layer of complexity to the issue.
+
+When I was at the OAI-ORE rollout in Baltimore recently, I did ask  
+Herbert van de Sompel about "minting" new metadataPrefixes.   It was a  
+brief exchange as he was quite busy, but if he understood my question  
+and I his answer, he places heavy emphasis on the particular schema  
+being referenced and much less on the metadataPrefix.
+
+If that's true, then the burden would be on the OAI harvester to  
+correctly parse and interpret the referenced schema in order to  
+determine what metadata format was being referenced.   Which no  
+existing OAI harvester I know of actually does, AND which would not  
+work consistently anyway, e.g. with reference to versioning.   The  
+Marc21 slim xsd (http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd 
+) for instance makes use of a version attribute in its xsd:schema  
+namespace, but I notice that none of the mods schemas use a similar  
+convention.
+
+--
+Kyle Fenton
+Technical Manager
+Emory University Libraries
+
+On Mar 31, 2008, at 9:54 AM, Gary McGath wrote:
+
+> Riley, Jenn wrote:
+>> Hello all,
+>> We're growing our OAI-PMH data provider to the point where we need  
+>> to simultaneously support multiple versions of a metadata schema,  
+>> for different sets that have been created over time using different  
+>> versions of a schema.
+>> We're finding this to be an issue specifically with MODS (although  
+>> the principles would apply for any metadata format that's evolving  
+>> over time). According to the UIUC OAI-PMH Registry at <http://gita.grainger.uiuc.edu/registry/ListSchemas.asp 
+>> >, the metadata format "mods" is used to refer to three different  
+>> versions of MODS in different repositories:
+>> http://www.loc.gov/standards/mods/v3/mods-3-0.xsd
+>> http://www.loc.gov/standards/mods/v3/mods-3-1.xsd
+>> http://www.loc.gov/standards/mods/v3/mods-3-2.xsd
+>> Since the ListMetadataFormats response includes both a  
+>> metadataPrefix and a pointer to a specific schema, I'm concluding  
+>> that we can't use the same metadataPrefix to refer to different  
+>> versions of the schema for different sets. Is that correct?
+>> Within the various MODS 3.x versions, we *could* just call all the  
+>> earlier versions by a newer version number when it comes out, since  
+>> they're supposed to be backwards-compatible within the major  
+>> release version. But saying a MODS 3.0 record is MODS 3.2 implies  
+>> we've done the work to use some of the (very useful!) new features  
+>> of MODS 3.2, when in fact we haven't. And given the realities of a  
+>> production environment, we won't be able to spend the time to  
+>> upgrade all the existing MODS records whenever a new set wants to  
+>> take advantage of a feature in a newer version of MODS. Also, this  
+>> fake upgrading approach wouldn't work when a new major release  
+>> version comes out that's not backwards compatible. Based on all of  
+>> this I'm thinking we need different metadataPrefix-es for different  
+>> versions of the schema.
+>> I'm not seeing in the UIUC registry any good examples of versioning  
+>> a metadataPrefix that I could follow as a best practice, though.  
+>> The only metadataPrefix-es listed there that seem at first glance  
+>> to be versioned are junii vs. junii2, but I'm not familiar with  
+>> those schemas so I can't say for sure that's what they're trying to  
+>> do.
+>> So what would be the best way to create "versioned" metadataPrefix- 
+>> es? Something like mods_3.0, mods_3.1, and mods_3.2? Has anybody  
+>> thought through these issues enough that there's a model we could  
+>> follow? There's nothing on the DLF/NSDL OAI Best Practices page on  
+>> namespaces and schemas <http://webservices.itcs.umich.edu/mediawiki/oaibp/index.php/NamespacesAndSchemas 
+>> > that addresses this specific issue.
+>> If we were to use different metadata prefixes, would this cause big  
+>> problems for service providers trying to use this metadata? Or is  
+>> there a way to do this with a single metadataPrefix I'm not  
+>> thinking of?
+>
+> Interesting question, and one that could be relevant to us here  
+> (though currently we've just picked one schema). If there were, say,  
+> an incompatible upgrade to MODS 4, I could see wanting to support  
+> both the old and new MODS for a while till everyone was up to speed  
+> on the new version.
+>
+> I think going with different metadata prefixes would be the only  
+> solution, but don't know of any standard nomenclature. In theory it  
+> shouldn't matter what prefix you use, since XML considers the  
+> namespace prefix just a pointer to the schema. But since the prefix  
+> is what the harvester actually uses, consistency would be nice.
+>
+>
+>
+> -- 
+> Gary McGath
+> Digital Library Software Engineer
+> Harvard University Library Office for Information Systems
+> http://hul.harvard.edu/~gary/index.html
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+
+From lbjay at reallywow.com  Thu Apr 10 09:14:38 2008
+From: lbjay at reallywow.com (Jay Luker)
+Date: Thu Apr 10 09:14:41 2008
+Subject: [OAI-implementers] Multiple set arguments
+Message-ID: <30292b940804100614o7ad277a3hdbdc50293ee038f9@mail.gmail.com>
+
+Hi all,
+
+I'm trying to clarify the expected behavior when a list request includes
+multiple set arguments. For example, "&set=A&set=B". Would/should this
+return the union of the two sets or the intersection?
+
+-- 
+Jay Luker jayl@exlibris-usa.com
+Software Engineer, Ex Libris Inc.
+(617) 332-8800, x604 http://www.exlibrisgroup.com
+
+From mln at cs.odu.edu  Thu Apr 10 09:29:10 2008
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Thu Apr 10 09:29:12 2008
+Subject: [OAI-implementers] Multiple set arguments
+In-Reply-To: <30292b940804100614o7ad277a3hdbdc50293ee038f9@mail.gmail.com>
+References: <30292b940804100614o7ad277a3hdbdc50293ee038f9@mail.gmail.com>
+Message-ID: <Pine.GSO.4.58.0804100924060.12239@tango.cs.odu.edu>
+
+
+Hello Jay,
+
+OAI-PMH does not allow for multiple "set" arguments, so in a single list
+request you'll have to choose one or the other.
+
+Since all set memberships are included in the record header, you get
+intersection "for free":
+
+verb=ListIdentifiers&set=A
+
+will return all members of A, but those headers will also say if they are
+in B.  To get a union, you'll have to do both:
+
+verb=ListIdentifiers&set=A
+verb=ListIdentifiers&set=B
+
+regards,
+
+Michael
+
+On Thu, 10 Apr 2008, Jay Luker wrote:
+
+> Hi all,
+>
+> I'm trying to clarify the expected behavior when a list request includes
+> multiple set arguments. For example, "&set=A&set=B". Would/should this
+> return the union of the two sets or the intersection?
+>
+> --
+> Jay Luker jayl@exlibris-usa.com
+> Software Engineer, Ex Libris Inc.
+> (617) 332-8800, x604 http://www.exlibrisgroup.com
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From ckoscher at crossref.org  Thu Apr 10 09:31:20 2008
+From: ckoscher at crossref.org (Chuck Koscher)
+Date: Thu Apr 10 09:31:50 2008
+Subject: [OAI-implementers] Multiple set arguments
+In-Reply-To: <30292b940804100614o7ad277a3hdbdc50293ee038f9@mail.gmail.com>
+References: <30292b940804100614o7ad277a3hdbdc50293ee038f9@mail.gmail.com>
+Message-ID: <005601c89b0f$29c043e0$8101a8c0@chuckx1>
+
+Interesting question.... I would expect most systems to respond ambiguously
+since this would overload the one 'set' property. 
+
+Chuck Koscher
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Jay Luker
+Sent: Thursday, April 10, 2008 9:15 AM
+To: oai-implementers@openarchives.org
+Subject: [OAI-implementers] Multiple set arguments
+
+Hi all,
+
+I'm trying to clarify the expected behavior when a list request includes
+multiple set arguments. For example, "&set=A&set=B". Would/should this
+return the union of the two sets or the intersection?
+
+-- 
+Jay Luker jayl@exlibris-usa.com
+Software Engineer, Ex Libris Inc.
+(617) 332-8800, x604 http://www.exlibrisgroup.com
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From jsmit at cs.odu.edu  Thu Apr 10 10:03:02 2008
+From: jsmit at cs.odu.edu (Joan Smith)
+Date: Thu Apr 10 10:03:35 2008
+Subject: [OAI-implementers] Multiple set arguments
+In-Reply-To: <005601c89b0f$29c043e0$8101a8c0@chuckx1>
+References: <30292b940804100614o7ad277a3hdbdc50293ee038f9@mail.gmail.com>
+	<005601c89b0f$29c043e0$8101a8c0@chuckx1>
+Message-ID: <6a22bfe80804100703t1c5b1d11w3daf5f3d35e60442@mail.gmail.com>
+
+Chuck,
+
+I don't know about other implementations, but the apache module,
+"mod_oai" responds with an error message if more than one set spec is
+in the request string.
+
+Regards,
+
+Joan
+
+On 4/10/08, Chuck Koscher <ckoscher@crossref.org> wrote:
+> Interesting question.... I would expect most systems to respond ambiguously
+>  since this would overload the one 'set' property.
+>
+>
+>  Chuck Koscher
+>
+>
+>  -----Original Message-----
+>  From: oai-implementers-bounces@openarchives.org
+>  [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Jay Luker
+>  Sent: Thursday, April 10, 2008 9:15 AM
+>  To: oai-implementers@openarchives.org
+>  Subject: [OAI-implementers] Multiple set arguments
+>
+>  Hi all,
+>
+>  I'm trying to clarify the expected behavior when a list request includes
+>  multiple set arguments. For example, "&set=A&set=B". Would/should this
+>  return the union of the two sets or the intersection?
+>
+>  --
+>  Jay Luker jayl@exlibris-usa.com
+>  Software Engineer, Ex Libris Inc.
+>  (617) 332-8800, x604 http://www.exlibrisgroup.com
+>
+>  _______________________________________________
+>  OAI-implementers mailing list
+>  List information, archives, preferences and to unsubscribe:
+>  http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+>  _______________________________________________
+>  OAI-implementers mailing list
+>  List information, archives, preferences and to unsubscribe:
+>  http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+From gary at hulmail.harvard.edu  Thu Apr 10 10:12:03 2008
+From: gary at hulmail.harvard.edu (Gary McGath)
+Date: Thu Apr 10 10:12:41 2008
+Subject: [OAI-implementers] Multiple set arguments
+In-Reply-To: <6a22bfe80804100703t1c5b1d11w3daf5f3d35e60442@mail.gmail.com>
+References: <30292b940804100614o7ad277a3hdbdc50293ee038f9@mail.gmail.com>	<005601c89b0f$29c043e0$8101a8c0@chuckx1>
+	<6a22bfe80804100703t1c5b1d11w3daf5f3d35e60442@mail.gmail.com>
+Message-ID: <47FE2033.9040803@hulmail.harvard.edu>
+
+Joan Smith wrote:
+> Chuck,
+> 
+> I don't know about other implementations, but the apache module,
+> "mod_oai" responds with an error message if more than one set spec is
+> in the request string.
+
+OAICAT-based implementations -- well, at least ours -- also give an 
+error message.
+
+-- 
+Gary McGath
+Digital Library Software Engineer
+Harvard University Library Office for Information Systems
+http://hul.harvard.edu/~gary/index.html
+
+
+From lisa at issuelab.com  Thu Apr 10 18:28:25 2008
+From: lisa at issuelab.com (Lisa M. Brooks)
+Date: Thu Apr 10 18:28:32 2008
+Subject: [OAI-implementers] Using dates other than metadata record creation
+	date for data provider "from" and "until" searches
+Message-ID: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+
+Hello - We're very close to launching our data provider. Before we do I have
+a question about date-stamps.
+
+I understand that the "from" and "until" dates used to request metadata
+records refer to the date that the metadata record was created. We are an
+archive of research works that date back to the 1980s (we will definitely
+get even older works into our archive as we move forward). To my mind it
+would be more helpful to folks if our record date-stamps reflect the date
+the research work in question was first published.
+
+My concern is that we introduce our repository and harvesters don't get the
+gist of the temporal scope of our collection because everything is
+date-stamped en masse with the date that we generate our metadata records
+(which, with luck, will be this Saturday).
+
+I hope I'm making sense! Just want to know if this is a big no-no, or if
+there are things to consider before doing something like this. Appreciate
+the insight of list participants.
+
+Thanks for reading -
+~Lisa
+
+Lisa M. Brooks
+IssueLab - bringing nonprofit research into focus
+lisa@issuelab.org
+773-649-1790
+http://www.issuelab.org
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20080410/450b5049/attachment.htm
+From Frederic.Merceur at ifremer.fr  Fri Apr 11 02:41:08 2008
+From: Frederic.Merceur at ifremer.fr (Frederic MERCEUR)
+Date: Fri Apr 11 02:41:25 2008
+Subject: [OAI-implementers] Using dates other than metadata record creation
+	date for data provider "from" and "until" searches
+In-Reply-To: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+References: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+Message-ID: <47FF0804.8070609@ifremer.fr>
+
+Hello,
+
+As far as I understand the OAI protocol, I would rather say that 
+DateStamp is about the last time that your record has been updated 
+(which then must reflect "create", "update" or "delete").
+
+When you will first register your archive into a Harvester, I guess the 
+harvester will first get all records available. To do so, it will query 
+your archive without the "from" and "to" parameter.
+
+Then, most of harvesters will run regularly some incremental harvesting 
+to get the records modified, deleted or added since the previous 
+harvest. To do so they will run the query with the "from" parameter.
+
+Kind regards,
+Fred
+
+
+
+Lisa M. Brooks a ?crit :
+> Hello - We're very close to launching our data provider. Before we do 
+> I have a question about date-stamps.
+>
+> I understand that the "from" and "until" dates used to request 
+> metadata records refer to the date that the metadata record was 
+> created. We are an archive of research works that date back to the 
+> 1980s (we will definitely get even older works into our archive as we 
+> move forward). To my mind it would be more helpful to folks if our 
+> record date-stamps reflect the date the research work in question was 
+> first published.
+>
+> My concern is that we introduce our repository and harvesters don't 
+> get the gist of the temporal scope of our collection because 
+> everything is date-stamped en masse with the date that we generate our 
+> metadata records (which, with luck, will be this Saturday).
+>
+> I hope I'm making sense! Just want to know if this is a big no-no, or 
+> if there are things to consider before doing something like this. 
+> Appreciate the insight of list participants.
+>
+> Thanks for reading -
+> ~Lisa
+>
+> Lisa M. Brooks
+> IssueLab - bringing nonprofit research into focus
+> lisa@issuelab.org <mailto:lisa@issuelab.org>
+> 773-649-1790
+> http://www.issuelab.org
+> ------------------------------------------------------------------------
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>   
+
+-- 
+Fred Merceur
+Ifremer / Biblioth?que La P?rouse
+frederic.merceur@ifremer.fr
+T?l : 02-98-49-88-69
+Fax : 02-98-49-88-84
+Biblioth?que La P?rouse <http://www.ifremer.fr/blp/>
+Archimer, Ifremer's Institutional Repository 
+<http://www.ifremer.fr/docelec/>
+Avano, a marine and aquatic OAI harvester <http://www.ifremer.fr/avano/>
+
+*Avant d'imprimer, pensez ? l'environnement!*
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20080411/b8513acd/attachment.htm
+From rob.tice at k-int.com  Fri Apr 11 05:53:58 2008
+From: rob.tice at k-int.com (Rob Tice)
+Date: Fri Apr 11 05:56:05 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creation	date for data provider "from" and "until" searches
+In-Reply-To: <47FF0804.8070609@ifremer.fr>
+References: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+	<47FF0804.8070609@ifremer.fr>
+Message-ID: <003601c89bb9$f7cfb9a0$e76f2ce0$@tice@k-int.com>
+
+Hi Lisa
+
+ 
+
+I find that it is always helpful to put yourself in the shoes of someone who
+wants to harvest your data. 
+
+ 
+
+If the smallest record count that can be obtained from your system as the
+result of an initial OAI ListRecords request (including dates and/or sets)
+is very large, it can be quite difficult for harvesting systems to
+successfully complete an ?initial population? from your data without other
+influences (network  connectivity, target response time, resumption token
+lifetime etc.) having an increasing bearing on the successful outcome of the
+harvest.  
+
+ 
+
+For example, having a repository containing 200,000 records, all dated the
+same day and not supporting a request granularity of less than 1 day makes
+initial population more difficult for any harvesting system J. 
+
+ 
+
+I do not know how many records you have so this may not be an issue for you
+but I think it is worth bearing in mind. 
+
+ 
+
+Cheers
+
+ 
+
+Rob
+
+ 
+
+ 
+
+ 
+
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Frederic
+MERCEUR
+Sent: 11 April 2008 07:41
+To: lisa@issuelab.com
+Cc: oai-implementers@openarchives.org
+Subject: Re: [OAI-implementers] Using dates other than metadata record
+creation date for data provider "from" and "until" searches
+
+ 
+
+Hello,
+
+As far as I understand the OAI protocol, I would rather say that DateStamp
+is about the last time that your record has been updated (which then must
+reflect "create", "update" or "delete"). 
+
+When you will first register your archive into a Harvester, I guess the
+harvester will first get all records available. To do so, it will query your
+archive without the "from" and "to" parameter. 
+
+Then, most of harvesters will run regularly some incremental harvesting to
+get the records modified, deleted or added since the previous harvest. To do
+so they will run the query with the "from" parameter.
+
+Kind regards,
+Fred
+
+
+
+Lisa M. Brooks a ?crit : 
+
+Hello - We're very close to launching our data provider. Before we do I have
+a question about date-stamps.
+
+I understand that the "from" and "until" dates used to request metadata
+records refer to the date that the metadata record was created. We are an
+archive of research works that date back to the 1980s (we will definitely
+get even older works into our archive as we move forward). To my mind it
+would be more helpful to folks if our record date-stamps reflect the date
+the research work in question was first published.
+
+My concern is that we introduce our repository and harvesters don't get the
+gist of the temporal scope of our collection because everything is
+date-stamped en masse with the date that we generate our metadata records
+(which, with luck, will be this Saturday).
+
+I hope I'm making sense! Just want to know if this is a big no-no, or if
+there are things to consider before doing something like this. Appreciate
+the insight of list participants.
+
+Thanks for reading -
+~Lisa
+
+Lisa M. Brooks
+IssueLab - bringing nonprofit research into focus
+HYPERLINK "mailto:lisa@issuelab.org"lisa@issuelab.org
+773-649-1790
+HYPERLINK "http://www.issuelab.org"http://www.issuelab.org
+
+
+
+ 
+
+
+
+   _____  
+
+
+
+ 
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+HYPERLINK
+"http://www.openarchives.org/mailman/listinfo/oai-implementers"http://www.op
+enarchives.org/mailman/listinfo/oai-implementers
+ 
+  
+
+ 
+
+-- 
+Fred Merceur
+Ifremer / Biblioth?que La P?rouse
+HYPERLINK "mailto:frederic.merceur@ifremer.fr"frederic.merceur@ifremer.fr
+T?l : 02-98-49-88-69
+Fax : 02-98-49-88-84
+HYPERLINK "http://www.ifremer.fr/blp/"Biblioth?que La P?rouse
+HYPERLINK "http://www.ifremer.fr/docelec/"Archimer, Ifremer's Institutional
+Repository
+HYPERLINK "http://www.ifremer.fr/avano/"Avano, a marine and aquatic OAI
+harvester
+
+Avant d'imprimer, pensez ? l'environnement! 
+
+ 
+
+No virus found in this incoming message.
+Checked by AVG.
+Version: 7.5.519 / Virus Database: 269.22.11/1368 - Release Date: 09/04/2008
+16:20
+
+
+No virus found in this outgoing message.
+Checked by AVG. 
+Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date: 10/04/2008
+17:36
+ 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20080411/d03d4a24/attachment-0001.htm
+From mln at cs.odu.edu  Fri Apr 11 08:32:59 2008
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Fri Apr 11 08:33:03 2008
+Subject: [OAI-implementers] Using dates other than metadata record creation
+	date for data provider "from" and "until" searches
+In-Reply-To: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+References: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+Message-ID: <Pine.GSO.4.58.0804110821280.28829@tango.cs.odu.edu>
+
+
+Hi Lisa,
+
+The OAI-PMH is pretty explicit about not doing what you're asking.  The
+OAI-PMH datestamps are about when the record was added (or updated) in the
+repository.  The publication date (or discovery date, or ...) is reflected
+in the metadata you are exporting.  People that harvest your metadata will
+index the publciation date and throw the OAI-PMH datestamps away -- they
+exist only to support harvesting.
+
+Here is a scenario on why you don't want to set your OAI-PMH datestamps to
+your publication date.
+
+- 2008-04-11, you initially publish 500,000 records.  They have OAI-PMH
+datestamps of 1985-01-01 through 2008-04-11.
+
+- 2008-04-12, I discover your site for the first time and do a baseline
+harvest.  I get all your metadata records (since I haven't harvested you
+before).  My harvester decides to revist your site every week and ask
+what's new.
+
+- 2008-04-14, you publish 100,000 more records with datestamps of
+1981-01-01 through 1984-12-31.
+
+- 2008-04-19, I return to your site and say:
+
+?verb=ListRecords&metadatPrefix=abc&from=2008-04-12
+
+Now my harvester will miss your 100,000 new records since they were added
+"earlier" in time and not later.
+
+In summary, be honest about your datestamps or people will miss your
+updates.  Harvesters / service providers won't confuse datestamps with
+publication dates.
+
+regards,
+
+Michael
+
+On Thu, 10 Apr 2008, Lisa M. Brooks wrote:
+
+> Hello - We're very close to launching our data provider. Before we do I have
+> a question about date-stamps.
+>
+> I understand that the "from" and "until" dates used to request metadata
+> records refer to the date that the metadata record was created. We are an
+> archive of research works that date back to the 1980s (we will definitely
+> get even older works into our archive as we move forward). To my mind it
+> would be more helpful to folks if our record date-stamps reflect the date
+> the research work in question was first published.
+>
+> My concern is that we introduce our repository and harvesters don't get the
+> gist of the temporal scope of our collection because everything is
+> date-stamped en masse with the date that we generate our metadata records
+> (which, with luck, will be this Saturday).
+>
+> I hope I'm making sense! Just want to know if this is a big no-no, or if
+> there are things to consider before doing something like this. Appreciate
+> the insight of list participants.
+>
+> Thanks for reading -
+> ~Lisa
+>
+> Lisa M. Brooks
+> IssueLab - bringing nonprofit research into focus
+> lisa@issuelab.org
+> 773-649-1790
+> http://www.issuelab.org
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From simeon at cs.cornell.edu  Fri Apr 11 08:51:51 2008
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Fri Apr 11 08:51:37 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creation date for data provider "from" and "until" searches
+In-Reply-To: <Pine.GSO.4.58.0804110821280.28829@tango.cs.odu.edu>
+References: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+	<Pine.GSO.4.58.0804110821280.28829@tango.cs.odu.edu>
+Message-ID: <20080411125151.GA12115@ice.cs.cornell.edu>
+
+
+Hi Lisa,
+
+I think the one exception is already pointed out in Michael's reply, but I'll
+make it explicit: BEFORE your data provider is public you can use historical 
+datestamps to populate. Harvesters will be expecting this for the initial 
+baseline harvest.
+
+However, as Michael very nicely illustrates, after the data provider has been 
+made public all updates/additions must be refelected with the time of 
+update/addition in the datestamp to avoid missing updates.
+
+Cheers,
+Simeon
+
+
+On Fri, Apr 11, 2008 at 08:32:59AM -0400, Michael Nelson wrote:
+> Hi Lisa,
+> 
+> The OAI-PMH is pretty explicit about not doing what you're asking.  The
+> OAI-PMH datestamps are about when the record was added (or updated) in the
+> repository.  The publication date (or discovery date, or ...) is reflected
+> in the metadata you are exporting.  People that harvest your metadata will
+> index the publciation date and throw the OAI-PMH datestamps away -- they
+> exist only to support harvesting.
+> 
+> Here is a scenario on why you don't want to set your OAI-PMH datestamps to
+> your publication date.
+> 
+> - 2008-04-11, you initially publish 500,000 records.  They have OAI-PMH
+> datestamps of 1985-01-01 through 2008-04-11.
+> 
+> - 2008-04-12, I discover your site for the first time and do a baseline
+> harvest.  I get all your metadata records (since I haven't harvested you
+> before).  My harvester decides to revist your site every week and ask
+> what's new.
+> 
+> - 2008-04-14, you publish 100,000 more records with datestamps of
+> 1981-01-01 through 1984-12-31.
+> 
+> - 2008-04-19, I return to your site and say:
+> 
+> ?verb=ListRecords&metadatPrefix=abc&from=2008-04-12
+> 
+> Now my harvester will miss your 100,000 new records since they were added
+> "earlier" in time and not later.
+> 
+> In summary, be honest about your datestamps or people will miss your
+> updates.  Harvesters / service providers won't confuse datestamps with
+> publication dates.
+> 
+> regards,
+> 
+> Michael
+> 
+> On Thu, 10 Apr 2008, Lisa M. Brooks wrote:
+> 
+> > Hello - We're very close to launching our data provider. Before we do I have
+> > a question about date-stamps.
+> >
+> > I understand that the "from" and "until" dates used to request metadata
+> > records refer to the date that the metadata record was created. We are an
+> > archive of research works that date back to the 1980s (we will definitely
+> > get even older works into our archive as we move forward). To my mind it
+> > would be more helpful to folks if our record date-stamps reflect the date
+> > the research work in question was first published.
+> >
+> > My concern is that we introduce our repository and harvesters don't get the
+> > gist of the temporal scope of our collection because everything is
+> > date-stamped en masse with the date that we generate our metadata records
+> > (which, with luck, will be this Saturday).
+> >
+> > I hope I'm making sense! Just want to know if this is a big no-no, or if
+> > there are things to consider before doing something like this. Appreciate
+> > the insight of list participants.
+> >
+> > Thanks for reading -
+> > ~Lisa
+> >
+> > Lisa M. Brooks
+> > IssueLab - bringing nonprofit research into focus
+> > lisa@issuelab.org
+> > 773-649-1790
+> > http://www.issuelab.org
+> >
+> 
+> ----
+> Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+> Dept of Computer Science, Old Dominion University, Norfolk VA 23529
+> +1 757 683 6393 +1 757 683 4900 (f)
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+From ckoscher at crossref.org  Fri Apr 11 09:36:47 2008
+From: ckoscher at crossref.org (Chuck Koscher)
+Date: Fri Apr 11 09:37:16 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creationdate for data provider "from" and "until" searches
+In-Reply-To: <Pine.GSO.4.58.0804110821280.28829@tango.cs.odu.edu>
+References: <48ece0fc0804101528j672cdfb8m70a10d3eba6fe1e4@mail.gmail.com>
+	<Pine.GSO.4.58.0804110821280.28829@tango.cs.odu.edu>
+Message-ID: <02eb01c89bd9$16f0d6b0$8101a8c0@chuckx1>
+
+
+Just a thought ... we organize our set hierarchy to include year of
+publication so at least to that granularity one can retrieve data based on
+publication date.
+
+Chuck
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Michael
+Nelson
+Sent: Friday, April 11, 2008 8:33 AM
+To: Lisa M. Brooks
+Cc: oai-implementers@openarchives.org
+Subject: Re: [OAI-implementers] Using dates other than metadata record
+creationdate for data provider "from" and "until" searches
+
+
+Hi Lisa,
+
+The OAI-PMH is pretty explicit about not doing what you're asking.  The
+OAI-PMH datestamps are about when the record was added (or updated) in the
+repository.  The publication date (or discovery date, or ...) is reflected
+in the metadata you are exporting.  People that harvest your metadata will
+index the publciation date and throw the OAI-PMH datestamps away -- they
+exist only to support harvesting.
+
+Here is a scenario on why you don't want to set your OAI-PMH datestamps to
+your publication date.
+
+- 2008-04-11, you initially publish 500,000 records.  They have OAI-PMH
+datestamps of 1985-01-01 through 2008-04-11.
+
+- 2008-04-12, I discover your site for the first time and do a baseline
+harvest.  I get all your metadata records (since I haven't harvested you
+before).  My harvester decides to revist your site every week and ask
+what's new.
+
+- 2008-04-14, you publish 100,000 more records with datestamps of
+1981-01-01 through 1984-12-31.
+
+- 2008-04-19, I return to your site and say:
+
+?verb=ListRecords&metadatPrefix=abc&from=2008-04-12
+
+Now my harvester will miss your 100,000 new records since they were added
+"earlier" in time and not later.
+
+In summary, be honest about your datestamps or people will miss your
+updates.  Harvesters / service providers won't confuse datestamps with
+publication dates.
+
+regards,
+
+Michael
+
+On Thu, 10 Apr 2008, Lisa M. Brooks wrote:
+
+> Hello - We're very close to launching our data provider. Before we do I
+have
+> a question about date-stamps.
+>
+> I understand that the "from" and "until" dates used to request metadata
+> records refer to the date that the metadata record was created. We are an
+> archive of research works that date back to the 1980s (we will definitely
+> get even older works into our archive as we move forward). To my mind it
+> would be more helpful to folks if our record date-stamps reflect the date
+> the research work in question was first published.
+>
+> My concern is that we introduce our repository and harvesters don't get
+the
+> gist of the temporal scope of our collection because everything is
+> date-stamped en masse with the date that we generate our metadata records
+> (which, with luck, will be this Saturday).
+>
+> I hope I'm making sense! Just want to know if this is a big no-no, or if
+> there are things to consider before doing something like this. Appreciate
+> the insight of list participants.
+>
+> Thanks for reading -
+> ~Lisa
+>
+> Lisa M. Brooks
+> IssueLab - bringing nonprofit research into focus
+> lisa@issuelab.org
+> 773-649-1790
+> http://www.issuelab.org
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From khage at umich.edu  Fri Apr 11 10:00:36 2008
+From: khage at umich.edu (Kat Hagedorn)
+Date: Fri Apr 11 10:01:21 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creation date for data provider "from" and "until" searches
+In-Reply-To: <003601c89bb9$f7cfb9a0$e76f2ce0$@tice@k-int.com>
+Message-ID: <C424E744.18F0A%khage@umich.edu>
+
+I?m not sure I agree. Any robust harvester software should be able to
+*initially* harvest regardless of datestamp.
+
+Problems such as network connectivity, etc. should be addressed in the
+harvesting software to allow as close to seamless harvesting as possible.
+For example, software should have a timeout feature that provides for
+network issues (e.g., waits 1 minute before trying again). If robust
+software is not able to handle these problems, it?s most likely an issue on
+the data provider side, in my experience.
+
+Regards,
+ -Kat
+
+
+On 4/11/08 5:53 AM, "Rob Tice" <rob.tice@k-int.com> wrote:
+
+> Hi Lisa
+>  
+> I find that it is always helpful to put yourself in the shoes of someone who
+> wants to harvest your data.
+>  
+> If the smallest record count that can be obtained from your system as the
+> result of an initial OAI ListRecords request (including dates and/or sets) is
+> very large, it can be quite difficult for harvesting systems to successfully
+> complete an ?initial population? from your data without other influences
+> (network ?connectivity, target response time, resumption token lifetime etc.)
+> having an increasing bearing on the successful outcome of the harvest. ?
+>  
+> For example, having a repository containing 200,000 records, all dated the
+> same day and not supporting a request granularity of less than 1 day makes
+> initial population more difficult for any harvesting system J.
+>  
+> I do not know how many records you have so this may not be an issue for you
+> but I think it is worth bearing in mind.
+>  
+> Cheers
+>  
+> Rob
+>  
+>  
+>  
+> 
+> From: oai-implementers-bounces@openarchives.org
+> [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Frederic
+> MERCEUR
+> Sent: 11 April 2008 07:41
+> To: lisa@issuelab.com
+> Cc: oai-implementers@openarchives.org
+> Subject: Re: [OAI-implementers] Using dates other than metadata record
+> creation date for data provider "from" and "until" searches
+>  
+> Hello,
+> As far as I understand the OAI protocol, I would rather say that DateStamp is
+> about the last time that your record has been updated (which then must reflect
+> "create", "update" or "delete").
+> When you will first register your archive into a Harvester, I guess the
+> harvester will first get all records available. To do so, it will query your
+> archive without the "from" and "to" parameter.
+> Then, most of harvesters will run regularly some incremental harvesting to get
+> the records modified, deleted or added since the previous harvest. To do so
+> they will run the query with the "from" parameter.
+> Kind regards,
+> Fred
+> 
+> 
+> Lisa M. Brooks a ?crit :
+> Hello - We're very close to launching our data provider. Before we do I have a
+> question about date-stamps.
+> 
+> I understand that the "from" and "until" dates used to request metadata
+> records refer to the date that the metadata record was created. We are an
+> archive of research works that date back to the 1980s (we will definitely get
+> even older works into our archive as we move forward). To my mind it would be
+> more helpful to folks if our record date-stamps reflect the date the research
+> work in question was first published.
+> 
+> My concern is that we introduce our repository and harvesters don't get the
+> gist of the temporal scope of our collection because everything is
+> date-stamped en masse with the date that we generate our metadata records
+> (which, with luck, will be this Saturday).
+> 
+> I hope I'm making sense! Just want to know if this is a big no-no, or if there
+> are things to consider before doing something like this. Appreciate the
+> insight of list participants.
+> 
+> Thanks for reading -
+> ~Lisa
+> 
+> Lisa M. Brooks
+> IssueLab - bringing nonprofit research into focus
+> lisa@issuelab.org
+> 773-649-1790
+> http://www.issuelab.org
+> 
+>  
+> 
+> 
+> 
+> 
+> 
+>  
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>  
+> ? 
+>  
+
+
+-------------------
+Kat Hagedorn 
+OAIster/Metadata Harvesting Librarian
+DLXS Bibliographic Class Coordinator
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From rob.tice at k-int.com  Fri Apr 11 12:20:30 2008
+From: rob.tice at k-int.com (Rob Tice)
+Date: Fri Apr 11 12:22:36 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creation date for data provider "from" and "until" searches
+In-Reply-To: <C424E744.18F0A%khage@umich.edu>
+References: <003601c89bb9$f7cfb9a0$e76f2ce0$@tice@k-int.com>
+	<C424E744.18F0A%khage@umich.edu>
+Message-ID: <005801c89bef$f7652870$e62f7950$@tice@k-int.com>
+
+Hi Kat
+
+I am not saying that harvesting software shouldn't be robust or be able to
+recover from errors (where possible). However, I still reckon that
+performing some (pretty rudimentary) data analysis and adhering to a few
+basic principles when exposing your data, can make harvesting easier. 
+
+In my experience as a harvester (when dealing with large collections), I
+would much rather set up an instruction to sequentially issue (for example)
+50 date bounded requests (starting with the earliest date stamp from the
+identify response). 50 x 4000 is much better than 1 x 200,000 IMHO :)
+
+Cheers
+
+Rob
+
+
+
+> -----Original Message-----
+> From: Kat Hagedorn [mailto:khage@umich.edu]
+> Sent: 11 April 2008 15:01
+> To: Rob Tice; lisa@issuelab.com
+> Cc: oai-implementers@openarchives.org
+> Subject: Re: [OAI-implementers] Using dates other than metadata record
+> creation date for data provider "from" and "until" searches
+> 
+> I?m not sure I agree. Any robust harvester software should be able to
+> *initially* harvest regardless of datestamp.
+> 
+> Problems such as network connectivity, etc. should be addressed in the
+> harvesting software to allow as close to seamless harvesting as
+> possible.
+> For example, software should have a timeout feature that provides for
+> network issues (e.g., waits 1 minute before trying again). If robust
+> software is not able to handle these problems, it?s most likely an
+> issue on
+> the data provider side, in my experience.
+> 
+> Regards,
+>  -Kat
+> 
+> 
+> On 4/11/08 5:53 AM, "Rob Tice" <rob.tice@k-int.com> wrote:
+> 
+> > Hi Lisa
+> >
+> > I find that it is always helpful to put yourself in the shoes of
+> someone who
+> > wants to harvest your data.
+> >
+> > If the smallest record count that can be obtained from your system as
+> the
+> > result of an initial OAI ListRecords request (including dates and/or
+> sets) is
+> > very large, it can be quite difficult for harvesting systems to
+> successfully
+> > complete an ?initial population? from your data without other
+> influences
+> > (network ?connectivity, target response time, resumption token
+> lifetime etc.)
+> > having an increasing bearing on the successful outcome of the
+> harvest.
+> >
+> > For example, having a repository containing 200,000 records, all
+> dated the
+> > same day and not supporting a request granularity of less than 1 day
+> makes
+> > initial population more difficult for any harvesting system J.
+> >
+> > I do not know how many records you have so this may not be an issue
+> for you
+> > but I think it is worth bearing in mind.
+> >
+> > Cheers
+> >
+> > Rob
+> >
+> >
+> >
+> >
+> > From: oai-implementers-bounces@openarchives.org
+> > [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of
+> Frederic
+> > MERCEUR
+> > Sent: 11 April 2008 07:41
+> > To: lisa@issuelab.com
+> > Cc: oai-implementers@openarchives.org
+> > Subject: Re: [OAI-implementers] Using dates other than metadata
+> record
+> > creation date for data provider "from" and "until" searches
+> >
+> > Hello,
+> > As far as I understand the OAI protocol, I would rather say that
+> DateStamp is
+> > about the last time that your record has been updated (which then
+> must reflect
+> > "create", "update" or "delete").
+> > When you will first register your archive into a Harvester, I guess
+> the
+> > harvester will first get all records available. To do so, it will
+> query your
+> > archive without the "from" and "to" parameter.
+> > Then, most of harvesters will run regularly some incremental
+> harvesting to get
+> > the records modified, deleted or added since the previous harvest. To
+> do so
+> > they will run the query with the "from" parameter.
+> > Kind regards,
+> > Fred
+> >
+> >
+> > Lisa M. Brooks a ?crit :
+> > Hello - We're very close to launching our data provider. Before we do
+> I have a
+> > question about date-stamps.
+> >
+> > I understand that the "from" and "until" dates used to request
+> metadata
+> > records refer to the date that the metadata record was created. We
+> are an
+> > archive of research works that date back to the 1980s (we will
+> definitely get
+> > even older works into our archive as we move forward). To my mind it
+> would be
+> > more helpful to folks if our record date-stamps reflect the date the
+> research
+> > work in question was first published.
+> >
+> > My concern is that we introduce our repository and harvesters don't
+> get the
+> > gist of the temporal scope of our collection because everything is
+> > date-stamped en masse with the date that we generate our metadata
+> records
+> > (which, with luck, will be this Saturday).
+> >
+> > I hope I'm making sense! Just want to know if this is a big no-no, or
+> if there
+> > are things to consider before doing something like this. Appreciate
+> the
+> > insight of list participants.
+> >
+> > Thanks for reading -
+> > ~Lisa
+> >
+> > Lisa M. Brooks
+> > IssueLab - bringing nonprofit research into focus
+> > lisa@issuelab.org
+> > 773-649-1790
+> > http://www.issuelab.org
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+> >
+> >
+> 
+> 
+> -------------------
+> Kat Hagedorn
+> OAIster/Metadata Harvesting Librarian
+> DLXS Bibliographic Class Coordinator
+> Digital Library Production Service
+> University of Michigan
+> 
+> http://www.oaister.org/
+> http://www.dlxs.org/
+> email: khage@umich.edu
+> phone: 734-615-7618
+> 
+> No virus found in this incoming message.
+> Checked by AVG.
+> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+> 10/04/2008 17:36
+> 
+
+No virus found in this outgoing message.
+Checked by AVG. 
+Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date: 10/04/2008
+17:36
+ 
+
+
+From khage at umich.edu  Fri Apr 11 12:29:08 2008
+From: khage at umich.edu (Kat Hagedorn)
+Date: Fri Apr 11 12:29:42 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creation date for data provider "from" and "until" searches
+In-Reply-To: <005801c89bef$f7652870$e62f7950$@tice@k-int.com>
+Message-ID: <C4250A14.18F2F%khage@umich.edu>
+
+Hi Rob,
+
+But your harvester handles resumptionTokens, right? So, it's not 1 x 200,000
+requests if those 200,000 are broken into rTs of 500 each, say. I'm
+interested in how your harvesting system is set up that makes it easier to
+harvest by multiple bounded date requests rather than one single request.
+
+We use a homegrown solution (http://sourceforge.net/umoaitoolkit) which
+we've tweaked as time goes on to handle server outages and such, but we
+don't have trouble with most of our large harvests, e.g., HighWire has over
+a million and as a rule takes about 8 hours to run from scratch.
+
+Regards,
+ -Kat
+
+
+On 4/11/08 12:20 PM, "Rob Tice" <rob.tice@k-int.com> wrote:
+
+> Hi Kat
+> 
+> I am not saying that harvesting software shouldn't be robust or be able to
+> recover from errors (where possible). However, I still reckon that
+> performing some (pretty rudimentary) data analysis and adhering to a few
+> basic principles when exposing your data, can make harvesting easier.
+> 
+> In my experience as a harvester (when dealing with large collections), I
+> would much rather set up an instruction to sequentially issue (for example)
+> 50 date bounded requests (starting with the earliest date stamp from the
+> identify response). 50 x 4000 is much better than 1 x 200,000 IMHO :)
+> 
+> Cheers
+> 
+> Rob
+> 
+> 
+> 
+>> -----Original Message-----
+>> From: Kat Hagedorn [mailto:khage@umich.edu]
+>> Sent: 11 April 2008 15:01
+>> To: Rob Tice; lisa@issuelab.com
+>> Cc: oai-implementers@openarchives.org
+>> Subject: Re: [OAI-implementers] Using dates other than metadata record
+>> creation date for data provider "from" and "until" searches
+>> 
+>> I?m not sure I agree. Any robust harvester software should be able to
+>> *initially* harvest regardless of datestamp.
+>> 
+>> Problems such as network connectivity, etc. should be addressed in the
+>> harvesting software to allow as close to seamless harvesting as
+>> possible.
+>> For example, software should have a timeout feature that provides for
+>> network issues (e.g., waits 1 minute before trying again). If robust
+>> software is not able to handle these problems, it?s most likely an
+>> issue on
+>> the data provider side, in my experience.
+>> 
+>> Regards,
+>>  -Kat
+>> 
+>> 
+>> On 4/11/08 5:53 AM, "Rob Tice" <rob.tice@k-int.com> wrote:
+>> 
+>>> Hi Lisa
+>>> 
+>>> I find that it is always helpful to put yourself in the shoes of
+>> someone who
+>>> wants to harvest your data.
+>>> 
+>>> If the smallest record count that can be obtained from your system as
+>> the
+>>> result of an initial OAI ListRecords request (including dates and/or
+>> sets) is
+>>> very large, it can be quite difficult for harvesting systems to
+>> successfully
+>>> complete an ?initial population? from your data without other
+>> influences
+>>> (network ?connectivity, target response time, resumption token
+>> lifetime etc.)
+>>> having an increasing bearing on the successful outcome of the
+>> harvest.
+>>> 
+>>> For example, having a repository containing 200,000 records, all
+>> dated the
+>>> same day and not supporting a request granularity of less than 1 day
+>> makes
+>>> initial population more difficult for any harvesting system J.
+>>> 
+>>> I do not know how many records you have so this may not be an issue
+>> for you
+>>> but I think it is worth bearing in mind.
+>>> 
+>>> Cheers
+>>> 
+>>> Rob
+>>> 
+>>> 
+>>> 
+>>> 
+>>> From: oai-implementers-bounces@openarchives.org
+>>> [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of
+>> Frederic
+>>> MERCEUR
+>>> Sent: 11 April 2008 07:41
+>>> To: lisa@issuelab.com
+>>> Cc: oai-implementers@openarchives.org
+>>> Subject: Re: [OAI-implementers] Using dates other than metadata
+>> record
+>>> creation date for data provider "from" and "until" searches
+>>> 
+>>> Hello,
+>>> As far as I understand the OAI protocol, I would rather say that
+>> DateStamp is
+>>> about the last time that your record has been updated (which then
+>> must reflect
+>>> "create", "update" or "delete").
+>>> When you will first register your archive into a Harvester, I guess
+>> the
+>>> harvester will first get all records available. To do so, it will
+>> query your
+>>> archive without the "from" and "to" parameter.
+>>> Then, most of harvesters will run regularly some incremental
+>> harvesting to get
+>>> the records modified, deleted or added since the previous harvest. To
+>> do so
+>>> they will run the query with the "from" parameter.
+>>> Kind regards,
+>>> Fred
+>>> 
+>>> 
+>>> Lisa M. Brooks a ?crit :
+>>> Hello - We're very close to launching our data provider. Before we do
+>> I have a
+>>> question about date-stamps.
+>>> 
+>>> I understand that the "from" and "until" dates used to request
+>> metadata
+>>> records refer to the date that the metadata record was created. We
+>> are an
+>>> archive of research works that date back to the 1980s (we will
+>> definitely get
+>>> even older works into our archive as we move forward). To my mind it
+>> would be
+>>> more helpful to folks if our record date-stamps reflect the date the
+>> research
+>>> work in question was first published.
+>>> 
+>>> My concern is that we introduce our repository and harvesters don't
+>> get the
+>>> gist of the temporal scope of our collection because everything is
+>>> date-stamped en masse with the date that we generate our metadata
+>> records
+>>> (which, with luck, will be this Saturday).
+>>> 
+>>> I hope I'm making sense! Just want to know if this is a big no-no, or
+>> if there
+>>> are things to consider before doing something like this. Appreciate
+>> the
+>>> insight of list participants.
+>>> 
+>>> Thanks for reading -
+>>> ~Lisa
+>>> 
+>>> Lisa M. Brooks
+>>> IssueLab - bringing nonprofit research into focus
+>>> lisa@issuelab.org
+>>> 773-649-1790
+>>> http://www.issuelab.org
+>>> 
+>>> 
+>>> 
+>>> 
+>>> 
+>>> 
+>>> 
+>>> 
+>>> _______________________________________________
+>>> OAI-implementers mailing list
+>>> List information, archives, preferences and to unsubscribe:
+>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>> 
+>>> 
+>>> 
+>> 
+>> 
+>> -------------------
+>> Kat Hagedorn
+>> OAIster/Metadata Harvesting Librarian
+>> DLXS Bibliographic Class Coordinator
+>> Digital Library Production Service
+>> University of Michigan
+>> 
+>> http://www.oaister.org/
+>> http://www.dlxs.org/
+>> email: khage@umich.edu
+>> phone: 734-615-7618
+>> 
+>> No virus found in this incoming message.
+>> Checked by AVG.
+>> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+>> 10/04/2008 17:36
+>> 
+> 
+> No virus found in this outgoing message.
+> Checked by AVG. 
+> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date: 10/04/2008
+> 17:36
+>  
+> 
+
+-------------------
+Kat Hagedorn 
+OAIster/Metadata Harvesting Librarian
+DLXS Bibliographic Class Coordinator
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From namoet2 at gmail.com  Fri Apr 11 13:34:37 2008
+From: namoet2 at gmail.com (teoman madra)
+Date: Fri Apr 11 13:34:43 2008
+Subject: [OAI-implementers] feed back issues
+Message-ID: <b6eb371f0804111034l72159b32we53899bc5620f54e@mail.gmail.com>
+
+re: art works dealing with new technology manipulations,
+if you are liable to do random essays, trials with new aestheti
+cs... the marvelous chances that may encourage yourself to
+novelties, chance mistakes and so on, will best be online
+fed back with remarks etc fair or wrong...  in the internet you get a chance
+to deposit them and requesting also some discussions
+in return   http://.flickr.com/teomanmadra   http://spq2.blogspot.com
+teoman  madra  namoet2@gmail.com
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20080411/1ce72dc6/attachment.htm
+From rob.tice at k-int.com  Fri Apr 11 14:29:47 2008
+From: rob.tice at k-int.com (Rob Tice)
+Date: Fri Apr 11 14:31:52 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creation date for data provider "from" and "until" searches
+In-Reply-To: <C4250A14.18F2F%khage@umich.edu>
+References: <005801c89bef$f7652870$e62f7950$@tice@k-int.com>
+	<C4250A14.18F2F%khage@umich.edu>
+Message-ID: <006601c89c02$06fe35d0$14faa170$@tice@k-int.com>
+
+Hi Kat
+
+I am not advocating a different harvesting methodology I am just approaching from a different perspective. In my 'OAI world' (and based on my experiences) not all targets are perfect and not all errors are recoverable. If all OAI targets were created equal and performed faultlessly then there would not be a strategy to discuss. 
+
+My experience is that they aren't and that the devil (as with everything) is in the implementation. 
+
+So as I see it the difference between 50 x 4000 and 1 x 200,000 is:
+
+In the first scenario, you have an entirely complete OAI request after every 4000 records and any unrecoverable failure (of either the harvester or target) results in a re-harvest of 4000 records - worst case rollback 3999 records (even after 199,999 have been harvested) 
+
+In the second scenario,  any unrecoverable failure results in a re-harvest of 200,000 records -  worst case rollback of 199,999 records. In addition the repository has to deal with the burden of persistence and resumption for a great deal longer which arguably increases both its workload and the chance of failure.
+
+In our imperfect world and given that I am not a betting man I would always choose the first approach if it were available to me.
+
+Does this make me a pessimist :) ?
+
+
+Cheers
+
+Rob
+
+
+
+
+
+
+
+
+
+> -----Original Message-----
+> From: Kat Hagedorn [mailto:khage@umich.edu]
+> Sent: 11 April 2008 17:29
+> To: Rob Tice
+> Cc: oai-implementers@openarchives.org
+> Subject: Re: [OAI-implementers] Using dates other than metadata record
+> creation date for data provider "from" and "until" searches
+> 
+> Hi Rob,
+> 
+> But your harvester handles resumptionTokens, right? So, it's not 1 x
+> 200,000
+> requests if those 200,000 are broken into rTs of 500 each, say. I'm
+> interested in how your harvesting system is set up that makes it easier
+> to
+> harvest by multiple bounded date requests rather than one single
+> request.
+> 
+> We use a homegrown solution (http://sourceforge.net/umoaitoolkit) which
+> we've tweaked as time goes on to handle server outages and such, but we
+> don't have trouble with most of our large harvests, e.g., HighWire has
+> over
+> a million and as a rule takes about 8 hours to run from scratch.
+> 
+> Regards,
+>  -Kat
+> 
+> 
+> On 4/11/08 12:20 PM, "Rob Tice" <rob.tice@k-int.com> wrote:
+> 
+> > Hi Kat
+> >
+> > I am not saying that harvesting software shouldn't be robust or be
+> able to
+> > recover from errors (where possible). However, I still reckon that
+> > performing some (pretty rudimentary) data analysis and adhering to a
+> few
+> > basic principles when exposing your data, can make harvesting easier.
+> >
+> > In my experience as a harvester (when dealing with large
+> collections), I
+> > would much rather set up an instruction to sequentially issue (for
+> example)
+> > 50 date bounded requests (starting with the earliest date stamp from
+> the
+> > identify response). 50 x 4000 is much better than 1 x 200,000 IMHO :)
+> >
+> > Cheers
+> >
+> > Rob
+> >
+> >
+> >
+> >> -----Original Message-----
+> >> From: Kat Hagedorn [mailto:khage@umich.edu]
+> >> Sent: 11 April 2008 15:01
+> >> To: Rob Tice; lisa@issuelab.com
+> >> Cc: oai-implementers@openarchives.org
+> >> Subject: Re: [OAI-implementers] Using dates other than metadata
+> record
+> >> creation date for data provider "from" and "until" searches
+> >>
+> >> I?m not sure I agree. Any robust harvester software should be able
+> to
+> >> *initially* harvest regardless of datestamp.
+> >>
+> >> Problems such as network connectivity, etc. should be addressed in
+> the
+> >> harvesting software to allow as close to seamless harvesting as
+> >> possible.
+> >> For example, software should have a timeout feature that provides
+> for
+> >> network issues (e.g., waits 1 minute before trying again). If robust
+> >> software is not able to handle these problems, it?s most likely an
+> >> issue on
+> >> the data provider side, in my experience.
+> >>
+> >> Regards,
+> >>  -Kat
+> >>
+> >>
+> >> On 4/11/08 5:53 AM, "Rob Tice" <rob.tice@k-int.com> wrote:
+> >>
+> >>> Hi Lisa
+> >>>
+> >>> I find that it is always helpful to put yourself in the shoes of
+> >> someone who
+> >>> wants to harvest your data.
+> >>>
+> >>> If the smallest record count that can be obtained from your system
+> as
+> >> the
+> >>> result of an initial OAI ListRecords request (including dates
+> and/or
+> >> sets) is
+> >>> very large, it can be quite difficult for harvesting systems to
+> >> successfully
+> >>> complete an ?initial population? from your data without other
+> >> influences
+> >>> (network  connectivity, target response time, resumption token
+> >> lifetime etc.)
+> >>> having an increasing bearing on the successful outcome of the
+> >> harvest.
+> >>>
+> >>> For example, having a repository containing 200,000 records, all
+> >> dated the
+> >>> same day and not supporting a request granularity of less than 1
+> day
+> >> makes
+> >>> initial population more difficult for any harvesting system J.
+> >>>
+> >>> I do not know how many records you have so this may not be an issue
+> >> for you
+> >>> but I think it is worth bearing in mind.
+> >>>
+> >>> Cheers
+> >>>
+> >>> Rob
+> >>>
+> >>>
+> >>>
+> >>>
+> >>> From: oai-implementers-bounces@openarchives.org
+> >>> [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of
+> >> Frederic
+> >>> MERCEUR
+> >>> Sent: 11 April 2008 07:41
+> >>> To: lisa@issuelab.com
+> >>> Cc: oai-implementers@openarchives.org
+> >>> Subject: Re: [OAI-implementers] Using dates other than metadata
+> >> record
+> >>> creation date for data provider "from" and "until" searches
+> >>>
+> >>> Hello,
+> >>> As far as I understand the OAI protocol, I would rather say that
+> >> DateStamp is
+> >>> about the last time that your record has been updated (which then
+> >> must reflect
+> >>> "create", "update" or "delete").
+> >>> When you will first register your archive into a Harvester, I guess
+> >> the
+> >>> harvester will first get all records available. To do so, it will
+> >> query your
+> >>> archive without the "from" and "to" parameter.
+> >>> Then, most of harvesters will run regularly some incremental
+> >> harvesting to get
+> >>> the records modified, deleted or added since the previous harvest.
+> To
+> >> do so
+> >>> they will run the query with the "from" parameter.
+> >>> Kind regards,
+> >>> Fred
+> >>>
+> >>>
+> >>> Lisa M. Brooks a ?crit :
+> >>> Hello - We're very close to launching our data provider. Before we
+> do
+> >> I have a
+> >>> question about date-stamps.
+> >>>
+> >>> I understand that the "from" and "until" dates used to request
+> >> metadata
+> >>> records refer to the date that the metadata record was created. We
+> >> are an
+> >>> archive of research works that date back to the 1980s (we will
+> >> definitely get
+> >>> even older works into our archive as we move forward). To my mind
+> it
+> >> would be
+> >>> more helpful to folks if our record date-stamps reflect the date
+> the
+> >> research
+> >>> work in question was first published.
+> >>>
+> >>> My concern is that we introduce our repository and harvesters don't
+> >> get the
+> >>> gist of the temporal scope of our collection because everything is
+> >>> date-stamped en masse with the date that we generate our metadata
+> >> records
+> >>> (which, with luck, will be this Saturday).
+> >>>
+> >>> I hope I'm making sense! Just want to know if this is a big no-no,
+> or
+> >> if there
+> >>> are things to consider before doing something like this. Appreciate
+> >> the
+> >>> insight of list participants.
+> >>>
+> >>> Thanks for reading -
+> >>> ~Lisa
+> >>>
+> >>> Lisa M. Brooks
+> >>> IssueLab - bringing nonprofit research into focus
+> >>> lisa@issuelab.org
+> >>> 773-649-1790
+> >>> http://www.issuelab.org
+> >>>
+> >>>
+> >>>
+> >>>
+> >>>
+> >>>
+> >>>
+> >>>
+> >>> _______________________________________________
+> >>> OAI-implementers mailing list
+> >>> List information, archives, preferences and to unsubscribe:
+> >>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >>>
+> >>>
+> >>>
+> >>
+> >>
+> >> -------------------
+> >> Kat Hagedorn
+> >> OAIster/Metadata Harvesting Librarian
+> >> DLXS Bibliographic Class Coordinator
+> >> Digital Library Production Service
+> >> University of Michigan
+> >>
+> >> http://www.oaister.org/
+> >> http://www.dlxs.org/
+> >> email: khage@umich.edu
+> >> phone: 734-615-7618
+> >>
+> >> No virus found in this incoming message.
+> >> Checked by AVG.
+> >> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+> >> 10/04/2008 17:36
+> >>
+> >
+> > No virus found in this outgoing message.
+> > Checked by AVG.
+> > Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+> 10/04/2008
+> > 17:36
+> >
+> >
+> 
+> -------------------
+> Kat Hagedorn
+> OAIster/Metadata Harvesting Librarian
+> DLXS Bibliographic Class Coordinator
+> Digital Library Production Service
+> University of Michigan
+> 
+> http://www.oaister.org/
+> http://www.dlxs.org/
+> email: khage@umich.edu
+> phone: 734-615-7618
+> 
+> No virus found in this incoming message.
+> Checked by AVG.
+> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+> 10/04/2008 17:36
+> 
+
+No virus found in this outgoing message.
+Checked by AVG. 
+Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date: 10/04/2008 17:36
+ 
+
+
+From khage at umich.edu  Fri Apr 11 15:59:29 2008
+From: khage at umich.edu (Kat Hagedorn)
+Date: Fri Apr 11 15:59:56 2008
+Subject: [OAI-implementers] Using dates other than metadata record
+	creation date for data provider "from" and "until" searches
+In-Reply-To: <006601c89c02$06fe35d0$14faa170$@tice@k-int.com>
+Message-ID: <C4253B61.18F48%khage@umich.edu>
+
+Well, I would never consider myself an optimist, actually.  ;)
+
+But, while I do understand your approach, in my experience there have been
+very, very few unrecoverable errors when harvesting large repositories. If
+there is an error of this type, it's generally because the data repository
+server has failed, and consequently has nothing to do with rTs, persistence
+or anything of that ilk. And that will be a problem whether we pick the
+first scenario or the second one.
+
+I suppose it comes down to how you've built your software-- I had never
+thought of the data-bounded approach, which is an interesting and
+potentially less risky method. (Or more risky because certain datestamps may
+be missed...to come back full circle.)
+
+ -Kat
+
+
+On 4/11/08 2:29 PM, "Rob Tice" <rob.tice@k-int.com> wrote:
+
+> Hi Kat
+> 
+> I am not advocating a different harvesting methodology I am just approaching
+> from a different perspective. In my 'OAI world' (and based on my experiences)
+> not all targets are perfect and not all errors are recoverable. If all OAI
+> targets were created equal and performed faultlessly then there would not be a
+> strategy to discuss.
+> 
+> My experience is that they aren't and that the devil (as with everything) is
+> in the implementation.
+> 
+> So as I see it the difference between 50 x 4000 and 1 x 200,000 is:
+> 
+> In the first scenario, you have an entirely complete OAI request after every
+> 4000 records and any unrecoverable failure (of either the harvester or target)
+> results in a re-harvest of 4000 records - worst case rollback 3999 records
+> (even after 199,999 have been harvested)
+> 
+> In the second scenario,  any unrecoverable failure results in a re-harvest of
+> 200,000 records -  worst case rollback of 199,999 records. In addition the
+> repository has to deal with the burden of persistence and resumption for a
+> great deal longer which arguably increases both its workload and the chance of
+> failure.
+> 
+> In our imperfect world and given that I am not a betting man I would always
+> choose the first approach if it were available to me.
+> 
+> Does this make me a pessimist :) ?
+> 
+> 
+> Cheers
+> 
+> Rob
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+>> -----Original Message-----
+>> From: Kat Hagedorn [mailto:khage@umich.edu]
+>> Sent: 11 April 2008 17:29
+>> To: Rob Tice
+>> Cc: oai-implementers@openarchives.org
+>> Subject: Re: [OAI-implementers] Using dates other than metadata record
+>> creation date for data provider "from" and "until" searches
+>> 
+>> Hi Rob,
+>> 
+>> But your harvester handles resumptionTokens, right? So, it's not 1 x
+>> 200,000
+>> requests if those 200,000 are broken into rTs of 500 each, say. I'm
+>> interested in how your harvesting system is set up that makes it easier
+>> to
+>> harvest by multiple bounded date requests rather than one single
+>> request.
+>> 
+>> We use a homegrown solution (http://sourceforge.net/umoaitoolkit) which
+>> we've tweaked as time goes on to handle server outages and such, but we
+>> don't have trouble with most of our large harvests, e.g., HighWire has
+>> over
+>> a million and as a rule takes about 8 hours to run from scratch.
+>> 
+>> Regards,
+>>  -Kat
+>> 
+>> 
+>> On 4/11/08 12:20 PM, "Rob Tice" <rob.tice@k-int.com> wrote:
+>> 
+>>> Hi Kat
+>>> 
+>>> I am not saying that harvesting software shouldn't be robust or be
+>> able to
+>>> recover from errors (where possible). However, I still reckon that
+>>> performing some (pretty rudimentary) data analysis and adhering to a
+>> few
+>>> basic principles when exposing your data, can make harvesting easier.
+>>> 
+>>> In my experience as a harvester (when dealing with large
+>> collections), I
+>>> would much rather set up an instruction to sequentially issue (for
+>> example)
+>>> 50 date bounded requests (starting with the earliest date stamp from
+>> the
+>>> identify response). 50 x 4000 is much better than 1 x 200,000 IMHO :)
+>>> 
+>>> Cheers
+>>> 
+>>> Rob
+>>> 
+>>> 
+>>> 
+>>>> -----Original Message-----
+>>>> From: Kat Hagedorn [mailto:khage@umich.edu]
+>>>> Sent: 11 April 2008 15:01
+>>>> To: Rob Tice; lisa@issuelab.com
+>>>> Cc: oai-implementers@openarchives.org
+>>>> Subject: Re: [OAI-implementers] Using dates other than metadata
+>> record
+>>>> creation date for data provider "from" and "until" searches
+>>>> 
+>>>> I?m not sure I agree. Any robust harvester software should be able
+>> to
+>>>> *initially* harvest regardless of datestamp.
+>>>> 
+>>>> Problems such as network connectivity, etc. should be addressed in
+>> the
+>>>> harvesting software to allow as close to seamless harvesting as
+>>>> possible.
+>>>> For example, software should have a timeout feature that provides
+>> for
+>>>> network issues (e.g., waits 1 minute before trying again). If robust
+>>>> software is not able to handle these problems, it?s most likely an
+>>>> issue on
+>>>> the data provider side, in my experience.
+>>>> 
+>>>> Regards,
+>>>>  -Kat
+>>>> 
+>>>> 
+>>>> On 4/11/08 5:53 AM, "Rob Tice" <rob.tice@k-int.com> wrote:
+>>>> 
+>>>>> Hi Lisa
+>>>>> 
+>>>>> I find that it is always helpful to put yourself in the shoes of
+>>>> someone who
+>>>>> wants to harvest your data.
+>>>>> 
+>>>>> If the smallest record count that can be obtained from your system
+>> as
+>>>> the
+>>>>> result of an initial OAI ListRecords request (including dates
+>> and/or
+>>>> sets) is
+>>>>> very large, it can be quite difficult for harvesting systems to
+>>>> successfully
+>>>>> complete an ?initial population? from your data without other
+>>>> influences
+>>>>> (network  connectivity, target response time, resumption token
+>>>> lifetime etc.)
+>>>>> having an increasing bearing on the successful outcome of the
+>>>> harvest.
+>>>>> 
+>>>>> For example, having a repository containing 200,000 records, all
+>>>> dated the
+>>>>> same day and not supporting a request granularity of less than 1
+>> day
+>>>> makes
+>>>>> initial population more difficult for any harvesting system J.
+>>>>> 
+>>>>> I do not know how many records you have so this may not be an issue
+>>>> for you
+>>>>> but I think it is worth bearing in mind.
+>>>>> 
+>>>>> Cheers
+>>>>> 
+>>>>> Rob
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> From: oai-implementers-bounces@openarchives.org
+>>>>> [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of
+>>>> Frederic
+>>>>> MERCEUR
+>>>>> Sent: 11 April 2008 07:41
+>>>>> To: lisa@issuelab.com
+>>>>> Cc: oai-implementers@openarchives.org
+>>>>> Subject: Re: [OAI-implementers] Using dates other than metadata
+>>>> record
+>>>>> creation date for data provider "from" and "until" searches
+>>>>> 
+>>>>> Hello,
+>>>>> As far as I understand the OAI protocol, I would rather say that
+>>>> DateStamp is
+>>>>> about the last time that your record has been updated (which then
+>>>> must reflect
+>>>>> "create", "update" or "delete").
+>>>>> When you will first register your archive into a Harvester, I guess
+>>>> the
+>>>>> harvester will first get all records available. To do so, it will
+>>>> query your
+>>>>> archive without the "from" and "to" parameter.
+>>>>> Then, most of harvesters will run regularly some incremental
+>>>> harvesting to get
+>>>>> the records modified, deleted or added since the previous harvest.
+>> To
+>>>> do so
+>>>>> they will run the query with the "from" parameter.
+>>>>> Kind regards,
+>>>>> Fred
+>>>>> 
+>>>>> 
+>>>>> Lisa M. Brooks a ?crit :
+>>>>> Hello - We're very close to launching our data provider. Before we
+>> do
+>>>> I have a
+>>>>> question about date-stamps.
+>>>>> 
+>>>>> I understand that the "from" and "until" dates used to request
+>>>> metadata
+>>>>> records refer to the date that the metadata record was created. We
+>>>> are an
+>>>>> archive of research works that date back to the 1980s (we will
+>>>> definitely get
+>>>>> even older works into our archive as we move forward). To my mind
+>> it
+>>>> would be
+>>>>> more helpful to folks if our record date-stamps reflect the date
+>> the
+>>>> research
+>>>>> work in question was first published.
+>>>>> 
+>>>>> My concern is that we introduce our repository and harvesters don't
+>>>> get the
+>>>>> gist of the temporal scope of our collection because everything is
+>>>>> date-stamped en masse with the date that we generate our metadata
+>>>> records
+>>>>> (which, with luck, will be this Saturday).
+>>>>> 
+>>>>> I hope I'm making sense! Just want to know if this is a big no-no,
+>> or
+>>>> if there
+>>>>> are things to consider before doing something like this. Appreciate
+>>>> the
+>>>>> insight of list participants.
+>>>>> 
+>>>>> Thanks for reading -
+>>>>> ~Lisa
+>>>>> 
+>>>>> Lisa M. Brooks
+>>>>> IssueLab - bringing nonprofit research into focus
+>>>>> lisa@issuelab.org
+>>>>> 773-649-1790
+>>>>> http://www.issuelab.org
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> 
+>>>>> _______________________________________________
+>>>>> OAI-implementers mailing list
+>>>>> List information, archives, preferences and to unsubscribe:
+>>>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>>>> 
+>>>>> 
+>>>>> 
+>>>> 
+>>>> 
+>>>> -------------------
+>>>> Kat Hagedorn
+>>>> OAIster/Metadata Harvesting Librarian
+>>>> DLXS Bibliographic Class Coordinator
+>>>> Digital Library Production Service
+>>>> University of Michigan
+>>>> 
+>>>> http://www.oaister.org/
+>>>> http://www.dlxs.org/
+>>>> email: khage@umich.edu
+>>>> phone: 734-615-7618
+>>>> 
+>>>> No virus found in this incoming message.
+>>>> Checked by AVG.
+>>>> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+>>>> 10/04/2008 17:36
+>>>> 
+>>> 
+>>> No virus found in this outgoing message.
+>>> Checked by AVG.
+>>> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+>> 10/04/2008
+>>> 17:36
+>>> 
+>>> 
+>> 
+>> -------------------
+>> Kat Hagedorn
+>> OAIster/Metadata Harvesting Librarian
+>> DLXS Bibliographic Class Coordinator
+>> Digital Library Production Service
+>> University of Michigan
+>> 
+>> http://www.oaister.org/
+>> http://www.dlxs.org/
+>> email: khage@umich.edu
+>> phone: 734-615-7618
+>> 
+>> No virus found in this incoming message.
+>> Checked by AVG.
+>> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date:
+>> 10/04/2008 17:36
+>> 
+> 
+> No virus found in this outgoing message.
+> Checked by AVG. 
+> Version: 7.5.519 / Virus Database: 269.22.12/1372 - Release Date: 10/04/2008
+> 17:36
+>  
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-------------------
+Kat Hagedorn 
+OAIster/Metadata Harvesting Librarian
+DLXS Bibliographic Class Coordinator
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From herbertv at lanl.gov  Wed Apr 30 16:00:11 2008
+From: herbertv at lanl.gov (Herbert Van de Sompel)
+Date: Wed Apr 30 16:00:20 2008
+Subject: [OAI-implementers] OAI2LOD
+Message-ID: <4818CFCB.80900@lanl.gov>
+
+hi all,
+
+I felt like drawing you attention to an OAI-PMH tool that has been 
+created by the Linked Data community:
+
+(*) The OAI2LOD server is described and available at:
+http://www.mediaspaces.info/tools/oai2lod/
+
+(*) A paper was presented at the recent WWW Conference Linked Data 
+Workshop:
+http://events.linkeddata.org/ldow2008/papers/03-haslhofer-schandl-oai2lod-server.pdf
+
+(*) And Tim Berners Lee took quite some interest in this development, as 
+can be seen from:
+http://lists.w3.org/Archives/Public/semantic-web/2008Apr/0183.html
+
+Thanks to Chris Bizer for the pointers.
+
+cheers
+
+Herbert
+
+-- 
+Herbert Van de Sompel
+Digital Library Research & Prototyping
+Los Alamos National Laboratory, Research Library
+http://public.lanl.gov/herbertv/
+tel. +1 505 667 1267
+

@@ -1,0 +1,2867 @@
+From hussein@vt.edu  Mon Feb  5 17:33:31 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Mon, 05 Feb 2001 12:33:31 -0500
+Subject: [OAI-implementers] updates on repository explorer
+Message-ID: <3A7EE3EB.42ACD5C@vt.edu>
+
+hi
+
+i just made some changes to the repository explorer that may interest
+some of you ...
+
+1. i changed the auto-tester to now count as protocol errors only
+missing parameters and illegal verbs ... everything else should generate
+either a 400 or verifiable XML
+
+2. i put in support for 503 in both the auto-tester and the explorer ...
+this support is transparent so there will be a delay but no errors will
+be generated (thanx to Simeon for the comments on this issue)
+
+thanx for all the feedback ... if you encounter any problems, please let
+me know and i will look into it asap ...
+
+ttfn
+
+hussein
+
+-- 
+=========================================================================
+hussein suleman -- hussein@vt.edu -- vt cs --
+http://purl.org/net/hussein
+=========================================================================
+
+From deridder@cs.utk.edu  Thu Feb  8 20:28:51 2001
+From: deridder@cs.utk.edu (deridder)
+Date: Thu, 8 Feb 2001 15:28:51 -0500 (EST)
+Subject: [OAI-implementers] List Id's for multiple sets
+Message-ID: <Pine.GSO.4.10.10102081523160.19888-100000@duncan.cs.utk.edu>
+
+Now that we're adding more sets, I'm suddenly unclear about the usage of
+ListIdentifiers and ListRecords, where the set specification is optional.
+
+When no set is specified, should I list ids/records from first one set,
+then another, then another, till I run out of sets?  
+ (alphabetical order?)
+
+Using resumption tokens, should I keep track of which sets I've covered so
+far, and pick up where I left off, so that all sets are covered, when no
+set is specified?
+
+  This is looking more complicated than I expected.  With no dates
+specified, and no sets specified, the list could be enormous;  and as more
+and more sets are added, the resumption tokens could get pretty hairy too.
+
+  Question to those who have implemented this for multiple sets:  is this
+how you have done it, or do you have a better way?
+
+ --Jody
+
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.6.2
+
+mQCNAzpx5qgAAAEEAKYqSHUPBHsE1SIOclJiJN5TpA8PalfWOCWH3X1d9AQWj8Tz
+Lf1mT6R3ps7p+Rn2w9QZHEpZf1AiW9XCJ3Hpiu60IIQ9AHFOddtO8IEcUUreOU5k
+mVnxfXC2RXtGKN6cwCUzSVT7X8a+UkJq4rHTRR1WMIFe2XieesmMNng0GECtAAUR
+tCNKb2R5IERlUmlkZGVyIDxkZXJpZGRlckBjcy51dGsuZWR1PokAlQMFEDpx5vfJ
+jDZ4NBhArQEBbHUD/0/JRsgqGaNXlDaO6BV8xosIyVE0FRuyhBaIVCAAij6RFIi5
+Wls/hCmkpBtWwYvu4HJTH5ZtmljJK8TiRmKpZZzsGyAg2dVRxytLIDgNuwkoX28v
+9G5gBludckV9usAEtYaTwLpwVaBATttc3FBsUafUpZIkRvdtDv6x49JcWhsA
+=AGsQ
+-----END PGP PUBLIC KEY BLOCK-----
+
+pub  1024/341840AD 2001/01/26 Jody DeRidder <deridder@cs.utk.edu>
+Key fingerprint =  07 1D D3 00 21 2F FA 83  E8 FD B7 80 D2 D9 D5 2D
+
+
+
+
+
+From simeon@lanl.gov  Thu Feb  8 20:43:32 2001
+From: simeon@lanl.gov (Simeon Warner)
+Date: Thu, 8 Feb 2001 13:43:32 -0700 (MST)
+Subject: [OAI-implementers] List Id's for multiple sets
+In-Reply-To: <Pine.GSO.4.10.10102081523160.19888-100000@duncan.cs.utk.edu>
+Message-ID: <Pine.LNX.4.10.10102081333260.21220-100000@mmm.lanl.gov>
+
+On Thu, 8 Feb 2001, deridder wrote:
+> Now that we're adding more sets, I'm suddenly unclear about the usage of
+> ListIdentifiers and ListRecords, where the set specification is optional.
+> 
+> When no set is specified, should I list ids/records from first one set,
+> then another, then another, till I run out of sets?  
+>  (alphabetical order?)
+
+The only meaning is that you should list the complete contents of
+the repository -- regardless of whether items belong to none, one
+or more sets.
+
+The order in which you return ids/records is not specified by
+the protocol. You may choose any convenient order.
+ 
+> Using resumption tokens, should I keep track of which sets I've covered so
+> far, and pick up where I left off, so that all sets are covered, when no
+> set is specified?
+
+This is entirely implementation dependent. The protocol spec. explicitly
+says that the resumptionToken is opaque. I suggest you do whatever
+makes the implementation simplest.
+ 
+>   This is looking more complicated than I expected.  With no dates
+> specified, and no sets specified, the list could be enormous;  and as more
+> and more sets are added, the resumption tokens could get pretty hairy too.
+
+We haven't touched on issues of how large the resumptionToken might
+get. I think one should try to avoid them getting too huge.
+ 
+>   Question to those who have implemented this for multiple sets:  is this
+> how you have done it, or do you have a better way?
+
+I _choose_ to encode the equivalent parameters for a request to continue
+the list. This is possible because I _choose_ to return ids/records in
+date order with 1 day granularity. 
+
+--
+Simeon
+
+> 
+>  --Jody
+
+
+From jyoung@oclc.org  Thu Feb  8 21:16:29 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Thu, 8 Feb 2001 16:16:29 -0500
+Subject: [OAI-implementers] OCLC OAI 1.0 Thesis and Dissertation Repository
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98341F06@OA3-SERVER.oa.oclc.org>
+
+I'd like to announce the availability of a thesis and dissertation OAI 1.0
+repository with the base URL of
+http://purl.org/alcme/etdcat/servlet/OAIHandler. It passed the Repository
+Explorer 1.0 examination and has been added to its list of tested archives.
+The repository currently contains a sample of about 100,000 thesis and
+dissertation records extracted from OCLC's WorldCat database. Documentation
+for the repository, such as it is, can be found at
+http://purl.org/alcme/etdcat/index.html.
+
+Currently, the repository only supports the oai_dc format. Eventually, it
+will also support an enhanced Dublin Core format to be defined by the
+Networked Digital Library of Theses and Dissertations organization (NDLTD).
+
+I'd also like to note that this repository was built using OAICat software
+that will eventually be available to the OAI community under an open-source
+license. The idea for this software is to make it as simple as possible for
+people to add OAI protocol capability to an existing database.
+Documentation, as it accumulates, can be found at
+http://alcme.oclc.org:4342/OAICat.html. If this sounds useful to you,
+contact me for details.
+
+Jeff
+
+---
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Fax:		614-764-2344
+Email:	jyoung@oclc.org
+
+
+
+
+From tdb198@ecs.soton.ac.uk  Fri Feb  9 09:07:31 2001
+From: tdb198@ecs.soton.ac.uk (Tim Brody)
+Date: Fri, 9 Feb 2001 09:07:31 +0000 (GMT)
+Subject: [OAI-implementers] List Id's for multiple sets
+In-Reply-To: <Pine.GSO.4.10.10102081523160.19888-100000@duncan.cs.utk.edu>
+Message-ID: <Pine.LNX.4.21.0102090849470.9098-100000@ugnode2.ecs.soton.ac.uk>
+
+On Thu, 8 Feb 2001, deridder wrote:
+
+>   This is looking more complicated than I expected.  With no dates
+> specified, and no sets specified, the list could be enormous;  and as more
+> and more sets are added, the resumption tokens could get pretty hairy too.
+
+Excuse my ignorance if this is already obvious to you:
+
+(as suggested by Chris Gutteridge, this is how I have implemented
+resumptionTokens)
+
+Initial request:
+Build a temporary table of all the identifiers that match the request,
+this CAN get huge but if you want harvesters to get all of your repository
+there isn't much choice...(indeed I would argue this is more efficient
+than enumerating over sets)
+Output the first 400 records (or whatever) from the temporary table, using
+the identifiers as an index into your database/file system. The
+resumptionToken will be the name of your temporary table and an encoded
+string to tell you what the metadataFormat is (required for ListRecords).
+
+Temporary table is:
+pos	int,auto_increment
+id	char(64) ... this is OAI Identifier/your archive identifier, but
+if you use OAI to index means ListIdentifiers only needs temporary table
+
+Latter requests:
+Get the appropriate list of identifiers by saying get "pos > start".
+
+To manage the temporary tables I have another table, the temp index, which
+stores the table names and the last time they were accessed. Whenever a
+query is started I remove old temporary tables and their associated
+entries in the temp index. To make the resumptionToken even simpler you
+could store the metadataPrefix in the index ...
+
+The initial request can be very slow, as it has to enumerate over your
+entire archive, but subsequent requests are very quick. Each harvester (if
+it is well behaved) will only need to do this once, subsequent queries
+should use "from" to only grab the latest data.
+
+e.g. (liable to be broken and knackered as is my wont)
+http://cite-base.ecs.soton.ac.uk/cgi-bin/oai/OAI-script?debug=1&verb=ListRecords&metadataPrefix=oai_dc
+
+As an aside, I have tried to write my OAI "bits" to be in a seperate, non
+archive-specific library - would people be interested in access to this (I
+can not guarantee its correctness nor robustness, just it supports the
+bits of OAI that I've needed)?
+
+All the best,
+Tim Brody
+Computer Science, University of Southampton
+email: tdb198@soton.ac.uk
+Web: http://www.ecs.soton.ac.uk/~tdb198/
+
+
+From deridder@cs.utk.edu  Fri Feb  9 14:51:20 2001
+From: deridder@cs.utk.edu (deridder)
+Date: Fri, 9 Feb 2001 09:51:20 -0500 (EST)
+Subject: [OAI-implementers] List Id's for multiple sets
+In-Reply-To: <Pine.LNX.4.21.0102090849470.9098-100000@ugnode2.ecs.soton.ac.uk>
+Message-ID: <Pine.GSO.4.10.10102090943150.6251-100000@duncan.cs.utk.edu>
+
+Good gracious, Tim!  That *is* complex.  What happens if you have 40
+harvesters working on your program at once?  You would have multiple
+tables--- are you using cookies?  And do you have time limitations on
+accessing those temp tables?  If so, how do you implement that--- and do
+you remove all current temp tables on each new query?  Seems like that
+would mess up with several current accessess.  But unaccessed tables could
+build up also, so I certainly see that they would need to be periodically
+cleared out.  
+
+  Whew!  
+
+   And yes, I for one would like to see your OAI "bits";  I'd love to
+compare how I'm doing things with how others are, to see if I can improve
+on my methods.
+
+ ---jody
+
+ On Fri, 9 Feb 2001, Tim Brody wrote:
+
+> On Thu, 8 Feb 2001, deridder wrote:
+> 
+> >   This is looking more complicated than I expected.  With no dates
+> > specified, and no sets specified, the list could be enormous;  and as more
+> > and more sets are added, the resumption tokens could get pretty hairy too.
+> 
+> Excuse my ignorance if this is already obvious to you:
+> 
+> (as suggested by Chris Gutteridge, this is how I have implemented
+> resumptionTokens)
+> 
+> Initial request:
+> Build a temporary table of all the identifiers that match the request,
+> this CAN get huge but if you want harvesters to get all of your repository
+> there isn't much choice...(indeed I would argue this is more efficient
+> than enumerating over sets)
+> Output the first 400 records (or whatever) from the temporary table, using
+> the identifiers as an index into your database/file system. The
+> resumptionToken will be the name of your temporary table and an encoded
+> string to tell you what the metadataFormat is (required for ListRecords).
+> 
+> Temporary table is:
+> pos	int,auto_increment
+> id	char(64) ... this is OAI Identifier/your archive identifier, but
+> if you use OAI to index means ListIdentifiers only needs temporary table
+> 
+> Latter requests:
+> Get the appropriate list of identifiers by saying get "pos > start".
+> 
+> To manage the temporary tables I have another table, the temp index, which
+> stores the table names and the last time they were accessed. Whenever a
+> query is started I remove old temporary tables and their associated
+> entries in the temp index. To make the resumptionToken even simpler you
+> could store the metadataPrefix in the index ...
+> 
+> The initial request can be very slow, as it has to enumerate over your
+> entire archive, but subsequent requests are very quick. Each harvester (if
+> it is well behaved) will only need to do this once, subsequent queries
+> should use "from" to only grab the latest data.
+> 
+> e.g. (liable to be broken and knackered as is my wont)
+> http://cite-base.ecs.soton.ac.uk/cgi-bin/oai/OAI-script?debug=1&verb=ListRecords&m
+etadataPrefix=oai_dc
+> 
+> As an aside, I have tried to write my OAI "bits" to be in a seperate, non
+> archive-specific library - would people be interested in access to this (I
+> can not guarantee its correctness nor robustness, just it supports the
+> bits of OAI that I've needed)?
+> 
+> All the best,
+> Tim Brody
+> Computer Science, University of Southampton
+> email: tdb198@soton.ac.uk
+> Web: http://www.ecs.soton.ac.uk/~tdb198/
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.6.2
+
+mQCNAzpx5qgAAAEEAKYqSHUPBHsE1SIOclJiJN5TpA8PalfWOCWH3X1d9AQWj8Tz
+Lf1mT6R3ps7p+Rn2w9QZHEpZf1AiW9XCJ3Hpiu60IIQ9AHFOddtO8IEcUUreOU5k
+mVnxfXC2RXtGKN6cwCUzSVT7X8a+UkJq4rHTRR1WMIFe2XieesmMNng0GECtAAUR
+tCNKb2R5IERlUmlkZGVyIDxkZXJpZGRlckBjcy51dGsuZWR1PokAlQMFEDpx5vfJ
+jDZ4NBhArQEBbHUD/0/JRsgqGaNXlDaO6BV8xosIyVE0FRuyhBaIVCAAij6RFIi5
+Wls/hCmkpBtWwYvu4HJTH5ZtmljJK8TiRmKpZZzsGyAg2dVRxytLIDgNuwkoX28v
+9G5gBludckV9usAEtYaTwLpwVaBATttc3FBsUafUpZIkRvdtDv6x49JcWhsA
+=AGsQ
+-----END PGP PUBLIC KEY BLOCK-----
+
+pub  1024/341840AD 2001/01/26 Jody DeRidder <deridder@cs.utk.edu>
+Key fingerprint =  07 1D D3 00 21 2F FA 83  E8 FD B7 80 D2 D9 D5 2D
+
+
+
+
+
+From tdb198@ecs.soton.ac.uk  Fri Feb  9 16:17:02 2001
+From: tdb198@ecs.soton.ac.uk (Tim Brody)
+Date: Fri, 9 Feb 2001 16:17:02 +0000 (GMT)
+Subject: [OAI-implementers] List Id's for multiple sets
+In-Reply-To: <Pine.GSO.4.10.10102090943150.6251-100000@duncan.cs.utk.edu>
+Message-ID: <Pine.LNX.4.21.0102091521230.24495-100000@ugnode2.ecs.soton.ac.uk>
+
+On Fri, 9 Feb 2001, deridder wrote:
+
+> Good gracious, Tim!  That *is* complex.  What happens if you have 40
+> harvesters working on your program at once?  You would have multiple
+> tables--- are you using cookies?  And do you have time limitations on
+> accessing those temp tables?  If so, how do you implement that--- and do
+> you remove all current temp tables on each new query?  Seems like that
+> would mess up with several current accessess.  But unaccessed tables could
+> build up also, so I certainly see that they would need to be periodically
+> cleared out.
+
+I have found temporary tables make life simpler ... or at least as easy as
+implementing encoding and decoding of resumptionToken strings.
+
+A more detailed explanation of what I'm doing:
+
+The resumptionToken I'm generating is a "session token", that is it is
+unique to the query that generated it (and is not supposed to be harvester
+understandable).
+For each token I generate I create a table with the same name, see tmpXXX
+below. ( FYI I'm using token = offset+remote_addr+time+rand()+metadataPrefix )
+
+The resumptionToken has a limited life-span, currently I've got it set to
+30 minutes. Each time the resumptionToken is used I refresh its
+timestamp, so if a query takes longer than 30 minutes (with multiple
+resumptions) it will not timeout.
+
+Each time a query is made I clear tables older than 30 minutes. BTW The
+time to live (TTL) of tokens is unspecified by OAI (an error 400 should be
+returned if you have discarded the token - not yet implemented by me).
+
+My tables:
+tmpIndex
+========
+	tableName = The unique name of the table
+	timestamp = The last time this table was accessed
+
+tmpXXX
+======
+	pos = The index of the identifier, used for finding the offset
+		to resume from
+	identifier = The OAI identifier
+
+I have purposely not copied the metadata into the temporary table to avoid
+getting "explosive" growth in database size, besides it makes finding the
+offset faster and the operation to find the metadata given an identifier
+is O(1).
+
+Chris has suggested some improvements to this scheme:
+- Store the request parameters in the tmpIndex, therefore if two (or 40)
+harvesters simultaneously request the same data you need not run the same
+search more than once
+- Store the metadataPrefix in tmpIndex, therefore avoiding the need to
+encode this parameter (the resumption offset still needs to be encoded)
+
+As a last thought about timeouts:
+What do you do if a harvester requests, gets a resumptionToken, then uses
+that token a week later? My instinct would be, if the token is still
+alive, it should complete the list as it existed a week ago rather than
+putting in any alterations. But ... I can't see anything in the OAI
+protocol that makes it explicit about whether alterations to data should
+be reflected during flow control (?).
+
+>    And yes, I for one would like to see your OAI "bits";  I'd love to
+> compare how I'm doing things with how others are, to see if I can improve
+> on my methods.
+
+Thank you. I am coding in PERL modules - I will make an effort to get it
+all together in a web page - I fear they will not be as accomplished as
+Jeff Young's servlets!
+
+All the best,
+Tim.
+
+
+From harnad@coglit.ecs.soton.ac.uk  Fri Feb  9 17:10:38 2001
+From: harnad@coglit.ecs.soton.ac.uk (Stevan Harnad)
+Date: Fri, 9 Feb 2001 17:10:38 +0000 (GMT)
+Subject: [OAI-implementers] Multilingualising OAI/eprints.org documentation and software
+Message-ID: <Pine.SGI.3.95.1010209164515.13083a-100000@cogito.ecs.soton.ac.uk>
+
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
+  Send mail to mime@docserver.cac.washington.edu for more info.
+
+--a8Wt8u1KmwUX3Y2C
+Content-Type: TEXT/PLAIN; CHARSET=iso-8859-1
+Content-Transfer-Encoding: QUOTED-PRINTABLE
+Content-ID: <Pine.SGI.3.95.1010209164515.13083c@cogito.ecs.soton.ac.uk>
+
+
+---------- Forwarded message ----------
+Date: Fri, 9 Feb 2001 16:24:47 +0000
+From: ePrints Support (Christopher Gutteridge) <support@eprints.org>
+Subject: Multiple language Support for Eprints.
+
+eprints.org is beginning to gain some multi-language functionality.
+
+I plan to have "language" files with all the phrases used by eprints in
+them. I will maintain an English version, and arrange to make it as
+easy as possible to create/maintain other languages - hopefully a
+script to compare any language file with the english file and spot any
+missing phrases etc.
+
+It's time-consuming applying this change, but also easy. It will take a
+while to get the whole code done.
+
+The advantage of this method is that although each eprint.org archive
+will have a default language, a user could view the CGI scripts in any
+language supported, using cookies or something!
+
+I'm currently considering how to make the static pages support multiple
+languages... I'm considering mod_rewrite using the same cookie. I think
+static pages are a slightly different issue from the main code, as
+people will want to customise those, and customising in more than one
+language will be more than most people, especially anglocentric ones,
+will want to do.
+
+The other issue is the "help" in the metadata cfg section and various
+blocks of english text in the site routines.=20
+
+Some of SiteInfo.pm may go from:
+
+$EPrintsSite::SiteInfo::blurb =3D "This is some blurb only in english";
+
+to
+
+$EPrintsSite::SiteInfo::blurb{english} =3D "This is some blurb only in engl=
+ish";
+
+With the option to add any language you support; how does this sound?
+
+My main concern is not making any significant extra work to deploy
+eprints.org for people who DON'T care about this issue.
+
+Please see the attached file for an example of a language file - this
+is only somewhere between 1/8 and 1/4 of the final length I'm
+expecting.
+
+I'd be keen for some of you to at least have a go at translating some
+of this so I've got some french (and other language) text to work with
+(I'm afraid I am a monoglot). Also let me know if there is anything
+good/bad about the way that I've organised it.
+
+The file is organised by the file which uses the phrase. Eg. User.pm
+Each line has a ID for the phrase eg:
+
+H:thanks =3D Thank-you. Your paper named $(1) is now in the system.
+
+"H" indicates that this will be displayed as HTML so &aacute; etc are
+acceptable. Other types, "M" for example, will need different escaping
+of such characters, or they may be altogether illegal.
+
+Rather than split a sentence into two phrases, the system inserts data
+into the points at $(1) $(2) etc...
+
+Christopher Gutteridge=20
+ePrints Technical Support
+support@eprints.org
+
+------------------------------------
+
+# English Language Phrases
+
+# First letter donates use:
+#
+# H =3D HTML
+# A =3D ASCII
+# L =3D Log
+# S =3D Mail Subject (or From) Line
+# M =3D Mail Message
+# F =3D HTML Form (Some characters maybe illegal! Don't use &eacute; escapi=
+ng)=20
+
+<file SearchExpression.pm>
+H:leastone =3D You need to specify something for at least one field!
+F:any =3D any
+F:all =3D all
+H:mustfulfill =3D Retrieved records must fulfill $(1) of these conditions.
+H:orderresults =3D Order the results: $(1)
+</file>
+
+<file update_ecs_users>
+A:dude =3D Internationalisation Rocks.
+</file>
+
+<file Citation.pm>
+H:unknowneprint =3D Unknown EPrint field $(1) in "$(2)"
+H:na =3D N/A
+</file>
+
+<file UserForm.pm>
+H:dontknow =09=3D I don't know who you are
+H:recfor =09=3D Record for $(1)
+H:blurb =09=3D Please enter correct information about yourself for our reco=
+rds. This information will be useful to us and readers of your papers. You =
+don't have to supply all this information if you don't want to; you need on=
+ly fill out those fields marked wi
+th a * to start using the archive.
+H:changeemail =09=3D For instructions on how to change your e-mail address,=
+ $(1).
+H:clickhere =09=3D click here
+H:formincorrect =3D The form doesn't seem to be filled out correctly:
+H:completeform =09=3D Please complete the form before continuing.
+H:problemupdating =3D There was a problem reading the posted data and updat=
+ing the database. Please try again later
+H:usernotmatch =09=3D Username in form $(1) doesn't match object username $=
+(2)
+</file>
+
+<file User.pm>
+H:missedfield =3D You haven't filled out the required $(1) field.
+S:weclome =3D Welcome to $(1)!
+M:reminder =3D Dear $(1) User,\n\n$(2)Your username and password for the si=
+te are:\n\nUser name: $(3)\nPassword:  $(4)\n\nIf you didn't expect this e-=
+mail, please contact the site\nadministrator at:\n\n$(5)\n
+S:remindersub =3D Your username and password
+S:newuser =3D New $(1) User
+S:newstaff =3D New $(1) Staff
+</file>
+
+<file Subscription.pm>
+H:sendupdates =3D Send updates: $(1)
+M:weekly =3D weekly
+M:daily =3D daily
+M:monthly =3D monthly
+L:notopenrec =3D Couldn't open user record for user $(1) (sub ID $(2))
+M:blurb =3D This mail contains your $(1) subscription to $(2).\n\nTo cancel=
+, temporarily disable or alter your subscription,\nvisit the following Web =
+page:\n\n $(3)\n\n
+M:newsub =3D One new submission was received.
+M:newsubs =3D $(1) new submissions were received.
+S:subsubj =3D Subscription
+L:failsend =3D Failed to send subscription to user $(1): $(2)
+</file>
+
+<file SubmissionForm.pm>
+L:dberr =09=3D Database Error: $(1)
+H:useautharea=09=3D Use your author area to deposit new documents
+L:errclone=09=3D Error cloning EPrint $(1): $(2)
+H:uploadprob=09=3D There was a problem uploading your file(s). Please try a=
+gain.
+L:removeerror=09=3D DB Error removing EPrint $(1): $(2)
+H:seltype=09=3D Please select the most appropriate type for your deposit.
+H:bibinfo=09=3D Please enter the bibliographic data about your deposit. Fie=
+lds marked with a * are fields that must be filled out before your deposit =
+will be accepted.
+H:verify=09=3D Verify:
+H:invaleprint=09=3D ID $(1) is not a valid EPrint ID!
+H:validformats=09=3D Here are the available upload formats, and how many fi=
+les you have uploaded for each.
+H:leastone=09=3D You must upload at least one of the formats listed in bold=
+=2E
+F:plain=09=09=3D Plain Files
+F:graburl=09=3D From an Existing Web Site
+H:fixupload=09=3D The document upload can't be completed because:
+H:pleasefix=09=3D Please fix this before continuing.
+H:nofiles=09=3D No files have been uploaded for this format.
+H:heretoview=09=3D Click here to view and verify the uploaded files
+H:selfirst=09=3D You need to select the file that should be shown first whe=
+n a reader wishes to view your deposit.
+H:filesforformat=3D These are the files you have uploaded for this format.
+H:fileupmethod=09=3D File upload method:
+H:plainonly=09=3D (Plain files only)
+H:numfiles=09=3D Number of files to upload:
+H:enterurl=09=3D Please enter the URL of the document you wish to upload to=
+ the archive in the box below.
+H:urlwarning=09=3D Occasionally, uploading this way may not produce a total=
+ly accurate copy. This is because some assumptions about the structure of t=
+he HTML must be made, to stop the software from trying to upload the whole =
+World-Wide Web!
+H:entercompfile =3D Enter the filename (with full path) of the compressed f=
+ile in the box below.
+H:enterfile=09=3D Please enter the filename (with full path) of the documen=
+t file in the box below.
+H:enterfiles=09=3D Please enter the filenames (with full paths) of the docu=
+ment files in the boxes below.
+H:fixprobs=09=3D Before you deposit this entry to the archive, the followin=
+g problems need to be corrected:
+H:pleaseverify=09=3D Please verify that all of the details about your depos=
+it are correct, and that all necessary document files have been correctly u=
+ploaded including any figures. =20
+H:thanks=09=3D Thank you.
+H:inbuffer=09=3D Your document is now held in the deposit buffer. Provided =
+there are no problems it should appear in the main archive within the next =
+few days.
+H:retdeppage=09=3D Click here to return to your deposit papers page=20
+H:suredelete=09=3D Are you absolutely sure you want to delete this entry?
+H:filledwrong=09=3D The form doesn't seem to be filled out correctly:
+H:pleasecomplete=3D Please complete the form before continuing.
+L:idnotmatch=09=3D EPrint ID in form >$(1)< doesn't match object id $(2)
+H:filename=09=3D Filename
+H:sizebytes=09=3D Size (Bytes)
+H:shownfirst=09=3D Shown First
+F:showfirst=09=3D Show first
+F:action_new    =3D Nouvou
+F:action_delete =3D Delete
+F:action_edit   =3D Edit
+F:action_next   =3D N=E9xt >
+F:action_prev   =3D < Back
+F:action_submit =3D Deposit
+F:action_cancel =3D Cancel
+F:action_confirm=3D Confirm
+F:action_clone  =3D Clone
+F:action_uploadedit =3D Upload/Edit >
+F:action_finished   =3D Finished
+F:action_upload =3D Upload >
+F:action_verify =3D Verify ID's
+H:title_type       =3D Deposit Type
+H:title_meta       =3D Bibliographic Information
+H:title_subject    =3D Subject Categories
+H:title_linking    =3D Succession/Commentary
+H:title_format     =3D Document Storage Formats
+H:title_fileview   =3D Document File Upload
+H:title_upload     =3D Document File Upload
+H:title_verify     =3D Deposit Verification
+H:title_done       =3D Completed Deposit
+H:title_error      =3D Error
+H:title_return     =3D Return to Author's Home
+H:title_confirmdel =3D Confirm Deletion
+H:corrupt_err=09=3D An inconsistency in the posted data was detected. Usual=
+ly this is caused by arriving directly to this page from a bookmark and not=
+ from your paper depositing page, or through using the browser's back/forwa=
+rds or reload buttons. Always acce
+ss the depositing mechanism via your author area and use the buttons on the=
+ form.</P><P>If this has happened in the normal course of operation please =
+tell the $(1).
+H:database_err =09=3D There's been a problem accessing the site database. P=
+lease try again later, and contact the $(1) if the problem persists.
+H:siteadmin=09=3D site administrator=20
+H:nosel_err=09=3D You hadn't selected a paper to edit, clone, delete or dep=
+osit!
+F:delete=09=3D Delete
+F:delete_all=09=3D Delete All Files
+H:format=09=3D Format
+H:files_uploaded=3D Files Uploaded
+F:uploadedit=09=3D Upload/Edit
+F:remove=09=3D Remove
+</file>
+
+
+--a8Wt8u1KmwUX3Y2C--
+
+From support@eprints.org  Fri Feb  9 20:25:57 2001
+From: support@eprints.org (ePrints Support)
+Date: Fri, 9 Feb 2001 20:25:57 +0000
+Subject: [OAI-implementers] Universal Identifiers
+Message-ID: <20010209202557.B26455@ecs.soton.ac.uk>
+
+Is there a plan for registering archive identifiers yet? I'd like
+to mention it in the eprints.org documentation.
+
+Does anyone know of a system for assigning unqique identifiers to 
+other cromulent entities such as people (creators), institutions
+and/or anything else you might want to uniquely identify in an
+archives metadata.
+
+At least journals and books have ISSN and ISBN.
+
+-- 
+
+Christopher Gutteridge 
+ePrints Technical Support
+support@eprints.org
+
+
+From thomas.krichel@liu.edu  Fri Feb  9 20:45:14 2001
+From: thomas.krichel@liu.edu (Thomas Krichel)
+Date: Fri, 9 Feb 2001 15:45:14 -0500
+Subject: [OAI-implementers] Universal Identifiers
+In-Reply-To: <20010209202557.B26455@ecs.soton.ac.uk>; from support@eprints.org on Fri, Feb 09, 2001 at 08:25:57PM +0000
+References: <20010209202557.B26455@ecs.soton.ac.uk>
+Message-ID: <20010209154514.A6177@wotan.liu.edu>
+
+  ePrints Support writes
+
+> Does anyone know of a system for assigning unqique identifiers to 
+> other cromulent entities such as people (creators), institutions
+> and/or anything else you might want to uniquely identify in an
+> archives metadata.
+
+  In the RePEc project, we have extensive collections of such
+  data and all of them have persistent identifiers. However the
+  solution that we adopt are local to RePEc. But it works well
+  in user services.
+
+  In addition, Simeon and I are working on an academic metadata
+  format. This will not by itself solve the identification problem,
+  (it can not, really)  but it will allow you to use identified authors
+  and institution in a straightforwared way in your metadata set.
+  You are welcome to join our small team and work on this. We should
+  have a test version out soon.
+
+  Finally, and most importantly,  there is the OAI meeting on
+  certification in Geneva.  I expect that such registration aspects
+  will be discussed there.
+
+  Cheers,
+
+  Thomas Krichel                         http://openlib.org/home/krichel
+                                     RePEc:per:1965-06-05:thomas_krichel
+
+
+From jyoung@oclc.org  Fri Feb  9 21:32:05 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Fri, 9 Feb 2001 16:32:05 -0500
+Subject: [OAI-implementers] Universal Identifiers
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98341F0B@OA3-SERVER.oa.oclc.org>
+
+The answer to your question about unique identifiers for non-bibliographic
+items isn't necessarily simple. 
+
+If there is a simple answer, this is it. The Library of Congress has a MARC
+name authority database for people and institutions, and each records has a
+widely recognized unique identifier called the LCCN. The coverage, however,
+is hardly exhaustive. For details about the format, consult
+http://lcweb.loc.gov/marc/authority/.
+
+Closer to home, the Networked Digital Library of Theses and Dissertations
+(NDLTD) project (see http://www.ndltd.org/), may be of interest to you since
+it's dealing with this very issue. NDLTD is working to create OAI
+repositories around the world containing thesis and dissertation records
+from participating universities and libraries. OCLC has been assigned the
+task of developing a scheme for allowing links to be stored in the records
+in place of personal names. (I'm oversimplifying a little here.) For
+example, where you might otherwise see <dc:creator>Twain, Mark</dc:creator>,
+I expect that you will instead see some sort of URL that will return a rich
+set of XML data about that person. In an important sense, then, this URL is
+a unique identifier for the person, and a useful one to boot.
+
+I should note, however, that NDLTD has chosen to accomplish this feat by
+defining their own metadata format based on the Resource Description
+Framework (RDF). Since OAI hasn't chosen to use RDF to encode their oai_dc
+format, such linking isn't appropriate from their default format. If you
+plan to store any kind of link in your records, you too will be forced to
+define your own format just as NDLTD will do.
+
+To continue, and this is all still preliminary thinking, the URL I just
+mentioned might very well resolve to an OAI GetRecord command to an OAI
+repository containing name authority records. The implications of using the
+OAI protocols are that the authority database could be distributed around
+the world and freely shared. To show the potential, the LC authority
+database I mentioned above could easily be mounted as an OAI repository and
+the MARC content distributed in XML format for convenient use. One caveat
+here, though is that there is currently no Dublin Core standard for name
+authority information. The NDLTD application, however, depends on such a
+scheme, so it will happen, even if it's ad hoc.
+
+An even bigger caveat, however, is that this is just the tip of the
+logistical iceberg for making such a scheme work. I've worked on authority
+control-related projects for a number of years here at OCLC, and can attest
+to the fact that it's a horribly complicated problem. The internet and tools
+such as OAI, XML, Dublin Core, and perhaps even PURLs afford us an
+opportunity to reexamine the way we can address this problem. I'm pretty
+excited about the possibilities.
+
+Jeff Young
+
+---
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Fax:		614-764-2344
+Email:	jyoung@oclc.org
+
+
+
+
+> -----Original Message-----
+> From: ePrints Support [mailto:support@eprints.org]
+> Sent: Friday, February 09, 2001 3:26 PM
+> To: 'OAI-implementers'
+> Subject: [OAI-implementers] Universal Identifiers
+> 
+> 
+> Is there a plan for registering archive identifiers yet? I'd like
+> to mention it in the eprints.org documentation.
+> 
+> Does anyone know of a system for assigning unqique identifiers to 
+> other cromulent entities such as people (creators), institutions
+> and/or anything else you might want to uniquely identify in an
+> archives metadata.
+> 
+> At least journals and books have ISSN and ISBN.
+> 
+> -- 
+> 
+> Christopher Gutteridge 
+> ePrints Technical Support
+> support@eprints.org
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From thabing@uiuc.edu  Fri Feb  9 22:10:09 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Fri, 09 Feb 2001 16:10:09 -0600
+Subject: [OAI-implementers] re: ListMetadataFormats problem
+References: <3A7823DE.B47AB938@cs.cornell.edu>
+Message-ID: <3A846AC1.569F70C9@uiuc.edu>
+
+Herbert:
+
+While the current OAI spec is clearly workable for the time being using
+techniques such as what you and Carl suggest, we do think that it would be
+desirable in a future revision to allow for references to multiple
+namespaces and XSDs per metadataPrefix in a response ListMetadataFormats.  
+
+For instance, the response to XML Schemas Last Call item 12
+(http://www.w3.org/2000/05/12-xmlschema-lcissues.html#exporting-attributes)
+talks about the desirability of writing schemas to allow later extensions
+unknown to the original schema using other techniques than import statements
+within an XSD. (See specifically Dan Connolly's comment: "I think it's
+clearly preferable to have one schema for XHTML, one for SMIL, one for SVG,
+and one for MathML that can be used together in compound documents; rather
+than one for XHTML+MathML, one for XHTML+MathML+SVG, etc. for a total of N!
+schemas.") 
+
+In the meantime we can build for use with OAI brief XSDs that import and
+merge other canonical metadata XSDs as necessary.
+
+Tom Habing
+Tim Cole
+University of Illinois
+
+herbert van de sompel wrote:
+> 
+> I am completely on the same line of thinking with Carl, here.  There
+> needs to be a one-to-one relationship between a metadataPrefix and the
+> location of a schema describing the metadataformat represented by that
+> metadataPrefix.  If that metadataformats wants to draw from multiple
+> namespaces, that is fine, but that should be declared in the schema for
+> the metadataformat as Carl indicates.  Building on Carl's example, a
+> repo working with the CARL metadataformat would reply to the
+> ListMetadataFormat verb as:
+> 
+> <?xml version="1.0" encoding="UTF-8"?>
+>   <ListMetadataFormats
+> 
+> xmlns="http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats"
+>       xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+> 
+> xsi:schemaLocation="http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats
+> 
+> http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats.xsd">
+>     <responseDate>2000-10-01T19:20:30-04:00</responseDate>
+>     <requestURL>http://an.oa.org/OAI-script?verb=ListMetadataFormats
+> 
+> &amp;identifier=oai%3AarXiv%3Ahep-th%2F9901001</requestURL>
+>     <metadataFormat>
+>       <metadataPrefix>oai_CARL</metadataPrefix>
+>       <schema>http://foo.org/carlmeta.xsd</schema>
+>       <metadataNamespace>http://foo.org/carlmeta</metadataNamespace>
+>     </metadataFormat>
+>     <metadataFormat>
+>       <metadataPrefix>oai_dc</metadataPrefix>
+>       <schema>http://www.openarchives.org/OAI/dc.xsd</schema>
+> 
+> <metadataNamespace>http://purl.org/dc/elements/1.1/</metadataNamespace>
+>     </metadataFormat>
+> </ListMetadataFormats>
+> 
+> That is, the repo undertands oai_CARL as a metadataPrefix, and it points
+> at http://foo.org/carlmeta.xsd as the location of the corresponding
+> schema.  That carlmetadata.xsd schema will declare the import of
+> whichever other metadataformats it wants to build upon.  See XML Primer
+> section "5. Advanced Concepts III: The Quarterly Report"
+> (http://www.w3.org/TR/xmlschema-0/#quartelyReport) for an example
+> (report.xsd) that shows how this can be done.
+> 
+> If, in our example, the CARL formats want to use DC elements, I think
+> that the top part of the carlmetadata.xsd schema would look like:
+> 
+> <schema targetNamespace="http://foo.org/carlmeta"
+>                       xmlns="http://www.w3.org/2000/08/XMLSchema"
+>                       xmlns:carl="http://foo.org/carlmeta"
+>                       xmlns:dc="http://purl.org/dc/elements/1.1/"
+>                       elementFormDefault="qualified">
+> 
+> <!-- import DC -->
+> <import namespace="http://purl.org/dc/elements/1.1/"/>
+> 
+> <element name="oai_carl" type=carl:carlType>
+> 
+> <complexType name="carlType">
+>  <sequence>
+>    <element name="element1" type="string"/>
+>    <element name="element2" type="carl:element2Type"/>
+>    <element name="element3" type="dc:creator"/>
+>  </sequence>
+> </complexType>
+> 
+> ....
+> 
+> greetings
+> 
+> herbert
+> 
+> lagoze@CS.Cornell.EDU wrote:
+> >
+> > Jeff, I think you've got the wrong approach here.  Having spent the last
+> > hour or so staring at the xml schema primer at
+> > http://www.w3.org/TR/xmlschema-0  I found the explanation on importing
+> > types at http://www.w3.org/TR/xmlschema-0/#import.  Using this mechanism
+> > you can pull in types (elements) from another namespace.  E.g., you
+> > could define a schema carlmeta.xsd with a target namespace
+> > http://foo.org/carlmeta with an import of
+> > http://purl.org/dc/elements/1.1.  I quote the primer:
+> >
+> > When schema components are imported from multiple namespaces, each
+> > namespace must be identified with a separate import element. The import
+> > elements themselves must appear as the first children of the schema
+> > element. Furthermore, each namespace must be associated with a prefix,
+> > using a standard namespace declaration, and that prefix is used to
+> > qualify references to any schema components belonging to that namespace.
+> > Finally, import elements optionally contain a schemaLocation attribute
+> > to help locate resources associated with the namespaces.
+> >
+> > Don't have time now to experiment with this but coming up with an
+> > example shouldn't be too hard.
+> >
+> > Carl
+> >
+> > > -----Original Message-----
+> > > From: Young,Jeff [mailto:jyoung@oclc.org]
+> > > Sent: Tuesday, January 30, 2001 4:58 PM
+> > > To: 'lagoze@cs.cornell.edu'
+> > > Subject: FW: [OAI-implementers] ListMetadataFormats problem
+> > >
+> > >
+> > > Hi Carl,
+> > >
+> > > I don't think things are as simple as I'd hoped. I want to
+> > > check with you
+> > > first, though, before I stir up more confusion in the
+> > > listserv. Apparently,
+> > > the xsi:schemaLocation element expects namespaces to be
+> > > paired with schema
+> > > locations. If this is true, then a single schema won't work for the
+> > > application I described below. Is there any reason that
+> > > schemas can't be
+> > > repeatable as well as namespaces in relation to metadata formats?
+> > >
+> > > Jeff
+> > >
+> > > > -----Original Message-----
+> > > > From: Young,Jeff [mailto:jyoung@oclc.org]
+> > > > Sent: Tuesday, January 30, 2001 4:01 PM
+> > > > To: 'OAI-implementers'
+> > > > Subject: [OAI-implementers] ListMetadataFormats problem
+> > > >
+> > > >
+> > > > I'm working on an OAI repository for a group that wants to
+> > > > define it's own
+> > > > metadata format. The trick is, this format will be a
+> > > > combination of Dublin
+> > > > Core elements and some new elements yet to be defined. The
+> > > > examples in the
+> > > > OAI specs, however, all assume that the metadata will consist
+> > > > of elements
+> > > > from a single namespace. I believe, for the most part, that
+> > > > the OAI spec
+> > > > doesn't preclude the use of multiple namespaces. For example,
+> > > > I imagine that
+> > > > the following XML fragment is likely to be acceptable:
+> > > >
+> > > > <combined xmlns:dc="http://purl.org/dc/elements/1.1/"
+> > > >     xmlns:myelems="http://www.myelems.com/"
+> > > >     xmlns:xsi="..."
+> > > >     xsi:schemaLocation="http://purl.org/dc/elements/1.1/
+> > > >             http://www.myelems.com/
+> > > >             http://www.myelems.com/combined.xsd">
+> > > >   <dc:title>This is the title</dc:title>
+> > > >   <myelems:shoesize>12</myelems:shoesize>
+> > > > </combined>
+> > > >
+> > > > (As far as I can tell, specifying multiple namespaces in the
+> > > > xsi:schemaLocation attribute is perfectly valid.)
+> > > >
+> > > > Assuming no one sees any problems with this, I do think I see
+> > > > a problem with
+> > > > ListMetadataFormats.xsd. Now that multiple namespaces are
+> > > > involved, I expect
+> > > > that ListMetadataFormats will need to accommodate them with multiple
+> > > > metadataNamespace elements. The XML schema for
+> > > > ListMetadataFormats, however,
+> > > > sets the maxOccurs for metadataNamespace to one. I suspect
+> > > > this is easily
+> > > > changed to unbounded.
+> > > >
+> > > > Hopefully, the problem is no more involved than this, but
+> > > > someone may want
+> > > > to check my assumptions.
+> > > >
+> > > > Thanks,
+> > > > Jeff
+> > > >
+> > > > ---
+> > > > Jeffrey A. Young
+> > > > Senior Consulting Systems Analyst
+> > > > Office of Research, Mail Code 710
+> > > > OCLC Online Computer Library Center, Inc.
+> > > > 6565 Frantz Road
+> > > > Dublin, OH   43017-3395
+> > > > www.oclc.org
+> > > >
+> > > > Voice:      614-764-4342
+> > > > Fax:                614-764-2344
+> > > > Email:      jyoung@oclc.org
+> > > >
+> > > >
+> > > >
+> > > > _______________________________________________
+> > > > OAI-implementers mailing list
+> > > > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > > > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > > >
+> > >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+> --
+> Herbert Van de Sompel
+> Visiting Assistant Professor
+> Cornell University -- Computer Science
+> tel + 1 - 607 - 255 - 3085
+> fax + 1 - 607 - 255 - 4428
+> http://www.cs.cornell.edu/people/herbertv/
+> digital life in libraries used to be primitive
+> --
+> Herbert Van de Sompel
+> Visiting Assistant Professor
+> Cornell University -- Computer Science
+> tel + 1 - 607 - 255 - 3085
+> fax + 1 - 607 - 255 - 4428
+> http://www.cs.cornell.edu/people/herbertv/
+> digital life in libraries used to be primitive
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From rgue@loc.gov  Sat Feb 10 21:09:56 2001
+From: rgue@loc.gov (Rebecca S. Guenther)
+Date: Sat, 10 Feb 2001 16:09:56 -0500 (EST)
+Subject: [OAI-implementers] MARC to Dublin Core Crosswalk
+Message-ID: <Pine.SOL.4.21.0102101607400.8534-100000@sun8.loc.gov>
+
+A crosswalk from MARC to Dublin Core is now available from the MARC 21 Web
+site.  This document marks MARC 21 fields to Dublin Core elements; there
+are separate sections for unqualified and qualified Dublin Core. It is at:
+http://www.loc.gov/marc/marc2dc.html
+
+
+The alternate mapping, Dublin Core to MARC, is undergoing revision and
+will be made available soon.
+
+The crosswalk (unqualified Dublin Core) is generally used by the Library
+of Congress in its OAI implementation with a few modifications.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^  Rebecca S. Guenther                                   ^^
+^^  Senior Networking and Standards Specialist            ^^
+^^  Network Development and MARC Standards Office         ^^
+^^  1st and Independence Ave. SE                          ^^
+^^  Library of Congress                                   ^^
+^^  Washington, DC 20540-4402                             ^^
+^^  (202) 707-5092 (voice)    (202) 707-0115 (FAX)        ^^
+^^  rgue@loc.gov                                          ^^
+^^                                                        ^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+
+
+From lagoze@cs.cornell.edu  Sun Feb 11 15:20:59 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Sun, 11 Feb 2001 10:20:59 -0500
+Subject: [OAI-implementers] Universal Identifiers
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43BD75AE@opus.cs.cornell.edu>
+
+Christopher,
+
+We are in the final stages of putting up the registration mechanism.
+Take a look at
+http://www.cs.cornell.edu/lagoze/Projects/OAi/registration.htm for a
+draft of the page that (hopefully) explains everything.  Note that the
+form does not work yet.  We hope to have this completed by the end of
+Monday.
+
+Carl
+
+> -----Original Message-----
+> From: ePrints Support [mailto:support@eprints.org]
+> Sent: Friday, February 09, 2001 3:26 PM
+> To: 'OAI-implementers'
+> Subject: [OAI-implementers] Universal Identifiers
+> 
+> 
+> Is there a plan for registering archive identifiers yet? I'd like
+> to mention it in the eprints.org documentation.
+> 
+> Does anyone know of a system for assigning unqique identifiers to 
+> other cromulent entities such as people (creators), institutions
+> and/or anything else you might want to uniquely identify in an
+> archives metadata.
+> 
+> At least journals and books have ISSN and ISBN.
+> 
+> -- 
+> 
+> Christopher Gutteridge 
+> ePrints Technical Support
+> support@eprints.org
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From herbertv@CS.Cornell.EDU  Mon Feb 12 14:21:06 2001
+From: herbertv@CS.Cornell.EDU (herbert van de sompel)
+Date: Mon, 12 Feb 2001 09:21:06 -0500
+Subject: [OAI-implementers] Universal Identifiers
+References: <20010209202557.B26455@ecs.soton.ac.uk>
+Message-ID: <3A87F152.D8D1A2AD@cs.cornell.edu>
+
+ePrints Support wrote:
+> 
+> Is there a plan for registering archive identifiers yet? I'd like
+> to mention it in the eprints.org documentation.
+> 
+
+We are working on this.  Carl will send a reply very soon.
+
+> Does anyone know of a system for assigning unqique identifiers to
+> other cromulent entities such as people (creators), institutions
+> and/or anything else you might want to uniquely identify in an
+> archives metadata.
+> 
+
+>From a recent conversation, I understand that The International DOI
+Foundation thinks that assigning identifiers to "parties" (in addition
+to "creations") should be part of their long term strategy.  I also
+learnt that the IDF and CNRI are looking into collaborating with an EC
+project named InterParty that works on the notion of a "Directory of
+Parties".  CNRI's expertise with handle technology could obviously be
+very valuable with this respect.  
+
+In the OpenURL linking framework we equally need such identifiers for
+parties.  This was one of the initial findings of my SFX research.  I
+have recently been in touch with CNRI regarding assigning handles to
+parties in the context of an ongoing experiment re the alternative
+resolution of DOI's using the OpenURL framework
+(http://sfxserv.rug.ac.be:8888/public/xref)
+
+herbert
+
+
+> At least journals and books have ISSN and ISBN.
+> 
+> --
+> 
+> Christopher Gutteridge
+> ePrints Technical Support
+> support@eprints.org
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+
+
+From caar@loc.gov  Tue Feb 13 00:17:21 2001
+From: caar@loc.gov (Caroline Arms)
+Date: Mon, 12 Feb 2001 19:17:21 -0500 (EST)
+Subject: [OAI-implementers] Special characters, UNICODE, and OAI tools
+In-Reply-To: <Pine.SOL.4.21.0102101607400.8534-100000@sun8.loc.gov>
+Message-ID: <Pine.SOL.4.21.0102121814410.27356-100000@sun8.loc.gov>
+
+I am exploring what is happening to special characters through a
+variety of browsers, Hussein's Repository Explorer, and ARC.  This is in
+part to have a reliable way to check the results of our mapping and in
+part to be able to explain to others why things look odd when they try
+them.
+
+Hussein, 
+
+Can you confirm that you are doing nothing to the UNICODE entities in your
+Raw XML view?  That's what it looks like if I look at the page source.  
+
+My Netscape 4.7 for Windows (under Windows 95) appears to replace the &#
+by ? before displaying the entity.  My Mac version of Netscape appears to
+handle some of the entities (i and a with acute accents, for example) but
+not others.  Internet Explorer 5.5 for Windows is handling all the
+characters I have looked at so far.  [This looks like the best approach
+for checking mapping of known characters.]
+
+What do you do in the parsed view?  I'm getting strange character
+combinations in both Netscape 4.7 and Internet Explorer 5.5.
+
+Liu,    
+
+Several (although not all) special characters are coming through when I
+use ARC with Netscape 4.7 on Windows.  Internet 5.5 doesn't do any better
+than Netscape 4.7.  Also, not coming through are a few "XML sanity"
+entities, which we have been expressing as "old-fashioned" character
+entities.  I don't claim to be an XML character encoding expert; for OAI
+we accepted the recommendation of our standards office to keep using this
+handful of character entities (e.g. &apos;) in that form.  What do others
+think the practice should be on these?  They presumably validate against
+the schema because they get through Hussein's Explorer.
+
+Sample GetRecord URLs that show the issues are:
+
+http://memory.loc.gov/cgi-bin/oai1_0?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:lcoa1:loc.music/musdi.213
+
+  Title includes apostrophe in     d'une
+
+and 
+
+http://memory.loc.gov/cgi-bin/oai1_0?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:lcoa1:loc.music/musdi.215
+
+  4 special czech characters (regular letters with diacritics)
+
+
+   Any thoughts and experiences welcome.  
+
+   Thanks.                       Caroline Arms              caar@loc.gov
+                                 National Digital Library Program
+                                 Library of Congress
+
+
+From hussein@vt.edu  Tue Feb 13 01:04:59 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Mon, 12 Feb 2001 20:04:59 -0500
+Subject: [OAI-implementers] Special characters, UNICODE, and OAI tools
+References: <Pine.SOL.4.21.0102121814410.27356-100000@sun8.loc.gov>
+Message-ID: <3A88883B.A2CC52D8@vt.edu>
+
+hi
+
+Caroline Arms wrote:
+> Can you confirm that you are doing nothing to the UNICODE entities in your
+> Raw XML view?  That's what it looks like if I look at the page source.
+
+yes. the only substitution i was making for a raw view was escaping of
+the angle brackets ... but i just changed that to escape ampersands as
+well ... so now your output should be "rawer" ...
+
+> What do you do in the parsed view?  I'm getting strange character
+> combinations in both Netscape 4.7 and Internet Explorer 5.5.
+
+thats the tricky thing ... all my character processing is done in 8-bit
+so the XML parser mangles >8bit stuff before passing it on to other
+tests ... (i use expat for XML parsing and xsv for xsd processing) ...
+
+there are two things i could do here: either change everything to
+16-bit, which could involve considerable effort ... or just ignore the
+problem since it doesnt really signify an error: its just that the
+"best-effort" to display characters is failing ... you should never
+actually get an error message unless you use entities in your parameters
+(identifiers, sets, etc.)
+
+in either event, i will keep this issue in mind and try to remedy it
+when i crank out the next revision ...
+
+ttfn -h.
+
+-- 
+=========================================================================
+hussein suleman -- hussein@vt.edu -- vt cs --
+http://purl.org/net/hussein
+=========================================================================
+
+From liu_x@cs.odu.edu  Tue Feb 13 07:16:42 2001
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Tue, 13 Feb 2001 02:16:42 -0500 (EST)
+Subject: [OAI-implementers] Special characters, UNICODE, and OAI tools
+In-Reply-To: <Pine.SOL.4.21.0102121814410.27356-100000@sun8.loc.gov>
+Message-ID: <Pine.SOL.4.10.10102130050270.28580-100000@defiant.cs.odu.edu>
+
+hi,
+
+On Mon, 12 Feb 2001, Caroline Arms wrote:
+
+> 
+> Several (although not all) special characters are coming through when I
+> use ARC with Netscape 4.7 on Windows.  Internet 5.5 doesn't do any better
+> than Netscape 4.7.  Also, not coming through are a few "XML sanity"
+> entities, which we have been expressing as "old-fashioned" character
+> entities.  I don't claim to be an XML character encoding expert; for OAI
+> we accepted the recommendation of our standards office to keep using this
+> handful of character entities (e.g. &apos;) in that form.  What do others
+> think the practice should be on these?  They presumably validate against
+> the schema because they get through Hussein's Explorer.
+> 
+
+Thanks for the message. It's **partially** solved now. For the part 
+solved, it's a bug in program. For the part I did not solve, I need more
+test.
+
+Solved part:
+
+The "Entity Reference" is widely used in loc archive, as DOM level 1
+specified in
+http://www.w3.org/TR/2000/WD-DOM-Level-1-20000929/level-one-core.html#ID-11C98490
+, an "Entity Reference" may or may **not** be expanded into Unicode
+during parsing, Unfortunately, the parser I am using (java xml parser from
+sun), does the expanding randomly, I did not notice this problem before
+and treated all as expanding. So the sample URL 1 is working fine after
+the bug-fix.
+
+no solved:
+In sample2, some expanded "Entity Reference"s are not correctly processed.
+I have to do more test.
+
+regards,
+liu
+
+
+
+
+
+> Sample GetRecord URLs that show the issues are:
+> 
+> http://memory.loc.gov/cgi-bin/oai1_0?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:lcoa1:loc.music/musdi.213
+> 
+>   Title includes apostrophe in     d'une
+> 
+> and 
+> 
+> http://memory.loc.gov/cgi-bin/oai1_0?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai:lcoa1:loc.music/musdi.215
+> 
+>   4 special czech characters (regular letters with diacritics)
+> 
+> 
+>    Any thoughts and experiences welcome.  
+> 
+>    Thanks.                       Caroline Arms              caar@loc.gov
+>                                  National Digital Library Program
+>                                  Library of Congress
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+From deridder@cs.utk.edu  Tue Feb 13 19:43:22 2001
+From: deridder@cs.utk.edu (deridder)
+Date: Tue, 13 Feb 2001 14:43:22 -0500 (EST)
+Subject: [OAI-implementers] changing formats
+Message-ID: <Pine.GSO.4.10.10102131438160.25959-100000@cetus4b.cs.utk.edu>
+
+  If we implement another metadata prefix, do we then return data in the
+given format (which need not include Dublin core *or* XML) in response to
+GetRecord & ListRecords, if that format is specified?
+  (and the others are still returned in xml/dc, since the MDprefix is not
+an input arg for them?)
+
+  I am guessing in that case we create our own
+schema which determines if what we are returning is correct.
+
+ 
+Am I clear on this?? If not, please enlighten me!  thanks!
+
+ ---Jody
+
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: 2.6.2
+
+mQCNAzpx5qgAAAEEAKYqSHUPBHsE1SIOclJiJN5TpA8PalfWOCWH3X1d9AQWj8Tz
+Lf1mT6R3ps7p+Rn2w9QZHEpZf1AiW9XCJ3Hpiu60IIQ9AHFOddtO8IEcUUreOU5k
+mVnxfXC2RXtGKN6cwCUzSVT7X8a+UkJq4rHTRR1WMIFe2XieesmMNng0GECtAAUR
+tCNKb2R5IERlUmlkZGVyIDxkZXJpZGRlckBjcy51dGsuZWR1PokAlQMFEDpx5vfJ
+jDZ4NBhArQEBbHUD/0/JRsgqGaNXlDaO6BV8xosIyVE0FRuyhBaIVCAAij6RFIi5
+Wls/hCmkpBtWwYvu4HJTH5ZtmljJK8TiRmKpZZzsGyAg2dVRxytLIDgNuwkoX28v
+9G5gBludckV9usAEtYaTwLpwVaBATttc3FBsUafUpZIkRvdtDv6x49JcWhsA
+=AGsQ
+-----END PGP PUBLIC KEY BLOCK-----
+
+pub  1024/341840AD 2001/01/26 Jody DeRidder <deridder@cs.utk.edu>
+Key fingerprint =  07 1D D3 00 21 2F FA 83  E8 FD B7 80 D2 D9 D5 2D
+
+
+
+
+
+From lagoze@cs.cornell.edu  Tue Feb 13 22:25:11 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Tue, 13 Feb 2001 17:25:11 -0500
+Subject: [OAI-implementers] New registration page is now up
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43BD7648@opus.cs.cornell.edu>
+
+Hi,
+
+We've put up a new page at the OAI site that gives details on
+registering as a data provider.  You can look at it at
+http://www.openarchives.org/registration.htm.
+
+Carl
+
+---------------------------------------
+Carl Lagoze, Digital Library Scientist 
+Department of Computer Science
+Cornell University
+Ithaca, NY 14853 USA
+Phone: +1-607-255-6046
+FAX: +1-607-255-4428
+email: lagoze@cs.cornell.edu
+WWW: http://www.cs.cornell.edu/lagoze/lagoze.html
+
+From harnad@coglit.ecs.soton.ac.uk  Wed Feb 14 09:26:49 2001
+From: harnad@coglit.ecs.soton.ac.uk (Stevan Harnad)
+Date: Wed, 14 Feb 2001 09:26:49 +0000 (GMT)
+Subject: [OAI-implementers] New registration page is now up
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D43BD7648@opus.cs.cornell.edu>
+Message-ID: <Pine.SGI.3.95.1010214092628.28546I-100000@cogito.ecs.soton.ac.uk>
+
+We will update the eprints.org information about sta/service provision
+to reflect this. But will there be a site that lists the registered
+data-providers and service-providers? (Right now the eprints.org links
+to this are out of date, as the old registries are superseded. Can we
+have new URLs for these two lists?)
+
+Second, are the current compliant data-providers (e.g. CogPrints)
+being carried over into this new registry, or do they have to go
+through the registration again?
+
+
+--------------------------------------------------------------------
+Stevan Harnad                     harnad@cogsci.soton.ac.uk
+Professor of Cognitive Science    harnad@princeton.edu
+Department of Electronics and     phone: +44 23-80 592-582
+             Computer Science     fax:   +44 23-80 592-865
+University of Southampton         http://www.cogsci.soton.ac.uk/~harnad/
+Highfield, Southampton            http://www.princeton.edu/~harnad/
+SO17 1BJ UNITED KINGDOM           
+
+On Tue, 13 Feb 2001 lagoze@cs.cornell.edu wrote:
+
+> Hi,
+> 
+> We've put up a new page at the OAI site that gives details on
+> registering as a data provider.  You can look at it at
+> http://www.openarchives.org/registration.htm.
+> 
+> Carl
+> 
+> ---------------------------------------
+> Carl Lagoze, Digital Library Scientist 
+> Department of Computer Science
+> Cornell University
+> Ithaca, NY 14853 USA
+> Phone: +1-607-255-6046
+> FAX: +1-607-255-4428
+> email: lagoze@cs.cornell.edu
+> WWW: http://www.cs.cornell.edu/lagoze/lagoze.html
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+From lagoze@cs.cornell.edu  Wed Feb 14 10:41:20 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Wed, 14 Feb 2001 05:41:20 -0500
+Subject: [OAI-implementers] New registration page is now up
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43BD7652@opus.cs.cornell.edu>
+
+Hi Stevan,
+
+Answers to your questions:
+
+1. We have no plans at the moment for registration of service providers.
+Our main goal with registration at this point is to register only those
+data providers that are conformant with the protocol as described in
+http://www.openarchives.org/registration.htm.  'Conformance' for service
+providers is difficult to define, and we are still considering what it
+means to register them. 
+2. As stated at the top of http://www.openarchives.org/registration.htm,
+our intention is to "provide a publicaly accessible list of OAI
+conformant repositories" (data providers).  Donna Bergmark has that on
+her list as soon as the registration software and conformance testing
+software is completed.
+3. I tried to go to eprints.org to check out the 'links' that you are
+referring to but the site is down at the moment.
+4. By "go through registration again", I'm assuming you mean the need
+for sites that were listed as "Santa Fe registered" having to registered
+as "OAI data providers".  Since these are indeed to different animals -
+the protocol is completely different - we do ask that anyone who
+supported Santa Fe and has now changed to the OAI protocol please go
+through the registration process. Since this involves but a handful of
+sites, we hope that this won't be too much of a problem.
+
+Let me know if you have any further questions.
+
+Thanks,
+
+Carl
+
+> -----Original Message-----
+> From: Stevan Harnad [mailto:harnad@coglit.ecs.soton.ac.uk]
+> Sent: Wednesday, February 14, 2001 4:27 AM
+> To: lagoze@CS.Cornell.EDU
+> Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] New registration page is now up
+> 
+> 
+> We will update the eprints.org information about sta/service provision
+> to reflect this. But will there be a site that lists the registered
+> data-providers and service-providers? (Right now the eprints.org links
+> to this are out of date, as the old registries are superseded. Can we
+> have new URLs for these two lists?)
+> 
+> Second, are the current compliant data-providers (e.g. CogPrints)
+> being carried over into this new registry, or do they have to go
+> through the registration again?
+> 
+> 
+> --------------------------------------------------------------------
+> Stevan Harnad                     harnad@cogsci.soton.ac.uk
+> Professor of Cognitive Science    harnad@princeton.edu
+> Department of Electronics and     phone: +44 23-80 592-582
+>              Computer Science     fax:   +44 23-80 592-865
+> University of Southampton         
+> http://www.cogsci.soton.ac.uk/~harnad/
+> Highfield, Southampton            http://www.princeton.edu/~harnad/
+> SO17 1BJ UNITED KINGDOM           
+> 
+> On Tue, 13 Feb 2001 lagoze@cs.cornell.edu wrote:
+> 
+> > Hi,
+> > 
+> > We've put up a new page at the OAI site that gives details on
+> > registering as a data provider.  You can look at it at
+> > http://www.openarchives.org/registration.htm.
+> > 
+> > Carl
+> > 
+> > ---------------------------------------
+> > Carl Lagoze, Digital Library Scientist 
+> > Department of Computer Science
+> > Cornell University
+> > Ithaca, NY 14853 USA
+> > Phone: +1-607-255-6046
+> > FAX: +1-607-255-4428
+> > email: lagoze@cs.cornell.edu
+> > WWW: http://www.cs.cornell.edu/lagoze/lagoze.html
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From harnad@coglit.ecs.soton.ac.uk  Wed Feb 14 12:43:01 2001
+From: harnad@coglit.ecs.soton.ac.uk (Stevan Harnad)
+Date: Wed, 14 Feb 2001 12:43:01 +0000 (GMT)
+Subject: [OAI-implementers] New registration page is now up
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D43BD7652@opus.cs.cornell.edu>
+Message-ID: <Pine.SGI.3.95.1010214123150.28546T-100000@cogito.ecs.soton.ac.uk>
+
+On Wed, 14 Feb 2001 lagoze@cs.cornell.edu wrote:
+
+> 2. As stated at the top of http://www.openarchives.org/registration.htm,
+> our intention is to "provide a publicaly accessible list of OAI
+> conformant repositories" (data providers).  Donna Bergmark has that on
+> her list as soon as the registration software and conformance testing
+> software is completed.
+
+Please let us know the URL for the registry as soon as it is
+established. In fact, I would suggest setting up now, out of the old
+set of data-providers, specifying that these are not yet OAI 1.0-tested,
+but shortly will be, and once shown to comply, will be upgraded to
+registered status.
+
+(I don't think it's as motivating to register if we cannot also point
+to a registry.)
+
+> 3. I tried to go to eprints.org to check out the 'links' that you are
+> referring to but the site is down at the moment.
+
+I don't think it's down (just tried it). 
+
+The code I've just ask Chris to change is in http://www.eprints.org/
+
+Please change:
+
+    <P>The generic version of <B>eprints</B> is fully
+    <B>interoperable</B> with all other OAI-Compliant <A
+    HREF="http://www.openarchives.org/">Open Archives</A>. This means
+    that it no longer matters <I>where</I> papers are archived; the
+    papers in all OAI-compliant Archives can be harvested using the <A
+    href="http://www.openarchives.org/OAI/openarchivesprotocol.htm">OAI
+    protocol</A> into one global "virtual archive" by <A
+    HREF="http://www.openarchives.org/sfc/sfc_services.htm">Open
+    Archives Service Providers</A> such as the <A
+    HREF="http://arc.cs.odu.edu/">Cross Archive Searching
+    Service</A>.</P>
+
+To:
+
+    <P>The generic version of <B>eprints</B> is fully
+    <B>interoperable</B> with all other OAI-Compliant <A
+    HREF="http://www.openarchives.org/">Open Archives</A>. This means
+    that it no longer matters <I>where</I> papers are archived.  Archives
+    need only <A
+    href="http://www.openarchives.org/registration.htm">
+    register as OAI-compliant </A> in order to
+    be harvested using the <A
+    href="http://www.openarchives.org/OAI/openarchivesprotocol.htm">OAI
+    protocol</A> into global "virtual archives" by <A
+    HREF="http://www.openarchives.org/sfc/sfc_services.htm">Open
+    Archives Service Providers</A> such as the <A
+    HREF="http://arc.cs.odu.edu/">Cross Archive Searching
+    Service</A>.</P>
+
+As you see, I still point to the old service-provider registry because
+I think it is an important target to keep in mind. Any suggestions for
+alternatives would be welcome!
+
+> 4. By "go through registration again", I'm assuming you mean the need
+> for sites that were listed as "Santa Fe registered" having to registered
+> as "OAI data providers".  Since these are indeed two different animals -
+> the protocol is completely different - we do ask that anyone who
+> supported Santa Fe and has now changed to the OAI protocol please go
+> through the registration process. Since this involves but a handful of
+> sites, we hope that this won't be too much of a problem.
+
+Ok. I believe Chris Gutteridge is doing this right now. Again, it would
+be a motivator to transfer the prior registry into a new registry as
+something like "pending upgrade" so the registry is there, and
+non-empty. It is then a traget to aim toward for others.
+
+Cheers, Stevan
+--------------------------------------------------------------------
+Stevan Harnad                     harnad@cogsci.soton.ac.uk
+Professor of Cognitive Science    harnad@princeton.edu
+Department of Electronics and     phone: +44 23-80 592-582
+             Computer Science     fax:   +44 23-80 592-865
+University of Southampton         http://www.cogsci.soton.ac.uk/~harnad/
+Highfield, Southampton            http://www.princeton.edu/~harnad/
+SO17 1BJ UNITED KINGDOM           
+
+> Let me know if you have any further questions.
+> 
+> Thanks,
+> 
+> Carl
+> 
+> > -----Original Message-----
+> > From: Stevan Harnad [mailto:harnad@coglit.ecs.soton.ac.uk]
+> > Sent: Wednesday, February 14, 2001 4:27 AM
+> > To: lagoze@CS.Cornell.EDU
+> > Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> > Subject: Re: [OAI-implementers] New registration page is now up
+> > 
+> > 
+> > We will update the eprints.org information about sta/service provision
+> > to reflect this. But will there be a site that lists the registered
+> > data-providers and service-providers? (Right now the eprints.org links
+> > to this are out of date, as the old registries are superseded. Can we
+> > have new URLs for these two lists?)
+> > 
+> > Second, are the current compliant data-providers (e.g. CogPrints)
+> > being carried over into this new registry, or do they have to go
+> > through the registration again?
+> > 
+> > 
+> > --------------------------------------------------------------------
+> > Stevan Harnad                     harnad@cogsci.soton.ac.uk
+> > Professor of Cognitive Science    harnad@princeton.edu
+> > Department of Electronics and     phone: +44 23-80 592-582
+> >              Computer Science     fax:   +44 23-80 592-865
+> > University of Southampton         
+> > http://www.cogsci.soton.ac.uk/~harnad/
+> > Highfield, Southampton            http://www.princeton.edu/~harnad/
+> > SO17 1BJ UNITED KINGDOM           
+> > 
+> > On Tue, 13 Feb 2001 lagoze@cs.cornell.edu wrote:
+> > 
+> > > Hi,
+> > > 
+> > > We've put up a new page at the OAI site that gives details on
+> > > registering as a data provider.  You can look at it at
+> > > http://www.openarchives.org/registration.htm.
+> > > 
+> > > Carl
+> > > 
+> > > ---------------------------------------
+> > > Carl Lagoze, Digital Library Scientist 
+> > > Department of Computer Science
+> > > Cornell University
+> > > Ithaca, NY 14853 USA
+> > > Phone: +1-607-255-6046
+> > > FAX: +1-607-255-4428
+> > > email: lagoze@cs.cornell.edu
+> > > WWW: http://www.cs.cornell.edu/lagoze/lagoze.html
+> > > _______________________________________________
+> > > OAI-implementers mailing list
+> > > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > > 
+> > 
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > 
+> 
+
+
+From harnad@coglit.ecs.soton.ac.uk  Wed Feb 14 13:35:24 2001
+From: harnad@coglit.ecs.soton.ac.uk (Stevan Harnad)
+Date: Wed, 14 Feb 2001 13:35:24 +0000 (GMT)
+Subject: [OAI-implementers] Wording of Data Policy Statements
+In-Reply-To: <20010214105936.B5784@ecs.soton.ac.uk>
+Message-ID: <Pine.SGI.3.95.1010214125010.28546U-100000@cogito.ecs.soton.ac.uk>
+
+I'm trying to avoid being wordy or obscure here. Does this sound like a
+reasonable default metadata, data, and deposit (I avoid the ambiguous
+word "submission") policy?  SH
+
+
+>  <metadataPolicy>
+>         <text>No metadata policy defined. This server has not yet been fully configured.</text>
+>       </metadataPolicy>
+
+CogPrints metadata are freely accessible to all, and freely re-useable
+by all, under the following conditions: (1) The full name(s) of the
+author(s) and (2) the full bibliographic reference information for the
+paper (date, title, and, if published, journal, volume, and pages, if
+any) must always co-appear prominently with any re-use or redisplay of
+the metadata, in any medium. The metadata may not be offered for sale
+without the formal permission of the author and publisher. (Note:
+CogPrints is NOT the publisher; it is merely the online archive. Mention
+of Cogprints in re-use is appreciated but not mandatory.)
+
+>       <dataPolicy>
+>         <text>No data policy defined. This server has not yet been fully configured.</text>
+>         <URL>http://a.url.demo/for/the/sake/of/it.html</URL>
+>       </dataPolicy>
+
+CogPrints full-text papers are freely accessible to all, and freely
+re-useable by all, under the following conditions: (1) The full name(s)
+of the author(s) and (2) the full bibliographic reference information
+for the paper (the date, title, and, if published, the copyright
+notice, journal, volume, and pages, if any) must always co-appear
+prominently with any re-use or redisplay of the text, in any medium.
+The text may not be offered for sale without the formal permission of
+the author and publisher. (Note:  CogPrints is NOT the publisher; it is
+merely the online archive. Mention of Cogprints in re-use is
+appreciated but not mandatory.)
+
+
+>       <submissionPolicy>
+>         <text>No submission-data policy defined. This server has not yet been fully configured.</text>
+>       </submissionPolicy>
+>       <comment>System is EPrints  (http://www.eprints.org)</comment>
+
+CogPrints is intended as a repository for the self-archiving, by their
+authors (or, by authorized second parties, or, if the papers are in the
+public domain, by anyone), of research papers in the cognitive sciences
+(Psychology, Neuroscience, and pertinent portions of Biology, Computer
+Science, Linguistics, Philosophy and other pertinent disciplines).
+Papers can be (1) refereed, accepted, published final drafts
+("postprints") or (2) unrefereed drafts prior to publication
+("preprints"). Deposits will be vetted by CogPrints for relevance only;
+they will not be otherwise validated or authenticated. Responsibility
+for the validity and authenticity of the content of these self-archived
+papers rests entirely with the depositor. Any copyright violations are
+also entirely the responsibility of the depositor. (CogPrints, if it
+receives proof of copyright violation, will immediately remove the
+paper in question.)
+
+
+
+
+From lagoze@cs.cornell.edu  Wed Feb 14 13:54:19 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Wed, 14 Feb 2001 08:54:19 -0500
+Subject: [OAI-implementers] New registration page is now up
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43BD7657@opus.cs.cornell.edu>
+
+Hi Steven,
+
+Comments and answers inserted below:
+
+> -----Original Message-----
+> From: Stevan Harnad [mailto:harnad@coglit.ecs.soton.ac.uk]
+> Sent: Wednesday, February 14, 2001 7:43 AM
+> To: lagoze@CS.Cornell.EDU
+> Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: RE: [OAI-implementers] New registration page is now up
+> 
+> 
+> On Wed, 14 Feb 2001 lagoze@cs.cornell.edu wrote:
+> 
+> > 2. As stated at the top of 
+> http://www.openarchives.org/registration.htm,
+> > our intention is to "provide a publicaly accessible list of OAI
+> > conformant repositories" (data providers).  Donna Bergmark 
+> has that on
+> > her list as soon as the registration software and 
+> conformance testing
+> > software is completed.
+> 
+> Please let us know the URL for the registry as soon as it is
+> established. In fact, I would suggest setting up now, out of the old
+> set of data-providers, specifying that these are not yet OAI 
+> 1.0-tested,
+> but shortly will be, and once shown to comply, will be upgraded to
+> registered status.
+
+I hear your point and its a matter of philosophy.  Our goal in the
+registry and in the conformance testing is to provide a relatively high
+integrity list of data providers (where integrity is measured by our
+stated test criteria).  The list of old data providers while
+historically interesting doesn't provide any information that anyone can
+use - e.g., Santa Fe conformance has really very little to do with OAI
+1.0 conformance.  Being a minimalist at heart I'd rather stick to
+posting information that is useful for applications.
+
+> 
+> (I don't think it's as motivating to register if we cannot also point
+> to a registry.)
+
+Good point!  I'll touch base with Donna today to see how long it can be
+before a listing capability will be possible.
+
+> 
+> > 3. I tried to go to eprints.org to check out the 'links' 
+> that you are
+> > referring to but the site is down at the moment.
+> 
+> I don't think it's down (just tried it). 
+
+I still can't get to it.  You might have a sys admin do some checks.  I
+did a traceroute and I get as far as southampton.site.ja.net
+(146.97.255.0), but then it can't find www.eprints.org.
+
+> 
+> The code I've just ask Chris to change is in http://www.eprints.org/
+> 
+> Please change:
+> 
+>     <P>The generic version of <B>eprints</B> is fully
+>     <B>interoperable</B> with all other OAI-Compliant <A
+>     HREF="http://www.openarchives.org/">Open Archives</A>. This means
+>     that it no longer matters <I>where</I> papers are archived; the
+>     papers in all OAI-compliant Archives can be harvested using the <A
+>     
+> href="http://www.openarchives.org/OAI/openarchivesprotocol.htm">OAI
+>     protocol</A> into one global "virtual archive" by <A
+>     HREF="http://www.openarchives.org/sfc/sfc_services.htm">Open
+>     Archives Service Providers</A> such as the <A
+>     HREF="http://arc.cs.odu.edu/">Cross Archive Searching
+>     Service</A>.</P>
+> 
+> To:
+> 
+>     <P>The generic version of <B>eprints</B> is fully
+>     <B>interoperable</B> with all other OAI-Compliant <A
+>     HREF="http://www.openarchives.org/">Open Archives</A>. This means
+>     that it no longer matters <I>where</I> papers are 
+> archived.  Archives
+>     need only <A
+>     href="http://www.openarchives.org/registration.htm">
+>     register as OAI-compliant </A> in order to
+>     be harvested using the <A
+>     
+> href="http://www.openarchives.org/OAI/openarchivesprotocol.htm">OAI
+>     protocol</A> into global "virtual archives" by <A
+>     HREF="http://www.openarchives.org/sfc/sfc_services.htm">Open
+>     Archives Service Providers</A> such as the <A
+>     HREF="http://arc.cs.odu.edu/">Cross Archive Searching
+>     Service</A>.</P>
+> 
+> As you see, I still point to the old service-provider registry because
+> I think it is an important target to keep in mind. Any suggestions for
+> alternatives would be welcome!
+
+I have no objections or opinions on individual sites pointing to their
+service providers of choice. Hopefully there will be an increasing
+number of service providers tailored for individual community needs.
+So, go ahead and point to those that you think are appropriate for you.
+
+> 
+> > 4. By "go through registration again", I'm assuming you 
+> mean the need
+> > for sites that were listed as "Santa Fe registered" having 
+> to registered
+> > as "OAI data providers".  Since these are indeed two 
+> different animals -
+> > the protocol is completely different - we do ask that anyone who
+> > supported Santa Fe and has now changed to the OAI protocol please go
+> > through the registration process. Since this involves but a 
+> handful of
+> > sites, we hope that this won't be too much of a problem.
+> 
+> Ok. I believe Chris Gutteridge is doing this right now. 
+> Again, it would
+> be a motivator to transfer the prior registry into a new registry as
+> something like "pending upgrade" so the registry is there, and
+> non-empty. It is then a traget to aim toward for others.
+
+
+The registry is not empty and has a few conformant repositories in it.
+We just need to get the listing capability up.
+
+I'm personally comfortable about stating anything is "pending" without
+having such promise from the party responsible for the site.  Too many
+chances of unrequited promises. I'd rather stick with only listing those
+things that are actual.
+
+Regards,
+
+Carl
+
+> 
+> Cheers, Stevan
+> --------------------------------------------------------------------
+> Stevan Harnad                     harnad@cogsci.soton.ac.uk
+> Professor of Cognitive Science    harnad@princeton.edu
+> Department of Electronics and     phone: +44 23-80 592-582
+>              Computer Science     fax:   +44 23-80 592-865
+> University of Southampton         
+> http://www.cogsci.soton.ac.uk/~harnad/
+> Highfield, Southampton            http://www.princeton.edu/~harnad/
+> SO17 1BJ UNITED KINGDOM           
+> 
+> > Let me know if you have any further questions.
+> > 
+> > Thanks,
+> > 
+> > Carl
+> > 
+> > > -----Original Message-----
+> > > From: Stevan Harnad [mailto:harnad@coglit.ecs.soton.ac.uk]
+> > > Sent: Wednesday, February 14, 2001 4:27 AM
+> > > To: lagoze@CS.Cornell.EDU
+> > > Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> > > Subject: Re: [OAI-implementers] New registration page is now up
+> > > 
+> > > 
+> > > We will update the eprints.org information about 
+> sta/service provision
+> > > to reflect this. But will there be a site that lists the 
+> registered
+> > > data-providers and service-providers? (Right now the 
+> eprints.org links
+> > > to this are out of date, as the old registries are 
+> superseded. Can we
+> > > have new URLs for these two lists?)
+> > > 
+> > > Second, are the current compliant data-providers (e.g. CogPrints)
+> > > being carried over into this new registry, or do they have to go
+> > > through the registration again?
+> > > 
+> > > 
+> > > 
+> --------------------------------------------------------------------
+> > > Stevan Harnad                     harnad@cogsci.soton.ac.uk
+> > > Professor of Cognitive Science    harnad@princeton.edu
+> > > Department of Electronics and     phone: +44 23-80 592-582
+> > >              Computer Science     fax:   +44 23-80 592-865
+> > > University of Southampton         
+> > > http://www.cogsci.soton.ac.uk/~harnad/
+> > > Highfield, Southampton            
+http://www.princeton.edu/~harnad/
+> > SO17 1BJ UNITED KINGDOM           
+> > 
+> > On Tue, 13 Feb 2001 lagoze@cs.cornell.edu wrote:
+> > 
+> > > Hi,
+> > > 
+> > > We've put up a new page at the OAI site that gives details on
+> > > registering as a data provider.  You can look at it at
+> > > http://www.openarchives.org/registration.htm.
+> > > 
+> > > Carl
+> > > 
+> > > ---------------------------------------
+> > > Carl Lagoze, Digital Library Scientist 
+> > > Department of Computer Science
+> > > Cornell University
+> > > Ithaca, NY 14853 USA
+> > > Phone: +1-607-255-6046
+> > > FAX: +1-607-255-4428
+> > > email: lagoze@cs.cornell.edu
+> > > WWW: http://www.cs.cornell.edu/lagoze/lagoze.html
+> > > _______________________________________________
+> > > OAI-implementers mailing list
+> > > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > > 
+> > 
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > 
+> 
+
+_______________________________________________
+OAI-implementers mailing list
+OAI-implementers@oaisrv.nsdl.cornell.edu
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+From amahoney@perseus.tufts.edu  Wed Feb 14 15:01:37 2001
+From: amahoney@perseus.tufts.edu (Anne Mahoney)
+Date: Wed, 14 Feb 2001 10:01:37 -0500
+Subject: [OAI-implementers] New registration page is now up
+References: <706871B20764CD449DB0E8E3D81C4D43BD7652@opus.cs.cornell.edu>
+Message-ID: <3A8A9DD1.203FE335@perseus.tufts.edu>
+
+What about sites that have already registered as OAI 1.0 data
+providers?  Do we also have to re-register, or are we carried over?
+
+--Anne Mahoney
+Perseus Project
+
+From bergmark@CS.Cornell.EDU  Wed Feb 14 15:03:26 2001
+From: bergmark@CS.Cornell.EDU (Donna Bergmark)
+Date: Wed, 14 Feb 2001 10:03:26 -0500
+Subject: [OAI-implementers] New registration page is now up
+In-Reply-To: Your message of "Wed, 14 Feb 2001 10:01:37 EST."
+ <3A8A9DD1.203FE335@perseus.tufts.edu>
+Message-ID: <200102141503.KAA17401@elgin.cs.cornell.edu>
+
+The perseus project is already in the database.  You passed
+the validation test.  
+
+From caar@loc.gov  Thu Feb 15 17:08:47 2001
+From: caar@loc.gov (Caroline Arms)
+Date: Thu, 15 Feb 2001 12:08:47 -0500 (EST)
+Subject: [OAI-implementers] LC Sheet Music metadata available
+In-Reply-To: <Pine.LNX.4.10.10101270813170.5382-100000@mmm.lanl.gov>
+Message-ID: <Pine.SOL.4.21.0102151028390.13543-100000@sun8.loc.gov>
+
+~47,000 metadata records for sheet music digitized for American Memory are
+now available for harvesting from lcoa1 as a new set (in Dublin Core and
+oai-marc formats).
+
+  BaseURL  http://memory.loc.gov/cgi-bin/oai1_0 
+
+Over 47,000 pieces of sheet music registered for copyright during the
+years 1870 to 1885. Included are popular songs, piano music, sacred and
+secular choral music, solo instrumental music, method books and
+instructional materials, and music for band and orchestra.  The
+corresponding American Memory collection is 
+
+  Music for the Nation: American Sheet Music, 1870-1885 
+  http://memory.loc.gov/ammem/smhtml/smhome.html
+
+This is the third Set available.  The others are American Memory's 
+digitized maps (~3000) and a collection of dance manuals (~200).
+
+We have implemented the ResumptionToken feature (using the same
+temporary session file approach used for American Memory).  As currently
+configured, ListIdentifiers returns batches of 5,000 and ListRecords
+batches of 500.  
+
+  Caroline Arms                                   caar@loc.gov
+  National Digital Library Program
+
+
+
+From hussein@vt.edu  Thu Feb 15 17:31:33 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Thu, 15 Feb 2001 12:31:33 -0500
+Subject: [OAI-implementers] LC Sheet Music metadata available
+References: <Pine.SOL.4.21.0102151028390.13543-100000@sun8.loc.gov>
+Message-ID: <3A8C1275.4B7749B3@vt.edu>
+
+hi
+
+i have a quick question ...
+
+since you added a new set to an existing interface, how do you make sure
+that everything gets harvested by service providers who already have you
+listed as a source (and dont use sets) ? are all new records stamped
+with the current date ? or is there another solution to this ?
+
+and while im on this topic, yesterday i was discussing changing a
+database->metadata mapping on one of our OAs ... how would i force all
+service providers to reload our data ? datestamps ? deletion and
+recoding of ids ? will internal versioning of ids make this simpler ?
+
+ttfn
+
+hussein
+
+-- 
+========================================================================
+hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+========================================================================
+
+From jyoung@oclc.org  Fri Feb 16 16:35:00 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Fri, 16 Feb 2001 11:35:00 -0500
+Subject: [OAI-implementers] OAICat software is available.
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98341F32@OA3-SERVER.oa.oclc.org>
+
+A week ago, or so, I mentioned that I was working on some open-source
+software (OAICat) that would allow people to add OAI support to their own
+databases. I have it cleaned up pretty well now, and packaged it up so
+people can starting trying it out. Project information can be found at
+http://alcme.oclc.org:4342/oaicat/. Installation notes can be found at
+http://alcme.oclc.org:4342/oaicat/install.html. 
+
+OAICat is a Java Servlet 2.2 "web application" that runs in a compliant
+server such as Apache's Tomcat Server (http://jakarta.apache.org/tomcat/).
+Once Tomcat is installed, you just copy the OAICat web application
+(available at http://alcme.oclc.org:4342/oaicat/oaicat.war) into Tomcat's
+webapps subdirectory and start the server. Tomcat runs on port 8080 by
+default, so once the server is started, you should be able to access a
+working demo from a URL such as http://my.org:8080/oaicat where "my.org" is
+replaced with your machine's domain name.
+
+When you start the server, the oaicat.war file will unpack itself
+automatically. Once it's unpacked, you'll find the source code in the
+webapps/oaicat/WEB-INF/classes subdirectory. Soon, this source will be
+available via CVS, at which time people can join me in developing the core
+code base. For the time being, I've included the source for comment's sake.
+
+The install notes at the URL I mentioned above has a brief section with the
+steps necessary to get OAICat to work with your own database. Basically,
+you'll need to write a new class implementing the
+ORG.oclc.oai.catalog.OAICatalog interface using your own database's API
+calls. You can pattern it after ORG.oclc.oai.catalog.DummyOAICatalog, which
+is used for the demo. The only other step should be to change the
+webapps/oaicat/WEB-INF/oaicat.properties file to point to your new class and
+specify any properties necessary to get it initialized. Use the
+DummyOAICatalog properties you'll find there as a guide.
+
+Note that OCLC is currently working on the release of an open-source
+database engine called Gwen/Pears. I'm currently using this database engine
+for the Theses and Dissertations repository at
+http://purl.org/alcme/etdcat/. Hopefully, it will be available soon so other
+people can use it for their own repositories.
+
+Right now, my notes on all this are rather sparse. Please contact me if you
+have questions about OAICat that the documentation doesn't cover. I'd like
+to make OAICat as painless as possible to use, so comments and criticisms
+are welcome.
+
+Jeff
+
+---
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Fax:		614-764-2344
+Email:	jyoung@oclc.org
+
+
+
+
+From lagoze@cs.cornell.edu  Mon Feb 19 11:15:21 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Mon, 19 Feb 2001 06:15:21 -0500
+Subject: [OAI-implementers] changing formats
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43BD76BB@opus.cs.cornell.edu>
+
+Jody,
+
+If I understand your question correctly...
+
+- Each record only contains metadata in one format.
+- The format corresponds to the prefix given as an argument.
+- A prefix argument is alway required regardless of whether the desired
+return is DC or another metadata format.
+- Every metadata format requires a schema for validation.
+
+Carl
+
+> -----Original Message-----
+> From: deridder [mailto:deridder@cs.utk.edu]
+> Sent: Tuesday, February 13, 2001 2:43 PM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: [OAI-implementers] changing formats
+> 
+> 
+>   If we implement another metadata prefix, do we then return 
+> data in the
+> given format (which need not include Dublin core *or* XML) in 
+> response to
+> GetRecord & ListRecords, if that format is specified?
+>   (and the others are still returned in xml/dc, since the 
+> MDprefix is not
+> an input arg for them?)
+> 
+>   I am guessing in that case we create our own
+> schema which determines if what we are returning is correct.
+> 
+>  
+> Am I clear on this?? If not, please enlighten me!  thanks!
+> 
+>  ---Jody
+> 
+> 
+> -----BEGIN PGP PUBLIC KEY BLOCK-----
+> Version: 2.6.2
+> 
+> mQCNAzpx5qgAAAEEAKYqSHUPBHsE1SIOclJiJN5TpA8PalfWOCWH3X1d9AQWj8Tz
+> Lf1mT6R3ps7p+Rn2w9QZHEpZf1AiW9XCJ3Hpiu60IIQ9AHFOddtO8IEcUUreOU5k
+> mVnxfXC2RXtGKN6cwCUzSVT7X8a+UkJq4rHTRR1WMIFe2XieesmMNng0GECtAAUR
+> tCNKb2R5IERlUmlkZGVyIDxkZXJpZGRlckBjcy51dGsuZWR1PokAlQMFEDpx5vfJ
+> jDZ4NBhArQEBbHUD/0/JRsgqGaNXlDaO6BV8xosIyVE0FRuyhBaIVCAAij6RFIi5
+> Wls/hCmkpBtWwYvu4HJTH5ZtmljJK8TiRmKpZZzsGyAg2dVRxytLIDgNuwkoX28v
+> 9G5gBludckV9usAEtYaTwLpwVaBATttc3FBsUafUpZIkRvdtDv6x49JcWhsA
+> =AGsQ
+> -----END PGP PUBLIC KEY BLOCK-----
+> 
+> pub  1024/341840AD 2001/01/26 Jody DeRidder <deridder@cs.utk.edu>
+> Key fingerprint =  07 1D D3 00 21 2F FA 83  E8 FD B7 80 D2 D9 D5 2D
+> 
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From deridder@cs.utk.edu  Mon Feb 19 14:00:09 2001
+From: deridder@cs.utk.edu (deridder)
+Date: Mon, 19 Feb 2001 09:00:09 -0500 (EST)
+Subject: [OAI-implementers] changing formats
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D43BD76BB@opus.cs.cornell.edu>
+Message-ID: <Pine.GSO.4.10.10102190850380.5607-100000@hydra3b.cs.utk.edu>
+
+Actually, we have data available in TEI lite (a build on SGML), from
+which we extracted the info to create the dc XML files.  And soon we
+will have streaming media, etc., etc;  and also we have incredible 
+images of old documents, stuff like that.
+   Looking at the specs, it seems that the return info on the verbs
+which require metadata prefixes could be/should be in the format of
+whatever the prefix describes (via the created schema).
+  However, Hussein tells me (thank-you, Hussein!!) that I am
+constrained to put everything in XML regardless of what it is.  I can
+probably figure out a way to do that with TEI lite (though it may
+render it pointless), but I can't exactly put streaming media in XML---
+only a description of it.  So now it seems to me that if we want to make 
+that stuff available, it can only be via a link, either in the metadata
+somewhere, or via the <about> tag in ListRecords (or both).
+
+  Is my understanding on this clear??
+  I appreciate your feedback!
+
+   --Jody
+   
+On Mon, 19 Feb 2001
+lagoze@cs.cornell.edu wrote:
+
+> Jody,
+> 
+> If I understand your question correctly...
+> 
+> - Each record only contains metadata in one format.
+> - The format corresponds to the prefix given as an argument.
+> - A prefix argument is alway required regardless of whether the desired
+> return is DC or another metadata format.
+> - Every metadata format requires a schema for validation.
+> 
+> Carl
+> 
+> > -----Original Message-----
+> > From: deridder [mailto:deridder@cs.utk.edu]
+> > Sent: Tuesday, February 13, 2001 2:43 PM
+> > To: oai-implementers@oaisrv.nsdl.cornell.edu
+> > Subject: [OAI-implementers] changing formats
+> > 
+> > 
+> >   If we implement another metadata prefix, do we then return 
+> > data in the
+> > given format (which need not include Dublin core *or* XML) in 
+> > response to
+> > GetRecord & ListRecords, if that format is specified?
+> >   (and the others are still returned in xml/dc, since the 
+> > MDprefix is not
+> > an input arg for them?)
+> > 
+> >   I am guessing in that case we create our own
+> > schema which determines if what we are returning is correct.
+> > 
+> >  
+> > Am I clear on this?? If not, please enlighten me!  thanks!
+> > 
+> >  ---Jody
+> > 
+> > 
+> > -----BEGIN PGP PUBLIC KEY BLOCK-----
+> > Version: 2.6.2
+> > 
+> > mQCNAzpx5qgAAAEEAKYqSHUPBHsE1SIOclJiJN5TpA8PalfWOCWH3X1d9AQWj8Tz
+> > Lf1mT6R3ps7p+Rn2w9QZHEpZf1AiW9XCJ3Hpiu60IIQ9AHFOddtO8IEcUUreOU5k
+> > mVnxfXC2RXtGKN6cwCUzSVT7X8a+UkJq4rHTRR1WMIFe2XieesmMNng0GECtAAUR
+> > tCNKb2R5IERlUmlkZGVyIDxkZXJpZGRlckBjcy51dGsuZWR1PokAlQMFEDpx5vfJ
+> > jDZ4NBhArQEBbHUD/0/JRsgqGaNXlDaO6BV8xosIyVE0FRuyhBaIVCAAij6RFIi5
+> > Wls/hCmkpBtWwYvu4HJTH5ZtmljJK8TiRmKpZZzsGyAg2dVRxytLIDgNuwkoX28v
+> > 9G5gBludckV9usAEtYaTwLpwVaBATttc3FBsUafUpZIkRvdtDv6x49JcWhsA
+> > =AGsQ
+> > -----END PGP PUBLIC KEY BLOCK-----
+> > 
+> > pub  1024/341840AD 2001/01/26 Jody DeRidder <deridder@cs.utk.edu>
+> > Key fingerprint =  07 1D D3 00 21 2F FA 83  E8 FD B7 80 D2 D9 D5 2D
+> > 
+> > 
+> > 
+> > 
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > 
+> 
+
+
+
+From deridder@cs.utk.edu  Mon Feb 19 14:54:32 2001
+From: deridder@cs.utk.edu (deridder)
+Date: Mon, 19 Feb 2001 09:54:32 -0500 (EST)
+Subject: [OAI-implementers] changing formats
+In-Reply-To: <Pine.GSO.4.10.10102190850380.5607-100000@hydra3b.cs.utk.edu>
+Message-ID: <Pine.GSO.4.10.10102190953110.8535-100000@duncan.cs.utk.edu>
+
+Okay, okay, I realize now how dumb that sounds.  Of course we are only
+returning metadata about records;  by extension it seems silly to want
+to return that in video, audio, or images;  but when dealing with other
+text formats, it's not nearly so clear.
+
+  --j.
+
+On Mon, 19 Feb 2001, deridder
+wrote:
+
+> 
+> Actually, we have data available in TEI lite (a build on SGML), from
+> which we extracted the info to create the dc XML files.  And soon we
+> will have streaming media, etc., etc;  and also we have incredible 
+> images of old documents, stuff like that.
+>    Looking at the specs, it seems that the return info on the verbs
+> which require metadata prefixes could be/should be in the format of
+> whatever the prefix describes (via the created schema).
+>   However, Hussein tells me (thank-you, Hussein!!) that I am
+> constrained to put everything in XML regardless of what it is.  I can
+> probably figure out a way to do that with TEI lite (though it may
+> render it pointless), but I can't exactly put streaming media in XML---
+> only a description of it.  So now it seems to me that if we want to make 
+> that stuff available, it can only be via a link, either in the metadata
+> somewhere, or via the <about> tag in ListRecords (or both).
+> 
+>   Is my understanding on this clear??
+>   I appreciate your feedback!
+> 
+>    --Jody
+>    
+> On Mon, 19 Feb 2001
+> lagoze@cs.cornell.edu wrote:
+> 
+> > Jody,
+> > 
+> > If I understand your question correctly...
+> > 
+> > - Each record only contains metadata in one format.
+> > - The format corresponds to the prefix given as an argument.
+> > - A prefix argument is alway required regardless of whether the desired
+> > return is DC or another metadata format.
+> > - Every metadata format requires a schema for validation.
+> > 
+> > Carl
+> > 
+> > > -----Original Message-----
+> > > From: deridder [mailto:deridder@cs.utk.edu]
+> > > Sent: Tuesday, February 13, 2001 2:43 PM
+> > > To: oai-implementers@oaisrv.nsdl.cornell.edu
+> > > Subject: [OAI-implementers] changing formats
+> > > 
+> > > 
+> > >   If we implement another metadata prefix, do we then return 
+> > > data in the
+> > > given format (which need not include Dublin core *or* XML) in 
+> > > response to
+> > > GetRecord & ListRecords, if that format is specified?
+> > >   (and the others are still returned in xml/dc, since the 
+> > > MDprefix is not
+> > > an input arg for them?)
+> > > 
+> > >   I am guessing in that case we create our own
+> > > schema which determines if what we are returning is correct.
+> > > 
+> > >  
+> > > Am I clear on this?? If not, please enlighten me!  thanks!
+> > > 
+> > >  ---Jody
+> > > 
+> > > 
+> > > -----BEGIN PGP PUBLIC KEY BLOCK-----
+> > > Version: 2.6.2
+> > > 
+> > > mQCNAzpx5qgAAAEEAKYqSHUPBHsE1SIOclJiJN5TpA8PalfWOCWH3X1d9AQWj8Tz
+> > > Lf1mT6R3ps7p+Rn2w9QZHEpZf1AiW9XCJ3Hpiu60IIQ9AHFOddtO8IEcUUreOU5k
+> > > mVnxfXC2RXtGKN6cwCUzSVT7X8a+UkJq4rHTRR1WMIFe2XieesmMNng0GECtAAUR
+> > > tCNKb2R5IERlUmlkZGVyIDxkZXJpZGRlckBjcy51dGsuZWR1PokAlQMFEDpx5vfJ
+> > > jDZ4NBhArQEBbHUD/0/JRsgqGaNXlDaO6BV8xosIyVE0FRuyhBaIVCAAij6RFIi5
+> > > Wls/hCmkpBtWwYvu4HJTH5ZtmljJK8TiRmKpZZzsGyAg2dVRxytLIDgNuwkoX28v
+> > > 9G5gBludckV9usAEtYaTwLpwVaBATttc3FBsUafUpZIkRvdtDv6x49JcWhsA
+> > > =AGsQ
+> > > -----END PGP PUBLIC KEY BLOCK-----
+> > > 
+> > > pub  1024/341840AD 2001/01/26 Jody DeRidder <deridder@cs.utk.edu>
+> > > Key fingerprint =  07 1D D3 00 21 2F FA 83  E8 FD B7 80 D2 D9 D5 2D
+> > > 
+> > > 
+> > > 
+> > > 
+> > > _______________________________________________
+> > > OAI-implementers mailing list
+> > > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > > 
+> > 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+
+From tdb198@ecs.soton.ac.uk  Wed Feb 21 15:46:19 2001
+From: tdb198@ecs.soton.ac.uk (Tim Brody)
+Date: Wed, 21 Feb 2001 15:46:19 +0000 (GMT)
+Subject: [OAI-implementers] OAI in PERL
+Message-ID: <Pine.LNX.4.21.0102211535370.5052-100000@sway.ecs.soton.ac.uk>
+
+Hi all,
+
+I have written a few PERL modules that should make the implementation of
+OAI compliant archives and harvesters a bit easier, taking care of most of
+the OAI protocol.
+
+Initial documentation is available from:
+http://www.ecs.soton.ac.uk/~tdb198/oai/frontend.html
+
+The modules can be downloaded by following the "availability" section.
+
+Please keep in mind that these modules are in development.
+
+I invite comments/criticisms/bug reports.
+
+If you would like to make use of these modules during this development
+stage please contact me beforehand so I can keep track of where they are
+being used.
+
+I also hope to make my code for a complete harvester/search engine
+available when it is a bit more complete!
+
+All the best,
+Tim Brody
+Computer Science, University of Southampton
+email: tdb198@soton.ac.uk
+Web: http://www.ecs.soton.ac.uk/~tdb198/
+
+
+From thabing@uiuc.edu  Fri Feb 23 22:35:01 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Fri, 23 Feb 2001 16:35:01 -0600
+Subject: [OAI-implementers] OAI in PERL
+References: <Pine.LNX.4.21.0102211535370.5052-100000@sway.ecs.soton.ac.uk>
+Message-ID: <3A96E595.AFBF6C00@uiuc.edu>
+
+Hi all,
+
+Here is another sample implementation of the OAI protocol for anyone who
+might be using a Windows NT platform.  You can download the ZIP file from
+the following URL:
+
+http://dli.grainger.uiuc.edu/publications/twcole/oaialpha/
+
+This is a simple implementation, intended for illustration only, using the
+Microsoft Windows Active Server Pages (ASP) and ActiveX Data Object (ADODB)
+technology.  A sample MS Access database is included, but the scripts could
+be easily modified to support other data sources such as SQL Server or
+others.
+
+See the included README file for minimalist documentation.
+
+Anyone is free to use this however they see fit; all the usual caveats
+apply, of course.
+
+Any and all questions, comments, or bug reports are welcome.
+
+Kind regards,
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+and 
+
+Timothy W. Cole 
+Mathematics Librarian
+University of Illinois at Urbana-Champaign
+214 Altgeld Hall, MC-382
+t-cole3@uiuc.edu
+
+From harnad@coglit.ecs.soton.ac.uk  Sun Feb 25 17:05:25 2001
+From: harnad@coglit.ecs.soton.ac.uk (Stevan Harnad)
+Date: Sun, 25 Feb 2001 17:05:25 +0000 (GMT)
+Subject: [OAI-implementers] Survey of Users and Non-Users of Eprint Archives
+Message-ID: <Pine.SGI.3.95.1010225164405.15278R-100000@cogito.ecs.soton.ac.uk>
+
+I would be very grateful if you could help announce a survey we are
+conducting on current users and non-users of Eprint Archives.
+
+    http://www.eprints.org/survey/
+
+The purpose of the survey is to determine who is and is not using such
+archives at this time, how they use them if they do, why they do not
+use them if they do not, and what features they would like to have
+added to them to make them more useful. (The survey is anonymous.
+Revealing your identity is optional and it will be kept confidential.)
+
+The survey consists of about 72 web-based questions, and comes in four
+versions:
+
+PHYSICISTS, ASTROPHYSICISTS, MATHEMATICIANS
+
+    1. arXiv Users
+
+    2. arXiv Non-Users
+
+COGNITIVE SCIENTISTS (Psychologists, Neuroscientists, Behavioral
+Biologists, Computer Scientists [AI/robotics/vision/speech/learning],
+Linguists, Philosophers)
+
+    3. CogPrints Users
+
+    4. CogPrints Non-Users
+
+OTHER DISCIPLINES: Please use either 2. or 4.
+
+    http://www.eprints.org/survey/
+
+Many thanks,
+
+Stevan Harnad                     harnad@cogsci.soton.ac.uk
+Professor of Cognitive Science    harnad@princeton.edu
+Department of Electronics and     phone: +44 23-80 592-582
+             Computer Science     fax:   +44 23-80 592-865
+University of Southampton         http://www.cogsci.soton.ac.uk/~harnad/
+Highfield, Southampton            http://www.princeton.edu/~harnad/
+SO17 1BJ UNITED KINGDOM
+
+
+From gorden@bnl.gov  Tue Feb 27 19:12:55 2001
+From: gorden@bnl.gov (Gorden-Ozgul, Patricia E)
+Date: Tue, 27 Feb 2001 14:12:55 -0500
+Subject: [OAI-implementers] 2/27/01 - Curious and Interested
+Message-ID: <D869CC4782D3D41182CB0002B30A362B6811ED@exchange01.bnl.gov>
+
+Forgive me the cross-posting to the general list, but I fear I shall get no
+response from there.
+I haven't seen anything coming through it.
+
+__________________________________________________
+Pat Gorden-Ozgul               BNL-ISD Systems
+gorden@bnl.gov                 631-344-5159
+
+
+
+
+
+> -----Original Message-----
+> From:	Gorden-Ozgul, Patricia E 
+> Sent:	Tuesday, February 27, 2001 1:57 PM
+> To:	'OAI-General List'
+> Subject:	2/27/01 - Curious and Interested
+> 
+> Hello OAI-General List:
+> 
+> I'm looking for some information in general 'layman's terms' what your
+> organization is doing with regard to exchange of scholarly writings.
+> 
+> Let me explain myself.  Perhaps that may give a clue about where my
+> questions originate.  I am wondering if our organization, Brookhaven
+> National Laboratory and specifically our Information Services Division
+> (ISD which encompasses the Research Library where I work),  might either
+> benefit from participation in what you are doing or might be a pertinent
+> information source for you.
+> 
+> I am not a librarian, nor am I a scientist.  I am a systems specialist who
+> works with relational databases in a research library.  Part of my
+> function is to maintain a repository of both metadata and content of
+> various publications related to the pursuit of federally-funded research
+> and development activities.  I work with both UNIX and NT based systems;
+> I've worked extensively in data manipulation activities to include UNIX
+> utilities, perl, cgi scripting in shell and perl, SGML and HTML.   I've
+> dabbled with XML.  I understand the concepts of DTDs and parsing.  I
+> partially understand your specification from the protocol for metadata
+> harvesting.  I've read much at your site.
+> 
+> Would someone be able to provide me with an outline of how OAI might be of
+> benefit to us?   Or how we might contribute?  Have you a public affairs
+> representative perhaps?
+> 
+> I appreciate any and all information you might provide.
+> 
+> Thank you.
+> 
+> __________________________________________________
+> Pat Gorden-Ozgul               BNL-ISD Systems
+> gorden@bnl.gov                 631-344-5159
+> 
+> 
+> 
+> 
+> 
+
+From mln@ils.unc.edu  Tue Feb 27 19:42:25 2001
+From: mln@ils.unc.edu (Michael L. Nelson)
+Date: Tue, 27 Feb 2001 14:42:25 -0500 (EST)
+Subject: [OAI-implementers] Re: [OAI-general] 2/27/01 - Curious and Interested
+In-Reply-To: <D869CC4782D3D41182CB0002B30A362B6811EC@exchange01.bnl.gov>
+Message-ID: <Pine.GSO.4.21.0102271416330.15788-100000@ruby.ils.unc.edu>
+
+Patricia,
+
+You're right - this should probably be covered in a FAQ or something.
+
+Putting on my NASA hat, I can say what we get out of OAI participation.
+
+I'm responsible for:
+
+http://naca.larc.nasa.gov/
+and 
+http://techreports.larc.nasa.gov/ltrs/
+
+though I'm less involved with the latter now.  The goal of these DLs it to
+have maximum exposure for their contents.   I'd say their respective
+interfaces are functional, but surely others could do a better job.  My
+focus is mainly on making as much LaRC / NACA content as possible is
+available on line.  To that end, both of the above have OAI interfaces:
+
+http://naca.larc.nasa.gov/oai/
+http://techreports.larc.nasa.gov/ltrs/oai/
+
+So others can harvest our metadata and include them in their own service
+provder (which points back to the "data" (full text reports in this case)
+at our DLs).
+
+Ultimately, OAI harvesting is the "right" way to build services such as:
+
+http://techreports.larc.nasa.gov/cgi-bin/NTRS
+(which I'm resposible for) and:
+
+http://www.osti.gov/bridge/
+http://www.osti.gov/preprint/
+http://stinet.dtic.mil/
+
+and other services.  And if you don't like those interfaces, you can build
+your own service provider, and it can target the OAI archives of your
+choosing.  An example of an OAI compliant service provider is:
+
+http://arc.cs.odu.edu/
+
+Which does some neat things with using Oracle and session mgmt for quick
+searching.  Not satisfied?  Build your own service provider and use a
+different search engine (or a totally different resource discovery
+metaphor, if you'd like).
+
+It would be nice to have an OAI interface to:
+
+http://www.inform.bnl.gov/pubsearch/
+
+so the contents therein could be discovered through alternate
+interfaces.  I'm guessing the only current way to find:
+
+http://www.pubs.bnl.gov/pubs/documents/21099.pdf
+
+is through through http://www.inform.bnl.gov/pubsearch/ ....
+
+it would be nice if people searching http://arc.cs.odu.edu could find it,
+or perhaps people searching a DOE-specific service provider (OSTI?), or
+perhaps a through a service provider run by the Sierra Club (for example),
+which selectively harvested this report (and related reports) for their
+constituency interested in the environmental planning of government
+research laboratories.
+
+In summary, the advantages of participating as a data provider are mostly
+about increased visibility of your contents.  You can use the OAI protocol
+to easily build things like selective dissemination of information,
+alerts, update services, etc., but these projects seem to me to be related
+to the "increased visibility" result.
+
+If BNL wanted to construct a serivce provider, it could easily harvest
+from other sources to build (for example) a specialized service directly
+targeted for your customer base.  Or you could decide you can do a better
+job ofa general service provider than OSTI and build your own ;-)
+
+Let me know if you have any questions.
+
+regards,
+
+Michael
+
+On Tue, 27 Feb 2001, Gorden-Ozgul, Patricia E wrote:
+
+> Hello OAI-General List:
+> 
+> I'm looking for some information in general 'layman's terms' what your
+> organization is doing with regard to exchange of scholarly writings.
+> 
+> Let me explain myself.  Perhaps that may give a clue about where my
+> questions originate.  I am wondering if our organization, Brookhaven
+> National Laboratory and specifically our Information Services Division (ISD
+> which encompasses the Research Library where I work),  might either benefit
+> from participation in what you are doing or might be a pertinent information
+> source for you.
+> 
+> I am not a librarian, nor am I a scientist.  I am a systems specialist who
+> works with relational databases in a research library.  Part of my function
+> is to maintain a repository of both metadata and content of various
+> publications related to the pursuit of federally-funded research and
+> development activities.  I work with both UNIX and NT based systems; I've
+> worked extensively in data manipulation activities to include UNIX
+> utilities, perl, cgi scripting in shell and perl, SGML and HTML.   I've
+> dabbled with XML.  I understand the concepts of DTDs and parsing.  I
+> partially understand your specification from the protocol for metadata
+> harvesting.  I've read much at your site.
+> 
+> Would someone be able to provide me with an outline of how OAI might be of
+> benefit to us?   Or how we might contribute?  Have you a public affairs
+> representative perhaps?
+> 
+> I appreciate any and all information you might provide.
+> 
+> Thank you.
+> 
+> __________________________________________________
+> Pat Gorden-Ozgul               BNL-ISD Systems
+> gorden@bnl.gov                 631-344-5159
+> 
+> 
+> 
+> 
+> 
+> _______________________________________________
+> OAI-general mailing list
+> OAI-general@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-general
+> 
+
+---
+Michael L. Nelson			
+207 Manning Hall, School of Information and Library Science
+University of North Carolina 		mln@ils.unc.edu
+Chapel Hill, NC 27599			http://ils.unc.edu/~mln/
++1 919 966 5042				+1 919 962 8071 (f)
+
+
+

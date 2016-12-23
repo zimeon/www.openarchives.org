@@ -1,0 +1,821 @@
+From hussein at cs.uct.ac.za  Fri Apr  3 10:40:07 2009
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Thu Apr  9 12:52:05 2009
+Subject: [OAI-implementers] question about PMH baseURLs 
+Message-ID: <49D61FC7.1000709@cs.uct.ac.za>
+
+hi
+
+a protocol specification issue: can we have a baseURL that includes a 
+"?" character (see email below from Thomas Staecker).
+
+personally, it seems reasonable to me. the schema says anyURI for 
+Identify response, which makes it valid. but the PMH narrative says that 
+in order to create a request a harvester can append "?" and a 
+"&"-separated parameter list to the baseURL. this causes a bit of a 
+contradiction.
+
+so, should the narrative of the PMH be changed to allow baseURLs with 
+existing embedded parameters? all harvesters will then need to be aware 
+of this and check for existing parameters if they are not already doing 
+this.
+
+other interoperable Web-based systems (Facebook, Sakai) already do this 
+quite seamlessly. from our perspective, is a minor change for consistent 
+HTTP usage worth the possible need for change to harvesters?
+
+thoughts?
+
+ttfn,
+----hussein
+
+
+-------- Original Message --------
+Subject: oai Repository Explorer
+Date: Wed, 01 Apr 2009 17:55:41 +0200
+From: Dr. Thomas Staecker <staecker@hab.de>
+To: hussein@cs.uct.ac.za
+
+Hello,
+
+I tried to check our OAI interface against your checker, but it didn't
+work because your checker assumes that there is a plain base URL. But as
+we host two repositories at the moment we decided to put the base URLs
+as follows: http://dbs.hab.de/oai/?repository=WDB_OPAC and
+http://dbs.hab.de/oai/?repository=VKK. Your checker now tries to resolve
+this URL as follows
+http://dbs.hab.de/oai/?repository=WDB_OPAC?verb=Identify which leads to
+an error due to the double questionmark. Is it possible to avoid the
+second questionmark?
+
+Regards,
+Thomas
+
+
+
+
+-- 
+Dr. Thomas Staecker (Leiter Abteilung Alte Drucke, Digitalisierung)
+Herzog August Bibliothek - Postfach 1364 - D-38299 Wolfenbuettel
+Tel. +49(0)5331/808-119 - email: staecker@hab.de
+
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+From tdowling at ohiolink.edu  Thu Apr  9 13:45:47 2009
+From: tdowling at ohiolink.edu (Thomas Dowling)
+Date: Thu Apr  9 15:09:02 2009
+Subject: [OAI-implementers] question about PMH baseURLs
+In-Reply-To: <49D61FC7.1000709@cs.uct.ac.za>
+References: <49D61FC7.1000709@cs.uct.ac.za>
+Message-ID: <49DE344B.9080805@ohiolink.edu>
+
+On 04/03/2009 10:40 AM, Hussein Suleman wrote:
+> hi
+> 
+> a protocol specification issue: can we have a baseURL that includes a
+> "?" character (see email below from Thomas Staecker).
+
+
+I believe the URI definition (still RFC 2396?  Or has that been obsoleted?)
+makes it clear that you can only have one query string, and that the "?"
+character is reserved within the query string.
+
+And if the URI is "http://myserver/foo?bar?baz" how will anyone decide if "foo"
+should intepret "bar?baz" or if "foo?bar" should interpret "baz"?  You should
+be aware that EZProxy, which is common in library-land, often does the first
+and I think you're trying to do the second.
+
+IMO it's going to be much more successful to make the two repositories
+addressable without that first query string (different path names or port
+numbers come to mind).
+
+
+
+BTW, this note from April 3 only arrived here on April 9 - apologies if this
+has already been resolved.
+
+
+-- 
+Thomas Dowling
+tdowling@ohiolink.edu
+
+
+
+
+From jyoung at oclc.org  Thu Apr  9 14:49:37 2009
+From: jyoung at oclc.org (Young,Jeff (OR))
+Date: Thu Apr  9 15:11:50 2009
+Subject: [OAI-implementers] question about PMH baseURLs 
+In-Reply-To: <49D61FC7.1000709@cs.uct.ac.za>
+References: <49D61FC7.1000709@cs.uct.ac.za>
+Message-ID: <52E301F960B30049ADEFBCCF1CCAEF5903C00182@OAEXCH4SERVER.oa.oclc.org>
+
+According to the URI standard
+<http://tools.ietf.org/html/rfc3986#section-3.4>:
+
+"The query component is indicated by the first question mark ("?")..."
+
+This implies that an OAI-PMH request supporting HTTP GET must have a
+baseURI without a question mark.
+
+If the repository only accepted POST requests, then it could probably
+get away with it. Whether it should or not is another question.
+
+Jeff
+
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-
+> bounces@openarchives.org] On Behalf Of Hussein Suleman
+> Sent: Friday, April 03, 2009 10:40 AM
+> To: oai-implementers@openarchives.org
+> Cc: Dr. Thomas Staecker
+> Subject: [OAI-implementers] question about PMH baseURLs
+> 
+> hi
+> 
+> a protocol specification issue: can we have a baseURL that includes a
+> "?" character (see email below from Thomas Staecker).
+> 
+> personally, it seems reasonable to me. the schema says anyURI for
+> Identify response, which makes it valid. but the PMH narrative says
+that
+> in order to create a request a harvester can append "?" and a
+> "&"-separated parameter list to the baseURL. this causes a bit of a
+> contradiction.
+> 
+> so, should the narrative of the PMH be changed to allow baseURLs with
+> existing embedded parameters? all harvesters will then need to be
+aware
+> of this and check for existing parameters if they are not already
+doing
+> this.
+> 
+> other interoperable Web-based systems (Facebook, Sakai) already do
+this
+> quite seamlessly. from our perspective, is a minor change for
+consistent
+> HTTP usage worth the possible need for change to harvesters?
+> 
+> thoughts?
+> 
+> ttfn,
+> ----hussein
+> 
+> 
+> -------- Original Message --------
+> Subject: oai Repository Explorer
+> Date: Wed, 01 Apr 2009 17:55:41 +0200
+> From: Dr. Thomas Staecker <staecker@hab.de>
+> To: hussein@cs.uct.ac.za
+> 
+> Hello,
+> 
+> I tried to check our OAI interface against your checker, but it didn't
+> work because your checker assumes that there is a plain base URL. But
+as
+> we host two repositories at the moment we decided to put the base URLs
+> as follows: http://dbs.hab.de/oai/?repository=WDB_OPAC and
+> http://dbs.hab.de/oai/?repository=VKK. Your checker now tries to
+resolve
+> this URL as follows
+> http://dbs.hab.de/oai/?repository=WDB_OPAC?verb=Identify which leads
+to
+> an error due to the double questionmark. Is it possible to avoid the
+> second questionmark?
+> 
+> Regards,
+> Thomas
+> 
+> 
+> 
+> 
+> --
+> Dr. Thomas Staecker (Leiter Abteilung Alte Drucke, Digitalisierung)
+> Herzog August Bibliothek - Postfach 1364 - D-38299 Wolfenbuettel
+> Tel. +49(0)5331/808-119 - email: staecker@hab.de
+> 
+> 
+> --
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+
+From hussein at cs.uct.ac.za  Thu Apr  9 16:03:28 2009
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Thu Apr  9 16:03:36 2009
+Subject: [OAI-implementers] question about PMH baseURLs
+In-Reply-To: <52E301F960B30049ADEFBCCF1CCAEF5903C00182@OAEXCH4SERVER.oa.oclc.org>
+References: <49D61FC7.1000709@cs.uct.ac.za>
+	<52E301F960B30049ADEFBCCF1CCAEF5903C00182@OAEXCH4SERVER.oa.oclc.org>
+Message-ID: <49DE5490.7050608@cs.uct.ac.za>
+
+hi folks
+
+thanks for the quick responses.
+
+if indeed we dont want ? characters in baseURLs, the OAI schema needs to 
+be changed to use a different datatype than anyURI for the baseURL; and 
+it probably needs to be made explicit in the spec.
+
+fwiw, merging of parameter lists seemed like the right thing to do (as 
+all new interoperable systems do this) but it does result in invalid PMH 
+requests because the PMH is defined much more narrowly than newer standards.
+
+so, bottom line, unless i hear otherwise, i will assume we go for ?-less 
+baseURLs and i will check for this in the repository explorer in future...
+
+ttfn,
+----hussein
+
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+Young,Jeff (OR) wrote:
+> According to the URI standard
+> <http://tools.ietf.org/html/rfc3986#section-3.4>:
+> 
+> "The query component is indicated by the first question mark ("?")..."
+> 
+> This implies that an OAI-PMH request supporting HTTP GET must have a
+> baseURI without a question mark.
+> 
+> If the repository only accepted POST requests, then it could probably
+> get away with it. Whether it should or not is another question.
+> 
+> Jeff
+> 
+>> -----Original Message-----
+>> From: oai-implementers-bounces@openarchives.org
+> [mailto:oai-implementers-
+>> bounces@openarchives.org] On Behalf Of Hussein Suleman
+>> Sent: Friday, April 03, 2009 10:40 AM
+>> To: oai-implementers@openarchives.org
+>> Cc: Dr. Thomas Staecker
+>> Subject: [OAI-implementers] question about PMH baseURLs
+>>
+>> hi
+>>
+>> a protocol specification issue: can we have a baseURL that includes a
+>> "?" character (see email below from Thomas Staecker).
+>>
+>> personally, it seems reasonable to me. the schema says anyURI for
+>> Identify response, which makes it valid. but the PMH narrative says
+> that
+>> in order to create a request a harvester can append "?" and a
+>> "&"-separated parameter list to the baseURL. this causes a bit of a
+>> contradiction.
+>>
+>> so, should the narrative of the PMH be changed to allow baseURLs with
+>> existing embedded parameters? all harvesters will then need to be
+> aware
+>> of this and check for existing parameters if they are not already
+> doing
+>> this.
+>>
+>> other interoperable Web-based systems (Facebook, Sakai) already do
+> this
+>> quite seamlessly. from our perspective, is a minor change for
+> consistent
+>> HTTP usage worth the possible need for change to harvesters?
+>>
+>> thoughts?
+>>
+>> ttfn,
+>> ----hussein
+>>
+>>
+>> -------- Original Message --------
+>> Subject: oai Repository Explorer
+>> Date: Wed, 01 Apr 2009 17:55:41 +0200
+>> From: Dr. Thomas Staecker <staecker@hab.de>
+>> To: hussein@cs.uct.ac.za
+>>
+>> Hello,
+>>
+>> I tried to check our OAI interface against your checker, but it didn't
+>> work because your checker assumes that there is a plain base URL. But
+> as
+>> we host two repositories at the moment we decided to put the base URLs
+>> as follows: http://dbs.hab.de/oai/?repository=WDB_OPAC and
+>> http://dbs.hab.de/oai/?repository=VKK. Your checker now tries to
+> resolve
+>> this URL as follows
+>> http://dbs.hab.de/oai/?repository=WDB_OPAC?verb=Identify which leads
+> to
+>> an error due to the double questionmark. Is it possible to avoid the
+>> second questionmark?
+>>
+>> Regards,
+>> Thomas
+>>
+>>
+>>
+>>
+>> --
+>> Dr. Thomas Staecker (Leiter Abteilung Alte Drucke, Digitalisierung)
+>> Herzog August Bibliothek - Postfach 1364 - D-38299 Wolfenbuettel
+>> Tel. +49(0)5331/808-119 - email: staecker@hab.de
+>>
+>>
+>> --
+>> =====================================================================
+>> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+>> =====================================================================
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+From simeon.warner at cornell.edu  Thu Apr  9 16:43:06 2009
+From: simeon.warner at cornell.edu (Simeon Warner)
+Date: Thu Apr  9 16:43:07 2009
+Subject: [OAI-implementers] question about PMH baseURLs
+Message-ID: <20090409204306.GA26074@ice.library.cornell.edu>
+
+The spec says that repositories should support BOTH GET and POST so I think 
+this implies that the baseURL should not include a query component (?).
+
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#HTTPRequestFormat
+"Repositories must support both the GET and POST methods."
+
+If we wanted to enforce this with the schema (and perhaps rule out relative 
+URIs etc.) then I think we would have to constrain the anyURI datatype with 
+a pattern (regex).
+
+Cheers,
+Simeon
+
+
+
+Young,Jeff (OR) wrote:
+> According to the URI standard
+> <http://tools.ietf.org/html/rfc3986#section-3.4>:
+>
+> "The query component is indicated by the first question mark ("?")..."
+>
+> This implies that an OAI-PMH request supporting HTTP GET must have a
+> baseURI without a question mark.
+>
+> If the repository only accepted POST requests, then it could probably
+> get away with it. Whether it should or not is another question.
+>
+> Jeff
+>
+>> -----Original Message-----
+>> From: oai-implementers-bounces@openarchives.org
+> [mailto:oai-implementers-
+>> bounces@openarchives.org] On Behalf Of Hussein Suleman
+>> Sent: Friday, April 03, 2009 10:40 AM
+>> To: oai-implementers@openarchives.org
+>> Cc: Dr. Thomas Staecker
+>> Subject: [OAI-implementers] question about PMH baseURLs
+>>
+>> hi
+>>
+>> a protocol specification issue: can we have a baseURL that includes a
+>> "?" character (see email below from Thomas Staecker).
+>>
+>> personally, it seems reasonable to me. the schema says anyURI for
+>> Identify response, which makes it valid. but the PMH narrative says
+> that
+>> in order to create a request a harvester can append "?" and a
+>> "&"-separated parameter list to the baseURL. this causes a bit of a
+>> contradiction.
+>>
+>> so, should the narrative of the PMH be changed to allow baseURLs with
+>> existing embedded parameters? all harvesters will then need to be
+> aware
+>> of this and check for existing parameters if they are not already
+> doing
+>> this.
+>>
+>> other interoperable Web-based systems (Facebook, Sakai) already do
+> this
+>> quite seamlessly. from our perspective, is a minor change for
+> consistent
+>> HTTP usage worth the possible need for change to harvesters?
+>>
+>> thoughts?
+>>
+>> ttfn,
+>> ----hussein
+>>
+>>
+>> -------- Original Message --------
+>> Subject: oai Repository Explorer
+>> Date: Wed, 01 Apr 2009 17:55:41 +0200
+>> From: Dr. Thomas Staecker <staecker@hab.de>
+>> To: hussein@cs.uct.ac.za
+>>
+>> Hello,
+>>
+>> I tried to check our OAI interface against your checker, but it didn't
+>> work because your checker assumes that there is a plain base URL. But
+> as
+>> we host two repositories at the moment we decided to put the base URLs
+>> as follows: http://dbs.hab.de/oai/?repository=WDB_OPAC and
+>> http://dbs.hab.de/oai/?repository=VKK. Your checker now tries to
+> resolve
+>> this URL as follows
+>> http://dbs.hab.de/oai/?repository=WDB_OPAC?verb=Identify which leads
+> to
+>> an error due to the double questionmark. Is it possible to avoid the
+>> second questionmark?
+>>
+>> Regards,
+>> Thomas
+>>
+>>
+>>
+>>
+>> --
+>> Dr. Thomas Staecker (Leiter Abteilung Alte Drucke, Digitalisierung)
+>> Herzog August Bibliothek - Postfach 1364 - D-38299 Wolfenbuettel
+>> Tel. +49(0)5331/808-119 - email: staecker@hab.de
+>>
+>>
+>> --
+>> =====================================================================
+>> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+>> =====================================================================
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+
+----- End forwarded message -----
+
+From simeon.warner at cornell.edu  Thu Apr  9 16:43:55 2009
+From: simeon.warner at cornell.edu (Simeon Warner)
+Date: Thu Apr  9 16:43:57 2009
+Subject: [OAI-implementers] Query Regarding OAI Identifier
+Message-ID: <20090409204354.GB26074@ice.library.cornell.edu>
+
+Pope Alison wrote:
+> We are working on a project that will take our current eprints collection 
+> from a dedicated eprints repository platform to a new repository platform 
+> where eprints will be one of many collections.  I?m trying to understand 
+> what the OAI implications of this will be and what might be the impact of 
+> harvesters and other service providers.  One of the things is with this 
+> broadening of the repository is it will use a different domain name as 
+> currently designed.  I note however that this goes against the OAi 
+> Identifier principles as we would want our namespace identifier to change 
+> also.  This is currently defined as:
+>
+> <description>
+>         <scheme>oai</scheme>       
+> <repositoryIdentifier>eprints.rhul.ac.uk.OAI2</repositoryIdentifier>
+>
+> We might in future want it to be:
+>
+> <description>
+>         <scheme>oai</scheme>
+>         <repositoryIdentifier>digirep.rhul.ac.uk</repositoryIdentifier>
+>
+> The OAI data provider registration guidelines 
+> (http://www.openarchives.org/data/registerasprovider.html) states a 
+> repository can only have one namespace identifier and a repository may not 
+> change its namespace identifier.  Does this mean:
+>
+> a)      It?s not possible to change the OAI identifier as specified above?
+
+This is not enforced, it is just bad practice. Any services consuming the 
+metadata may get confused...
+
+> b)      We could change the OAI identifier above but we need to remove all 
+> registrations for our old repository and register this as a new repository 
+> rather than change the repository information
+
+Should really also tell all services consuming your metadata to delete it 
+too, and then ask them to start again with new setup.
+
+> c)      Continue to use our existing eprints.rhul.ac.uk domain in the OAI 
+> identifier configuration even though the repository URL is now 
+> digirep.rhul.ac.uk because the identifier only relates to the OAI 
+> request/response harvesting. 
+
+This would be to best option to persist the identifiers and data. However, 
+if you change location of your server you'd still need to let consuming 
+services know that.
+
+I suppose the bottom line is that OAI-PMH does not have mechanisms to deal 
+with this sort of change. One has either to resort to web-server tricks to 
+make old URIs work, or else talk to consuming services to push 
+configuration changes.
+
+(Putting a technology name in the URI has just the same problems that all 
+those silly URLs out there with .jsp, .asp, .cfm, .php extensions have. 
+When the technology changes you either end up with confusing URLs or you 
+have to break or redirect old ones...)
+
+Cheers,
+Simeon
+
+
+>
+> Has anyone done a similar repository migration and considered these kinds 
+> of issues or has any suggestions on what best practice would be in this 
+> sort of scenario.
+>
+>  
+> May thanks,
+>
+> Alison
+>
+>  
+>  
+> *Alison Pope*
+>
+> Business Analyst
+>
+> IT Business Development
+>
+>  
+> Computer Centre
+>
+> Royal Holloway, University of London
+>
+> Egham
+>
+> Surrey
+>
+> TW20 0EX
+>
+>  
+> alison.pope@rhul.ac.uk <mailto:alison.pope@rhul.ac.uk>
+>
+> 01784 414925
+
+From ravila4321 at yahoo.com  Tue Apr 14 09:46:29 2009
+From: ravila4321 at yahoo.com (R Avila)
+Date: Tue Apr 14 09:47:06 2009
+Subject: [OAI-implementers] Questions about embedding/mixing metadata
+Message-ID: <455714.84991.qm@web62204.mail.re1.yahoo.com>
+
+I've got some questions about mixing metadata into oai_dc.? Can anyone help?
+?
+For instance, the rules for mixing metadata at the dublincore site here: http://dublincore.org/documents/dc-xml-guidelines/?-- do they apply to oai_dc as well? 
+?
+I also have a few other questions I'll ask off-list.
+?
+Thanks for any help.
+?
+Regina Avila
+ravila4321@yahoo.com
+
+
+      
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090414/500d1648/attachment.htm
+From robert.robertson at strath.ac.uk  Tue Apr 14 11:01:59 2009
+From: robert.robertson at strath.ac.uk (Robert Robertson)
+Date: Tue Apr 14 11:02:27 2009
+Subject: [OAI-implementers] Questions about embedding/mixing metadata
+In-Reply-To: <455714.84991.qm@web62204.mail.re1.yahoo.com>
+References: <455714.84991.qm@web62204.mail.re1.yahoo.com>
+Message-ID: <9C0140C91395D74BAD253635B1AC298571FD50986E@E2K7-MS2.ds.strath.ac.uk>
+
+Hi Regina,
+
+>From the way you've phrased the question on oai-implementers and metadata-librarians, it sounds like you've got some metadata elements that you want to use in addition to those Dublin Core elements used in the oai_dc schema.
+
+The short answer is that you can't add other metadata elements into the oai_dc schema.
+You can, however, have multiple occurrences of any element and you can add other schemas to be exposed by OAI-PMH. This could be a qualified dc schema of your  own or someone else's design or it could be from another standard entirely. The important thing about OAI-PMH is to remember that oai_dc is the mandated set you have to expose but you can expose as many others as you wish.
+
+However, the bigger questions is:
+Why do you want/ need to share this information?
+
+There's plenty of metadata used for local purposes that it isn't effective or necessary to share - apologies if this is an obvious statement but many repositories conflate local metadata requirements with the metadata schemas they expose for harvesting.
+
+Also - across most archives/repositories/digital libraries oai_dc is the only metadata schema widely supported and looked for by harvesters. Yes some services pay attention to what else is exposed and the situation is improving but there isn't really much of a common denominator to take advantage of more detailed or different metadata - unless there's a particular community/ organisation/ federation/ service that you're working with. This situation is improving and if you can easily expose other standards it is a good thing to do.
+
+I hope that begins to answer your question, without knowing a bit more of the specific issues it's hard to suggest elements or schema.
+
+Regards,
+John
+
+
+--
+R. John Robertson
+skype: rjohnrobertson
+Repositories Research Officer (JISCCETIS), Centre for Academic Practice and Learning Enhancement University of Strathclyde
+Tel:    +44 (0) 141 548 3072
+http://blogs.cetis.ac.uk/johnr/
+The University of Strathclyde is a charitable body, registered in Scotland, with registration number SC015263
+
+From: oai-implementers-bounces@openarchives.org [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of R Avila
+Sent: 14 April 2009 14:46
+To: oai-implementers@openarchives.org
+Subject: [OAI-implementers] Questions about embedding/mixing metadata
+
+I've got some questions about mixing metadata into oai_dc.  Can anyone help?
+
+For instance, the rules for mixing metadata at the dublincore site here: http://dublincore.org/documents/dc-xml-guidelines/ -- do they apply to oai_dc as well?
+
+I also have a few other questions I'll ask off-list.
+
+Thanks for any help.
+
+Regina Avila
+ravila4321@yahoo.com<mailto:ravila4321@yahoo.com>
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090414/138af491/attachment.htm
+From tdb01r at ecs.soton.ac.uk  Wed Apr 15 04:29:56 2009
+From: tdb01r at ecs.soton.ac.uk (Tim Brody)
+Date: Wed Apr 15 04:30:15 2009
+Subject: [OAI-implementers] oai:UTCdateTimeZType
+References: <1239784196.6443.5.camel@dell-desktop.example.com>
+Message-ID: <EMEW3|9c92aa144bc15dcd6c3318addb9d4c75l3E9U706tdb01r|ecs.soton.ac.uk|.6443.5.camel@dell-desktop.example.com>
+
+We're having trouble validating against the OAI schema (testing with
+xmllint & xerces).
+        
+It fails with any use of seconds-based granularity e.g.
+http://dspace.mit.edu/dspace-oai/request?verb=ListRecords&metadataPrefix=oai_dc&until=2009-03-03T00:00:00Z
+        
+http://espace.library.uq.edu.au/oai.php?verb=ListRecords&metadataPrefix=oai_dc&until=2009-03-03T00:00:00Z
+        
+The problem regexp is ".*Z", which as far as we can tell is correct but
+doesn't work.
+        
+Any ideas?
+        
+foo.xml:6: element request: Schemas validity error : Element 
+'{http://www.openarchives.org/OAI/2.0/
+}request', attribute 'until': '0000-01-01T00:00:00Z' is not a valid
+value of the union type '{http://www.openarchives.org/OAI/
+2.0/}UTCdatetimeType'.
+foo.xml fails to validate
+        
+All the best,
+Tim.
+
+
+
+
+From simeon.warner at cornell.edu  Wed Apr 15 09:05:56 2009
+From: simeon.warner at cornell.edu (Simeon Warner)
+Date: Wed Apr 15 09:06:01 2009
+Subject: [OAI-implementers] oai:UTCdateTimeZType
+In-Reply-To: <EMEW3|9c92aa144bc15dcd6c3318addb9d4c75l3E9U706tdb01r|ecs.soton.ac.uk|.6443.5.camel@dell-desktop.example.com>
+References: <1239784196.6443.5.camel@dell-desktop.example.com>
+	<EMEW3|9c92aa144bc15dcd6c3318addb9d4c75l3E9U706tdb01r|ecs.soton.ac.uk|.6443.5.camel@dell-desktop.example.com>
+Message-ID: <20090415130556.GA25610@ice.library.cornell.edu>
+
+Hi Tim,
+
+It seems from my testing that xerces doesn't like the year zero. I get
+tests to work if I change to year 0001. XSV
+(http://www.w3.org/2001/03/webdata/xsv) is happy with year zero.
+
+I used the following test file (simplified from the dspace URL you quote):
+
+simeon@homebox ~>more c.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+                             http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+<responseDate>2009-04-15T12:45:43Z</responseDate>
+<request metadataPrefix="oai_dc"
+         until="0000-01-01T00:00:00Z"
+         verb="ListRecords">http://dspace.mit.edu/oai/request</request>
+<ListRecords>
+<record>
+  <header>
+    <identifier>1</identifier>
+    <datestamp>2009-04-15T12:45:43Z</datestamp>
+  </header>
+</record>
+</ListRecords>
+</OAI-PMH>
+
+the above give an error from xerces:
+
+simeon@homebox ~>xerceslint c.xml
+[Error] c.xml:9:29: cvc-datatype-valid.1.2.2: '0000-01-01T00:00:00Z' is not a valid value of list type 'UTCdatetimeType'.
+[Error] c.xml:9:29: cvc-attribute.3: The value '0000-01-01T00:00:00Z' of attribute 'until' on element 'request' is not valid with respect to its type, 'UTCdatetimeType'.
+
+but if I change the year to 0001 xerces (2.6.2) is happy:
+
+simeon@homebox ~>diff c.xml d.xml
+8c8
+<          until="0000-01-01T00:00:00Z"
+---
+>          until="0001-01-01T00:00:00Z"
+
+simeon@homebox ~>xerceslint d.xml
+d.xml: 899;0;0 ms (8 elems, 6 attrs, 0 spaces, 97 chars)
+
+element[0]: OAI-PMH   in http://www.openarchives.org/OAI/2.0/
+
+namespace[0]: http://www.openarchives.org/OAI/2.0/
+              http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd
+namespace[1]: http://www.w3.org/2001/XMLSchema
+              [no schema doc]
+
+Do you get the same in your setup?
+
+
+
+I also did a couple of tests to probe the two parts of the definition of
+UTCdatetimeType. XSV prints out nice helpful messages which suggest to me
+that the base type and restruction work as planned:
+
+## with valid dateTime but not Z
+Invalid per cvc-attribute.1.2: attribute type check failed for {None}:until: 0001-01-01T00:00:00+0400 no members of union succeeded:  is not a valid date literal; does not match pattern .*Z
+
+## with valid patter for Z but invalid dateTime
+Invalid per cvc-attribute.1.2: attribute type check failed for {None}:until: A001-01-01T00:00:00Z no members of union succeeded:  is not a valid date literal; is not a valid dateTime literal
+
+
+Cheers,
+Simeon
+
+
+On Wed, Apr 15, 2009 at 09:29:56AM +0100, Tim Brody wrote:
+> We're having trouble validating against the OAI schema (testing with
+> xmllint & xerces).
+>         
+> It fails with any use of seconds-based granularity e.g.
+> http://dspace.mit.edu/dspace-oai/request?verb=ListRecords&metadataPrefix=oai_dc&until=2009-03-03T00:00:00Z
+>         
+> http://espace.library.uq.edu.au/oai.php?verb=ListRecords&metadataPrefix=oai_dc&until=2009-03-03T00:00:00Z
+>         
+> The problem regexp is ".*Z", which as far as we can tell is correct but
+> doesn't work.
+>         
+> Any ideas?
+>         
+> foo.xml:6: element request: Schemas validity error : Element 
+> '{http://www.openarchives.org/OAI/2.0/
+> }request', attribute 'until': '0000-01-01T00:00:00Z' is not a valid
+> value of the union type '{http://www.openarchives.org/OAI/
+> 2.0/}UTCdatetimeType'.
+> foo.xml fails to validate
+>         
+> All the best,
+> Tim.
+> 
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+From david.uvalle at gmail.com  Thu Apr 16 12:22:06 2009
+From: david.uvalle at gmail.com (David Uvalle)
+Date: Thu Apr 16 12:22:10 2009
+Subject: [OAI-implementers] joailib 0.1
+Message-ID: <26af88f00904160922l488b2709gcd7c90348af4f5be@mail.gmail.com>
+
+Hi all:
+
+I have been working on a Java library for OAI-PMH v2, and it's now available
+at http://code.google.com/p/joailib/
+I would appreciate feedback on this.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090416/0b908d17/attachment.htm

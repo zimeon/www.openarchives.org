@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] I have problems with OAI
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20I%20have%20problems%20with%20OAI&In-Reply-To=000d01c519dd%247647c910%240301a8c0%40dark">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001436.html">
+   <LINK REL="Next"  HREF="001437.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] I have problems with OAI</H1>
+    <B>Heinrich Stamerjohanns</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20I%20have%20problems%20with%20OAI&In-Reply-To=000d01c519dd%247647c910%240301a8c0%40dark"
+       TITLE="[OAI-implementers] I have problems with OAI">stamer at physnet.physik.uni-oldenburg.de
+       </A><BR>
+    <I>Fri Feb 25 06:02:19 EST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001436.html">[OAI-implementers] I have problems with OAI
+</A></li>
+        <LI>Next message: <A HREF="001437.html">[OAI-implementers] I have problems with OAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1435">[ date ]</a>
+              <a href="thread.html#1435">[ thread ]</a>
+              <a href="subject.html#1435">[ subject ]</a>
+              <a href="author.html#1435">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, 23 Feb 2005, Daniel Manchego wrote:
+
+Dear Daniel, 
+
+the problem is that the Protocol suggests to return the identifier in this 
+error case. However the invalid identifier does not match 
+the type oai:identifierType, so the generated XML is invalid.
+ 
+So in fact it is a problem in either the specification or the XML Schema.
+
+Two solutions are possible:
+
+The XML Schema for Validating Responses to OAI-PMH Requests can be fixed
+by just requiring any string and not an oai:identifierType.
+
+OR
+
+fix the file oaidp-util.php with this patch:
+
+oai2-1.5/oai2/oaidp-util.php
+--- phpoai2-1.6/oai2/oaidp-util.php     2005-02-25 11:43:47.155125000 
++0100
++++ phpoai2-1.5/oai2/oaidp-util.php     2004-07-02 17:14:44.000000000 
++0200
+@@ -113,7 +113,7 @@
+                        $code = 'badArgument';
+        }
+
+-       if ($code == 'badVerb' || $code == 'badArgument' || $code == 
+'idDoesNotExist') {
++       if ($code == 'badVerb' || $code == 'badArgument') {
+                $request = $request_err;
+        }
+        $error .= ' &lt;error code=&quot;'.xmlstr($code, 'iso8859-1', 
+false).'&quot;&gt;'.xmlstr($text, 'iso8859-1', false).&quot;&lt;/error&gt;\n&quot;;
+
+The last line of 3.2.3 in 
+<A HREF="http://www.openarchives.org/OAI/openarchivesprotocol.html">http://www.openarchives.org/OAI/openarchivesprotocol.html</A>
+should be changed to 
+
+&quot;In cases where the request that generated this response resulted in a 
+badVerb or badArgument or idDoesNotExist error condition, the repository 
+must return the base URL of the protocol request only. 
+Attributes must not be provided in these cases.&quot;
+
+I do not think that the data provider has to check the validity of the 
+identifier so returning badArgument does not seem to make sense (and the
+text does not suggest something like that.
+
+Greetings, Heinrich
+
+
+
+
+
+
+&gt;<i> 
+</I>&gt;<i> (30) Testing : GetRecord (invalid_id, oai_dc)
+</I>&gt;<i> URL :
+</I>&gt;<i> <A HREF="http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php?verb=GetRecord&amp;ident">http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php?verb=GetRecord&amp;ident</A>
+</I>&gt;<i> ifier=invalid\&quot;id&amp;metadataPrefix=oai_dc
+</I>&gt;<i> ------ Response from Xerces Schema Validation ------
+</I>&gt;<i> [Error] re.wWUN2I:7:81: cvc-datatype-valid.1.2.1: 'invalid&quot;id' is not a
+</I>&gt;<i> valid value for 'anyURI'. [Error] re.wWUN2I:7:81: cvc-attribute.3: The
+</I>&gt;<i> value 'invalid&quot;id' of attribute 'identifier' on element 'request' is not
+</I>&gt;<i> valid with respect to its type, 'identifierType'.
+</I>&gt;<i> /tmp/re.wWUN2I: 745;11;0 ms (4 elems, 7 attrs, 0 spaces, 149 chars)
+</I>&gt;<i> ------- End of Xerces Schema Validation Report  -------
+</I>&gt;<i> ------ Start of XML Response ------
+</I>&gt;<i> &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+</I>&gt;<i> &lt;OAI-PMH xmlns=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/&quot;">http://www.openarchives.org/OAI/2.0/&quot;</A>
+</I>&gt;<i>          xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance&quot;">http://www.w3.org/2001/XMLSchema-instance&quot;</A>
+</I>&gt;<i>          xsi:schemaLocation=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/">http://www.openarchives.org/OAI/2.0/</A>
+</I>&gt;<i>          <A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;">http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;</A>&gt;
+</I>&gt;<i>  &lt;responseDate&gt;2005-02-23T17:38:12Z&lt;/responseDate&gt;
+</I>&gt;<i>  &lt;request verb=&quot;GetRecord&quot; identifier=&quot;invalid&amp;quot;id&quot;
+</I>&gt;<i> metadataPrefix=&quot;oai_dc&quot;&gt;<A HREF="http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.">http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.</A>
+</I>&gt;<i> php&lt;/request&gt;
+</I>&gt;<i>  &lt;error code=&quot;idDoesNotExist&quot;&gt;The value &amp;#039;invalidid&amp;#039; of the
+</I>&gt;<i> identifier is illegal for this repository.&lt;/error&gt; &lt;/OAI-PMH&gt;
+</I>&gt;<i> 
+</I>&gt;<i> I have been reviewing, but I cannot find the error.
+</I>
+
+
+&gt;<i> 
+</I>&gt;<i> Could you help me, please?
+</I>&gt;<i> 
+</I>&gt;<i> Best Regards.
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i> Daniel Manchego 
+</I>&gt;<i> Web Administrator
+</I>&gt;<i> <A HREF="http://www.ifeanet.org">http://www.ifeanet.org</A>
+</I>&gt;<i> INSTITUT FRANCAIS d'ETUDES ANDINES 
+</I>&gt;<i> Tlf. 4476070 Cel. 93569056
+</I>&gt;<i> Lima - Per&#250; 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">stamer at uni-oldenburg.de</A>
+  University of Oldenburg           <A HREF="http://isn.uni-oldenburg.de/~stamer">http://isn.uni-oldenburg.de/~stamer</A>
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001436.html">[OAI-implementers] I have problems with OAI
+</A></li>
+	<LI>Next message: <A HREF="001437.html">[OAI-implementers] I have problems with OAI
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1435">[ date ]</a>
+              <a href="thread.html#1435">[ thread ]</a>
+              <a href="subject.html#1435">[ subject ]</a>
+              <a href="author.html#1435">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

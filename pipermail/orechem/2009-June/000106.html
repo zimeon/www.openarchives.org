@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [Orechem] High-throughput semantic computation in OREChem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:orechem%40openarchives.org?Subject=%5BOrechem%5D%20High-throughput%20semantic%20computation%20in%20OREChem&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="000105.html">
+   <LINK REL="Next"  HREF="000107.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[Orechem] High-throughput semantic computation in OREChem</H1>
+    <B>Peter Murray-Rust</B> 
+    <A HREF="mailto:orechem%40openarchives.org?Subject=%5BOrechem%5D%20High-throughput%20semantic%20computation%20in%20OREChem&In-Reply-To="
+       TITLE="[Orechem] High-throughput semantic computation in OREChem">pm286 at cam.ac.uk
+       </A><BR>
+    <I>Fri Jun 12 10:31:46 EDT 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="000105.html">[Orechem] Big data
+</A></li>
+        <LI>Next message: <A HREF="000107.html">[Orechem] Re: High-throughput semantic computation in OREChem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#106">[ date ]</a>
+              <a href="thread.html#106">[ thread ]</a>
+              <a href="subject.html#106">[ subject ]</a>
+              <a href="author.html#106">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>This is to review the subprojects that the computational geeks in OREChem
+have put together over the last few days. (a) is long term, (b) is immediate
+(a) The general goal is to compute NMR spectra for all new published
+compounds and compare them with spectra. This is a new approach &quot;robot
+refereeing of chemistry publications&quot; and any differences suggest errors or
+new chemistry. This is long term (months) and consists of the following (as
+we have put on the wiki):
+* PSU-Lee/Prasenjit retrieve chemistry-rich docs from publisher sites (ask
+for forgiveness policy) and segment the papers into text+non-text (tables,
+diagrams). This passes to:
+* Mark - Soton extracts molecules and spectra out of this and converts them
+to SVG. The short-term goal is to get this working by the end of next week
+in a pragmatic form. (we do not mind if recall is poor as long as we get a
+few SVGs as we need to develop the machine-learning and/or heuristics and
+find out what unknown horrors we have to deal with.
+Bitmaps are rejected at this stage
+* PMR- cambridge develops heuristics to interpret (i) molecules (ii) spectra
+(C13 and H1). These might later be crowdsourced. The output is CML molecules
+and spectra. It is unlikely we have assignments
+* PSU - Bill+Karl. Analyse spectra with peak-fitting.
+* IU - Marlon. (independently) molecules are passed to IU in CML and put
+into the NMREye workflow for computing peaks (below). IU run this
+automatically and return results in CML
+
+(b) To get IU up to speed we shall start immediately on simple molecules
+from Pubchem. This involves just Cambridge and IU.
+* The NMREye workflow has been developed and tested and should work on
+simple organic compounds. It consists of the following:
+  - convert PubchemXML2CML (already available in JUMBO)
+  - convert CML to Gaussian input. We have an XSLT script, but could convert
+this to Java in an hour.
+  - in parallel - create RDF metadata for provenance to this point (as this
+does not survive the Gaussian run)
+  ... submit and run job ... (IU) ... and collect results
+ - convert LOG file to CML (JUMBOMarker, effectively done)
+ - convert CML to RDF (JUMBO). Add GaussianOWL dictionary in RDF
+
+upload RDFs into reopository/tripleStore
+
+In (b) we would expect to get 10,000 - 100,000 small molecules from Pubchem
+of up to, say , 15 first row atoms. These already have 3D coordinates (I am
+ignoring conformers at this stage). The process should be automatic. Jobs
+take from 0.1 seconds to 1 day (probably) as they scale with N^4.
+
+P.
+
+I will try to send this to the Wiki
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <A HREF="http://www.openarchives.org/pipermail/orechem/attachments/20090612/3d2983f1/attachment.htm">http://www.openarchives.org/pipermail/orechem/attachments/20090612/3d2983f1/attachment.htm</A>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="000105.html">[Orechem] Big data
+</A></li>
+	<LI>Next message: <A HREF="000107.html">[Orechem] Re: High-throughput semantic computation in OREChem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#106">[ date ]</a>
+              <a href="thread.html#106">[ thread ]</a>
+              <a href="subject.html#106">[ subject ]</a>
+              <a href="author.html#106">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/orechem">More information about the Orechem
+mailing list</a><br>
+</body></html>

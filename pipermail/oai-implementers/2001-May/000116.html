@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] rdf
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:lagoze%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000115.html">
+   <LINK REL="Next"  HREF="000117.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] rdf
+   </H1>
+    <B>lagoze@cs.cornell.edu
+    </B> 
+    <A HREF="mailto:lagoze%40cs.cornell.edu"
+       TITLE="[OAI-implementers] rdf">lagoze@cs.cornell.edu
+       </A><BR>
+    <I>Wed, 2 May 2001 07:15:19 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000115.html">[OAI-implementers] rdf
+</A></li>
+        <LI> Next message: <A HREF="000117.html">[OAI-implementers] rdf
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#116">[ date ]</a>
+              <a href="thread.html#116">[ thread ]</a>
+              <a href="subject.html#116">[ subject ]</a>
+              <a href="author.html#116">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Sorry to enter this dialog a little late, I was out of town.
+
+I have a question about the goal here of &quot;passing RDF&quot; via OAI
+protocols. 
+
+A quick catch up to make sure we're all on the same page: RDF, first and
+foremost, as described in the RDF model and syntax document (M+S)
+<A HREF="http://www.w3.org/TR/REC-rdf-syntax/,">http://www.w3.org/TR/REC-rdf-syntax/,</A> is a data model describing typed
+relationships between uniquely identified entities.  This data model is
+often described in terms of a directed acyclic graph, but can also be
+expressed in a number of other representations; e.g. triples with  a
+subject, verb and object.  Among these representations there is an XML
+syntax for serialize RDF graphs that makes use of the RDF M+S namespace
+at <A HREF="http://www.w3.org/1999/02/22-rdf-syntax-ns#.">http://www.w3.org/1999/02/22-rdf-syntax-ns#.</A>  
+
+In addition, there is a an RDF schema specification at
+<A HREF="http://www.w3.org/TR/2000/CR-rdf-schema-20000327/">http://www.w3.org/TR/2000/CR-rdf-schema-20000327/</A> that uses the notions
+in RDF M+S to express knowledge about semantic relationships.  I'll
+quickly note that while RDF &quot;schema&quot; and XML &quot;schema&quot; are both &quot;schema&quot;,
+comparing them is a little like doing the same for apples and oranges.
+XML schema can generally be thought of as a data validation tool,
+allowing one to specify the structure of an XML data stream, with the
+ability to express rather detailed contraints on tree structure, data
+types, etc.  RDF schema should be thought of as a tool for ontology
+definition, making it possible to express class, sub-class
+relatioinships and property, sub-property relationships.  For example,
+in RDF schema one could state that a concept from one namespace (e.g., a
+&quot;CREATOR&quot; in dublin core) is a &quot;type of&quot; a concept in another
+relationship (e.g., an &quot;AGENT&quot;).  There are some constraint mechanisms
+in RDF schema, but they are farily week and not the major goal of RDF
+schema.  
+
+My colleague Jane Hunter did an excellent job comparing the
+functionality of the tool schema mechanisms in a paper she is presenting
+at WWW10 this week in Hong Kong, it is available at
+<A HREF="http://archive.dstc.edu.au/RDU/staff/jane-hunter/www10/paper.html.">http://archive.dstc.edu.au/RDU/staff/jane-hunter/www10/paper.html.</A>  
+
+I should state that there are other &quot;schema languages&quot; floating around
+related to XML schema: Schematron, RELAX, and of course good old DTDs.
+
+We have employed XML schema at two levels in the OAI protocol:
+
+1. To define the format of responses to all OAI protocol requests.
+2. To define the format of metadata streams embedded in the GetRecord
+and ListRecords responses.  
+
+In both cases our goal was to provide a mechanism for some degree of
+data validation.  I say &quot;some degree&quot; since conformance to a schema does
+not guarantee the integrity of the data (e.g. I can create Dublin Core
+that is complete nonsense even though it conforms to the oai-dc schema).
+
+
+Now onto the issue of &quot;passing RDF metadata in OAI responses&quot;, in
+particular.  I need to understand the motivation for this as I evaluate,
+with Herbert and other people in the OAI community, our choices in OAI.
+Is it:
+
+1. A desire to mix multiple namespaces in a metadata record (e.g., mix
+dc tags with GEM tags).  In the DC community this is currently called
+devising an &quot;application profile&quot;.
+2. A concern that xml schema are too tightly constraining.  This has
+been a concern raised in a number of mail lists where the issue is that
+the concept Dublin Core (that expressed by a namespace URI) is distinct
+from a particular data formating. (these identity issues run around the
+AI community, e.g. Carl the child and Carl the adult have different
+forms but are the same concept).
+3. The fact that some places have metadata stored in XML RDF and just
+want to expose that without further processing.  By this I mean that the
+metadata looks like:
+
+&lt;RDF xmlns = &quot;<A HREF="http://www.w3.org/TR/WD-rdf-syntax#"">http://www.w3.org/TR/WD-rdf-syntax#&quot;</A>
+           xmlns:dc = &quot;<A HREF="http://purl.org/dc/elements/1.0/"">http://purl.org/dc/elements/1.0/&quot;</A>&gt;
+   &lt;Description about = &quot;URI:R&quot;&gt;
+     &lt;dc:Title&gt; CIMI Presentation &lt;/dc:Title&gt;
+     &lt;dc:Creator&gt; Eric Miller &lt;/dc:Creator&gt;
+   &lt;/Description&gt;
+&lt;/RDF&gt;
+
+4. A desire to use other primitives in the RDF and/or RDFS namespace
+such as the container primitives (alt, seq, etc.).
+
+Adressing each of these:
+
+1. It is not necessary to use RDF to mix elements from multiple
+namespaces.  One can write an XML schema to allow this.  
+2. A colleague closely involved in the RDF community has criticized the
+OAI protocol on this basis.  His claim is that XML schema is criticized
+both due to its complexity and the fact that data format validation is
+much less important than concept identity (i.e., for a thing to be
+Dublin Core it shouldn't have to look one exact way).  In fact, the
+distinction between namespaces and schema expressions demonstrates this.
+A namespace URI is a different animal that the URL of a schema.  The
+former is a unique identity for a concept, not necessarily resolvable to
+any concrete expression.  The latter is a concrete meta-definition of
+that concept.  Developing technologies like RDDL express the fact that
+an abstract concept (Dublin Core) can have multiple concrete
+meta-definitions (e.g., as a natural language description, an RDF
+schema, a schematron schema, 2 xml schema, etc.).  
+3. Wrapping a metadata in RDF tags doesn't make it &quot;RDF&quot;.  As said
+earlier, RDF is really much more than a set of XML tags.  IF this is
+indeed the motivation here, I'd humbly suggest stripping off the outer
+RDF tags before embedding in an OAI response.
+4. The use of other RDF primitives in the metadata description starts to
+make this more interesting and I'd like to understand more of the
+particulars.  
+
+In closing, creating an XML schema for an RDF stream so it can embedded
+in an OAI protocol requests seems, in my opinion, to not be the best
+approach.  It has the flavor of mixing apples and oranges.  If, indeed,
+the desire is to use some of the semantic expression functinality of
+RDF, then we in the OAI community need to consider our rather tight
+commitment to XML schema.  I'd love to see continued discussion about
+this.
+
+I hope this all helps.  Sorry for the very long note but there are some
+many intertwined issues, that trying to make them explicit is often the
+best approach.
+
+Carl
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Eric Lease Morgan [mailto:<A HREF="mailto:eric_morgan@ncsu.edu">eric_morgan@ncsu.edu</A>]
+</I>&gt;<i> Sent: Monday, April 30, 2001 8:53 PM
+</I>&gt;<i> To: <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: Re: [OAI-implementers] rdf
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Thomas G. Habing &lt;<A HREF="mailto:thabing@uiuc.edu">thabing@uiuc.edu</A>&gt; wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt;&gt; It sort of sounds to me that in order to create 
+</I>&gt;<i> alternative metadata formats
+</I>&gt;<i> &gt;&gt; to be used in OAI one must create an XSD -- a schema, and 
+</I>&gt;<i> RDF does not
+</I>&gt;<i> &gt;&gt; cleanly fit into schemas. Correct?
+</I>&gt;<i> &gt;&gt; 
+</I>&gt;<i> &gt; Yes and not entirely sure yet.  OAI requires an XML Schema 
+</I>&gt;<i> be available in
+</I>&gt;<i> &gt; order to validate (check the correctness) of any alternate 
+</I>&gt;<i> metadata formats.
+</I>&gt;<i> &gt; But, after sending the previous message, I was able to find 
+</I>&gt;<i> an XML Schema for
+</I>&gt;<i> &gt; RDF (<A HREF="http://www.w3.org/2000/07/rdf.xsd">http://www.w3.org/2000/07/rdf.xsd</A>), but I haven't had 
+</I>&gt;<i> a chance to test it
+</I>&gt;<i> &gt; yet.  I suspect it will require some tweaking in order to 
+</I>&gt;<i> work with the latest
+</I>&gt;<i> &gt; XML Schema spec (a moving target).  Plus, schemas for any 
+</I>&gt;<i> other namespaces
+</I>&gt;<i> &gt; that you intend to embed in the RDF will also have to be developed.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Anyway, this is something that we are actively pursuing, 
+</I>&gt;<i> and are happy to
+</I>&gt;<i> &gt; share once we figure out more ourselves.
+</I>&gt;<i> 
+</I>&gt;<i> This looks promising. I will explore it as well. Thank you, and don't
+</I>&gt;<i> hesitate to pass along anything you happen to learn.
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> Eric Lease Morgan
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000115.html">[OAI-implementers] rdf
+</A></li>
+	<LI> Next message: <A HREF="000117.html">[OAI-implementers] rdf
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#116">[ date ]</a>
+              <a href="thread.html#116">[ thread ]</a>
+              <a href="subject.html#116">[ subject ]</a>
+              <a href="author.html#116">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

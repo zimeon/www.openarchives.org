@@ -1,0 +1,149 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XSD file for qualified DC
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ann.apps%40man.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000535.html">
+   <LINK REL="Next"  HREF="000539.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XSD file for qualified DC
+   </H1>
+    <B>Ann Apps
+    </B> 
+    <A HREF="mailto:ann.apps%40man.ac.uk"
+       TITLE="[OAI-implementers] XSD file for qualified DC">ann.apps@man.ac.uk
+       </A><BR>
+    <I>Fri, 21 Jun 2002 10:16:05 GMT1BST</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000535.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+        <LI> Next message: <A HREF="000539.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#537">[ date ]</a>
+              <a href="thread.html#537">[ thread ]</a>
+              <a href="subject.html#537">[ subject ]</a>
+              <a href="author.html#537">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Tim,
+
+I will answer Carl's email when I've had time to think a bit more about it. 
+But I would like to make a few comments on yours, and in particular 
+correct a few DC encodings.
+&gt;<i> 
+</I>&gt;<i> &quot;dc:identifier is an unambiguous reference to a resource&quot; - citations
+</I>&gt;<i> are intended to be unambiguous references. 
+</I>I agree with this. But dc:identifier is the identifier of the resource  
+the metadata record describes. This applies also to any qualifiers 
+of dc:identifier. The proposed qualifier 'citation' is a qualifier of 
+dc:identifier. So using dc:identifier or dcterms:citation for a 
+reference does not comply with DC recommendations.
+
+&gt;<i> &quot;dc:relation is a reference
+</I>&gt;<i> to a related resource&quot; - I believe reference data falls under this
+</I>&gt;<i> description.
+</I>&gt;<i> 
+</I>This is alos my understanding.
+
+&gt;<i> &lt;a_dc&gt;
+</I>&gt;<i> &lt;dc:relation&gt;Smith, John (1992) Functional Principles in Functions v5
+</I>&gt;<i> 44-50&lt;/dc:relation&gt; &lt;/a_dc&gt;
+</I>&gt;<i> 
+</I>&gt;<i> Passed through a citation-aware gateway would produce:
+</I>&gt;<i> 
+</I>&gt;<i> &lt;a_dcq&gt;
+</I>&gt;<i> &lt;dcq:relation.references&gt;
+</I>&gt;<i> &lt;dcterms:citation&gt;Smith, John (1992) &quot;Functional Principles in
+</I>&gt;<i> Functions&quot; v5 44-50&lt;/dcterms:citation&gt;
+</I>&gt;<i> &lt;dcq:identifier.citation&gt;
+</I>&gt;<i> &lt;dc:creator&gt;Smith, John&lt;/dc:creator&gt;
+</I>&gt;<i> &lt;dc:date&gt;1992&lt;/dc:date&gt;
+</I>&gt;<i> &lt;dc:title&gt;Functional Principles in Functions&lt;/dc:title&gt;
+</I>&gt;<i> &lt;ja:volume&gt;5&lt;/ja:volume&gt;
+</I>&gt;<i> &lt;/dcq:identifier.citation&gt;
+</I>&gt;<i> &lt;/dcq:relation.references&gt;
+</I>&gt;<i> &lt;/a_dcq&gt;
+</I>&gt;<i> 
+</I>Several things about this example:
+
+The accepted way now of encoding DC in XML is to use the 
+qualifier name directly within the dcterms namespace (dcq is a 
+synonym for dcterms) without its parent element, and not to use 
+the dot notation. So &lt;dcq:relation.references&gt; would be written as 
+simply &lt;dcterms:references&gt;. 
+
+dcterms:citation is a proposed qualifier for dc:identifier not for 
+dc:relation (which already has the references qualifier), so shouldn't 
+be nested inside a dc:relation. So the reference as a string could 
+be encoded as:
+
+&lt;dcterms:references&gt;Smith, John (1992) &quot;Functional Principles in 
+Functions&quot; v5 44-50&lt;/dcterms:references&gt;
+
+After that: dcq:identifier.citation, better dcterms:citation, is not valid 
+DC nested within a dc:relation. It would be possible to propose a 
+similar sub-structure for dcterms:references to that proposed for 
+dcterms:citation but it is not currently a valid encoding. But the 
+proposed structure of dcterms:citation does not include the 'top-
+level' DC elements (creator, date). I assume ja:volume is from 
+Herbert's OpenURL email.
+
+Of course the encoding you present will be valid XML given 
+appropriate namespace declarations. But it is not valid DC because 
+it does not follow DC recommendations. So I would dispute 
+whether you should be calling it DC at all. This then becomes an 
+argument for Carl's suggested parallel format.
+
+&gt;<i> 
+</I>&gt;<i> I've no doubt the same can be achieved through OpenURL, but DC is more
+</I>&gt;<i> widely used (so the closer to DC, and the more use of DC elements, the
+</I>&gt;<i> greater the adoption will be, hence the greater the interoperability).
+</I>&gt;<i> 
+</I>The main reason DC is more widely used is that it's been around 
+much longer. OpenURL is about citations, DC isn't - it is a basic 
+core metadata. I agree that more use of DC will mean greater 
+adoption, simply because it has developed a reputation. But using 
+DC incorrectly will actually deter interoperability. Using OpenURL, 
+as it becomes more widely adopted will increase interoperability.
+
+I am trying to be objective about this, but should probably declare 
+my interests - I am chair of the DC-Citation working group and also 
+a member of the OpenURL NISO committee.
+
+Best wishes,
+	Ann
+
+
+
+--------------------------------------------------------------------------
+Mrs. Ann Apps. Senior Analyst - Research &amp; Development, MIMAS,
+     University of Manchester, Oxford Road, Manchester, M13 9PL, UK
+Tel: +44 (0) 161 275 6039    Fax: +44 (0) 0161 275 6040
+Email: <A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>  WWW: <A HREF="http://epub.mimas.ac.uk/ann.html">http://epub.mimas.ac.uk/ann.html</A>
+--------------------------------------------------------------------------
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000535.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+	<LI> Next message: <A HREF="000539.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#537">[ date ]</a>
+              <a href="thread.html#537">[ thread ]</a>
+              <a href="subject.html#537">[ subject ]</a>
+              <a href="author.html#537">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,691 @@
+<!doctype HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0069)http://www.openarchives.org/OAI_protocol/2.x/openarchivesprotocol.htm -->
+<html>
+
+
+<head>
+<meta http-equiv="Content-Language" content="en-us">
+<title>The Open Archives Initiative Protocol for Metadata Harvesting Migration 
+Instructions</title>
+<meta content="text/html; charset=windows-1252" http-equiv="Content-Type">
+<meta content="Microsoft FrontPage 5.0" name="GENERATOR">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<!-- saved from url=(0063)http://eweb.cs.cornell.edu/cdlrg/dienst/protocols/protocol5.htm -->
+</head>
+
+
+<body bgColor="#ffffff">
+
+
+
+
+<table border="0" borderColor="#ffffff" borderColorDark="#ffffff" borderColorLight="#ffffff" width="97%">
+  <caption><br>
+  </caption>
+  <tr>
+    <td align="middle" height="54" rowSpan="2" vAlign="center">
+    <a href="http://www.openarchives.org/">
+    <img align="absbottom" border="0" height="70" src="http://www.openarchives.org/images/OA100.gif" width="100"></a></td>
+    <td align="left" height="27" vAlign="center" width="87%">
+    <h1><b>The Open Archives Initiative Protocol for Metadata Harvesting<br>
+        Changes from OAI-PMH 1.1 to OAI-PMH 2.0</b></h1>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" height="27" vAlign="center" width="87%"> 
+      <h4><b>Protocol Version 2.0 of 2002-06-14<br />
+        Document Version 2002/06/09T16:43:00Z</b><br>
+        http://www.openarchives.org/OAI/migration.htm</h4>
+    </td>
+  </tr>
+  </table>
+<p><b>Editors</b></p>
+<p><u>The OAI Executive:</u><br>
+<a href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</a> &lt;<a href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</a>&gt; 
+-- <a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a><br>
+<a href="mailto:herbertv@cs.cornell.edu">Herbert Van de Sompel</a> &lt;<a href="mailto:hvdsomp@yahoo.com">hvdsomp@yahoo.com</a>&gt; 
+-- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+Library </a><br>
+<br>
+<u>From the OAI Technical Committee:</u><br>
+<a href="mailto:m.l.nelson@larc.nasa.gov">Michael Nelson</a> &lt;<a href="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</a>&gt; 
+-- <a href="http://www.larc.nasa.gov/">NASA - Langley Research Center</a><br>
+<a href="mailto:simeon@cs.cornell.edu">Simeon Warner</a> &lt;<a href="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</a>&gt; 
+-- <a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a></p>
+<p><b>Table of Contents</b></p>
+<p><a href="#Annotation">0. Introduction to this Annotation Document</a><a href="#Introduction"><br>
+1. Introduction</a> <br>
+<a href="#DefinitionsConcepts">2. Definitions and Concepts</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#harvester">2.1. Harvester</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Repository">2.2. Repository</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Item">2.3. Item</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#UniqueIdentifier">2.4. Unique Identifier</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#Record">2.5. Record</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#Set">2.6. Set</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#SelectiveHarvesting">2.7. Selective Harvesting</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="#SelectiveHarvestingandDatestamps">2.7.1 Selective Harvesting and Datestamps</a><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#SelectiveHarvestingandSets">2.7.2 Selective Harvesting and 
+Sets</a><br>
+<a href="#ProtocolFeatures">3. Protocol Features</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#HTTPembedding">3.1. HTTP Embedding of OAI-PMH requests</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#HTTPRequestFormat">3.1.1. HTTP Request Format</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#HTTPResponseFormat">3.1.2. HTTP Response Format</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#ResponseCompression">3.1.3. Response Compression</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#XMLResponse">3.2. XML Response Format</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#OAIPMHschema">3.2.1. XML Schema for Validating Responses to 
+OAI-PMH Requests</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#Dates">3.3. UTCdatetime</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#DatestampsRequests">3.3.1. UTCdatetime in Protocol Requests</a>
+<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#DatestampsResponses">3.3.2. UTCdatetime in Protocol Responses</a>
+<br>
+&nbsp;&nbsp;&nbsp; <a href="#MetadataNamespaces">3.4. metadataPrefix and Metadata Schema<br>
+</a>&nbsp;&nbsp;&nbsp; <a href="#FlowControl">3.5. Flow Control</a> <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#Idempotency">3.5.1 Idempotency of resumptionTokens</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#ErrorConditions">3.6. Error and Exception Conditions</a> <br>
+<a href="#ProtocolMessages">4. Protocol Requests and Responses</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#GetRecord">4.1. GetRecord</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#Identify">4.2. Identify</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#ListIdentifers">4.3. ListIdentifiers</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#ListMetadataFormats">4.4. ListMetadataFormats</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#ListRecords">4.5. ListRecords</a> <br>
+&nbsp;&nbsp;&nbsp; <a href="#ListSets">4.6. ListSets</a> <br>
+<a href="#dublincore">5. Dublin Core</a> <br>
+<a href="#ImpGuid">6. Implementation Guidelines</a> <br>
+<a href="#acknowledgements">Acknowledgements</a> <br>
+<a href="#DocumentHistory">Document History</a> </p>
+<h1>0. <a name="Annotation">Introduction to this Annotation Document</a></h1>
+<p>This document is intended as an accompanying document to the
+<a href="openarchivesprotocol.htm">
+specification</a> of the Open Archives 
+Initiative Protocol for Metadata Harvesting <FONT color=#000000>(referred to as 
+the OAI-PMH in the remainder of this document).&nbsp; The purpose is to assist 
+implementers migrating from OAI-PMH 1.1 to OAI-PMH 2.0.&nbsp; This document is 
+expressly <b>not</b> intended as a standalone document, nor is it intended for 
+use by new implementers who have no concerns with migration issues.</FONT></p>
+<p>The organization of the document, except for this section, exactly parallels 
+the structure of the OAI-PMH specification, thus making it easy for readers to 
+move back and forth between the two documents.&nbsp; Each section is organized 
+as two lists: </p>
+<ol>
+  <li><i>textual changes </i>- describing changes that were made to the 
+  specification for the sake of clarity or changes in terminology.&nbsp; </li>
+  <li><i>functional changes </i>- describing changes that were made to the 
+  protocol rules.</li>
+</ol>
+<p>For the sake of brevity, the respective list only appears if necessary.</p>
+<h1>1.&nbsp;<a name="Introduction"></a>Introduction</h1>
+<h4>Textual Changes</h4>
+<ul>
+  <li>Language from RFC 2119 clarifying required and optional aspects of the 
+  protocol is introduced.</li>
+  <li>Separation of non-core protocol features into a separate Implementation 
+  Guidelines is introduced.</li>
+  <li>Minor wording changes.</li>
+</ul>
+<h1><a name="DefinitionsConcepts"></a>2. Definitions and Concepts</h1>
+<h2>2.1 <a name="harvester"></a>Harvester</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This is a new section introducing a new term.</li>
+</ul>
+<h2>2.2&nbsp;<a name="Repository"></a>Repository</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This corresponds to section 2.1 in OAI-PMH 1.1.</li>
+  <li>The terminological differentiation between <i>resources</i>, <i>items</i>, 
+  and <i>records </i>is introduced.</li>
+</ul>
+<h2>2.3 <a name="Item"></a>Item</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This is a new section introducing a new term.</li>
+</ul>
+<h2>2.4&nbsp;<a name="UniqueIdentifier"></a>Unique Identifier</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This section corresponds to section 2.3 in OAI-PMH 1.1.</li>
+  <li>Clarification that the Unique Identifier identifies an item and that all 
+  disseminations of records in various metadata formats share the same unique 
+  identifier.&nbsp; </li>
+  <li>Clarification of the use of identifiers in the protocol within responses 
+  and requests.</li>
+  <li>References and description of the optional oai-identifier format for unique 
+    identifiers has been moved to an accompanying guidelines document and the 
+    syntax of that identifier is changed.</li>
+  <li>Additional wording changes.</li>
+</ul>
+<h2>2.5&nbsp;<a name="Record"></a>Record</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This section corresponds to section 2.2 in OAI-PMH 1.1.</li>
+  <li>Clarification of the distinction between the notion of a <i>record </i>and
+    its XML-formatted dissemination, which is the result of a harvesting
+    request.</li>
+  <li>Clarification that the unambiguous identification of a record is the 
+  combination of its identifier,
+  <font face="Courier New, Courier, mono" size="2">datestamp</font>, and
+  <font face="Courier New, Courier, mono" size="2">metadataPrefix</font>.</li>
+  <li>Introduction of a new use of the <i>about </i>container in a record: a 
+  data structure to express the <i>provenance</i> of a metadata record.&nbsp; 
+  This use is shown in an example.</li>
+</ul>
+<h4>Functional Changes</h4>
+<ul>
+  <li>Loosen the restriction on the tags of sets to allow any character safe in 
+  the query component of a URL.</li>
+  <li>The record header <b>must </b>indicate the set membership of the item.</li>
+</ul>
+<h2>2.6 <a name="Set"></a>Set</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This section corresponds to section 2.5 in OAI-PMH 1.1.</li>
+  <li>The text has been clarified to indicate that set organizations need not be 
+  hierarchical, but can be a simple, flat list.</li>
+  <li>The text has been changes to clarify the fact that a
+  <font face="Courier New, Courier, mono" size="2">setTag</font> is simply a 
+  component of the colon-separated list that is a
+  <font face="Courier New, Courier, mono" size="2">setSpec</font>.</li>
+  <li>Numerous clarifying textual changes.</li>
+</ul>
+<h4>Functional Changes</h4>
+<ul>
+  <li>If a repository supports sets, the header of a record <b>must </b>indicate 
+  the set membership of the item from which that record was disseminated.</li>
+  <li>Set membership of items <b>must </b>be returned as part disseminated 
+  records</li>
+  <li>Each set in a repository's set organization <b>may </b>include a
+  <font face="Courier New, Courier, mono" size="2">setDescription</font> for 
+  community specific XML-encoded data about the set.</li>
+</ul>
+<h2>2.7 <a name="SelectiveHarvesting"></a>Selective Harvesting</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This is a new section clarifying <i>selective harvesting </i>as a distinct
+    concept and the criteria that are available in OAI-PMH</li>
+</ul>
+<h3>2.7.1&nbsp;<a name="SelectiveHarvestingandDatestamps">Selective Harvesting and Datestamps</a></h3>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This section roughly corresponds to section 2.4 in OAI-PMH 1.1.&nbsp; It
+    clarifies the intended purpose of <i>datestamps</i> and their relationship
+    to selective harvesting.</li>
+  <li>Numerous wording changes to clarify how record modification, deletion, and
+    creation affects datestamps..</li>
+</ul>
+<h4>Functional Changes</h4>
+<ul>
+  <li>A deleted <i>status</i> is now returned by <font face="Courier New" color="#000000" size="2">ListIdentifiers</font>, in addition to
+    <font face="Courier New" color="#000000" size="2"> 
+  GetRecord</font> and <font face="Courier New" color="#000000" size="2">ListRecords</font>.&nbsp;
+    In all cases &quot;deleted&quot; means the withdrawal of availability of the
+    respective <i>record</i>.</li>
+  <li>Repositories <b>must</b> express the nature of their support of the <i>
+  deleted</i> status as part of the <font face="Courier New" color="#000000" size="2"> Identify</font> response.</li>
+  <li>Repositories <b>may</b> support datestamp-based selective harvesting at
+    the granularity of seconds.&nbsp; Repositories <b>must</b> support datestamp-based
+    selective harvesting at the granularity of days.&nbsp; Support for seconds
+    granularity is indicated in the response to Identify.</li>
+</ul>
+<h3>2.7.2&nbsp;<a name="Datestamp">SelectiveHarvestingandSets</a></h3>
+<h4>Textual Changes</h4>
+<ul>
+  <li>This is a new section that clarifies the intended purpose of sets and
+    their relationship to selective harvesting.</li>
+</ul>
+<h1>3.0&nbsp;<a name="ProtocolFeatures"></a>Protocol Features</h1>
+<h2><a name="HTTPembedding"></a>3.1 HTTP embedding of OAI-PMH 
+requests</h2>
+<h4>Textual Changes</h4>
+<ul>
+  <li>Minor editing changes.</li>
+</ul>
+<h3><a name="HTTPRequestFormat"></a>3.1.1 HTTP Request Format</h3>
+<h4>Textual Changes</h4>
+<ul>
+  <li>Minor editing changes.</li>
+</ul>
+<h4>Functional Changes</h4>
+<ul>
+  <li>Repositories <b>must </b>support the both the <font face="Courier New" size="2">GET</font> and
+<font face="Courier New" size="2">POST</font> method. </li>
+</ul>
+<h4><a name="http get encoding"></a>3.1.1.1
+<a name="Encoding an OAI protocol request in an HTTP GET">Encoding an OAI-PMH 
+request in a URL for an HTTP GET</a></h4>
+<h4>Textual Changes</h4>
+<ul>
+  <li>Minor editing changes.</li>
+</ul>
+<h4>3.1.1.2 Encoding an OAI-PMH request in an HTTP POST</h4>
+<h4>Textual Changes</h4>
+<ul>
+  <li>Minor editing changes.</li>
+</ul>
+<h4><a name="SpecialCharacters"></a>3.1.1.3 Encoding of special characters in 
+keyword arguments of OAI-PMH requests</h4>
+<h4>Textual Changes</h4>
+<ul>
+  <li>Minor editing changes.</li>
+</ul>
+
+
+<h3 align="left"><a name="HTTPResponseFormat"></a>3.1.2 HTTP Response Format</h3>
+
+
+<h4>Textual Changes</h4>
+<ul>
+  <li>Editing changes to remove duplication.</li>
+</ul>
+
+
+<h4 align="left"><a name="MIME Types"></a>3.1.2.1 Content-Type</h4>
+<h4 align="left">Textual Changes</h4>
+<ul>
+  <li>
+<p align="left">Information about the format of the XML response has been moved 
+to a new Section 3.2, &quot;XML Response Format&quot;.</li>
+</ul>
+
+
+<h4 align="left"><a name="Status Codes"></a>3.1.2.2 Status-Code</h4>
+
+
+<h4 align="left">Textual Changes</h4>
+<ul>
+  <li>
+  <p align="left">Major rewriting to reflect functional changes</li>
+</ul>
+
+
+<h4 align="left">Functional Changes</h4>
+<ul>
+  <li>
+  <p align="left">OAI-PMH errors are handled separately&nbsp; from HTTP 
+  <font face="Courier New, Courier, mono" size="2" color="#000000">
+  Status-Codes. </font></li>
+</ul>
+
+
+<h3 align="left">3.1.3 <a name="ResponseCompression"></a>Response Compression</h3>
+
+
+<h4 align="left">Textual Changes</h4>
+<ul>
+  <li>
+  <p align="left">This is a new section explaining new functionality.</li>
+</ul>
+
+
+<h4 align="left">Functional Changes</h4>
+<ul>
+  <li>
+  <p align="left">Repositories <b>may</b> use HTTP compression functionality, 
+  with some restrictions. </li>
+</ul>
+  <h2 align=left>3.2. <a name="XMLResponse"></a>XML Response Format</h2>
+  <h4 align="left">Textual Changes</h4>
+<ul>
+  <li>
+  <h4 align="left"> 
+  <font color="#000000">
+  <span style="font-weight: 400">This is a new section containing information 
+  that was formally in Section 3.1.2.1 &quot;Content Type&quot;.</span></font><font face="Courier New, Courier, mono" size="2" color="#000000">&nbsp;</font></h4>
+  </li>
+</ul>
+<h4 align="left">Functional Changes</h4>
+
+
+<ul>
+  <li>
+  <p align="left">The <font face="Courier New" color="#000000" size="2">
+  responseDate</font> included in every OAI response <b>must </b>be in UTC.</li>
+  <li>
+  <p align="left">The <font face="Courier New" size="2" color="#000000">
+  requestURL</font>  in Version 1.x is replaced by a <font face="Courier New" color="#000000" size="2">&lt;request&gt;</font>
+  tag that encodes the originating protocol request and its arguments.</li>
+  <li>
+  <p align="left">Error conditions are reported within the XML response</li>
+  <li>
+  <p align="left">Character references, rather than entity references, <b>must</b>
+  be used within the XML of responses.</li>
+</ul>
+  <h3 align="left">3.2.1 <a name="OAIPMHschema"></a>XML Schema for Validating
+  Responses to OAI-PMH Requests</h3>
+  <h4 align="left">Textual Changes</h4>
+<ul>
+  <li>
+    <p align="left">This is a new section introducing new functionality</li>
+</ul>
+<h4 align="left">Functional Changes</h4>
+<ul>
+  <li>
+    <p align="left">A single XML schema now exists to validate all OAI-PMH
+    responses; replacing the six separate schemata.</li>
+</ul>
+<h2 align="left"><a name="Dates"></a>3.3 UTCdatetime</h2>
+<h4 align="left">Textual Changes</h4>
+<ul>
+  <li>
+<p align="left">The name of the section is changed from &quot;Dates and Times&quot;</li>
+<li>
+<p align="left">Major changes to explain new functionality</li>
+<li>
+<p align="left">The section is divided into sub-sections to clarify request and 
+response handling of dates and times.</li>
+</ul>
+<h4 align="left">Functional Changes</h4>
+<ul>
+  <li>
+<p align="left">Dates and times are
+  <font color="#000000">uniformly encoded using <a href="http://">ISO8601</a> and are expressed in 
+  UTC throughout the protocol.&nbsp;</font></li>
+</ul>
+
+
+  <h3>3.3.1 <a name="DatestampsRequests"></a>UTCdatetime in Protocol Requests
+  </h3>
+
+
+  <h4>Textual Changes</h4>
+  <ul>
+    <li>This is a new section</li>
+  </ul>
+  <h4>Functional Changes</h4>
+  <ul>
+    <li>Repositories <b>may</b> support datestamp-based selective harvesting at
+      the granularity of seconds.&nbsp; Repositories <b>must</b> support
+      datestamp-based selective harvesting at the granularity of days.&nbsp;
+      Support for seconds granularity is indicated in the response to Identify.</li>
+    <li> <font color="#000000">A request by a harvester with finer granularity 
+    than that supported by a repository <b>must</b> produce an error.&nbsp; </font>
+    </li>
+  </ul>
+  <h3>3.3.2 <a name="DatestampsResponses"></a>UTCdatetime in Protocol Responses
+  </h3>
+  <h4>Textual Changes</h4>
+  <ul>
+    <li>This is a new section</li>
+  </ul>
+  <h4>Functional Changes</h4>
+  <ul>
+    <li>Datestamps in response to <font face="Courier New, Courier, mono" size="2">ListRecord</font>,
+      <font face="Courier New, Courier, mono" size="2">GetRecord</font> and <font face="Courier New, Courier, mono" size="2">
+    ListRecords</font> are expressed in UTC and <b>must</b> be expressed in 
+    the finest granularity supported by the repository.</li>
+    <li>The <font color="#000000">
+<font face="Courier New, Courier, mono" size="2">responseDate</font> included 
+    with every protocol response is expressed in UTC.&nbsp; This&nbsp;is encoded
+using the &quot;Complete date plus hours, minutes, and seconds&quot; variant of
+ISO8601 . This format is <font face="Courier New, Courier, mono" size="2">YYYY-MM-DDThh:mm:ssZ</font>.</font></li>
+    <li>A resumptionToken <b>may</b> include an <b>optional</b> argument
+<font face="Courier New, Courier, mono" size="2" color="#000000">expirationDate.</font></li>
+  </ul>
+
+
+ 
+      <h2><a name="Metadata Namespaces"></a>3.4
+            metadataPrefix and Metadata Schema </h2>
+  <h4>Textual Changes</h4>
+
+
+  <ul>
+    <li>Numerous textual changes to reflect modified functionality.</li>
+  </ul>
+  <h4>Functional Changes</h4>
+      <ul>
+        <li>The character restrictions of a
+        <font face="Courier New, Courier, mono" color="#000000" size="2">
+        metadataPrefix</font> are relaxed to allow <font color="#000000">any 
+        characters that are safe in a query component 
+        of a URI. </font></li>
+        <li>A metadataPrefix <b>must</b> be included as an argument to the ListIdentifiers 
+            request as a means of requesting headers of records that correspond
+          to the metadata format identified by the value provided for
+            <font face="Courier New, Courier, mono" size="2" color="#000000">metadataPrefix</font> 
+            argument.</li>
+        <li>The URL of the XML schema for the required Dublin Core metadata 
+        format is changed to <font color="#000000">http://www.openarchives.org/OAI/2.0/oai_dc/oai_dc.xsd.</font> 
+            The corresponding
+            XML namespace URI is <font color="#000000">
+        <a href="http://www.openarchives.org/OAI/2.0/oai_dc/">http://www.openarchives.org/OAI/2.0/oai_dc/</a>.</font></li>
+        <li>The protocol reserves the
+        <font face="Courier New, Courier, mono" size="2">metadataPrefix</font> '<font face="Courier New, Courier, mono" size="2">all</font>' 
+        for future use. Implementations <b>should not</b> use this
+        <font face="Courier New, Courier, mono" size="2">metadataPrefix</font>.</li>
+      </ul>
+   
+ 
+  
+  <h2 align="left"><a name="FlowControl"></a>3.5&nbsp;Flow Control</h2>
+  <h4>Textual Changes</h4>
+  <ul>
+    <li>Numerous textual changes to reflect modified functionality and to 
+    improve clarity.</li>
+  </ul>
+  <h4>Functional Changes</h4>
+  <ul>
+    <li><font size="2" color="#000000"><font face="Courier New, Courier, mono">
+    resumptionTokens</font></font> <b>may</b> be accompanied by three optional 
+    attributes to aid processing by a harvester:
+    <font face="Courier New" color="#000000" size="2">expirationDate</font>,
+    <font face="Courier New" color="#000000" size="2">completeListSize</font>, 
+    and <font face="Courier New" color="#000000" size="2">cursor</font>.</li>
+  </ul>
+      <h3>3.5.1 <a name="Idempotency">Idempotency</a> of resumptionTokens</h3>
+      <h4>Textual Changes</h4>
+      <ul>
+        <li>This is a new section defining new functionality.</li>
+  </ul>
+      <h4>Functional Changes</h4>
+      <ul>
+        <li>The behavior of
+    <font face="Courier New, Courier, mono" size="2" color="#000000">a 
+    resumptionToken </font>within the time range defined by its
+    <font face="Courier New" color="#000000" size="2">expirationDate </font>
+    <font color="#000000"><b>must</b> be</font> idempotent modulo changes in the 
+    underlying content of the repository.</li>
+  </ul>
+    <h2>3.6 <a name="ErrorConditions">Error Conditions</a></h2>
+  <h4>Textual Changes</h4>
+  <ul>
+    <li>This is a new section describing new functionality.</li>
+  </ul>
+  <h4>Functional Changes</h4>
+    <ul>
+      <li><font color="#000000">Repositories <b>must</b> indicate OAI-PMH errors, 
+    distinguished from HTTP
+    <font face="Courier New" size="2">status-codes</font>, by including one 
+    or more <font face="Courier New" size="2">error</font> elements in the 
+    response. </font></li>
+    </ul>
+  
+
+
+  <h1 align="left"><a name="ProtocolMessages"></a>4. Protocol Requests and 
+  Responses</h1>
+ 
+    <h4>Textual Changes</h4>
+    <ul>
+      <li>Numerous editing changes.</li>
+    </ul>
+ 
+    <h2>4.1. <a name="GetRecord"></a>GetRecord </h2>
+    <h4 align="left">Textual Changes</h4>
+    <ul>
+      <li>
+    <p align="left">Clarification that the required identifier argument is 
+    linked to the item from which a record is requested.</li>
+      <li>
+    <p align="left">Removal of text explaining restriction on the character set in 
+  the metadataPrefix argument (text is included in the appropriate section).</li>
+      <li>
+    <p align="left">The examples are changed to reflect changes in the protocol 
+    specification.</li>
+      <li>
+    <p align="left">Appropriate OAI-PMH error codes are listed.</li>
+      <li>
+        <p align="left">&nbsp;</li>
+  </ul>
+    <h4 align="left">Functional Changes</h4>
+    <ul>
+      <li>
+    <p align="left">The record header <b>must </b>indicate the set membership of the item.</li>
+      <li>
+    <p align="left">There is no longer an XML schema unique to this
+    request.&nbsp; All responses are validated via a single schema, described in
+    Section 3.2.1.</li>
+    </ul>
+  <h2>4.2. <a name="Identify"></a>Identify</h2>
+  
+  <h4>Textual Changes</h4>
+  <ul>
+    <li>Minor editing changes</li>
+    <li>The examples are changed to reflect changes in the protocol 
+    specification.</li>
+    <li>
+    <p align="left">Appropriate OAI-PMH error codes are listed.</li>
+  </ul>
+  <h4>Functional Changes</h4>
+  <ul>
+    <li>The <font face="Courier New, Courier, mono" size="2">Identify</font> 
+    response <b>must</b> return the repository's level of deleted item support.</li>
+    <li>The <font face="Courier New, Courier, mono" size="2">Identify</font> 
+    response <b>must</b> return the harvesting granularity supported by the 
+    repository.</li>
+    <li>The <font face="Courier New, Courier, mono" size="2">Identify</font> 
+    response <b>must</b> return the compression encodings, other than
+    <font face="Courier New, Courier, mono" size="2">Identity</font>, supported 
+    by the repository.</li>
+    <li>The <font face="Courier New, Courier, mono" size="2">Identify</font> 
+    response <b>must</b> return the guaranteed lower limit of all datestamps of 
+    items in the repository.</li>
+    <li>There is no longer an XML schema unique to this request.&nbsp; All
+      responses are validated via a single schema, described in Section 3.2.1.</li>
+  </ul>
+  
+    <h2>4.3. <a name="ListIdentifers"></a>ListIdentifiers</h2>
+    <h4 align="left">Textual Changes</h4>
+    <ul>
+      <li>
+    <p align="left">Editing changes to reflect changed functionality.</li>
+    <li>
+    <p align="left">Appropriate OAI-PMH error codes are listed.</li>
+  </ul>
+    <h4 align="left">Functional Changes</h4>
+    <ul>
+      <li>
+    <p align="left"><font face="Courier New" size="2" color="#000000">
+    The purpose of ListIdentifiers</font>  is reframed as an abbreviated version
+    of <font face="Courier New" size="2" color="#000000">ListRecords</font>.&nbsp;
+    As such, it returns only the headers of records, omitting the metadata
+    part.&nbsp;&nbsp;</li>
+<li>
+    <p align="left">The use of a
+    <font face="Courier New" color="#000000" size="2">metadataPrefix</font> 
+    argument is <i>required&nbsp;</i> to specify <font color="#000000">that </font>headers
+    should be returned only if the metadata format matching the supplied <font face="Courier New" color="#000000" size="2">metadataPrefix</font>
+    is available, or has been deleted.</li>
+  <li>
+    <p align="left">The  header <b>must </b>indicate the set membership of the item.</li>
+<li>
+    <p align="left">The <font face="Courier New" color="#000000" size="2">from</font> 
+    and <font face="Courier New" color="#000000" size="2">until</font> argument 
+    values are expressed in UTC.</li>
+<li>
+    <p align="left">There is no longer an XML schema unique to this
+    request.&nbsp; All responses are validated via a single schema, described in
+    Section 3.2.1.</li>
+</ul>
+    <h2>4.4. <a name="ListMetadataFormats"></a>ListMetadataFormats</h2>
+    <h4 align="left">Textual Changes</h4>
+    <ul>
+      <li>
+    <p align="left">Minor editing to indicate the association of metadata 
+    formats with an item.</li>
+      <li>
+    <p align="left">Appropriate OAI-PMH error codes are listed.</li>
+    </ul>
+    <h4 align="left">Functional Changes</h4>
+    <ul>
+      <li>
+    <p align="left">There is no longer an XML schema unique to this
+    request.&nbsp; All responses are validated via a single schema, described in
+    Section 3.2.1.</li>
+    </ul>
+    <h2>4.5. <a name="ListRecords"></a>ListRecords</h2>
+    <h4 align="left">Textual Changes</h4>
+    <ul>
+      <li>
+    <p align="left">Appropriate OAI-PMH error codes are listed.</li>
+      <li>
+    <p align="left">Removal of text explaining restriction on the character set in 
+  the metadataPrefix argument (text is included in the appropriate section).</li>
+    </ul>
+    <h4 align="left">Functional Changes</h4>
+    <ul>
+      <li>
+    <p align="left">The record header <b>must </b>indicate the set membership of the
+    item corresponding to the record.</li>
+      <li>
+    <p align="left">There is no longer an XML schema unique to this
+    request.&nbsp; All responses are validated via a single schema, described in
+    Section 3.2.1.</li>
+    </ul>
+    <h2>4.6. <a name="ListSets"></a>ListSets</h2>
+    <h4 align="left">Textual Changes</h4>
+    <ul>
+      <li>
+    <p align="left">Appropriate OAI-PMH error codes are listed.</li>
+    </ul>
+    <h4 align="left">Functional Changes</h4>
+    <ul>
+      <li>
+    <p align="left">Each set in a repository's set organization <b>may </b>include a
+  <font face="Courier New, Courier, mono" size="2">setDescription</font> for 
+  community specific XML-encoded data about the set.</li>
+      <li>
+    <p align="left">There is no longer an XML schema unique to this
+    request.&nbsp; All responses are validated via a single schema, described in
+    Section 3.2.1.</li>
+    </ul>
+    
+      <h2>5. <a name="dublincore"></a>Dublin Core</h2>
+      <h4>Textual Changes</h4>
+  
+    <ul>
+      <li>This is a new section replacing Appendix 1 in OAI-PMH version 1.1.</li>
+      <li>XML schema for metadata formats other than the required Dublin Core 
+      are moved to the Implementation Guidelines document.</li>
+    </ul>
+      <h4>Functional Changes</h4>
+      <ul>
+        <li>The XML schema for Dublin Core is based on (imports) an XML schema 
+        for the DC elements supported by DCMI. </li>
+    </ul>
+    
+      <h2><a name="ImpGuid"></a>6. Implementation Guidelines</h2>
+     
+      <h4>Textual Changes</h4>
+   
+      <ul>
+        <li>This is a new section providing a link to the Implementations 
+        Guidelines document.</li>
+        <li>Contents of Appendix 2 in OAI-PMH version 1.1 are moved to the 
+        Implementations Guidelines document.</li>
+      </ul>
+ 
+  <h2><a name="acknowledgements"></a>Acknowledgements</h2>
+  <P>Support for the development of the OAI-PMH and for other Open Archives 
+    Initiative activities comes from the <a href="http://www.dliglib.org">Digital 
+    Library Federation</a>, the <A href="http://www.cni.org/">Coalition for 
+    Networked Information</A>, and from the National Science Foundation through Grant No. IIS-9817416.</P>
+  <h2><a name="DocumentHistory"></a>Document History</h2>
+  
+<p><b>2002-06-14</b>: Release of this document, combined with the release of OAI-PMH 
+  version 2.0. 
+</body>
+
+
+</html>

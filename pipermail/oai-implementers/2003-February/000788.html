@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Perl regexp for validating 'identifier'
+ (anyURI) needed
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000787.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Perl regexp for validating 'identifier'
+ (anyURI) needed
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] Perl regexp for validating 'identifier'
+ (anyURI) needed">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Wed, 26 Feb 2003 10:49:03 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000787.html">[OAI-implementers] Perl regexp for validating 'identifier' (anyURI)
+ needed
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#788">[ date ]</a>
+              <a href="thread.html#788">[ thread ]</a>
+              <a href="subject.html#788">[ subject ]</a>
+              <a href="author.html#788">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, 26 Feb 2003 <A HREF="mailto:marinb@gmx.net">marinb@gmx.net</A> wrote:
+&gt;<i> I am sure somebody has already written/found a reasonable good perl regexp
+</I>&gt;<i> for validating the identifier parameter. I only could find one for decoding
+</I>&gt;<i> 
+</I>&gt;<i> m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|
+</I>&gt;<i> 
+</I>&gt;<i> but it is not suitable for validating as no check is made for allowed
+</I>&gt;<i> characters within each 'fragment'. There must be a better solution
+</I>&gt;<i> instead of extracting the fragments and validating each of them
+</I>&gt;<i> separately?
+</I>
+I don't know whether you should take the following as an admission or as a
+suggestion. The pattern you give above pretty closely matches that given
+in <A HREF="http://www.ietf.org/rfc/rfc2396.txt">http://www.ietf.org/rfc/rfc2396.txt</A> (appendix B) as a match for generic
+URI syntax. I don't see why you can't add further validation for allowed
+characeters although it will make the match rather unweildy.  However, if
+you are creating a repository (as opposed to a service that automatically
+harvests and re-exports records), then from a practical point of view it
+isn't essential to validate all possible URIs (even the XML Schema docs
+point out issues with this, see
+<A HREF="http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#anyURI">http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#anyURI</A>). What is
+essential is to do enough validation such that all identifiers you use are
+permitted and the resulting &quot;validated&quot; identifiers are safe to use as
+keys for lookup internally. This is acceptable because the OAI
+specification requires only that you report at least one error for an
+illegal request -- for an invalid identifier it might reasonably be
+badArgument and/or idDoesNotExist (see:  
+<A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ErrorConditions">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ErrorConditions</A>)
+
+If you are creating a service that automatically harvests and re-exports
+records then incoming records must be carefully validated to avoid
+re-exporting bad data.
+ 
+&gt;<i> Can anybody also tell me where is the problem with following request?
+</I>&gt;<i> 
+</I>&gt;<i> Response to this request did not give error code 'badArgument':
+</I>&gt;<i> verb=ListRecords&amp;metadataPrefix=oai_dc&amp;resumptionToken=junk&amp;until=1990-01-10
+</I>
+As Donna points out, this request is certainly bad and should give at
+least one error code (the most obvious being badArgument). However, since
+the specification allows servers to respond with any appropriate error
+element it could reasonably give badResumptionToken if doesn't recognize
+the resumptionToken 'junk'.
+ 
+Cheers,
+Simeon.
+
+&gt;<i> Would appreciate very much any help,
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Marin
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000787.html">[OAI-implementers] Perl regexp for validating 'identifier' (anyURI)
+ needed
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#788">[ date ]</a>
+              <a href="thread.html#788">[ thread ]</a>
+              <a href="subject.html#788">[ subject ]</a>
+              <a href="author.html#788">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

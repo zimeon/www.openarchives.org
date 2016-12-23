@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Sets and stuff, OAI 2.0
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:deridder%40cs.utk.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000486.html">
+   <LINK REL="Next"  HREF="000488.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Sets and stuff, OAI 2.0
+   </H1>
+    <B>deridder
+    </B> 
+    <A HREF="mailto:deridder%40cs.utk.edu"
+       TITLE="[OAI-implementers] Sets and stuff, OAI 2.0">deridder@cs.utk.edu
+       </A><BR>
+    <I>Tue, 14 May 2002 21:57:48 -0400 (EDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000486.html">[OAI-implementers] Sets and stuff, OAI 2.0
+</A></li>
+        <LI> Next message: <A HREF="000488.html">[OAI-implementers] Sets and stuff, OAI 2.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#487">[ date ]</a>
+              <a href="thread.html#487">[ thread ]</a>
+              <a href="subject.html#487">[ subject ]</a>
+              <a href="author.html#487">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Gosh, Hussein, I guess you just have to spell things out for
+people like me.
+
+  Thank you for the clarification!  I simply did not read it
+that way.  As I did not know the reasons behind the choices of
+the verbs (and their arguments)-- and the examples for each
+seem to always differ in fields returned (in the specs)--- I
+supposed that ListRecord and GetRecord were completely different
+animals, instead of one being a subset of the other.
+
+  Good thing I asked!!
+
+   ;-)
+
+  --jody
+
+ On Tue, 14
+May
+2002, Hussein Suleman wrote:
+
+&gt;<i> hi
+</I>&gt;<i>
+</I>&gt;<i> hmmm ... an interesting interpretation ...
+</I>&gt;<i>
+</I>&gt;<i> but as most people understand the protocol (v1.0, v1.1, and v2.0),
+</I>&gt;<i> a record (everything between &lt;record&gt; and &lt;/record&gt;) as returned by
+</I>&gt;<i> ListRecords should be identical to the same record requested by its
+</I>&gt;<i> identifier using GetRecord, for a given metadataPrefix (assuming no
+</I>&gt;<i> dynamic updating between requests).
+</I>&gt;<i>
+</I>&gt;<i> so, if i submit a ListRecords request for oai_dc and i get a record with
+</I>&gt;<i> identifier xyz, i can then submit a GetRecord request with xyz/oai_dc
+</I>&gt;<i> and get the same identical record back. most service providers and
+</I>&gt;<i> harvesters will make this assumption so even if it is not explicitly
+</I>&gt;<i> stated in the protocol spec, it may be prudent to adopt it as best
+</I>&gt;<i> practice :)
+</I>&gt;<i>
+</I>&gt;<i> ttfn
+</I>&gt;<i> ----hussein
+</I>&gt;<i>
+</I>&gt;<i> deridder wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; Thank you, Alan!  (and Hussein!)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I will certainly consider your hack, as it's a huge improvement over
+</I>&gt;<i> &gt; redundant records or multiple selects.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Right now, what we put in ListRecord returns varies;  I'd like to
+</I>&gt;<i> &gt; standardize it, but there appear to be no guidelines.  I would like to
+</I>&gt;<i> &gt; return less than GetRecord, but am wondering if perhaps I should return
+</I>&gt;<i> &gt; the whole enchilada;  currently, the most we return is everything but the
+</I>&gt;<i> &gt; &quot;description&quot; fields (for some sets).
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; If ListRecords is used by harvesters to gather entire records quickly,
+</I>&gt;<i> &gt; and GetRecord is NOT used much (cumbersome, one record at a time), then
+</I>&gt;<i> &gt; I should want to include all of the record fields.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; If however, harvesters are using &lt;subject&gt; fields (or some such) in
+</I>&gt;<i> &gt; ListRecord returns to determine what they want to get as full records
+</I>&gt;<i> &gt; --and ignoring all else -- returning entire records is not worth the
+</I>&gt;<i> &gt; time and work for either end... and then &lt;subject&gt; fields would be
+</I>&gt;<i> &gt; very important (to me) to include.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The 2.0 ListRecord examples only contain the following fields:
+</I>&gt;<i> &gt; title, creator, type, source, language, identifier;  but Hussein tells
+</I>&gt;<i> &gt; me there are no actual guidelines for this.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   --jody
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Wed, 15 May 2002,
+</I>&gt;<i> &gt; Alan Kent wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;&gt;On Tue, May 14, 2002 at 05:58:15PM -0400, deridder wrote:
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;The dilemma is: how to implement the database to return records in a
+</I>&gt;<i> &gt;&gt;&gt;timely manner, and be scalable.
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;If I allow a record to be in 0-5 sets, and the set fields are in the
+</I>&gt;<i> &gt;&gt;&gt;same table as the record fields, 5 selects on the same table are required
+</I>&gt;<i> &gt;&gt;&gt;to respond to a single ListRecord request with set argument.
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;If I put the sets in a secondary table, pull out all the identifiers for
+</I>&gt;<i> &gt;&gt;&gt;a given set (same request), then when I have a request for ListRecords
+</I>&gt;<i> &gt;&gt;&gt;*without* a set argument, I need to do a select on the set table for each
+</I>&gt;<i> &gt;&gt;&gt;record returned in the ListRecord response.
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;I actually don't have a suggestion here. The database engine I am using
+</I>&gt;<i> &gt;&gt;(ours! :-) supports nested repeating structures, so we can store and index
+</I>&gt;<i> &gt;&gt;multiple sets directly in the record without problem. For a relational
+</I>&gt;<i> &gt;&gt;database, what you are saying makes sense.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;If you want a hacky suggestion, you could have a field in the same table
+</I>&gt;<i> &gt;&gt;as the record which contains all the set names (separated by say spaces
+</I>&gt;<i> &gt;&gt;or commas) so when you fetch the record you can return the set names
+</I>&gt;<i> &gt;&gt;efficently, but to allow efficient querying have a redundant separate table
+</I>&gt;<i> &gt;&gt;of set names which can be joined back to the main record table. But I
+</I>&gt;<i> &gt;&gt;am not speaking with any experience here.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;Maybe I should forget the sets altogether.  For those of you with
+</I>&gt;<i> &gt;&gt;&gt;harvesters and search engines:  how do you use the repository sets
+</I>&gt;<i> &gt;&gt;&gt; (or do you?)
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;Our intent is to left our implementation be configured so the person
+</I>&gt;<i> &gt;&gt;controlling the harvest selects which sets to use. The idea as I
+</I>&gt;<i> &gt;&gt;understand it is so a Museum with lots of different sorts of information
+</I>&gt;<i> &gt;&gt;can make it all available, but a physics department could harvest from
+</I>&gt;<i> &gt;&gt;lots of different sources information only relating to physics (eg:
+</I>&gt;<i> &gt;&gt;how physics are used in carbon dating or something). But its up to
+</I>&gt;<i> &gt;&gt;the data provider to define sets, then up to the harvester to decide
+</I>&gt;<i> &gt;&gt;which sets look interesting.
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;&gt;(Oh, and if you can recommend which ListRecord fields you have found
+</I>&gt;<i> &gt;&gt;&gt;useful, I'd like to hear about that also;  I'd like to standardize my
+</I>&gt;<i> &gt;&gt;&gt;returns.)
+</I>&gt;<i> &gt;&gt;&gt;
+</I>&gt;<i> &gt;&gt;I plan to keep the whole &lt;record&gt; in the database and so let applications
+</I>&gt;<i> &gt;&gt;use what they want out of it. So I guess I would encourage you to return
+</I>&gt;<i> &gt;&gt;as much as you can. Is there some specific areas you had in mind?
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;Hope this was a little help,
+</I>&gt;<i> &gt;&gt;Alan
+</I>&gt;<i> &gt;&gt;--
+</I>&gt;<i> &gt;&gt;Alan Kent (mailto:<A HREF="mailto:ajk@mds.rmit.edu.au">ajk@mds.rmit.edu.au</A>, <A HREF="http://www.mds.rmit.edu.au/~ajk/">http://www.mds.rmit.edu.au/~ajk/</A>)
+</I>&gt;<i> &gt;&gt;Project: TeraText Technical Director, InQuirion Pty Ltd (www.inquirion.com)
+</I>&gt;<i> &gt;&gt;Postal: Multimedia Database Systems, RMIT, GPO Box 2476V, Melbourne 3001.
+</I>&gt;<i> &gt;&gt;Where: RMIT MDS, Bld 91, Level 3, 110 Victoria St, Carlton 3053, VIC Australia.
+</I>&gt;<i> &gt;&gt;Phone: +61 3 9925 4114  Reception: +61 3 9925 4099  Fax: +61 3 9925 4098
+</I>&gt;<i> &gt;&gt;_______________________________________________
+</I>&gt;<i> &gt;&gt;OAI-implementers mailing list
+</I>&gt;<i> &gt;&gt;<A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt;&gt;<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ***********************************************************
+</I>&gt;<i> &gt;    PGPKey: <A HREF="http://www.cs.utk.edu/~deridder/jd-pgp.txt">http://www.cs.utk.edu/~deridder/jd-pgp.txt</A>
+</I>&gt;<i> &gt; ***********************************************************
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> ======================================================================
+</I>&gt;<i> hussein suleman - <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> - vtcs - <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+</I>&gt;<i> ======================================================================
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+
+***********************************************************
+   PGPKey: <A HREF="http://www.cs.utk.edu/~deridder/jd-pgp.txt">http://www.cs.utk.edu/~deridder/jd-pgp.txt</A>
+***********************************************************
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000486.html">[OAI-implementers] Sets and stuff, OAI 2.0
+</A></li>
+	<LI> Next message: <A HREF="000488.html">[OAI-implementers] Sets and stuff, OAI 2.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#487">[ date ]</a>
+              <a href="thread.html#487">[ thread ]</a>
+              <a href="subject.html#487">[ subject ]</a>
+              <a href="author.html#487">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <title>OAI-PMH Implementation Guidelines - XML schema to hold provenance information in the "about" part of a record</title>
+  <style type="text/css">
+    body { color: black; background: white; }
+    code { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+    em { color: black; background: #FF6666; }
+  </style>
+<META content="Open Archives Initiative - Protocol for Metadata Harvesting - v.2.0" name=DC.title>
+<META content="Lagoze, Carl" name=DC.creator>
+<META content="Van de Sompel, Herbert" name=DC.creator>
+<META content="Nelson, Michael" name=DC.creator>
+<META content="Warner, Simeon" name=DC.creator>
+<META content=2002-06-01 name=DC.date>
+</head>
+<body>
+<table summary="Logo and heading" border="0" width="100%">
+<tr>
+<td ALIGN="CENTER" ROWSPAN="2">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" BORDER="0" height="70" width="100" align="BOTTOM" /></a>
+</td>
+<td ALIGN="LEFT" WIDTH="87%">
+<h2>Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting</h2>
+<h1>-&nbsp;XML schema to hold provenance information in the "about" part of a record</h1>
+</td>
+</tr>
+<tr>
+    <td ALIGN="LEFT" WIDTH="87%" height="38"> <b> Protocol Version 2.0 of 2002-06-14<br />
+      Document Version 2002/07/02T02:39:00Z<br />
+      http://www.openarchives.org/OAI/2.0/guidelines-provenance.htm</b> </td>
+</tr>
+</table>
+
+<P><B>Editors</B></P>
+<P> <U>The OAI Executive:</U> <BR />
+  <A href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</A> &lt;<A href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt; 
+  -- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A> 
+  <BR />
+  <a href="mailto:herbertv@cs.cornell.edu">Herbert Van de Sompel</a> &lt;<a href="mailto:herbertv@lanl.gov">herbertv@lanl.gov</a>&gt; 
+  -- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+  Library </a></P>
+<P>
+<U>From the OAI Technical Committee:</U>
+<BR />
+<A href="mailto:m.l.nelson@larc.nasa.gov">Michael Nelson</A> 
+&lt;<A href="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>&gt; 
+-- <A href="http://www.larc.nasa.gov/">NASA - Langley Research Center</A>
+<BR />
+<A href="mailto:simeon@cs.cornell.edu">Simeon Warner</A> 
+&lt;<A href="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</A>&gt; 
+-- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A>
+</P>
+
+<p><b>
+This document is one part of the 
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h1>XML schema to hold provenance information in the "about" part of a record</h1>
+<p>
+One possible type of data provider is an <i>aggregator</i>
+that maintains a repository which disseminates metadata that originate
+from other data providers (repositories that themselves support OAI-PMH).
+The relationship of an <i>aggregator</i> and <i>originating repository</i>
+may, in fact be recursive. For example aggregator "A1" may harvest
+records from repositories "R1" and "R2", and aggregator "A2" may, in turn,
+harvest records from aggregator "A1".
+</p>
+<p>
+In the case of such redistribution, the aggregator
+may include information about the provenance of the metadata record in
+the <i>about</i> container. The following XML schema defines a simple 
+format for provenance information. The schema defines a <code>provenance</code>
+container consisting of a sequence of <code>originDescription</code>
+elements that identify the provenance of the metadata record; i.e. the 
+chain of originating repositories. The expectation is that each aggregator 
+will append the latest <code>originDescription</code> onto the list. 
+Each <code>originDescription</code> contains the following information:
+</p>
+<ul>
+<li><code>baseURL</code>
+- the <a href="openarchivesprotocol.htm#HTTPRequestFormat">baseURL</a> of the 
+originating repository from which the metadata record was harvested.</li>
+
+<li>
+<code>identifier</code>
+- the <a href="openarchivesprotocol.htm#UniqueIdentifier">unique identifier</a> 
+of the item in the originating repository from which the metadata record 
+was disseminated.</li>
+
+<li>
+<code>datestamp</code>
+- the <a href="openarchivesprotocol.htm#Datestamp">datestamp</a> of the 
+metadata record disseminated by the originating repository.</li>
+
+<li>
+<code>metadataNamespace</code>
+- the <a href="openarchivesprotocol.htm#MetadataNamespaces">XML namespace URI</a>
+of the metadata format of the record harvested from the originating 
+repository.</li>
+
+<li>
+<code>originDescription</code>
+- an optional <code>originDescription</code> block which was that obtained when
+the metadata record was harvested. A set of nested <code>originDescription</code> 
+blocks will describe provenance over a sequence of harvests.</li>
+</ul>
+<p>
+Each <code>originDescription</code> must also have the following two 
+attributes which relate to the act of harvesting and any subsequent 
+processing:
+</p>
+<ul>
+<li>
+<code>harvestDate</code>
+- the <a href="openarchivesprotocol.htm#DatestampsResponses">responseDate</a>
+of the OAI-PMH response that resulted in the record being harvested from the 
+originating repository.</li>
+
+<li>
+<code>altered</code>
+- a boolean value which must be <code>true</code> if the harvested record 
+was altered before being disseminated again.
+</li>
+</ul>
+<p>
+Note that the formats (granularity) of the <code>datestamp</code> and 
+<code>responseDate</code> values must be preserved when they are included 
+in the <code>datestamp</code> and <code>harvestDate</code> elements 
+respectively. They must not be changed to match the granularity of the 
+local repository.
+</p>
+
+<table summary="XML schema for provenance" BORDER=2 WIDTH="80%" BGCOLOR="#CCCCCC" >
+<tr>
+<td>
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;schema targetNamespace="http://www.openarchives.org/OAI/2.0/provenance" 
+  xmlns="http://www.w3.org/2001/XMLSchema" 
+  xmlns:provenance="http://www.openarchives.org/OAI/2.0/provenance" 
+  elementFormDefault="qualified" attributeFormDefault="unqualified"&gt;
+
+  &lt;annotation&gt;
+    &lt;documentation&gt;
+      Schema for the description of the provenance of metadata that is 
+      re-exposed by an OAI repository, i.e. metadata that has previously 
+      been harvested before being exposed by the repository.
+      See: http://www.openarchives.org/OAI/2.0/guidelines-branding.htm
+      Validated with http://www.w3.org/2001/03/webdata/xsv on 16May2002
+      Simeon Warner - &#36;Date: 2002/05/16 19:48:39 $
+     &lt;/documentation&gt;
+   &lt;/annotation&gt;
+
+  &lt;element name="provenance"&gt;
+    &lt;complexType&gt;
+      &lt;sequence&gt;
+        &lt;element name="originDescription"
+                 type="provenance:originDescriptionType"/&gt;
+      &lt;/sequence&gt;
+    &lt;/complexType&gt;
+  &lt;/element&gt;
+
+  &lt;complexType name="originDescriptionType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="baseURL" type="anyURI"/&gt;
+      &lt;element name="identifier" type="anyURI"/&gt;
+      &lt;element name="datestamp" type="provenance:UTCdatetimeType"/&gt;
+      &lt;element name="metadataNamespace" type="anyURI"/&gt;
+      &lt;element name="originDescription" minOccurs="0" 
+               type="provenance:originDescriptionType"/&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="harvestDate" type="provenance:UTCdatetimeType" use="required"/&gt;
+    &lt;attribute name="altered" type="boolean" use="required"/&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="UTCdatetimeType"&gt;
+    &lt;union memberTypes="date dateTime"/&gt;
+  &lt;/simpleType&gt;
+
+&lt;/schema&gt;
+</pre>
+</td>
+</tr>
+<tr>
+<td>This Schema is available at <a href="http://www.openarchives.org/OAI/2.0/provenance.xsd">http://www.openarchives.org/OAI/2.0/provenance.xsd</a></td>
+</tr>
+</table>
+
+<h2>Examples</h2>
+<p>
+The following example shows the use of this <code>provenance</code>
+container in an <code>about</code>
+part that would be associated with a metadata record.  
+The example shows a two element provenance chain with the record originally
+having been harvested from a repository with 
+<code>baseURL</code> http://some.oa.org. It was then harvested and subsequently
+disseminated by a repository with <code>baseURL</code> 
+http://the.oa.org. The <code>metadataNamespace</code> elements indicate
+that the metadata format has not been changed. 
+The <code>altered</code> attributes indicate that the metadata was 
+not altered between the first harvest and following dissemination,
+but was altered between the second harvest and following dissemination.
+</p> 
+<table summary="Example provenance response" BORDER=2 WIDTH="71%" BGCOLOR="#CCCCCC" >
+<tr>
+<td>
+<pre>
+&lt;about&gt;
+&lt;provenance xmlns="http://www.openarchives.org/OAI/2.0/provenance"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/provenance
+                      http://www.openarchives.org/OAI/2.0/provenance.xsd"&gt;
+
+&lt;originDescription harvestDate="2002-02-02T14:10:02Z" altered="true"&gt;
+  &lt;baseURL&gt;http://the.oa.org&lt;/baseURL&gt;
+  &lt;identifier&gt;oai:r2.org:klik001&lt;/identifier&gt;
+  &lt;datestamp&gt;2002-01-01&lt;/datestamp&gt;
+  &lt;metadataNamespace&gt;http://www.openarchives.org/OAI/2.0/oai_dc/&lt;/metadataNamespace&gt;
+  &lt;originDescription harvestDate="2002-01-01T11:10:01Z" altered="false"&gt;
+    &lt;baseURL&gt;http://some.oa.org&lt;/baseURL&gt;
+    &lt;identifier&gt;oai:r2.org:klik001&lt;/identifier&gt;
+    &lt;datestamp&gt;2001-01-01&lt;/datestamp&gt;
+    &lt;metadataNamespace&gt;http://www.openarchives.org/OAI/2.0/oai_dc/&lt;/metadataNamespace&gt;
+  &lt;/originDescription&gt;
+&lt;/originDescription&gt;
+
+&lt;/provenance&gt;
+&lt;/about&gt;
+</pre>
+</td>
+</tr>
+</table>
+
+<p>
+The following example shows a sequence of requests and responses leading to
+a response which contains a <code>provenance</code> container.
+</p>
+<table summary="Example requests and provenance response" BORDER=2 WIDTH="71%" BGCOLOR="#CCCCCC" >
+<tr>
+<td>
+Consider a request from <code>crosswalker.oa.org</code>:
+<pre>
+http://odd.oa.org?verb=GetRecord&amp;identifier=oai:odd.oa.org:z1x2y3
+                 &amp;metadataPrefix=odd_fmt
+</pre>
+and the following response from <code>odd.oa.org</code>:
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+&lt;GetRecord xmlns="http://www.openarchives.org/OAI/2.0/OAI-PMH" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/OAI-PMH 
+           http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt; 
+  &lt;responseDate&gt;2002-02-08T08:55:46&lt;/responseDate&gt;
+  &lt;request verb="GetRecord" metadataPrefix="odd_fmt" 
+           identifier="oai:odd.oa.org:z1x2y3"&gt;http://odd.oa.org&lt;/request&gt;
+  &lt;record&gt; 
+    &lt;header&gt;
+      &lt;identifier&gt;oai:odd.oa.org:z1x2y3&lt;/identifier&gt; 
+      &lt;datestamp&gt;1999-08-07T06:05:04Z&lt;/datestamp&gt;
+    &lt;/header&gt;
+    &lt;metadata&gt;
+      &lt;md:odd_fmt ...&gt;
+        ...metadata record in odd_fmt...
+      &lt;/md:odd_fmt&gt; 
+    &lt;/metadata&gt;
+  &lt;/record&gt;
+&lt;/GetRecord&gt;
+</pre>
+Imagine that <code>crosswalker.oa.org</code> cross-walks the metadata from 
+<code>odd_fmt</code> into <code>oai_marc</code> and then re-exposes the 
+new metadata record with a new identifier. 
+<br />
+<br />
+A request from <code>getmarc.oa.org</code>:
+<pre>
+http://crosswalker.oa.org?verb=GetRecord
+                         &amp;identifier=oai:crosswalker.oa.org:a9b8c7
+                         &amp;metadataPrefix=oai_marc
+</pre>
+might then yield the following response from <code>crosswalker.oa.org</code>:
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+&lt;GetRecord xmlns="http://www.openarchives.org/OAI/2.0/OAI-PMH" 
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+           xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/OAI-PMH 
+           http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt; 
+  &lt;responseDate&gt;2002-02-08T08:55:46Z&lt;/responseDate&gt;
+  &lt;request verb="GetRecord" metadataPrefix="oai_marc"
+           identifier="oai:crosswalker.oa.org:a9b8c7"&gt;http://crosswalker.oa.org&lt;/request&gt;
+  &lt;record&gt; 
+    &lt;header&gt;
+      &lt;identifier&gt;oai:crosswalker.oa.org:a9b8c7&lt;/identifier&gt; 
+      &lt;datestamp&gt;2002-02-09T01:15:24Z&lt;/datestamp&gt;
+    &lt;/header&gt;
+    &lt;metadata&gt;
+      &lt;marc:oai_marc ...&gt;
+        ...metadata record in oai_marc...
+      &lt;/marc:oai_marc&gt; 
+    &lt;/metadata&gt;
+    &lt;about&gt;
+      &lt;provenance xmlns="http://www.openarchives.org/OAI/2.0/provenance"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/provenance
+                            http://www.openarchives.org/OAI/2.0/provenance.xsd"&gt;
+        &lt;originDescription harvestDate="2002-02-08T08:55:46Z" altered="true"&gt;
+          &lt;baseURL&gt;http://odd.oa.org&lt;/baseURL&gt;
+          &lt;identifier&gt;oai:odd.oa.org:z1x2y3&lt;/identifier&gt;
+          &lt;datestamp&gt;1999-08-07T06:05:04Z&lt;/datestamp&gt;
+          &lt;metadataNamespace&gt;http://odd.oa.org/odd_fmt&lt;/metadataNamespace&gt;
+        &lt;/originDescription&gt;
+      &lt;/provenance&gt;
+    &lt;/about&gt;
+  &lt;/record&gt;
+&lt;/GetRecord&gt;
+</pre>
+</td>
+</tr>
+</table>
+
+<h2><a name="acknowledgements"></a>Acknowledgements</h2>
+<p>
+Support for the development of the OAI-PMH and for other Open Archives 
+Initiative activities comes from the 
+<A href="http://www.diglib.org/">Digital Library Federation</A>, the 
+<A href="http://www.cni.org/">Coalition for Networked Information</A>, 
+and from the National Science Foundation through Grant No. IIS-9817416.
+Individuals who have played a significant role in the development of 
+OAI-PMH version 2.0 are 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged in the protocol document</a>.
+</p>
+
+<h2><a name="DocumentHistory">Document History</a></h2>
+<p>
+<b>2002-06-14</b>: Release of this document, combined with the release of OAI-PMH 
+version 2.0.
+<br />
+<b>2002-07-02</b>: Corrected to follow OAI-PMH version 2.0 
+<code>datestamp</code> and <code>oai-identifier</code> specifications and to 
+change the identifier in the example where the metadata is altered.
+</p>
+
+<!--
+LocalWords: aggregator baseURL PMH originDescription xmlns htm xml UTF
+LocalWords: openarchivesprotocol HTTPRequestFormat UniqueIdentifier
+LocalWords: datestamp Datestamp metadataNamespace namespace MetadataNamespaces
+LocalWords: URI DatestampsResponses harvestDate responseDate boolean
+-->
+<!--START-FOOTER-->
+</body>
+</html>

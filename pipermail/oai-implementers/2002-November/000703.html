@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] deep nesting problem in DP9
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000702.html">
+   <LINK REL="Next"  HREF="000704.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] deep nesting problem in DP9
+   </H1>
+    <B>Young,Jeff
+    </B> 
+    <A HREF="mailto:jyoung%40oclc.org"
+       TITLE="[OAI-implementers] deep nesting problem in DP9">jyoung@oclc.org
+       </A><BR>
+    <I>Tue, 12 Nov 2002 13:18:59 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000702.html">[OAI-implementers] deep nesting problem in DP9
+</A></li>
+        <LI> Next message: <A HREF="000704.html">[OAI-implementers] deep nesting problem in DP9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#703">[ date ]</a>
+              <a href="thread.html#703">[ thread ]</a>
+              <a href="subject.html#703">[ subject ]</a>
+              <a href="author.html#703">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Let me add a bit of the context to this. If DP9 knew what all the
+resumptionTokens looked like up front, it could generate an HTML page
+containing a complete list of resumptionToken URLs as the front page for a
+repository that it presents to a crawler. This way the crawler only sees a
+total of 4 levels: 1) the dp9 gateway, 2) the complete list of harvest URLs
+for a particular repository, 3) an HTML rendering of a ListIdentifiers
+response, and 4) an HTML rendering of a GetRecord response.
+
+Jeff
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Xiaoming Liu [mailto:<A HREF="mailto:liu_x@cs.odu.edu">liu_x@cs.odu.edu</A>]
+</I>&gt;<i> Sent: Tuesday, November 12, 2002 1:05 PM
+</I>&gt;<i> To: <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: [OAI-implementers] deep nesting problem in DP9
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> I have a question regarding DP9 service and hope to solicit 
+</I>&gt;<i> some consensus
+</I>&gt;<i> in OAI community (After discussions with Jeff Young). DP9 is a gateway
+</I>&gt;<i> service which allows general search engines, (e.g. Google, Inktomi) to
+</I>&gt;<i> index OAI-PMH-compliant archives. For more information please see 
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://www.cs.odu.edu/~liu_x/dp9/dp9.pdf">http://www.cs.odu.edu/~liu_x/dp9/dp9.pdf</A>
+</I>&gt;<i> <A HREF="http://dlib.cs.odu.edu/dp9">http://dlib.cs.odu.edu/dp9</A>
+</I>&gt;<i> 
+</I>&gt;<i> DP9 uses resumptionToken to handle large archive, a 
+</I>&gt;<i> resumptionToken link
+</I>&gt;<i> is put at the bottom of each listidentifiers screen. Each time a web
+</I>&gt;<i> crawler follows a resumptionToken link, it takes them down 
+</I>&gt;<i> another level
+</I>&gt;<i> in the page hierarchy. In the case of XTCat (4M+) records, 
+</I>&gt;<i> there will be
+</I>&gt;<i> 8000+ pages deep. But actually most crawlers will only do 4~5 
+</I>&gt;<i> levels, so
+</I>&gt;<i> there will never be a chance of whole XTCat being harvested. 
+</I>&gt;<i> 
+</I>&gt;<i> Jeff and me discussed this question and came up several possible
+</I>&gt;<i> solutions. All of them require some levels of actions in data provider
+</I>&gt;<i> side, We hope the final solution is &quot;general&quot; and that's why 
+</I>&gt;<i> I post it in
+</I>&gt;<i> the list.
+</I>&gt;<i> 
+</I>&gt;<i> 1) Create many small bins based  on timestamp and sets, the DP9, of
+</I>&gt;<i> course, must be intelligent to do the correct split. This 
+</I>&gt;<i> probably can be
+</I>&gt;<i> done by a partial pre-harvest. This solution should be 
+</I>&gt;<i> applied for most
+</I>&gt;<i> data providers. But it fails if a data provider has a large 
+</I>&gt;<i> number records
+</I>&gt;<i> with same datestamp. 
+</I>&gt;<i>   pro) no change in OAI spec.
+</I>&gt;<i>   con) data provider should not have a large number of 
+</I>&gt;<i> records with same
+</I>&gt;<i> datestamp.
+</I>&gt;<i> 
+</I>&gt;<i> (snippet from Jeff's email)
+</I>&gt;<i> 2) Create a new verb named ListResumptionTokens that
+</I>&gt;<i> returns a complete set of stateless resumptionTokens.
+</I>&gt;<i>   pro) easy to implement in DP9 side.
+</I>&gt;<i>   con) requires modification of the OAI spec.
+</I>&gt;<i> 
+</I>&gt;<i> 3) Define a new &lt;description&gt; element to be returned in the Identify
+</I>&gt;<i> response that provides with the information DP9 need to automatically
+</I>&gt;<i> generate stateless resumptionTokens.
+</I>&gt;<i>   pro) doesn't require any modification of OAI spec.
+</I>&gt;<i>   con) requires individual repositories to voluntarily provide this
+</I>&gt;<i> information
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Probably somebody can come up with a better idea, and we may  reach a
+</I>&gt;<i> consensus of which way to go ;-) Please send to the list if you
+</I>&gt;<i> have any input. 
+</I>&gt;<i> 
+</I>&gt;<i> best regards,
+</I>&gt;<i> liu
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000702.html">[OAI-implementers] deep nesting problem in DP9
+</A></li>
+	<LI> Next message: <A HREF="000704.html">[OAI-implementers] deep nesting problem in DP9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#703">[ date ]</a>
+              <a href="thread.html#703">[ thread ]</a>
+              <a href="subject.html#703">[ subject ]</a>
+              <a href="author.html#703">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

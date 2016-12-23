@@ -1,0 +1,649 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] ListMetadataFormats problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:bass%40MIT.EDU">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000019.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] ListMetadataFormats problem
+   </H1>
+    <B>Mick Bass
+    </B> 
+    <A HREF="mailto:bass%40MIT.EDU"
+       TITLE="[OAI-implementers] ListMetadataFormats problem">bass@MIT.EDU
+       </A><BR>
+    <I>Wed, 31 Jan 2001 11:48:19 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000019.html">[OAI-implementers] re: ListMetadataFormats problem
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#20">[ date ]</a>
+              <a href="thread.html#20">[ thread ]</a>
+              <a href="subject.html#20">[ subject ]</a>
+              <a href="author.html#20">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>--=====================_149350594==_.ALT
+Content-Type: text/plain; charset=&quot;us-ascii&quot;; format=flowed
+
+Mick Bass here, from HP (employer) and MIT (partner &amp; development site), 
+leading DSpace joint development effort &lt;<A HREF="http://www.dspace.org">http://www.dspace.org</A>&gt;.
+
+I'm rather uninitiated in the ways of XML-Schema (but aren't we 
+all...).  So take these comments only as potentially helpful...
+
+import would seemingly allow validation of DC elements as a part of a 
+schema in another namespace.
+
+It sounds like in addition to this you want to extend DC to include new 
+elements, though, so I'd also recommend a read of the tutorial section on 
+&quot;Derving complex types by extension&quot;:
+
+&lt;<A HREF="http://www.w3.org/TR/xmlschema-0/#DerivExt">http://www.w3.org/TR/xmlschema-0/#DerivExt</A>&gt;:
+
+&gt;<i>4.2 Deriving Types by Extension
+</I>&gt;<i>To create our address constructs, we start by creating a complex type 
+</I>&gt;<i>called Address in the usual way (see address.xsd). The Address type 
+</I>&gt;<i>contains the basic elements of an address: a name, a street and a city. 
+</I>&gt;<i>(Such a definition will not work for all countries, but it will serve the 
+</I>&gt;<i>purposes of our example.) From this starting point we derive two new 
+</I>&gt;<i>complex types that contain all the elements of the original type plus 
+</I>&gt;<i>additional elements that are specific to addresses in the US and the UK. 
+</I>&gt;<i>The technique we use here to derive new (complex) address types by 
+</I>&gt;<i>extending an existing type is the same technique we used in in Section 
+</I>&gt;<i>2.5.1, except that our base type here is a complex type whereas our base 
+</I>&gt;<i>type in the previous section was a simple type.
+</I>&gt;<i>We define the two new complex types, USAddress and UKAddress, using the 
+</I>&gt;<i>complexType element. In addition, we indicate that the content models of 
+</I>&gt;<i>the new types are complex, i.e. contain elements, by using the 
+</I>&gt;<i>complexContent element, and we indicate that we are extending the base 
+</I>&gt;<i>type Address by the value of the base attribute on the extension element.
+</I>&gt;<i>When a complex type is derived by extension, its effective content model 
+</I>&gt;<i>is the content model of the base type plus the content model specified in 
+</I>&gt;<i>the type derivation. Furthermore, the two content models are treated as 
+</I>&gt;<i>two children of a sequential group. In the case of UKAddress, the content 
+</I>&gt;<i>model of UKAddress is the content model of Address plus the declarations 
+</I>&gt;<i>for a postcode element and an exportCode attribute.
+</I>
+The dublincore schema at <A HREF="http://www.openarchives.org/OAI/dc.xsd">http://www.openarchives.org/OAI/dc.xsd</A> defines:
+
+&lt;element name=&quot;dc&quot; type=&quot;dc:dublincoreType&quot;/&gt;
+
+  &lt;complexType name=&quot;dublincoreType&quot;&gt;
+   &lt;choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+    &lt;element name=&quot;title&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;creator&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;subject&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;description&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;contributor&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;publisher&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;date&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;type&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;format&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;identifier&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;source&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;language&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;relation&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;coverage&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;rights&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+   &lt;/choice&gt;
+  &lt;/complexType&gt;
+
+You may want something like:
+
+&lt;element name=&quot;edc&quot; type=&quot;edc:extendedDublincoreType&quot;/&gt;
+
+&lt;complexType name=&quot;extendedDublincoreType&quot;&gt;
+   &lt;complexContent&gt;
+     &lt;extension base=&quot;dc:dublincoreType&quot;&gt;
+       &lt;sequence&gt;
+         &lt;element name=&quot;shoesize&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;string&quot;/&gt;
+         &lt;element name=&quot;numfeet&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; 
+type=&quot;positiveInteger&quot;/&gt;
+       &lt;/sequence&gt;
+     &lt;/extension&gt;
+   &lt;/complexContent&gt;
+&lt;/complexType&gt;
+
+I'm thinking this would be defined in your namespace (here, &quot;edc&quot;), but the 
+dc namespace would need to be imported so that the validation processor 
+would be aware of the definition of dublincoreType, so that your extension 
+could be validated.
+
+If this were to work, you ought to be able to declare instance metadata of 
+type ExtendedDublinCoreType (in namespace &quot;edc&quot;), and have it be 
+successfully validated in schemas expecting straight up DublinCore.  The 
+details of actually getting this to work, I leave to you, but this seems to 
+be their  intent from a read through the XML-Schema documentation :)
+
+The impact on harvesters of instance metadata exported using types derived 
+by extension is not yet clear to me...
+
+- Mick
+
+At 07:15 AM 1/31/01 -0500, you wrote:
+&gt;<i>Jeff, I think you've got the wrong approach here.  Having spent the last
+</I>&gt;<i>hour or so staring at the xml schema primer at
+</I>&gt;<i><A HREF="http://www.w3.org/TR/xmlschema-0">http://www.w3.org/TR/xmlschema-0</A> I found the explanation on importing
+</I>&gt;<i>types at <A HREF="http://www.w3.org/TR/xmlschema-0/#import.">http://www.w3.org/TR/xmlschema-0/#import.</A> Using this mechanism
+</I>&gt;<i>you can pull in types (elements) from another namespace.  E.g., you
+</I>&gt;<i>could define a schema carlmeta.xsd with a target namespace
+</I>&gt;<i><A HREF="http://foo.org/carlmeta">http://foo.org/carlmeta</A> with an import of
+</I>&gt;<i><A HREF="http://purl.org/dc/elements/1.1.">http://purl.org/dc/elements/1.1.</A> I quote the primer:
+</I>&gt;<i>
+</I>&gt;<i>When schema components are imported from multiple namespaces, each
+</I>&gt;<i>namespace must be identified with a separate import element. The import
+</I>&gt;<i>elements themselves must appear as the first children of the schema
+</I>&gt;<i>element. Furthermore, each namespace must be associated with a prefix,
+</I>&gt;<i>using a standard namespace declaration, and that prefix is used to
+</I>&gt;<i>qualify references to any schema components belonging to that namespace.
+</I>&gt;<i>Finally, import elements optionally contain a schemaLocation attribute
+</I>&gt;<i>to help locate resources associated with the namespaces.
+</I>&gt;<i>
+</I>&gt;<i>Don't have time now to experiment with this but coming up with an
+</I>&gt;<i>example shouldn't be too hard.
+</I>&gt;<i>
+</I>&gt;<i>Carl
+</I>&gt;<i>
+</I>&gt;<i> &gt; -----Original Message-----
+</I>&gt;<i> &gt; From: Young,Jeff [mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>]
+</I>&gt;<i> &gt; Sent: Tuesday, January 30, 2001 4:58 PM
+</I>&gt;<i> &gt; To: '<A HREF="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>'
+</I>&gt;<i> &gt; Subject: FW: [OAI-implementers] ListMetadataFormats problem
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Hi Carl,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I don't think things are as simple as I'd hoped. I want to
+</I>&gt;<i> &gt; check with you
+</I>&gt;<i> &gt; first, though, before I stir up more confusion in the
+</I>&gt;<i> &gt; listserv. Apparently,
+</I>&gt;<i> &gt; the xsi:schemaLocation element expects namespaces to be
+</I>&gt;<i> &gt; paired with schema
+</I>&gt;<i> &gt; locations. If this is true, then a single schema won't work for the
+</I>&gt;<i> &gt; application I described below. Is there any reason that
+</I>&gt;<i> &gt; schemas can't be
+</I>&gt;<i> &gt; repeatable as well as namespaces in relation to metadata formats?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Jeff
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt; -----Original Message-----
+</I>&gt;<i> &gt; &gt; From: Young,Jeff [mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>]
+</I>&gt;<i> &gt; &gt; Sent: Tuesday, January 30, 2001 4:01 PM
+</I>&gt;<i> &gt; &gt; To: 'OAI-implementers'
+</I>&gt;<i> &gt; &gt; Subject: [OAI-implementers] ListMetadataFormats problem
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; I'm working on an OAI repository for a group that wants to
+</I>&gt;<i> &gt; &gt; define it's own
+</I>&gt;<i> &gt; &gt; metadata format. The trick is, this format will be a
+</I>&gt;<i> &gt; &gt; combination of Dublin
+</I>&gt;<i> &gt; &gt; Core elements and some new elements yet to be defined. The
+</I>&gt;<i> &gt; &gt; examples in the
+</I>&gt;<i> &gt; &gt; OAI specs, however, all assume that the metadata will consist
+</I>&gt;<i> &gt; &gt; of elements
+</I>&gt;<i> &gt; &gt; from a single namespace. I believe, for the most part, that
+</I>&gt;<i> &gt; &gt; the OAI spec
+</I>&gt;<i> &gt; &gt; doesn't preclude the use of multiple namespaces. For example,
+</I>&gt;<i> &gt; &gt; I imagine that
+</I>&gt;<i> &gt; &gt; the following XML fragment is likely to be acceptable:
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &lt;combined xmlns:dc=&quot;<A HREF="http://purl.org/dc/elements/1.1/"">http://purl.org/dc/elements/1.1/&quot;</A>
+</I>&gt;<i> &gt; &gt;     xmlns:myelems=&quot;<A HREF="http://www.myelems.com/"">http://www.myelems.com/&quot;</A>
+</I>&gt;<i> &gt; &gt;     xmlns:xsi=&quot;...&quot;
+</I>&gt;<i> &gt; &gt;     xsi:schemaLocation=&quot;<A HREF="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</A>
+</I>&gt;<i> &gt; &gt;             <A HREF="http://www.myelems.com/">http://www.myelems.com/</A>
+</I>&gt;<i> &gt; &gt;             <A HREF="http://www.myelems.com/combined.xsd"">http://www.myelems.com/combined.xsd&quot;</A>&gt;
+</I>&gt;<i> &gt; &gt;   &lt;dc:title&gt;This is the title&lt;/dc:title&gt;
+</I>&gt;<i> &gt; &gt;   &lt;myelems:shoesize&gt;12&lt;/myelems:shoesize&gt;
+</I>&gt;<i> &gt; &gt; &lt;/combined&gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; (As far as I can tell, specifying multiple namespaces in the
+</I>&gt;<i> &gt; &gt; xsi:schemaLocation attribute is perfectly valid.)
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Assuming no one sees any problems with this, I do think I see
+</I>&gt;<i> &gt; &gt; a problem with
+</I>&gt;<i> &gt; &gt; ListMetadataFormats.xsd. Now that multiple namespaces are
+</I>&gt;<i> &gt; &gt; involved, I expect
+</I>&gt;<i> &gt; &gt; that ListMetadataFormats will need to accommodate them with multiple
+</I>&gt;<i> &gt; &gt; metadataNamespace elements. The XML schema for
+</I>&gt;<i> &gt; &gt; ListMetadataFormats, however,
+</I>&gt;<i> &gt; &gt; sets the maxOccurs for metadataNamespace to one. I suspect
+</I>&gt;<i> &gt; &gt; this is easily
+</I>&gt;<i> &gt; &gt; changed to unbounded.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Hopefully, the problem is no more involved than this, but
+</I>&gt;<i> &gt; &gt; someone may want
+</I>&gt;<i> &gt; &gt; to check my assumptions.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Thanks,
+</I>&gt;<i> &gt; &gt; Jeff
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; ---
+</I>&gt;<i> &gt; &gt; Jeffrey A. Young
+</I>&gt;<i> &gt; &gt; Senior Consulting Systems Analyst
+</I>&gt;<i> &gt; &gt; Office of Research, Mail Code 710
+</I>&gt;<i> &gt; &gt; OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> &gt; &gt; 6565 Frantz Road
+</I>&gt;<i> &gt; &gt; Dublin, OH   43017-3395
+</I>&gt;<i> &gt; &gt; www.oclc.org
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Voice:      614-764-4342
+</I>&gt;<i> &gt; &gt; Fax:                614-764-2344
+</I>&gt;<i> &gt; &gt; Email:      <A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i>_______________________________________________
+</I>&gt;<i>OAI-implementers mailing list
+</I>&gt;<i><A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i><A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+=========================
+Mick Bass,   Sloan MOT 2000
+R&amp;D Project Manager
+Hewlett-Packard Company
+Cambridge, MA
+
+617.253.6617 office
+617.899.3938 mobile
+617.452.3000 fax
+617.627.9694 residence
+
+<A HREF="mailto:bass@alum.mit.edu">bass@alum.mit.edu</A>
+<A HREF="mailto:mick_bass@hp.com">mick_bass@hp.com</A>
+=========================
+
+--=====================_149350594==_.ALT
+Content-Type: text/html; charset=&quot;iso-8859-1&quot;
+Content-Transfer-Encoding: quoted-printable
+
+&lt;html&gt;
+Mick Bass here, from HP (employer) and MIT (partner &amp;amp; development
+site), leading DSpace joint development effort
+&amp;lt;&lt;a href=3D&quot;<A HREF="http://www.dspace.org/"=">http://www.dspace.org/&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://www.dspace.</a">http://www.dspace.&lt;/a</A>&gt;&lt;a href=3D&quot;<A HREF="http://www.dspace.org/"=">http://www.dspace.org/&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;org&lt;/a&gt;&amp;gt;.&lt;br&gt;
+&lt;br&gt;
+I'm rather uninitiated in the ways of XML-Schema (but aren't we
+all...).&amp;nbsp; So take these comments only as potentially=20
+helpful...&lt;br&gt;
+&lt;br&gt;
+import would seemingly allow validation of DC elements as a part of a
+schema in another namespace. &lt;br&gt;
+&lt;br&gt;
+It sounds like in addition to this you want to extend DC to include new
+elements, though, so I'd also recommend a read of the tutorial section on
+&amp;quot;Derving complex types by extension&amp;quot;:&lt;br&gt;
+&lt;br&gt;
+&amp;lt;&lt;a href=3D&quot;<A HREF="http://www.w3.org/TR/xmlschema-0/#DerivExt"=">http://www.w3.org/TR/xmlschema-0/#DerivExt&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://www.w3.org/TR/xmlschema-0/#DerivExt</a">http://www.w3.org/TR/xmlschema-0/#DerivExt&lt;/a</A>&gt;&amp;gt;:&lt;br&gt;
+&lt;br&gt;
+&lt;blockquote type=3Dcite cite&gt;&lt;font size=3D5&gt;&lt;b&gt;4.2 Deriving Types by
+Extension &lt;br&gt;
+&lt;/b&gt;&lt;/font&gt;To create our address constructs, we start by creating a
+complex type called
+&lt;font face=3D&quot;Courier New, Courier&quot; size=3D4&gt;Address&lt;/font&gt;&lt;font=
+ face=3D&quot;Courier New, Courier&quot;&gt;
+in the usual way (see &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot; size=3D4=
+ color=3D&quot;#0000FF&quot;&gt;&lt;u&gt;address.xsd&lt;/u&gt;&lt;/font&gt;&lt;font face=3D&quot;Courier New,=
+ Courier&quot;&gt;). The &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;=
+ size=3D4&gt;Address&lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;&gt; type contains=
+ the basic elements of an address: a name, a street and a city. (Such a=
+ definition will not work for all countries, but it will serve the purposes=
+ of our example.) From this starting point we derive two new complex types=
+ that contain all the elements of the original type plus additional elements=
+ that are specific to addresses in the US and the UK. The technique we use=
+ here to derive new (complex) address types by extending an existing type is=
+ the same technique we used in in &lt;/font&gt;&lt;font color=3D&quot;#0000FF&quot;&gt;&lt;u&gt;Section=
+ 2.5.1&lt;/u&gt;&lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;&gt;, except that our base=
+ type here is a complex type whereas our base type in the previous section=
+ was a simple type. &lt;br&gt;
+&lt;/font&gt;We define the two new complex types, &lt;font face=3D&quot;Courier New,=
+ Courier&quot; size=3D4&gt;USAddress&lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;&gt; and=
+ &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot; size=3D4&gt;UKAddress&lt;/font&gt;&lt;font=
+ face=3D&quot;Courier New, Courier&quot;&gt;, using the &lt;/font&gt;&lt;font face=3D&quot;Courier New,=
+ Courier&quot; size=3D4 color=3D&quot;#0000FF&quot;&gt;&lt;u&gt;complexType&lt;/u&gt;&lt;/font&gt;&lt;font=
+ face=3D&quot;Courier New, Courier&quot;&gt; element. In addition, we indicate that the=
+ content models of the new types are complex, i.e. contain elements, by=
+ using the &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot; size=3D4=
+ color=3D&quot;#0000FF&quot;&gt;&lt;u&gt;complexContent&lt;/u&gt;&lt;/font&gt;&lt;font face=3D&quot;Courier New,=
+ Courier&quot;&gt; element, and we indicate that we are extending the base type=
+ &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot; size=3D4&gt;Address&lt;/font&gt;&lt;font=
+ face=3D&quot;Courier New, Courier&quot;&gt; by the value of the &lt;/font&gt;&lt;font=
+ face=3D&quot;Courier New, Courier&quot; size=3D4=
+ color=3D&quot;#0000FF&quot;&gt;&lt;u&gt;base&lt;/u&gt;&lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;&gt;=
+ attribute on the &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot; size=3D4=
+ color=3D&quot;#0000FF&quot;&gt;&lt;u&gt;extension&lt;/u&gt;&lt;/font&gt;&lt;font face=3D&quot;Courier New,=
+ Courier&quot;&gt; element. &lt;br&gt;
+&lt;/font&gt;When a complex type is derived by extension, its effective content=
+ model is the content model of the base type plus the content model=
+ specified in the type derivation. Furthermore, the two content models are=
+ treated as two children of a sequential group. In the case of &lt;font=
+ face=3D&quot;Courier New, Courier&quot; size=3D4&gt;UKAddress&lt;/font&gt;&lt;font face=3D&quot;Courie=
+r New, Courier&quot;&gt;, the content model of &lt;/font&gt;&lt;font face=3D&quot;Courier New,=
+ Courier&quot; size=3D4&gt;UKAddress&lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;&gt; is=
+ the content model of &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;=
+ size=3D4&gt;Address&lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;&gt; plus the=
+ declarations for a &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;=
+ size=3D4&gt;postcode&lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot;&gt; element and an=
+ &lt;/font&gt;&lt;font face=3D&quot;Courier New, Courier&quot; size=3D4&gt;exportCode&lt;/font&gt;&lt;font=
+ face=3D&quot;Courier New, Courier&quot;&gt; attribute. &lt;/font&gt;&lt;/blockquote&gt;&lt;br&gt;
+The dublincore schema at &lt;a href=3D&quot;<A HREF="http://www.openarchives.org/OAI/dc.xsd"=">http://www.openarchives.org/OAI/dc.xsd&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://www.openarchives.org/OAI/dc.xsd</a">http://www.openarchives.org/OAI/dc.xsd&lt;/a</A>&gt; defines:&lt;br&gt;
+&lt;br&gt;
+&lt;font face=3D&quot;Fixedsys&quot; size=3D1&gt;&amp;lt;element name=3D&amp;quot;dc&amp;quot;=
+ type=3D&amp;quot;dc:dublincoreType&amp;quot;/&amp;gt;&lt;br&gt;
+&lt;br&gt;
+&amp;nbsp;&amp;lt;complexType name=3D&amp;quot;dublincoreType&amp;quot;&amp;gt;&lt;br&gt;
+&amp;nbsp; &amp;lt;choice minOccurs=3D&amp;quot;0&amp;quot;=
+ maxOccurs=3D&amp;quot;unbounded&amp;quot;&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;title&amp;quot; minOccurs=3D&amp;quot;0&amp;quot;=
+ maxOccurs=3D&amp;quot;unbounded&amp;quot; type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;creator&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;subject&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;description&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;contributor&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;publisher&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;date&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;type&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;format&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;identifier&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;source&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;language&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;relation&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;coverage&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;nbsp; &amp;lt;element name=3D&amp;quot;rights&amp;quot;&amp;nbsp;=
+ minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&amp;gt;&lt;br&gt;
+&amp;nbsp; &amp;lt;/choice&amp;gt;&lt;br&gt;
+&amp;nbsp;&amp;lt;/complexType&amp;gt;&lt;br&gt;
+&lt;br&gt;
+&lt;/font&gt;You may want something like:&lt;br&gt;
+&lt;br&gt;
+&lt;font face=3D&quot;Fixedsys&quot; size=3D1&gt;&amp;lt;element name=3D&amp;quot;edc&amp;quot;=
+ type=3D&amp;quot;edc:extendedDublincoreType&amp;quot;/&amp;gt;&lt;br&gt;
+&lt;br&gt;
+&lt;/font&gt;&lt;font face=3D&quot;Fixedsys&quot;&gt;&amp;lt;complexType=
+ name=3D&amp;quot;extendedDublincoreType&amp;quot;&amp;gt; &lt;br&gt;
+&amp;nbsp; &amp;lt;complexContent&amp;gt; &lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;extension base=3D&amp;quot;dc:dublincoreType&amp;quot;&amp;gt;=
+ &lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;sequence&amp;gt; &lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;element=
+ name=3D&amp;quot;shoesize&amp;quot; &lt;/font&gt;&lt;font face=3D&quot;Fixedsys&quot;=
+ size=3D1&gt;minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ type=3D&amp;quot;string&amp;quot;/&lt;/font&gt;&lt;font face=3D&quot;Fixedsys&quot;&gt;&amp;gt; &lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;element=
+ name=3D&amp;quot;numfeet&amp;quot; &lt;/font&gt;&lt;font face=3D&quot;Fixedsys&quot;=
+ size=3D1&gt;minOccurs=3D&amp;quot;0&amp;quot; maxOccurs=3D&amp;quot;unbounded&amp;quot;=
+ &lt;/font&gt;&lt;font face=3D&quot;Fixedsys&quot;&gt;type=3D&amp;quot;positiveInteger&amp;quot;/&amp;gt; &lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/sequence&amp;gt; &lt;br&gt;
+&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/extension&amp;gt; &lt;br&gt;
+&amp;nbsp; &amp;lt;/complexContent&amp;gt; &lt;br&gt;
+&amp;lt;/complexType&amp;gt; &lt;br&gt;
+&lt;br&gt;
+&lt;/font&gt;I'm thinking this would be defined in your namespace (here,=
+ &amp;quot;edc&amp;quot;), but the dc namespace would need to be imported so that=
+ the validation processor would be aware of the definition of=
+ dublincoreType, so that your extension could be validated.&lt;br&gt;
+&lt;br&gt;
+If this were to work, you ought to be able to declare instance metadata of=
+ type ExtendedDublinCoreType (in namespace &amp;quot;edc&amp;quot;), and have it be=
+ successfully validated in schemas expecting straight up DublinCore.&amp;nbsp;=
+ The details of actually getting this to work, I leave to you, but this=
+ seems to be their&amp;nbsp; intent from a read through the XML-Schema=
+ documentation :)&lt;br&gt;
+&lt;br&gt;
+The impact on harvesters of instance metadata exported using types derived=
+ by extension is not yet clear to me...&lt;br&gt;
+&lt;br&gt;
+- Mick&lt;br&gt;
+&lt;br&gt;
+At 07:15 AM 1/31/01 -0500, you wrote:&lt;br&gt;
+&lt;blockquote type=3Dcite cite&gt;Jeff, I think you've got the wrong approach=
+ here.&amp;nbsp; Having spent the last&lt;br&gt;
+hour or so staring at the xml schema primer at&lt;br&gt;
+&lt;a href=3D&quot;<A HREF="http://www.w3.org/TR/xmlschema-0"=">http://www.w3.org/TR/xmlschema-0&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://www.w3.org/TR/xmlschema-0</a">http://www.w3.org/TR/xmlschema-0&lt;/a</A>&gt; I found the=
+ explanation on importing&lt;br&gt;
+types at &lt;a href=3D&quot;<A HREF="http://www.w3.org/TR/xmlschema-0/#import"=">http://www.w3.org/TR/xmlschema-0/#import&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://www.w3.org/TR/xmlschema-0/#import</a">http://www.w3.org/TR/xmlschema-0/#import&lt;/a</A>&gt;. Using this=
+ mechanism&lt;br&gt;
+you can pull in types (elements) from another namespace.&amp;nbsp; E.g., you&lt;br&gt;
+could define a schema carlmeta.xsd with a target namespace&lt;br&gt;
+&lt;a href=3D&quot;<A HREF="http://foo.org/carlmeta"=">http://foo.org/carlmeta&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://foo.org/carlmeta</a">http://foo.org/carlmeta&lt;/a</A>&gt; with an import of&lt;br&gt;
+&lt;a href=3D&quot;<A HREF="http://purl.org/dc/elements/1.1"=">http://purl.org/dc/elements/1.1&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://purl.org/dc/elements/1.1</a">http://purl.org/dc/elements/1.1&lt;/a</A>&gt;. I quote the=
+ primer:&lt;br&gt;
+&lt;br&gt;
+When schema components are imported from multiple namespaces, each&lt;br&gt;
+namespace must be identified with a separate import element. The import&lt;br&gt;
+elements themselves must appear as the first children of the schema&lt;br&gt;
+element. Furthermore, each namespace must be associated with a prefix,&lt;br&gt;
+using a standard namespace declaration, and that prefix is used to&lt;br&gt;
+qualify references to any schema components belonging to that namespace.&lt;br&gt;
+Finally, import elements optionally contain a schemaLocation attribute&lt;br&gt;
+to help locate resources associated with the namespaces. &lt;br&gt;
+&lt;br&gt;
+Don't have time now to experiment with this but coming up with an&lt;br&gt;
+example shouldn't be too hard.&lt;br&gt;
+&lt;br&gt;
+Carl&lt;br&gt;
+&lt;br&gt;
+&amp;gt;<i> -----Original Message-----&lt;br&gt;
+</I>&amp;gt;<i> From: Young,Jeff [&lt;a href=3D&quot;mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>&quot;=
+</I> eudora=3D&quot;autourl&quot;&gt;mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>&lt;/a&gt;]&lt;br&gt;
+&amp;gt;<i> Sent: Tuesday, January 30, 2001 4:58 PM&lt;br&gt;
+</I>&amp;gt;<i> To: '<A HREF="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>'&lt;br&gt;
+</I>&amp;gt;<i> Subject: FW: [OAI-implementers] ListMetadataFormats problem&lt;br&gt;
+</I>&amp;gt;<i> &lt;br&gt;
+</I>&amp;gt;<i> &lt;br&gt;
+</I>&amp;gt;<i> Hi Carl,&lt;br&gt;
+</I>&amp;gt;<i> &lt;br&gt;
+</I>&amp;gt;<i> I don't think things are as simple as I'd hoped. I want to &lt;br&gt;
+</I>&amp;gt;<i> check with you&lt;br&gt;
+</I>&amp;gt;<i> first, though, before I stir up more confusion in the &lt;br&gt;
+</I>&amp;gt;<i> listserv. Apparently,&lt;br&gt;
+</I>&amp;gt;<i> the xsi:schemaLocation element expects namespaces to be &lt;br&gt;
+</I>&amp;gt;<i> paired with schema&lt;br&gt;
+</I>&amp;gt;<i> locations. If this is true, then a single schema won't work for the&lt;br&gt;
+</I>&amp;gt;<i> application I described below. Is there any reason that &lt;br&gt;
+</I>&amp;gt;<i> schemas can't be&lt;br&gt;
+</I>&amp;gt;<i> repeatable as well as namespaces in relation to metadata formats?&lt;br&gt;
+</I>&amp;gt;<i> &lt;br&gt;
+</I>&amp;gt;<i> Jeff&lt;br&gt;
+</I>&amp;gt;<i> &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; -----Original Message-----&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; From: Young,Jeff [&lt;a href=3D&quot;mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>&quot;=
+</I> eudora=3D&quot;autourl&quot;&gt;mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>&lt;/a&gt;] &lt;br&gt;
+&amp;gt;<i> &amp;gt; Sent: Tuesday, January 30, 2001 4:01 PM&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; To: 'OAI-implementers'&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Subject: [OAI-implementers] ListMetadataFormats problem&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; I'm working on an OAI repository for a group that wants to &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; define it's own&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; metadata format. The trick is, this format will be a &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; combination of Dublin&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Core elements and some new elements yet to be defined. The &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; examples in the&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; OAI specs, however, all assume that the metadata will consist &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; of elements&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; from a single namespace. I believe, for the most part, that &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; the OAI spec&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; doesn't preclude the use of multiple namespaces. For example, &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; I imagine that&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; the following XML fragment is likely to be acceptable:&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &amp;lt;combined=
+</I> xmlns:dc=3D&amp;quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;<br">http://purl.org/dc/elements/1.1/&amp;quot;&lt;br</A>&gt;
+&amp;gt;<i> &amp;gt; &lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;xmlns:myelems=3D&amp;quot;&lt;a=
+</I> href=3D&quot;<A HREF="http://www.myelems.com/"=">http://www.myelems.com/&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://www.myelems.com/</a">http://www.myelems.com/&lt;/a</A>&gt;&amp;quot;&lt;br&gt;
+&amp;gt;<i> &amp;gt;=
+</I> &lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;xmlns:xsi=3D&amp;quot;...&amp;quot;&lt;br&gt;
+&amp;gt;<i> &amp;gt; &lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;xsi:schemaLocation=3D&amp;quot;=
+</I>&lt;a=
+ href=3D&quot;<A HREF="http://purl.org/dc/elements/1.1/%3E%20%3E%20http://www.myelems.com/=">http://purl.org/dc/elements/1.1/%3E%20%3E%20http://www.myelems.com/=</A>
+%3E%20%3E%<A HREF="20http://www.myelems.com/combined.xsd"=">20http://www.myelems.com/combined.xsd&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://purl.org/dc/elements/1.1/<br">http://purl.org/dc/elements/1.1/&lt;br</A>&gt;
+&amp;gt;<i> &amp;gt;=
+</I> &lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;&lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp=
+;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;<A HREF="http://www.myelems.com/<br">http://www.myelems.com/&lt;br</A>&gt;
+&amp;gt;<i> &amp;gt;=
+</I> &lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;&lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp=
+;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;<A HREF="http://www.myelems.com/combined.xsd</a">http://www.myelems.com/combined.xsd&lt;/a</A>&gt;&amp;quot;&amp;gt;=
+&lt;br&gt;
+&amp;gt;<i> &amp;gt;&amp;nbsp;&amp;nbsp; &amp;lt;dc:title&amp;gt;This is the title&amp;lt;/dc:title&amp;gt;&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt;&amp;nbsp;&amp;nbsp;=
+</I> &amp;lt;myelems:shoesize&amp;gt;12&amp;lt;/myelems:shoesize&amp;gt;&lt;br&gt;
+&amp;gt;<i> &amp;gt; &amp;lt;/combined&amp;gt;&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; (As far as I can tell, specifying multiple namespaces in the&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; xsi:schemaLocation attribute is perfectly valid.)&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Assuming no one sees any problems with this, I do think I see &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; a problem with&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; ListMetadataFormats.xsd. Now that multiple namespaces are &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; involved, I expect&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; that ListMetadataFormats will need to accommodate them with=
+</I> multiple&lt;br&gt;
+&amp;gt;<i> &amp;gt; metadataNamespace elements. The XML schema for &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; ListMetadataFormats, however,&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; sets the maxOccurs for metadataNamespace to one. I suspect &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; this is easily&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; changed to unbounded.&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Hopefully, the problem is no more involved than this, but &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; someone may want&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; to check my assumptions.&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Thanks,&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Jeff&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; ---&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Jeffrey A. Young&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Senior Consulting Systems Analyst&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Office of Research, Mail Code 710&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; OCLC Online Computer Library Center, Inc.&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; 6565 Frantz Road&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; Dublin, OH&amp;nbsp;&amp;nbsp; 43017-3395&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;a href=3D&quot;<A HREF="http://www.oclc.org/"=">http://www.oclc.org/&quot;=</A>
+</I> eudora=3D&quot;autourl&quot;&gt;www.oclc.org&lt;/a&gt;&lt;br&gt;
+&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt;=
+</I> Voice:&lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;614-764-4342&lt;br&gt;
+&amp;gt;<i> &amp;gt;=
+</I> Fax:&lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;&lt;x-tab&gt;&amp;=
+nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;614-764-2344&lt;br&gt;
+&amp;gt;<i> &amp;gt;=
+</I> Email:&lt;x-tab&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/x-tab&gt;<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>&lt;br=
+&gt;<i>
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; _______________________________________________&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; OAI-implementers mailing list&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>&lt;br&gt;
+</I>&amp;gt;<i> &amp;gt; &lt;a=
+</I> href=3D&quot;<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers"=">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-impl=">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-impl=</A>
+ementers&lt;/a&gt;&lt;br&gt;
+&amp;gt;<i> &amp;gt; &lt;br&gt;
+</I>&amp;gt;<i> &lt;br&gt;
+</I>_______________________________________________&lt;br&gt;
+OAI-implementers mailing list&lt;br&gt;
+<A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>&lt;br&gt;
+&lt;a href=3D&quot;<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers"=">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers&quot;=</A>
+ eudora=3D&quot;autourl&quot;&gt;<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-impl=">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-impl=</A>
+ementers&lt;/a&gt; &lt;/blockquote&gt;&lt;br&gt;
+&lt;div&gt;=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D&lt;/div&gt;
+&lt;div&gt;Mick Bass,&amp;nbsp;&amp;nbsp; Sloan MOT 2000&lt;/div&gt;
+&lt;div&gt;R&amp;amp;D Project Manager&lt;/div&gt;
+&lt;div&gt;Hewlett-Packard Company&lt;/div&gt;
+&lt;div&gt;Cambridge, MA&lt;/div&gt;
+&lt;br&gt;
+&lt;div&gt;617.253.6617 office&lt;/div&gt;
+&lt;div&gt;617.899.3938 mobile&lt;/div&gt;
+&lt;div&gt;617.452.3000 fax&lt;/div&gt;
+&lt;div&gt;617.627.9694 residence&lt;/div&gt;
+&lt;br&gt;
+&lt;div&gt;<A HREF="mailto:bass@alum.mit.edu">bass@alum.mit.edu</A>&lt;/div&gt;
+&lt;div&gt;<A HREF="mailto:mick_bass@hp.com">mick_bass@hp.com</A>&lt;/div&gt;
+&lt;div&gt;=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D&lt;/div&gt;
+&lt;/html&gt;
+
+--=====================_149350594==_.ALT--
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000019.html">[OAI-implementers] re: ListMetadataFormats problem
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#20">[ date ]</a>
+              <a href="thread.html#20">[ thread ]</a>
+              <a href="subject.html#20">[ subject ]</a>
+              <a href="author.html#20">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

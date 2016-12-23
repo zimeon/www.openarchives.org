@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Net::OAI::Harvester
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ehs%40pobox.com">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000934.html">
+   <LINK REL="Next"  HREF="001006.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Net::OAI::Harvester
+   </H1>
+    <B>Ed Summers
+    </B> 
+    <A HREF="mailto:ehs%40pobox.com"
+       TITLE="[OAI-implementers] Net::OAI::Harvester">ehs@pobox.com
+       </A><BR>
+    <I>Tue, 8 Jul 2003 13:45:26 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000934.html">[OAI-implementers] Registration -- how long is it supposed to take?
+</A></li>
+        <LI> Next message: <A HREF="001006.html">[OAI-implementers] [OAI-general] 'In Practice, Good Practice: the Future of Open Archives' - The 4th Open Archives Forum Workshop, 4-5 September 2003, Bath UK.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#935">[ date ]</a>
+              <a href="thread.html#935">[ thread ]</a>
+              <a href="subject.html#935">[ subject ]</a>
+              <a href="author.html#935">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>A beta version of a Perl OAI-PMH harvesting library was just uploaded to
+CPAN as Net::OAI::Harvester. The idea behind Net::OAI::Harvester is to
+provide an object-oriented client interface to the data found in OAI-PMH 
+repositories (similar to what LWP::UserAgent does for HTTP). 
+
+More about OAI-PMH can be found here:
+     <A HREF="http://www.openarchives.org">http://www.openarchives.org</A>
+
+And more about Net::OAI::Harvester can be found here:
+     <A HREF="http://search.cpan.org/author/ESUMMERS/OAI-Harvester-0.1/">http://search.cpan.org/author/ESUMMERS/OAI-Harvester-0.1/</A>
+
+All of the 6 OAI-PMH verbs are supported. As an example here is the code to 
+retrieve a particular record from LC as Dublin Core and display the title.
+
+     my $harvester = Net::OAI::Harvester-&gt;new(
+          baseUrl =&gt; '<A HREF="http://memory.loc.gov/cgi-bin/oai2_0'">http://memory.loc.gov/cgi-bin/oai2_0'</A>
+     );
+
+     my $record = $harvester-&gt;getRecord(
+          identifier     =&gt; 'oai:lcoa1.loc.gov:loc.gmd/g3764s.pm003250',
+	  metadataPrefix =&gt; 'oai_dc'
+     );
+
+     my $metadata = $record-&gt;metadata();
+     print &quot;title: &quot;, $metadata-&gt;title(), &quot;\n&quot;;
+
+Features:
+
+- OAI-PMH responses can often be rather large XML files. Net::OAI::Harvester 
+  uses stream based parsing (XML::SAX) and serializes data as Perl objects on 
+  disk (using YAML). This serialized data is then made available through
+  an iterator interface which means that you keep a relatively low
+  memory foot print when doing ListRecords or ListIdentifiers requests.
+
+- Net::OAI::Harvester includes Net::OAI::Record::OAI_DC which is an
+  XML::SAX handler for parsing and providing an object oriented
+  interface to baseline Dublin Core metadata. It also provides a
+  framework for dropping in your own XML::SAX handler if you want to
+  parse other types of metadata. The idea is that as people create their
+  own handlers they can be easily included in the Net::OAI::Harvester
+  distribution.
+
+- If you are interested in the XML itself you can easily get a hold of the 
+  temporary file that contains the full XML response, and do what you want 
+  with it.
+
+- You can easily can a hold of the error code and message associated with any 
+  request.
+
+Caveats:
+
+- Net::OAI::Harvester only supports OAI-PMH v.2.
+
+- No support for compression (yet).
+
+- Needs more documentation, and examples.
+
+- You need to handle resumptionTokens explicitly. This means a call to 
+  listRecords() will not go and grab everything, but just the first chunk. 
+  However, there is infrastrucutre and methods to easily get at and pass the 
+  tokens.
+
+Feedback/comments/testser would be appreciated. If you are at all interested in 
+getting involved in the project please write to me directly, or (preferably) 
+use <A HREF="mailto:perl4lib@perl.org">perl4lib@perl.org</A> or <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu.">oai-implementers@oaisrv.nsdl.cornell.edu.</A>
+
+//Ed
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000934.html">[OAI-implementers] Registration -- how long is it supposed to take?
+</A></li>
+	<LI> Next message: <A HREF="001006.html">[OAI-implementers] [OAI-general] 'In Practice, Good Practice: the Future of Open Archives' - The 4th Open Archives Forum Workshop, 4-5 September 2003, Bath UK.
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#935">[ date ]</a>
+              <a href="thread.html#935">[ thread ]</a>
+              <a href="subject.html#935">[ subject ]</a>
+              <a href="author.html#935">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

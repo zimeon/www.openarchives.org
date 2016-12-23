@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Records getting out of sets and
+	repository/harvester implementation
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Records%20getting%20out%20of%20sets%20and%0A%09repository/harvester%20implementation&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002031.html">
+   <LINK REL="Next"  HREF="002033.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Records getting out of sets and
+	repository/harvester implementation</H1>
+    <B>Samuele Kaplun</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Records%20getting%20out%20of%20sets%20and%0A%09repository/harvester%20implementation&In-Reply-To="
+       TITLE="[OAI-implementers] Records getting out of sets and
+	repository/harvester implementation">Samuele.Kaplun at cern.ch
+       </A><BR>
+    <I>Thu Oct 14 09:06:44 EDT 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002031.html">[OAI-implementers] After Registration
+</A></li>
+        <LI>Next message: <A HREF="002033.html">[OAI-implementers] Records getting out of sets
+	and	repository/harvester implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2032">[ date ]</a>
+              <a href="thread.html#2032">[ thread ]</a>
+              <a href="subject.html#2032">[ subject ]</a>
+              <a href="author.html#2032">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear all,
+
+I am Samuele Kaplun, a CERN developer, and I am currently working in
+revising and improving the OAI-PMH repository implementation of the
+Invenio (&lt;<A HREF="http://invenio-software.org/">http://invenio-software.org/</A>&gt;).
+
+I came across this implementation doubt:
+
+in Invenio the repository manager is free to define any set he likes on
+top of the whole repository. This means two sets can in principle have a
+non empty intersection.
+
+Now suppose an item belongs to both setA and setB at some point in time.
+But then because of a change in the definition of setA (or because of an
+update of the record metadata) the record does no longer belong to setA,
+but continues to belong to setB.
+
+How can this information be given to harvester?
+
+Naively, if an harvester ask for an incremental update of setA, after
+the item was removed from it, the harvester would simply experience the
+vanishing of the record (like if the record was deleted and the
+repository was supporting only the policy deletedRecord=no).
+
+However this information (i.e. the fact that the record does not belong
+anymore to setA) might be an important one (e.g. in the case the record
+was there by mistake in the first place and contains restricted
+information), and also, the fact that the harvester is not deleting it
+on his side will make it keep an obsolete copy that would eventually
+rotten and simply contribute to the dissemination of mis-information.
+
+One possible solution to this issue might be that the repository keep
+track of previous set membership of the record and simply return the
+record as deleted (like with deletedRecord=transient/persistent for real
+deleted record). But this might open a new issue. What if the harvester
+both harvest setA and setB at the same time? The record will be then
+declared as deleted in setA, but will still be available in setB. What
+should an harvester do in this case (given it is requesting the same
+record, since also the oai_id will be the identical)? In particular if
+the harvester is first harvesting setA and then setB it will end up with
+having a copy of the record, but if it will first harvest setB and then
+setA it will delete his own copy of the record.
+
+Another possibility is that the record is instead returned as such both
+when harvested via setB but also via setA, but the &lt;setSpec&gt; in both
+harvesting session, for the given record, should only mention setB (as
+the record now belongs only to setB and no longer to setA).
+
+A smart harvester would then do the right thing, i.e. delete the record
+if it knows it is not harvesting setB or ignoring the record (as it will
+receive it anyway when it will harvest setB later)
+
+What do you think? Would this be the right behaviour for the repository
+in this situation? Would most of the existing harvesters behave
+correctly WRT this situation if the repository return a record with a
+different setSpec than the request?
+
+Cheers!
+	Samuele
+
+-- 
+Samuele Kaplun
+Invenio Developer ** &lt;<A HREF="http://invenio-software.org/">http://invenio-software.org/</A>&gt;
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002031.html">[OAI-implementers] After Registration
+</A></li>
+	<LI>Next message: <A HREF="002033.html">[OAI-implementers] Records getting out of sets
+	and	repository/harvester implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2032">[ date ]</a>
+              <a href="thread.html#2032">[ thread ]</a>
+              <a href="subject.html#2032">[ subject ]</a>
+              <a href="author.html#2032">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

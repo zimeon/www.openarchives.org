@@ -1,0 +1,233 @@
+From jweather@ucar.edu  Fri Oct  5 00:19:18 2001
+From: jweather@ucar.edu (John Weatherley)
+Date: Thu, 4 Oct 2001 17:19:18 -0600 (MDT)
+Subject: [OAI-implementers] Metadata Formats
+Message-ID: <Pine.LNX.4.33.0110041656550.27353-100000@quake.dpc.ucar.edu>
+
+I am implementing an OAI provider for a digital library project that will
+eventually house and serve several different metadata formats. We would
+like our collaborators to be able to request a listing of identifiers of
+records that are available in a given format (not all records will be
+available in all formats).
+
+Currently it appears there is no direct way to make such a query using the
+protocol (ie there is no option to include the metadataPrefix argument in
+the ListRecords request). One cumbersome solution might be to make a
+GetRecords request, then parse out only the identifiers from the return.
+
+Can anyone recommend another solution? Is there a possiblity the option to
+include the metadataPrefix argument in a ListRecords request might be
+included in future iterations of the protocol?
+
+John Weatherley
+Digital Library for Earth System Education (DLESE)
+
+
+From simeon@cs.cornell.edu  Fri Oct  5 02:15:03 2001
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Thu, 4 Oct 2001 21:15:03 -0400 (EDT)
+Subject: [OAI-implementers] Metadata Formats
+In-Reply-To: <Pine.LNX.4.33.0110041656550.27353-100000@quake.dpc.ucar.edu>
+Message-ID: <Pine.LNX.4.33.0110042057290.28252-100000@ice.cs.cornell.edu>
+
+On Thu, 4 Oct 2001, John Weatherley wrote:
+> I am implementing an OAI provider for a digital library project that will
+> eventually house and serve several different metadata formats. We would
+> like our collaborators to be able to request a listing of identifiers of
+> records that are available in a given format (not all records will be
+> available in all formats).
+>
+> Currently it appears there is no direct way to make such a query using the
+> protocol (ie there is no option to include the metadataPrefix argument in
+> the ListRecords request). One cumbersome solution might be to make a
+> GetRecords request, then parse out only the identifiers from the return.
+>
+> Can anyone recommend another solution? Is there a possiblity the option to
+> include the metadataPrefix argument in a ListRecords request might be
+> included in future iterations of the protocol?
+
+I assume in the above you mean ListIdentifiers when you say ListRecords.
+You are correct that there is no way to get a ListIdentifiers request
+to return identifiers of records available in a particular metadata
+format.
+
+I think that with the current (v1.1) protocol your suggestion of
+doing a ListRecords request (which I assume is what you mean by
+GetRecords) with the required metadataPrefix and then discarding
+all but the identifiers is the easiest way to accomplish what you
+want.
+
+Regarding the question of whether this facility should be added to the
+protocol, I'm curious to know why you want to be harvest this subset
+of available identifiers without also harvesting the metadata. If
+this is a community specific situation then it might perhaps be best for
+you and your collaborators to define sets corresponding to the
+metadataFormats and then doing ListIdentifiers requests qualified by a
+setSpec.
+
+Cheers,
+Simeon.
+
+
+> John Weatherley
+> Digital Library for Earth System Education (DLESE)
+
+
+From jweather@ucar.edu  Fri Oct  5 03:06:03 2001
+From: jweather@ucar.edu (John Weatherley)
+Date: Thu, 4 Oct 2001 20:06:03 -0600 (MDT)
+Subject: [OAI-implementers] Metadata Formats
+In-Reply-To: <Pine.LNX.4.33.0110042057290.28252-100000@ice.cs.cornell.edu>
+Message-ID: <Pine.LNX.4.33.0110041931380.7446-100000@flood.dpc.ucar.edu>
+
+Using the setSpec is a good suggestion. We've envisioned using the setSpec
+to denote each sub-collection where the setSpec hierarchy would be used to
+describe sub-collection-specific attributes as opposed to metadataFormats.
+If two separate sub-collections are available in the same metadataFormat
+but are otherwise unrelated, one could certainly construct another set of
+setSpecs to describe this relationship, however this muddies the semantics
+of the setSpec.
+
+Another way to look at it is from the harvesters point of view. If I know
+I can only handle metatadataFormat oai_dc, and I'm interested in updating
+my list of id's against yours, it would be nice to simply request a list
+of identifiers of metadataPrefix=oai_dc.
+
+We envision using ListIdentifiers as a way to synch metadata in the case
+where records have been deleted. For example, if a record has been
+deleted, a call to ListRecords&from=2001-09-17&metadataPrefix=oai_dc is
+not guaranteed to reveal this deletion, and this would be the common daily
+or weekly harvesting done by our collaborators. In such a case it's
+necessary to make a call to ListIdentifiers in order to detect deleted
+records in the harvested collection.
+
+Using the setSpec for this is a good suggestion however and it certainly
+beats having to use the GetRecords request when all you need are the ids.
+
+Many thanks,
+
+ - John
+
+On Thu, 4 Oct 2001, Simeon Warner wrote:
+
+>
+> On Thu, 4 Oct 2001, John Weatherley wrote:
+> > I am implementing an OAI provider for a digital library project that will
+> > eventually house and serve several different metadata formats. We would
+> > like our collaborators to be able to request a listing of identifiers of
+> > records that are available in a given format (not all records will be
+> > available in all formats).
+> >
+> > Currently it appears there is no direct way to make such a query using the
+> > protocol (ie there is no option to include the metadataPrefix argument in
+> > the ListRecords request). One cumbersome solution might be to make a
+> > GetRecords request, then parse out only the identifiers from the return.
+> >
+> > Can anyone recommend another solution? Is there a possiblity the option to
+> > include the metadataPrefix argument in a ListRecords request might be
+> > included in future iterations of the protocol?
+>
+> I assume in the above you mean ListIdentifiers when you say ListRecords.
+> You are correct that there is no way to get a ListIdentifiers request
+> to return identifiers of records available in a particular metadata
+> format.
+>
+> I think that with the current (v1.1) protocol your suggestion of
+> doing a ListRecords request (which I assume is what you mean by
+> GetRecords) with the required metadataPrefix and then discarding
+> all but the identifiers is the easiest way to accomplish what you
+> want.
+>
+> Regarding the question of whether this facility should be added to the
+> protocol, I'm curious to know why you want to be harvest this subset
+> of available identifiers without also harvesting the metadata. If
+> this is a community specific situation then it might perhaps be best for
+> you and your collaborators to define sets corresponding to the
+> metadataFormats and then doing ListIdentifiers requests qualified by a
+> setSpec.
+>
+> Cheers,
+> Simeon.
+>
+>
+> > John Weatherley
+> > Digital Library for Earth System Education (DLESE)
+>
+
+
+
+
+From hussein@vt.edu  Fri Oct  5 04:30:35 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Thu, 04 Oct 2001 23:30:35 -0400
+Subject: [OAI-implementers] Metadata Formats
+References: <Pine.LNX.4.33.0110041931380.7446-100000@flood.dpc.ucar.edu>
+Message-ID: <3BBD295B.1050709@vt.edu>
+
+hi
+
+John Weatherley wrote:
+
+> For example, if a record has been
+> deleted, a call to ListRecords&from=2001-09-17&metadataPrefix=oai_dc is
+> not guaranteed to reveal this deletion, ...
+
+
+as far as i read the protocol, this is not the case ... each top-level 
+"record" tag may have a "status" attribute just like the "identifier" 
+tag for ListIdentifiers (see the first example under ListRecords in the 
+protocol spec)
+
+ttfn
+----hussein
+
+-- 
+========================================================================
+hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+========================================================================
+
+
+From krichel@openlib.org  Wed Oct 10 04:14:31 2001
+From: krichel@openlib.org (Thomas Krichel)
+Date: Tue, 9 Oct 2001 23:14:31 -0400
+Subject: [OAI-implementers] requirement for oai_dc
+Message-ID: <20011009231431.A7071@wotan.liu.edu>
+
+  You may be aware that all records available through an
+  OAI compliant interface are required to be  available in the 
+  oai_dc metadata format. 
+
+  It has been pointed out that, since all elements in oai_dc are
+  optional, this requirement does not imply that oai_dc metadata
+  has to be available. The oai_dc record can be empty. 
+
+  Independently of that observation, the oai_dc requirement is currently 
+  under review by the OAI technical committee. It is alleged that out there
+  there are communities that wish to share metadata about 
+
+  (1) item that have no semantically valid oai_dc representation. This is for
+      example the case when there are personal data being exposed. 
+
+  (2) items where the creation of an oai_dc record would require stretching
+      DC semantics beyond what it is actually meant to be doing. 
+
+  I am in charge of preparing a review on this subject. To inform
+  my review, I would be interested to have your opinion. Please 
+  let me know if your community has a requirement under (1) or
+  if you feel that the oai_dc data that you are already providing
+  has questionable semantics, as alluded to in (2). 
+
+  If you think that the requirement for oai_dc is fundamental 
+  to your work, please let me know that too. 
+
+  Please respond to me personally, I will summarize the state
+  of the question later. 
+
+
+  Cheers,
+
+  Thomas Krichel                              mailto:krichel@openlib.org
+                                         http://openlib.org/home/krichel
+                                     RePEc:per:1965-06-05:thomas_krichel
+
+

@@ -1,0 +1,807 @@
+From lagoze@cs.cornell.edu  Mon Feb  4 17:04:48 2002
+From: lagoze@cs.cornell.edu (Carl Lagoze)
+Date: Mon, 4 Feb 2002 12:04:48 -0500
+Subject: [OAI-general] Open Archives Initiative Protocol for Metadata Harvesting Version 2 news
+Message-ID: <706871B20764CD449DB0E8E3D81C4D4301F2C762@opus.cs.cornell.edu>
+
+Dear OAI community: 
+
+In mid-2001 the Open Archives Initiative Technical Committee (OAI-TC) was
+formed to develop and write version 2 of the Open Archives Protocol for
+Metadata Harvesting (OAI-PMH).  In this email, we would like to inform you about:
+
+* The context of this technical work;
+* The process for undertaking the work;
+* The schedule for the release of v.2.0 of the OAI-PMH;
+* Anticipated changes in v.2.0 of the OAI-PMH.
+
+Carl Lagoze and Herbert Van de Sompel
+
+=> The context of this technical work was:
+
+1. The original release of the OAI-PMH, version 1.x, was intended to
+initiate a year long period of experimentation with the protocol.  The goal
+was to make this experimental version as stable as possible to encourage
+usage and testing. (In fact, only one change from version 1.0 to 1.1 was made
+during the year in response to a W3C change in the XML schema
+specification).
+
+2. The OAI-TC work should avoid if possible the addition of significant
+functionality to the protocol. Instead, the scope of work should be to
+resolve problems that arose over the past year in reaction to experience in
+the user community.
+
+3. While it was not deemed necessary that version 2.0 be backward compatible
+with version 1.x, the upgrade path when version 2 is release should be
+reasonably straightforward.
+
+4. The result of the work, version 2, should be a stable, "standard"
+release.  It remains undecided as to whether a formal standardization
+process will be undertaken with the version 2 protocol.
+
+
+ => The process for undertaking this work has been: 
+
+1. Formation of the OAI-TC representing technical expertise from a
+cross-section of the OAI community.  Conduct of this work within a closed
+technical committee follows the same procedure which was successfully used
+for the development of OAI-PMH v. 1.x.  Members of OAI-TC are listed at
+http://www.openarchives.org/organization/tech.comm.html.
+
+2. Joint identification of issues 
+
+3. Development of issue white papers 
+
+4. Vetting of white papers to determine those that were in scope of OAI-TC
+work 
+
+5. Development of issue resolution 
+
+6. On-line and phone meetings to reach final issue resolution 
+
+7. Reporting and validation of the results of the work of OAI-TC to the OAI Steering Committee.
+Members of OAI-SC are listed at
+http://www.openarchives.org/news/oaiscpress000825.html
+
+8. Protocol revision and writing 
+      
+
+=> The schedule for the release of v 2.0 of the protocol is as follows: 
+
+1. March 1: release of the protocol to a limited group of alpha testers 
+
+2. April 1: beta public release 
+
+3. May 1: final public release 
+
+
+=> The following is a summary of the changes that are anticipated for
+version 2 of OAI-PMH: 
+
+1. Dates and times - Standardize on UTC for all dates and times in protocol
+requests ("from" and "until" arguments) and responses.
+        
+ 2. Harvesting Granularity- Allow all ISO8601 time granularities in dates
+and times in the "from" and "until" arguments of protocol requests.  Allow a
+data provider to expose its support date/time granularity in the response to
+an Identity request.  Default granularity is YYY-MM-DD.
+
+3. Flow control - Improve flow control by allowing the following optional
+attributes when a resumptionToken is returned:    
+* retryAfter - a suggested wait time until the request should be resubmitted
+
+* expirationDate - the projected expiration of the resumptionToken  
+* completeListSize - total number of items across entire result set 
+* cursor - index of first item in this batch within entire result set 
+
+4. set functionality - It will be possible to specify an identifier as
+argument to the ListSets verb, permitting a harvester to inquire to which
+sets an item belongs.  Responses to ListRecords and GetRecord will return
+the sets to which each item belongs. Support of sets remains optional.
+
+5. base-URL - Insulate harvesters from proxy servers by mandating that the
+visible identity of the "handling server" in responses be that of a
+persistent "master", that may opaquely reflect requests to slaves. 
+
+6. xml schema for mandatory Dublin Core - Coordinate with the DCMI so that
+the schema used by the OAI is based on one managed by DCMI.  Must allow
+inclusion of the xml lang attribute (specifying the language of the metadata
+value). 
+        
+7. Dedupping - Define an optional "provenance" XML container that can be
+attached to metadata records that a data provider aggregates from other
+sources.  This will help harvesters in detecting duplicates harvested from
+multiple data providers. 
+
+8. Error handling - Report OAI errors in OAI responses in a manner
+independent of HTTP status codes. 
+
+9. Set description - Define an optional XML container with which communities
+can describe individual sets. 
+
+10. Multiple metadata formats - Modify ListIdentifiers to permit a metadata
+format as argument, filtering the return to include only record identifiers
+that support the specified format.
+        
+
+From support@eprints.org  Mon Feb  4 20:26:32 2002
+From: support@eprints.org (ePrints Support)
+Date: Mon, 4 Feb 2002 20:26:32 +0000
+Subject: [OAI-general] Re: [OAI-implementers] Open Archives Initiative Protocol for Metadata Harvesting Version 2 news
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D4301F2C762@opus.cs.cornell.edu>
+References: <706871B20764CD449DB0E8E3D81C4D4301F2C762@opus.cs.cornell.edu>
+Message-ID: <20020204202632.GB25807@ecs.soton.ac.uk>
+
+I strongly feel that sets should be made optional (maybe flagging this in
+the Identify response) to reduce the implementation load on small archives.
+
+Sets do not appear to be widely used by harvesters (shout if this is wrong)
+and increase implementation complexity by about 25%. The "which sets is this
+in" query makes this even more fiddley.
+
+It's easy for harvestors not to support sets, but if it's meaningless which
+it seems to be for some (many?) archives then forcing them to do extra work
+reduces the number who will uptake.
+
+also:
+
+> 10. Multiple metadata formats - Modify ListIdentifiers to permit a metadata
+> format as argument, filtering the return to include only record identifiers
+> that support the specified format.
+
+This is also more complexity, why is it needed?
+
+-- 
+
+ Christopher Gutteridge                   support@eprints.org 
+ ePrints Developer                        +44 23 8059 4833
+
+
+On Mon, Feb 04, 2002 at 12:04:48PM -0500, Carl Lagoze wrote:
+> Dear OAI community: 
+> 
+> In mid-2001 the Open Archives Initiative Technical Committee (OAI-TC) was
+> formed to develop and write version 2 of the Open Archives Protocol for
+> Metadata Harvesting (OAI-PMH).  In this email, we would like to inform you about:
+> 
+> * The context of this technical work;
+> * The process for undertaking the work;
+> * The schedule for the release of v.2.0 of the OAI-PMH;
+> * Anticipated changes in v.2.0 of the OAI-PMH.
+> 
+> Carl Lagoze and Herbert Van de Sompel
+> 
+> => The context of this technical work was:
+> 
+> 1. The original release of the OAI-PMH, version 1.x, was intended to
+> initiate a year long period of experimentation with the protocol.  The goal
+> was to make this experimental version as stable as possible to encourage
+> usage and testing. (In fact, only one change from version 1.0 to 1.1 was made
+> during the year in response to a W3C change in the XML schema
+> specification).
+> 
+> 2. The OAI-TC work should avoid if possible the addition of significant
+> functionality to the protocol. Instead, the scope of work should be to
+> resolve problems that arose over the past year in reaction to experience in
+> the user community.
+> 
+> 3. While it was not deemed necessary that version 2.0 be backward compatible
+> with version 1.x, the upgrade path when version 2 is release should be
+> reasonably straightforward.
+> 
+> 4. The result of the work, version 2, should be a stable, "standard"
+> release.  It remains undecided as to whether a formal standardization
+> process will be undertaken with the version 2 protocol.
+> 
+> 
+>  => The process for undertaking this work has been: 
+> 
+> 1. Formation of the OAI-TC representing technical expertise from a
+> cross-section of the OAI community.  Conduct of this work within a closed
+> technical committee follows the same procedure which was successfully used
+> for the development of OAI-PMH v. 1.x.  Members of OAI-TC are listed at
+> http://www.openarchives.org/organization/tech.comm.html.
+> 
+> 2. Joint identification of issues 
+> 
+> 3. Development of issue white papers 
+> 
+> 4. Vetting of white papers to determine those that were in scope of OAI-TC
+> work 
+> 
+> 5. Development of issue resolution 
+> 
+> 6. On-line and phone meetings to reach final issue resolution 
+> 
+> 7. Reporting and validation of the results of the work of OAI-TC to the OAI Steering Committee.
+> Members of OAI-SC are listed at
+> http://www.openarchives.org/news/oaiscpress000825.html
+> 
+> 8. Protocol revision and writing 
+>       
+> 
+> => The schedule for the release of v 2.0 of the protocol is as follows: 
+> 
+> 1. March 1: release of the protocol to a limited group of alpha testers 
+> 
+> 2. April 1: beta public release 
+> 
+> 3. May 1: final public release 
+> 
+> 
+> => The following is a summary of the changes that are anticipated for
+> version 2 of OAI-PMH: 
+> 
+> 1. Dates and times - Standardize on UTC for all dates and times in protocol
+> requests ("from" and "until" arguments) and responses.
+>         
+>  2. Harvesting Granularity- Allow all ISO8601 time granularities in dates
+> and times in the "from" and "until" arguments of protocol requests.  Allow a
+> data provider to expose its support date/time granularity in the response to
+> an Identity request.  Default granularity is YYY-MM-DD.
+> 
+> 3. Flow control - Improve flow control by allowing the following optional
+> attributes when a resumptionToken is returned:    
+> * retryAfter - a suggested wait time until the request should be resubmitted
+> 
+> * expirationDate - the projected expiration of the resumptionToken  
+> * completeListSize - total number of items across entire result set 
+> * cursor - index of first item in this batch within entire result set 
+> 
+> 4. set functionality - It will be possible to specify an identifier as
+> argument to the ListSets verb, permitting a harvester to inquire to which
+> sets an item belongs.  Responses to ListRecords and GetRecord will return
+> the sets to which each item belongs. Support of sets remains optional.
+> 
+> 5. base-URL - Insulate harvesters from proxy servers by mandating that the
+> visible identity of the "handling server" in responses be that of a
+> persistent "master", that may opaquely reflect requests to slaves. 
+> 
+> 6. xml schema for mandatory Dublin Core - Coordinate with the DCMI so that
+> the schema used by the OAI is based on one managed by DCMI.  Must allow
+> inclusion of the xml lang attribute (specifying the language of the metadata
+> value). 
+>         
+> 7. Dedupping - Define an optional "provenance" XML container that can be
+> attached to metadata records that a data provider aggregates from other
+> sources.  This will help harvesters in detecting duplicates harvested from
+> multiple data providers. 
+> 
+> 8. Error handling - Report OAI errors in OAI responses in a manner
+> independent of HTTP status codes. 
+> 
+> 9. Set description - Define an optional XML container with which communities
+> can describe individual sets. 
+> 
+> 10. Multiple metadata formats - Modify ListIdentifiers to permit a metadata
+> format as argument, filtering the return to include only record identifiers
+> that support the specified format.
+>         
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+
+From suutee@hotmail.com  Mon Feb  4 19:58:57 2002
+From: suutee@hotmail.com (suutee)
+Date: Mon, 4 Feb 2002 14:58:57 -0500
+Subject: [OAI-general] suutee@hotmail.com
+Message-ID: <OE69DjoYAPNXRPmcarc00001492@hotmail.com>
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0064_01C1AD8C.78D164E0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Unsubscribe me, please.
+
+------=_NextPart_000_0064_01C1AD8C.78D164E0
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 6.00.2712.300" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY bgColor=3D#ffffff>
+<DIV><FONT face=3DArial size=3D2>Unsubscribe me, =
+please.</FONT></DIV></BODY></HTML>
+
+------=_NextPart_000_0064_01C1AD8C.78D164E0--
+
+From jyoung@oclc.org  Tue Feb  5 17:27:06 2002
+From: jyoung@oclc.org (Young,Jeff)
+Date: Tue, 5 Feb 2002 12:27:06 -0500
+Subject: [OAI-general] FW: [OAI-implementers] Open Archives Initiative Protocol for Meta
+ data Harvesting Version 2 news
+Message-ID: <E5431CF93E29F9478878F623E5B9CE983424C2@OA3-SERVER.oa.oclc.org>
+
+Sorry Walter, I forgot to copy the listserv in my response.
+
+-----Original Message-----
+From: Young,Jeff 
+Sent: Tuesday, February 05, 2002 12:25 PM
+To: 'Walter Underwood'
+Subject: RE: [OAI-implementers] Open Archives Initiative Protocol for
+Metadata Harvesting Version 2 news
+
+
+> From: Walter Underwood [mailto:wunder@inktomi.com]
+> Sent: Monday, February 04, 2002 5:11 PM
+> This is surprisingly close to my suggested list approach. If this was
+> changed to have the client to send the cursor and the number 
+> of records
+> requested, then the resumption token is no longer needed. 
+> Think of it as
+> moving the database cursor from the server the client. Offloading the
+> state. This approach is  proven in high-load applications 
+> like LDAP and
+> HTTP search engines.
+
+Tim Brody raised a point in a different thread that hasn't been addressed
+yet:
+
+	I would be interested to know how resumptionTokens can be avoided,
+	as RT is both flow-control (which can be replaced by start-maxrows
+	requests), but also state information (i.e. which records are to be 
+	returned). If different sections of the same query are requested, 
+	without state being maintained, surely there is a risk that some 
+	records may be missed in the overlap? (or are you presuming that all
+
+	records are added, and returned, sequentially?)
+
+Of course, resumptionTokens don't guarantee that an arbitrary data provider
+will return a complete set of results. They merely provide a mechanism to
+make it possible. Without such a guarantee, harvesters are obliged to
+periodically reharvest the entire repository if they want to pick up those
+missed items.
+
+Jeff
+
+From jyoung@oclc.org  Wed Feb  6 18:59:55 2002
+From: jyoung@oclc.org (Young,Jeff)
+Date: Wed, 6 Feb 2002 13:59:55 -0500
+Subject: [OAI-general] RE: FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news
+Message-ID: <E5431CF93E29F9478878F623E5B9CE983424CC@OA3-SERVER.oa.oclc.org>
+
+> From: Walter Underwood [mailto:wunder@inktomi.com]
+> Sent: Wednesday, February 06, 2002 12:10 PM
+> The list interfaces are mostly needed for new items. We don't mind
+> if the list is inconsistant or unsynchronized, as long as it has
+> all the new stuff.
+
+I guess I'm saying that resumptionTokens don't necessarily guarantee you'll
+get "all the new stuff", but could if appropriately implemented. The
+stateless alternative, though, seems to assume an idealistically static
+repository. If records are deleted from the repository, a stateless
+harvesting solution doesn't seem to allow for the possibility of getting all
+the new stuff. 
+
+Imagine a resultset with 1 million records served in 1000 record chunks.
+During the course of the harvest 10 records get deleted from the repository.
+Since the stateless solution relies on the position of a cursor, the
+client's view of the cursor may be as many as 10 records beyond the server's
+view and thus records will be missed. Using resumptionTokens, however, I can
+maintain a consistent cursor between client and server.
+
+Also, I'd like to use OAI for internal operations within our organization.
+Under those circumstances, I can make assumptions about the OAI
+server/harvester such as records will never vanish and instead will be
+flagged as deleted. With millions records in our repository, I'd like to
+avoid a complete reharvest wherever possible. I don't believe reharvests can
+be avoided using stateless harvesting the way they can with stateful
+harvesting.
+
+Jeff
+
+
+From mln@ils.unc.edu  Fri Feb  8 16:06:29 2002
+From: mln@ils.unc.edu (Michael L. Nelson)
+Date: Fri, 8 Feb 2002 11:06:29 -0500 (EST)
+Subject: [OAI-general] CFP: Distributed Computing Architectures for Digital Libraries
+Message-ID: <Pine.GSO.4.21.0202081105500.16254-100000@ruby.ils.unc.edu>
+
+                          Call for Papers
+
+   Workshop on Distributed Computing Architectures for Digital Libraries
+                 http://www.cs.odu.edu/~jbollen/icpp2002/
+
+                     to be held in conjunction with the
+
+     31st International Conference on Parallel Processing (ICPP 2002)
+                   Vancouver, Canada August 18-21, 2002
+                   http://www.eecg.toronto.edu/icpp2002/
+
+Workshop Co-Chairs:
+
+Johan Bollen <jbollen@cs.odu.edu>
+Department of Computer Science
+Old Dominion University
+Norfolk VA, 23529, USA
+http://www.cs.odu.edu/~jbollen/
+
+Michael L. Nelson <m.l.nelson@larc.nasa.gov>
+NASA Langley Research Center
+Hampton VA 23681
+http://mln.larc.nasa.gov/~mln/
+
+Description:
+
+Digital libraries (DLs) are increasingly common on the Web,
+providing ordered, vetted digital collections to targeted user groups.
+To date, much of DL research has focused on the acquisition and
+representation of digital objects, optimizing and personalizing user
+services, and interoperability efforts.  Few DLs employ mirrors, much less
+some of the more sophisticated, non-client-server architectures found
+in WWW deployment, e.g. peer-to-peer systems and distributed storage
+architectures.  Although these new architectures have been succesfully
+applied to a large number of Internet services, they have had little
+impact on DL research.  Are they technically suitable for DL use, or do
+social and economic issues prevent their adoption?
+
+This workshop will explore these issues as well as highlight some of the
+more novel DL architectures.  A range of theoretical, technical,
+and speculative papers are sought to discuss and propose alternate DL
+architectures and approaches.  Papers are requested in the following
+and related topics:
+
+        - Peer-to-Peer (P2P) systems
+        - Adaptive digital libraries
+        - Wireless access to digital libraries
+        - Grid computing
+        - Distributed searching
+        - Metadata harvesting
+        - Distributed storage systems
+        - Serverless storage and information retrieval
+        - DL requirements vs. ordinary web requirements
+        - Provenance, trust, integrity and archival issues
+          in distributed digital libraries
+
+
+Important Dates:
+
+        April 20, 2002           Paper Submission
+        May 15, 2002             Notification of acceptance
+        June 1, 2002            Camera-ready copies due
+
+Submission details:
+
+Authors are invited to submit research contributions representing
+original, previously unpublished work. Submitted papers will be carefully
+evaluated by the technical committee for originality, significance,
+technical soundness, and clarity of exposition.  Submissions will only
+be accepted in PDF, emailed to the co-chairs.  Accepted papers will be
+published by IEEE Computer Society Press as proceedings of the ICPP'2002
+workshops. All submitted papers must be formatted according to the author
+guideline provided by IEEE Computer Society Press (two column-format),
+and accepted papers must not exceed six pages.  Please contact the
+co-chairs with any questions.
+
+Technical Committee
+
+- Kurt Bollacker, Long Now Foundation (kurt@longnow.org)
+- Johan Bollen, Old Dominion University (jbollen@cs.odu.edu)
+- Ed Chi, XEROX PARC (echi@parc.xerox.com)
+- Fabio Crestani, Strathclyde (fabioc@cs.strath.ac.uk)
+- Cliff Joslyn, Los Alamos National Laboratory (joslyn@lanl.gov)
+- Thomas Krichel, Long Island University (thomas.krichel@liu.edu)
+- Michael Nelson, NASA Langley Research Center (m.l.nelson@larc.nasa.gov)
+- Luis M. Rocha, Los Alamos National Laboratory (rocha@lanl.gov)
+- Herbert Van de Sompel, Los Alamos National Laboratory
+- Simeon Warner, Cornell (simeon@cs.cornell.edu)
+- Mohammad Zubair, Old Dominion University (zubair@cs.odu.edu)
+
+
+From billn@yelmtel.com  Tue Feb 12 22:32:08 2002
+From: billn@yelmtel.com (Bill Nicholls)
+Date: Tue, 12 Feb 2002 14:32:08 -0800
+Subject: [OAI-general] Eprints Reference
+Message-ID: <3C6997E8.AFE8F757@yelmtel.com>
+
+This is a multi-part message in MIME format.
+--------------EE3B127FF8FFD50EC1E8B8EF
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Just FYI:
+
+Both Eprints and OAI get mentioned in my next column on Byte.com, in
+about two weeks.
+
+See the Advanced Software and Technology column on http://www.byte.com
+
+Bill Nicholls
+--------------EE3B127FF8FFD50EC1E8B8EF
+Content-Type: text/x-vcard; charset=us-ascii;
+ name="billn.vcf"
+Content-Transfer-Encoding: 7bit
+Content-Description: Card for Bill Nicholls
+Content-Disposition: attachment;
+ filename="billn.vcf"
+
+begin:vcard 
+n:Nicholls;Bill
+x-mozilla-html:FALSE
+url:www.billswrite.com
+org:BillsWrite.com;Performance Management
+adr:;;PO Box 2107;Yelm;WA;98597;USA
+version:2.1
+email;internet:billn@ywave.com
+title:Owner
+fn:BillN
+end:vcard
+
+--------------EE3B127FF8FFD50EC1E8B8EF--
+
+
+From N.Dijk@sciencedirect.com  Wed Feb 13 09:54:16 2002
+From: N.Dijk@sciencedirect.com (Dijk, Nicolette van (ELS))
+Date: Wed, 13 Feb 2002 10:54:16 +0100
+Subject: [OAI-general] Scirus includes arXiv.org e-prints
+Message-ID: <46414F09B351C64BAA875CE0B37BE07101325A94@elsamsvexch02.elsevier.nl>
+
+Scirus includes arXiv.org e-prints
+
+Scirus.com, the web search engine for scientific information launched by
+Elsevier Science last April, has now made 180.000 e-prints from arXiv.org
+(formerly xxx.lanl.gov) available to its users. The e-prints of arXiv.org
+were harvested using the Protocol for Metadata Harvesting of the Open
+Archive Initiative. Scirus has just been voted Best Specialty Search Engine
+in the prestigious Search Engine Awards 2001, and is planning to add
+additional OAI sources to its index in the near future to broaden its
+coverage further. 
+
+
+*********************************
+Nicolette van Dijk
+Content Manager Scirus 
+
+Elsevier Science 
+Molenwerf 1
+1014 AG Amsterdam 
+The Netherlands
+
+Tel: 31 20 485 3467
+Fax: 31 20 485 3354
+
+http://www.scirus.com -- specialty search engine of the year 2001: 
+ 
+http://www.searchenginewatch.com/awards/2001-winners.html#specialty
+
+
+
+
+
+
+From support@eprints.org  Thu Feb 14 19:11:54 2002
+From: support@eprints.org (ePrints Support)
+Date: Thu, 14 Feb 2002 19:11:54 +0000
+Subject: [OAI-general] EPrints 2.0!
+Message-ID: <20020214191154.GB2003@ecs.soton.ac.uk>
+
+(this is being crossposted lots, apologies if you see several
+copies)
+
+
+***********************************************************
+    EPRINTS Version 2.0 Released          14th Feb, 2002
+***********************************************************
+
+We are proud to announce the official release of version 2 
+of the EPrints software for building online archives.
+
+EPrints 2 creates a web based archive, containing 
+documents and metadata.
+
+Features:
+
+* OAI 1.1 Compliant
+
+* Efficient word-indexed searching
+
+* Support for mulitple archives on one server
+
+* Much improved user interface, learning from experiences
+  of version 1
+
+* The system is internationalised, and uses unicode 
+  throughout. (XML config files + language phrase files)
+
+* Free Software (GPL)
+
+* Object Oriented Design and API which allows addition
+  of in house modules, scripts and other functionality
+
+* Fully customisable
+
+* Fixes common complaints about eprints v1
+
+   - Nifty installation, (eprints 1 required make and 
+     configure, eprints 2 does not)
+
+   - Web based registration, where you are emailed a pin -
+     eprints 2 does not need to receive email
+
+For more infomation see:
+http://www.eprints.org/
+
+For a demo see:
+http://demoprints.eprints.org/
+
+
+***********************************************************
+Related News:
+***********************************************************
+
+ EPrints Community site is ready for use: 
+ 
+  http://community.eprints.org/
+
+ It's brand new. Add Stuff.
+
+***********************************************************
+
+ Budapest Open Access Initiative
+
+ "The OSI Information Program is committing funding of 1 
+  million US dollars per year for three years in support 
+  of open access projects."
+
+ ...which is nice, and may be relevant to you.
+
+ http://www.soros.org/openaccess/index.shtml
+  
+***********************************************************
+
+
+ 
+ 
+
+
+
+
+-- 
+
+ Christopher Gutteridge                   support@eprints.org 
+ ePrints Developer                        +44 23 8059 4833
+
+
+From support@ecs.soton.ac.uk  Thu Feb 14 19:05:40 2002
+From: support@ecs.soton.ac.uk (ePrints Support)
+Date: Thu, 14 Feb 2002 19:05:40 +0000
+Subject: [OAI-general] EPrints Version 2.0!
+Message-ID: <20020214190539.GB1756@ecs.soton.ac.uk>
+
+***********************************************************
+    EPRINTS Version 2.0 Released          14th Feb, 2002
+***********************************************************
+
+We are proud to announce the official release of version 2 
+of the EPrints software for building online archives.
+
+EPrints 2 creates a web based archive, containing 
+documents and metadata.
+
+Features:
+
+* OAI 1.1 Compliant
+
+* Efficient word-indexed searching
+
+* Support for mulitple archives on one server
+
+* Much improved user interface, learning from experiences
+  of version 1
+
+* The system is internationalised, and uses unicode 
+  throughout. (XML config files + language phrase files)
+
+* Free Software (GPL)
+
+* Object Oriented Design and API which allows addition
+  of in house modules, scripts and other functionality
+
+* Fully customisable
+
+* Fixes common complaints about eprints v1
+
+   - Nifty installation, (eprints 1 required make and 
+     configure, eprints 2 does not)
+
+   - Web based registration, where you are emailed a pin -
+     eprints 2 does not need to receive email
+
+For more infomation see:
+http://www.eprints.org/
+
+For a demo see:
+http://demoprints.eprints.org/
+
+
+***********************************************************
+Related News:
+***********************************************************
+
+ EPrints Community site is ready for use: 
+ 
+  http://community.eprints.org/
+
+ It's brand new. Add Stuff.
+
+***********************************************************
+
+ Budapest Open Access Initiative
+
+ "The OSI Information Program is committing funding of 1 
+  million US dollars per year for three years in support 
+  of open access projects."
+
+ ...which is nice, and may be relevant to you.
+
+ http://www.soros.org/openaccess/index.shtml
+  
+***********************************************************
+
+
+ 
+ 
+
+
+
+
+-- 
+
+ Christopher Gutteridge                   support@eprints.org 
+ ePrints Developer                        +44 23 8059 4833
+
+
+From hussein@vt.edu  Tue Feb 19 05:15:59 2002
+From: hussein@vt.edu (Hussein Suleman)
+Date: Tue, 19 Feb 2002 00:15:59 -0500
+Subject: [OAI-general] Open Digital Libraries (ODL)
+Message-ID: <3C71DF8F.1000001@vt.edu>
+
+Announcement: Open Digital Libraries Project
+
+The creation of Open Digital Libraries (ODLs) is the aim of a research 
+project at Virginia Tech, investigating the building of digital 
+libraries as networks of independent components, with inter-component 
+communication based on the OAI Protocol for Metadata Harvesting and 
+extensions thereof.
+
+More documentation, online demonstrations and prototype components can 
+be found on the project website at:
+    http://oai.dlib.vt.edu/odl/
+
+The current suite of tools available for experimentation include:
+  - Harvest, a Perl-based OAI/ODL harvester module
+  - DBUnion, to perform aggregation of OAI/ODL archives
+  - IRDB, search engine over an arbitrary OAI/ODL archive
+  - sample user interface to the IRDB search engine
+(Additional components are under development to provide other typical DL 
+services such as submission and browsing.)
+
+Common features of the current component suite includes:
+  - simplicity: minimal number of external dependencies and no makefiles
+  - object-oriented Perl to support extensibility
+  - XML Schema for all configuration information
+  - single installation, multiple instance model
+  - configure.pl to create instances and set/edit parameters
+
+For comments, suggestions, or questions, please email hussein@vt.edu
+
+-- 
+=======================================================================
+hussein suleman -- hussein@vt.edu - vtcs - http://www.husseinsspace.com
+=======================================================================
+
+

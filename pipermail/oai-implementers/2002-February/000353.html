@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Support for Tim Cole's comments
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:caar%40loc.gov">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000370.html">
+   <LINK REL="Next"  HREF="000354.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Support for Tim Cole's comments
+   </H1>
+    <B>Caroline Arms
+    </B> 
+    <A HREF="mailto:caar%40loc.gov"
+       TITLE="[OAI-implementers] Support for Tim Cole's comments">caar@loc.gov
+       </A><BR>
+    <I>Tue, 12 Feb 2002 13:13:01 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000370.html">[OAI-implementers] Resumption 'from' date.
+</A></li>
+        <LI> Next message: <A HREF="000354.html">[OAI-implementers] Support for Tim Cole's comments
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#353">[ date ]</a>
+              <a href="thread.html#353">[ thread ]</a>
+              <a href="subject.html#353">[ subject ]</a>
+              <a href="author.html#353">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I would just like to endorse Tim Cole's comments about appreciating the
+flexibility of the resumptionToken.  Our implementation is somewhat
+similar to his in that there is no database management system, but static
+files of records, which are updated infrequently.  In our case, a whole
+&quot;set&quot; is likely to be updated at once, which means that fine granularity
+of timestamps will not help with the issue of dividing the response into
+chunks.  We have been using fairly small response sets for records and
+expiring the resumptionTokens fairly quickly, in order to avoid problems
+from major updates between issue of the token and its use.  We have no way
+to ensure that the order would be the same after the update.
+
+We would certainly be interested in hearing from harvesters if our chunks
+are annoyingly small and if our short expiry times are causing problems.  
+We made implementation decisions for these based on no information and
+would be happy to reconsider based on real experience.
+
+    Caroline Arms                                    <A HREF="mailto:caar@loc.gov">caar@loc.gov</A>
+    National Digital Library Program
+      &amp;
+    Information Technology Services
+    
+PS I will be away for a week.  I'll deal with any responses to this
+message on my return.
+
+On Fri, 8 Feb 2002, Tim Cole wrote:
+
+&gt;<i> Not to curtail the very interesting technical back and forth, but...
+</I>&gt;<i> 
+</I>&gt;<i> The flexible and naive nature of the resumptionToken parameter and the fact
+</I>&gt;<i> that the OAI-PMH doesn't allow Service Providers to request a fixed number
+</I>&gt;<i> of records is very much by design.  The minimum granularity and inherent
+</I>&gt;<i> limitations of the datestamp argument was also a decision made after some
+</I>&gt;<i> thought.  Given the intended mission of the OAI PMH, I believe the decisions
+</I>&gt;<i> were correct.  (Whether there's really a niche for what OAI-PMH is intended
+</I>&gt;<i> to be is of course open to debate.)
+</I>&gt;<i> 
+</I>&gt;<i> OAI PMH was created initially to facilitate interchange of metadata between
+</I>&gt;<i> E-Print archives.  These archives could be characterized by several
+</I>&gt;<i> characteristics -- among them that data contained in the archive changed
+</I>&gt;<i> relatively slowly (i.e., on average relatively few new records added,
+</I>&gt;<i> changed or deleted day to day) and that the repositories were built on
+</I>&gt;<i> limited resources and with limited capabilities (some didn't even support
+</I>&gt;<i> keyword search of full-text of documents held in the repository).
+</I>&gt;<i> 
+</I>&gt;<i> Accordingly OAI PMH built in a lot of flexibility (and a certain amount of
+</I>&gt;<i> wiggle room) for implementers, particularly metadata providers.  Timestamps
+</I>&gt;<i> with granularity of only 1 day were allowed.  Flow control was implemented
+</I>&gt;<i> in the least prescriptive, most stateless way possible.
+</I>&gt;<i> 
+</I>&gt;<i> Some metadata provider services have been built to take advantage of this
+</I>&gt;<i> flexibility.  For instance I have an experimental OAI provider service that
+</I>&gt;<i> has no database management software behind it at all.  Instead it relies on
+</I>&gt;<i> the implementation platform's file system.  Metadata is stored in XML files
+</I>&gt;<i> and dynamically transformed when requested to the requested metadata schema
+</I>&gt;<i> using XSLT.  The number of record chunk size returned for a ListRecord
+</I>&gt;<i> request varies according to the number of records in each file system
+</I>&gt;<i> directory at the time the request is received.  The order in which records
+</I>&gt;<i> are returned is determined by the implementation platform's file system and
+</I>&gt;<i> typically is not chronological, meaning it will change between requests as
+</I>&gt;<i> records are added, deleted, and updated.  This implementation would not be
+</I>&gt;<i> able to return a fixed number of records specified by the Service Provider
+</I>&gt;<i> without substansial changes to its basic design.
+</I>&gt;<i> 
+</I>&gt;<i> The resumption token as used in this implementation includes the requested
+</I>&gt;<i> metadata prefix, the date range values of the original request, and a list
+</I>&gt;<i> of remaining directories to be exported.  No state information is ever
+</I>&gt;<i> maintained on the server side, and the number of records returned in
+</I>&gt;<i> response to a request with a resumption token isn't determined until the
+</I>&gt;<i> request is received and processed.  (Thus a later request with same
+</I>&gt;<i> resumption token may get more or less records.) Datestamps are maintained to
+</I>&gt;<i> the day only (no hours, minutes, or seconds).  Implementing locking or
+</I>&gt;<i> creating some sort of state maintainence mechanism would require substansial
+</I>&gt;<i> and fundamental changes to the design of this implemetation.
+</I>&gt;<i> 
+</I>&gt;<i> I believe the implementation conforms to the current protocol document, and
+</I>&gt;<i> I'm reasonably sure that with only minor changes it will conform to the 2.0
+</I>&gt;<i> spec.  I've been surprised at how hard it is to break, though I certainly
+</I>&gt;<i> don't expect it to be as reliable and robust as some other implementations
+</I>&gt;<i> I've seen..  It does what it was designed to do.
+</I>&gt;<i> 
+</I>&gt;<i> However this implementation clearly does not support precise harvesting
+</I>&gt;<i> along the lines that have been discussed on this list over the course of the
+</I>&gt;<i> last week or two.  The resumptionToken is not deterministic, but only a
+</I>&gt;<i> somewhat imprecise method used to chunk a long response.  I would contend
+</I>&gt;<i> that given that the provider implementation descirbed is intended only to
+</I>&gt;<i> handle a respository of at most a few 10s of thousands of metadata records
+</I>&gt;<i> and in which additions, updates, and deletions occur at most weekly, and
+</I>&gt;<i> more often monthly, the imprecise harvesting does not lead to poor
+</I>&gt;<i> representation of the metadata stored in my repository, and therefore should
+</I>&gt;<i> not be of concern to Service Providers.  Of course that's debatable.
+</I>&gt;<i> 
+</I>&gt;<i> Which is the question before the OAI Community at this point in time.  Is
+</I>&gt;<i> there really a niche for a relatively simple protocol that allows in certain
+</I>&gt;<i> instances for less precise harvesting?  (For instance we've known from the
+</I>&gt;<i> start that some re-harvesting occurs because datestamps only have
+</I>&gt;<i> granularity of one day.)  Can services built on such a protocol be useful --
+</I>&gt;<i> at least for certain purposes?  Obviously not for a bank trying to do
+</I>&gt;<i> financial transactions, but perhaps in the DL world.  A number of us are
+</I>&gt;<i> trying to answer these kinds of questions by empirical means rather than
+</I>&gt;<i> speculation.
+</I>&gt;<i> 
+</I>&gt;<i> Given that there can be circumstances when a metadata provider might want to
+</I>&gt;<i> avoid overhead of a transactional database system, I would very much oppose
+</I>&gt;<i> moving OAI-PMH in the direction of SQL style transactions and cursors.  I
+</I>&gt;<i> would also oppose, especially as a required functionality, upgrading flow
+</I>&gt;<i> control to allow SPs to specify numbers of records wanted, or to specify
+</I>&gt;<i> resuming from a particularly record (which implictly assumes an ordered,
+</I>&gt;<i> persistent response object).  These changes would require providers to
+</I>&gt;<i> maintain state and would effectively require them to provide transactional
+</I>&gt;<i> functionalities -- things many of the current providers aren't in a good
+</I>&gt;<i> position to do.  The benefits of such changes for the target audience don't
+</I>&gt;<i> seem worth it.  (Which comes back to question raised earlier about whether a
+</I>&gt;<i> niche protocol aimed at a particular target audience can survive.  I think
+</I>&gt;<i> it can, but we'll have to see.)
+</I>&gt;<i> 
+</I>&gt;<i> Tim Cole
+</I>&gt;<i> University of Illinois at Urbana-Champaign
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000370.html">[OAI-implementers] Resumption 'from' date.
+</A></li>
+	<LI> Next message: <A HREF="000354.html">[OAI-implementers] Support for Tim Cole's comments
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#353">[ date ]</a>
+              <a href="thread.html#353">[ thread ]</a>
+              <a href="subject.html#353">[ subject ]</a>
+              <a href="author.html#353">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

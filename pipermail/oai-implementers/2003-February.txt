@@ -1,0 +1,2484 @@
+From mike.fraser@computing-services.oxford.ac.uk  Sun Feb  9 10:09:35 2003
+From: mike.fraser@computing-services.oxford.ac.uk (Michael Fraser)
+Date: Sun, 9 Feb 2003 10:09:35 +0000 (GMT Standard Time)
+Subject: [OAI-implementers] DRH2003 Call for papers (fwd)
+Message-ID: <Pine.WNT.4.50.0302091008370.-720741@humbul-3>
+
+[Presentations on OAI and humanities/heritage resources welcome!]
+[Please address any queries to drh2003@glos.ac.uk]
+[Apologies for cross-posting]
+
+
+                  CALL FOR PROPOSALS: DRH2003
+
+                  ****Deadline: March 31st****
+
+         DRH 2003: Digital Resources for the Humanities
+                University of Gloucestershire
+                 31 August - 3 September 2003
+           http://www.glos.ac.uk/humanities/drh2003/
+
+The DRH conferences have established themselves firmly in the UK and
+international calendar as the major forum bringing together scholars,
+librarians, archivists, curators, information scientists and computing
+professionals in a unique and positive way, to share ideas and information
+about the creation, exploitation, management and preservation of digital
+resources in the arts and humanities.
+
+The DRH 2003 conference will take place at the University of
+Gloucestershire's Cheltenham campus between 31 August and 3 September
+2003.
+
+Proposals for academic papers, themed panel sessions, posters and
+workshops are invited. Themes include:
+    * impact of access to digital resources on teaching and learning;
+    * digital libraries, archives and museums
+    * time-based media and multimedia studies in performing arts
+    * impact of network and televisual technologies on humanities research
+    and education.
+
+The deadline for submission is 31 March 2003.
+
+Please visit the website at http://www.glos.ac.uk/humanities/drh2003/ for
+full details of the conference and how to submit proposals. Email
+enquiries are also welcome at drh2003@glos.ac.uk
+
+
+From simeon@cs.cornell.edu  Fri Feb 14 22:07:46 2003
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Fri, 14 Feb 2003 17:07:46 -0500 (EST)
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+Message-ID: <Pine.LNX.4.44.0302141606570.12670-100000@ice.cs.cornell.edu>
+
+In my recent post to oai-general
+http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html
+I said I'd post a note about the current output of DSpace at MIT to this
+list (which seems a more appropriate forum). I just ran a harvest and got
+the log shown below, I've added comments in [].
+
+Cheers,
+Simeon.
+
+
+
+simeon@ice 14Feb03>more log 
+oaiharvest.pl: Harvest from http://hpds1.mit.edu/oai/ using POST
+OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=Identify
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+
+[nice, DSpace implements gzip content coding]
+
+oaiharvest.pl: Identify reports OAI-PMH version 2.0
+oaiharvest.pl: Doing complete harvest.
+OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListMetadataFormats
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListSets
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: metadataPrefix=oai_dc&verb=ListRecords
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+
+[oops, expat parser fails on response
+ my harvester now attempts to do replacement on bad XML/UTF8 bytes/chars
+ using my utf8conditioner, details at 
+ http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/ 
+ Unless the response can be parsed we can't even know if there is a
+ resumptionToken...] 
+
+utf8conditioner: 
+Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C, substituted 0x3F
+Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1839, char 559834, byte 559890: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1840, char 559919, byte 559975: code not allowed in XML: 0x000C, substituted 0x3F
+Line 1843, char 560213, byte 560269: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1846, char 560475, byte 560531: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1850, char 560807, byte 560863: code not allowed in XML: 0x000C, substituted 0x3F
+Line 1851, char 560911, byte 560967: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2249, char 658132, byte 658188: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2250, char 658230, byte 658286: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2253, char 658449, byte 658505: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2271, char 662207, byte 662263: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2274, char 662411, byte 662467: code not allowed in XML: 0x000E, substituted 0x3F
+Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, substituted 0x3F
+
+[utf8conditioner detected and did replacements for a number of characeters] 
+
+oaiharvest.pl: Got 752 records (running total: 752)
+oaiharvest.pl: No resumptionToken, end of complete list.
+
+[expat could then parse response extracting 752 records, no resumptionToken]
+
+oaiharvest.pl: Done.
+simeon@ice 14Feb03>
+
+
+[doing the same tests with Xerces...]
+
+simeon@ice 14Feb03>xercesCountElements lr
+[Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was found in the element content of the document.
+
+simeon@ice 14Feb03>cat lr | utf8conditioner -x > lrc
+Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C, substituted 0x3F
+[..etc, same output as above...]
+Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, substituted 0x3F
+
+simeon@ice 14Feb03>xercesCountElements lrc
+lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197 chars)
+
+
+
+From tim@tim.brody.btinternet.co.uk  Sat Feb 15 14:52:50 2003
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Sat, 15 Feb 2003 14:52:50 +0000
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <Pine.LNX.4.44.0302141606570.12670-100000@ice.cs.cornell.edu>
+References: <Pine.LNX.4.44.0302141606570.12670-100000@ice.cs.cornell.edu>
+Message-ID: <3E4E5442.1050007@tim.brody.btinternet.co.uk>
+
+http://celestial.eprints.org/cgi-bin/status?action=repository;metadataFormat=17
+
+Harvested 752 records - I've also implemented some 
+character-substitution to fix encoding errors, although this is probably 
+not as proficient as Simeon's!
+
+The question is, the more harvesters implement fixes the less pressure 
+there is on repositories to fix their output, so should harvesters 
+accept bad-XML?
+(once that question is answered, harvesters have to decide how much 
+normalisation of metadata they do :-)
+
+All the best,
+Tim.
+
+Simeon Warner wrote:
+> In my recent post to oai-general
+> http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html
+> I said I'd post a note about the current output of DSpace at MIT to this
+> list (which seems a more appropriate forum). I just ran a harvest and got
+> the log shown below, I've added comments in [].
+> 
+> Cheers,
+> Simeon.
+> 
+> 
+> 
+> simeon@ice 14Feb03>more log 
+> oaiharvest.pl: Harvest from http://hpds1.mit.edu/oai/ using POST
+> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=Identify
+> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+> 
+> [nice, DSpace implements gzip content coding]
+> 
+> oaiharvest.pl: Identify reports OAI-PMH version 2.0
+> oaiharvest.pl: Doing complete harvest.
+> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListMetadataFormats
+> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListSets
+> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: metadataPrefix=oai_dc&verb=ListRecords
+> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+> oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+> 
+> [oops, expat parser fails on response
+>  my harvester now attempts to do replacement on bad XML/UTF8 bytes/chars
+>  using my utf8conditioner, details at 
+>  http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/ 
+>  Unless the response can be parsed we can't even know if there is a
+>  resumptionToken...] 
+> 
+> utf8conditioner: 
+> Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C, substituted 0x3F
+> Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 1839, char 559834, byte 559890: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 1840, char 559919, byte 559975: code not allowed in XML: 0x000C, substituted 0x3F
+> Line 1843, char 560213, byte 560269: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 1846, char 560475, byte 560531: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 1850, char 560807, byte 560863: code not allowed in XML: 0x000C, substituted 0x3F
+> Line 1851, char 560911, byte 560967: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 2249, char 658132, byte 658188: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 2250, char 658230, byte 658286: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 2253, char 658449, byte 658505: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 2271, char 662207, byte 662263: code not allowed in XML: 0x000B, substituted 0x3F
+> Line 2274, char 662411, byte 662467: code not allowed in XML: 0x000E, substituted 0x3F
+> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, substituted 0x3F
+> 
+> [utf8conditioner detected and did replacements for a number of characeters] 
+> 
+> oaiharvest.pl: Got 752 records (running total: 752)
+> oaiharvest.pl: No resumptionToken, end of complete list.
+> 
+> [expat could then parse response extracting 752 records, no resumptionToken]
+> 
+> oaiharvest.pl: Done.
+> simeon@ice 14Feb03>
+> 
+> 
+> [doing the same tests with Xerces...]
+> 
+> simeon@ice 14Feb03>xercesCountElements lr
+> [Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was found in the element content of the document.
+> 
+> simeon@ice 14Feb03>cat lr | utf8conditioner -x > lrc
+> Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C, substituted 0x3F
+> [..etc, same output as above...]
+> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, substituted 0x3F
+> 
+> simeon@ice 14Feb03>xercesCountElements lrc
+> lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197 chars)
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+From hussein@vt.edu  Sat Feb 15 15:31:36 2003
+From: hussein@vt.edu (Hussein Suleman)
+Date: Sat, 15 Feb 2003 17:31:36 +0200
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+Message-ID: <3E4E5D58.9000106@vt.edu>
+
+hi
+
+i think Tim poses a very relevant question: do we deal with the
+so-called "real-world" encoding problems or do we try to encourage
+people to fix their implementations? (of course, for research purposes,
+we may end up doing both :))
+
+personally, the code i distribute to others does quite a lot of XML
+cleaning in the data provider, but none at all in the harvester. i think
+the basic philosophy i'm following is: clean data as close to the source
+as possible. also, i believe one of the reasons the adminEmail field in
+Identify responses is required is so that a service provider can contact
+the administrator if there are problems with the data.
+
+and now that the hype about OAI2 is dying down, i wonder how much (if
+any) more testing we need. i have some ideas to enhance, complement and
+possibly even replace the repository explorer in the next year ... it
+all depends on finding time and/or students/colleagues with time :)
+
+ttfn,
+----hussein
+
+
+Tim Brody wrote:
+ > 
+http://celestial.eprints.org/cgi-bin/status?action=repository;metadataFormat=17 
+
+ >
+ >
+ > Harvested 752 records - I've also implemented some
+ > character-substitution to fix encoding errors, although this is probably
+ > not as proficient as Simeon's!
+ >
+ > The question is, the more harvesters implement fixes the less pressure
+ > there is on repositories to fix their output, so should harvesters
+ > accept bad-XML?
+ > (once that question is answered, harvesters have to decide how much
+ > normalisation of metadata they do :-)
+ >
+ > All the best,
+ > Tim.
+ >
+ > Simeon Warner wrote:
+ >
+ >> In my recent post to oai-general
+ >> 
+http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html
+ >>
+ >> I said I'd post a note about the current output of DSpace at MIT to this
+ >> list (which seems a more appropriate forum). I just ran a harvest 
+and got
+ >> the log shown below, I've added comments in [].
+ >>
+ >> Cheers,
+ >> Simeon.
+ >>
+ >>
+ >>
+ >> simeon@ice 14Feb03>more log oaiharvest.pl: Harvest from
+ >> http://hpds1.mit.edu/oai/ using POST
+ >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=Identify
+ >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+ >> OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+ >>
+ >> [nice, DSpace implements gzip content coding]
+ >>
+ >> oaiharvest.pl: Identify reports OAI-PMH version 2.0
+ >> oaiharvest.pl: Doing complete harvest.
+ >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+ >> verb=ListMetadataFormats
+ >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+ >> OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+ >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListSets
+ >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+ >> OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+ >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+ >> metadataPrefix=oai_dc&verb=ListRecords
+ >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+ >> OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+ >> oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+ >>
+ >> [oops, expat parser fails on response
+ >>  my harvester now attempts to do replacement on bad XML/UTF8 bytes/chars
+ >>  using my utf8conditioner, details at
+ >>  http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/
+ >>  Unless the response can be parsed we can't even know if there is a
+ >>  resumptionToken...]
+ >> utf8conditioner: Line 320, char 81453, byte 81491: code not allowed in
+ >> XML: 0x000C, substituted 0x3F
+ >> Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 1839, char 559834, byte 559890: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 1840, char 559919, byte 559975: code not allowed in XML: 0x000C,
+ >> substituted 0x3F
+ >> Line 1843, char 560213, byte 560269: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 1846, char 560475, byte 560531: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 1850, char 560807, byte 560863: code not allowed in XML: 0x000C,
+ >> substituted 0x3F
+ >> Line 1851, char 560911, byte 560967: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 2249, char 658132, byte 658188: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 2250, char 658230, byte 658286: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 2253, char 658449, byte 658505: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 2271, char 662207, byte 662263: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >> Line 2274, char 662411, byte 662467: code not allowed in XML: 0x000E,
+ >> substituted 0x3F
+ >> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >>
+ >> [utf8conditioner detected and did replacements for a number of
+ >> characeters]
+ >> oaiharvest.pl: Got 752 records (running total: 752)
+ >> oaiharvest.pl: No resumptionToken, end of complete list.
+ >>
+ >> [expat could then parse response extracting 752 records, no
+ >> resumptionToken]
+ >>
+ >> oaiharvest.pl: Done.
+ >> simeon@ice 14Feb03>
+ >>
+ >>
+ >> [doing the same tests with Xerces...]
+ >>
+ >> simeon@ice 14Feb03>xercesCountElements lr
+ >> [Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was
+ >> found in the element content of the document.
+ >>
+ >> simeon@ice 14Feb03>cat lr | utf8conditioner -x > lrc
+ >> Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C,
+ >> substituted 0x3F
+ >> [..etc, same output as above...]
+ >> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B,
+ >> substituted 0x3F
+ >>
+ >> simeon@ice 14Feb03>xercesCountElements lrc
+ >> lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197 chars)
+ >>
+ >>
+ >> _______________________________________________
+ >> OAI-implementers mailing list
+ >> OAI-implementers@oaisrv.nsdl.cornell.edu
+ >> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+ >>
+ >
+ > _______________________________________________
+ > OAI-implementers mailing list
+ > OAI-implementers@oaisrv.nsdl.cornell.edu
+ > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+
+From caar@loc.gov  Sat Feb 15 16:25:01 2003
+From: caar@loc.gov (Caroline Arms)
+Date: Sat, 15 Feb 2003 11:25:01 -0500 (EST)
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <3E4E5D58.9000106@vt.edu>
+Message-ID: <Pine.SOL.4.21.0302151111430.17414-100000@sun8.loc.gov>
+
+As a data provider, LC would like to know if it is generating invalid
+characters.  The gradual migration to UNICODE is going to give us all
+problems, in part BECAUSE some systems work so hard to recognize different
+character encodings and adjust.  I'm with Hussein.  Notify data providers
+of problems (even if you do adjust) so that the problem can be fixed as
+close to home as possible.
+
+As a related aside, if anyone has a suggestion for an efficient way
+(preferably unix-based) to check that the metadata in a PDF file is stored
+in UTF-8 encoding (or consistently in any other UNICODE encoding), I'd be
+interested.  
+
+Caroline Arms
+Office of Strategic Initiatives
+Library of Congress
+
+On Sat, 15 Feb 2003, Hussein Suleman wrote:
+
+> hi
+> 
+> i think Tim poses a very relevant question: do we deal with the
+> so-called "real-world" encoding problems or do we try to encourage
+> people to fix their implementations? (of course, for research purposes,
+> we may end up doing both :))
+> 
+> personally, the code i distribute to others does quite a lot of XML
+> cleaning in the data provider, but none at all in the harvester. i think
+> the basic philosophy i'm following is: clean data as close to the source
+> as possible. also, i believe one of the reasons the adminEmail field in
+> Identify responses is required is so that a service provider can contact
+> the administrator if there are problems with the data.
+> 
+> and now that the hype about OAI2 is dying down, i wonder how much (if
+> any) more testing we need. i have some ideas to enhance, complement and
+> possibly even replace the repository explorer in the next year ... it
+> all depends on finding time and/or students/colleagues with time :)
+> 
+> ttfn,
+> ----hussein
+> 
+> 
+> Tim Brody wrote:
+>  > 
+> http://celestial.eprints.org/cgi-bin/status?action=repository;metadataFormat=17 
+> 
+>  >
+>  >
+>  > Harvested 752 records - I've also implemented some
+>  > character-substitution to fix encoding errors, although this is probably
+>  > not as proficient as Simeon's!
+>  >
+>  > The question is, the more harvesters implement fixes the less pressure
+>  > there is on repositories to fix their output, so should harvesters
+>  > accept bad-XML?
+>  > (once that question is answered, harvesters have to decide how much
+>  > normalisation of metadata they do :-)
+>  >
+>  > All the best,
+>  > Tim.
+>  >
+>  > Simeon Warner wrote:
+>  >
+>  >> In my recent post to oai-general
+>  >> 
+> http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html
+>  >>
+>  >> I said I'd post a note about the current output of DSpace at MIT to this
+>  >> list (which seems a more appropriate forum). I just ran a harvest 
+> and got
+>  >> the log shown below, I've added comments in [].
+>  >>
+>  >> Cheers,
+>  >> Simeon.
+>  >>
+>  >>
+>  >>
+>  >> simeon@ice 14Feb03>more log oaiharvest.pl: Harvest from
+>  >> http://hpds1.mit.edu/oai/ using POST
+>  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=Identify
+>  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>  >> OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+>  >>
+>  >> [nice, DSpace implements gzip content coding]
+>  >>
+>  >> oaiharvest.pl: Identify reports OAI-PMH version 2.0
+>  >> oaiharvest.pl: Doing complete harvest.
+>  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+>  >> verb=ListMetadataFormats
+>  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>  >> OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+>  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListSets
+>  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>  >> OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+>  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+>  >> metadataPrefix=oai_dc&verb=ListRecords
+>  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>  >> OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+>  >> oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+>  >>
+>  >> [oops, expat parser fails on response
+>  >>  my harvester now attempts to do replacement on bad XML/UTF8 bytes/chars
+>  >>  using my utf8conditioner, details at
+>  >>  http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/
+>  >>  Unless the response can be parsed we can't even know if there is a
+>  >>  resumptionToken...]
+>  >> utf8conditioner: Line 320, char 81453, byte 81491: code not allowed in
+>  >> XML: 0x000C, substituted 0x3F
+>  >> Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 1839, char 559834, byte 559890: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 1840, char 559919, byte 559975: code not allowed in XML: 0x000C,
+>  >> substituted 0x3F
+>  >> Line 1843, char 560213, byte 560269: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 1846, char 560475, byte 560531: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 1850, char 560807, byte 560863: code not allowed in XML: 0x000C,
+>  >> substituted 0x3F
+>  >> Line 1851, char 560911, byte 560967: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 2249, char 658132, byte 658188: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 2250, char 658230, byte 658286: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 2253, char 658449, byte 658505: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 2271, char 662207, byte 662263: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >> Line 2274, char 662411, byte 662467: code not allowed in XML: 0x000E,
+>  >> substituted 0x3F
+>  >> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >>
+>  >> [utf8conditioner detected and did replacements for a number of
+>  >> characeters]
+>  >> oaiharvest.pl: Got 752 records (running total: 752)
+>  >> oaiharvest.pl: No resumptionToken, end of complete list.
+>  >>
+>  >> [expat could then parse response extracting 752 records, no
+>  >> resumptionToken]
+>  >>
+>  >> oaiharvest.pl: Done.
+>  >> simeon@ice 14Feb03>
+>  >>
+>  >>
+>  >> [doing the same tests with Xerces...]
+>  >>
+>  >> simeon@ice 14Feb03>xercesCountElements lr
+>  >> [Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was
+>  >> found in the element content of the document.
+>  >>
+>  >> simeon@ice 14Feb03>cat lr | utf8conditioner -x > lrc
+>  >> Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C,
+>  >> substituted 0x3F
+>  >> [..etc, same output as above...]
+>  >> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B,
+>  >> substituted 0x3F
+>  >>
+>  >> simeon@ice 14Feb03>xercesCountElements lrc
+>  >> lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197 chars)
+>  >>
+>  >>
+>  >> _______________________________________________
+>  >> OAI-implementers mailing list
+>  >> OAI-implementers@oaisrv.nsdl.cornell.edu
+>  >> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>  >>
+>  >
+>  > _______________________________________________
+>  > OAI-implementers mailing list
+>  > OAI-implementers@oaisrv.nsdl.cornell.edu
+>  > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+> 
+> -- 
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+From liu_x@cs.odu.edu  Sun Feb 16 01:28:32 2003
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Sat, 15 Feb 2003 20:28:32 -0500 (EST)
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <Pine.SOL.4.21.0302151111430.17414-100000@sun8.loc.gov>
+References: <Pine.SOL.4.21.0302151111430.17414-100000@sun8.loc.gov>
+Message-ID: <Pine.GSO.4.52.0302152021320.7785@tango.cs.odu.edu>
+
+I have a list of parsing errors from arc's recent harvest.
+
+http://arc.cs.odu.edu/stat/parserror.txt
+
+In summary, about 140 records from 10 archives did not pass the xerces
+parser. This result is far from complete or accurate, and some of them
+might be our mistakes.
+
+regards,
+liu
+
+
+
+On Sat, 15 Feb 2003, Caroline Arms wrote:
+
+>
+> As a data provider, LC would like to know if it is generating invalid
+> characters.  The gradual migration to UNICODE is going to give us all
+> problems, in part BECAUSE some systems work so hard to recognize different
+> character encodings and adjust.  I'm with Hussein.  Notify data providers
+> of problems (even if you do adjust) so that the problem can be fixed as
+> close to home as possible.
+>
+> As a related aside, if anyone has a suggestion for an efficient way
+> (preferably unix-based) to check that the metadata in a PDF file is stored
+> in UTF-8 encoding (or consistently in any other UNICODE encoding), I'd be
+> interested.
+>
+> Caroline Arms
+> Office of Strategic Initiatives
+> Library of Congress
+>
+> On Sat, 15 Feb 2003, Hussein Suleman wrote:
+>
+> > hi
+> >
+> > i think Tim poses a very relevant question: do we deal with the
+> > so-called "real-world" encoding problems or do we try to encourage
+> > people to fix their implementations? (of course, for research purposes,
+> > we may end up doing both :))
+> >
+> > personally, the code i distribute to others does quite a lot of XML
+> > cleaning in the data provider, but none at all in the harvester. i think
+> > the basic philosophy i'm following is: clean data as close to the source
+> > as possible. also, i believe one of the reasons the adminEmail field in
+> > Identify responses is required is so that a service provider can contact
+> > the administrator if there are problems with the data.
+> >
+> > and now that the hype about OAI2 is dying down, i wonder how much (if
+> > any) more testing we need. i have some ideas to enhance, complement and
+> > possibly even replace the repository explorer in the next year ... it
+> > all depends on finding time and/or students/colleagues with time :)
+> >
+> > ttfn,
+> > ----hussein
+> >
+> >
+> > Tim Brody wrote:
+> >  >
+> > http://celestial.eprints.org/cgi-bin/status?action=repository;metadataFormat=17
+> >
+> >  >
+> >  >
+> >  > Harvested 752 records - I've also implemented some
+> >  > character-substitution to fix encoding errors, although this is probably
+> >  > not as proficient as Simeon's!
+> >  >
+> >  > The question is, the more harvesters implement fixes the less pressure
+> >  > there is on repositories to fix their output, so should harvesters
+> >  > accept bad-XML?
+> >  > (once that question is answered, harvesters have to decide how much
+> >  > normalisation of metadata they do :-)
+> >  >
+> >  > All the best,
+> >  > Tim.
+> >  >
+> >  > Simeon Warner wrote:
+> >  >
+> >  >> In my recent post to oai-general
+> >  >>
+> > http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html
+> >  >>
+> >  >> I said I'd post a note about the current output of DSpace at MIT to this
+> >  >> list (which seems a more appropriate forum). I just ran a harvest
+> > and got
+> >  >> the log shown below, I've added comments in [].
+> >  >>
+> >  >> Cheers,
+> >  >> Simeon.
+> >  >>
+> >  >>
+> >  >>
+> >  >> simeon@ice 14Feb03>more log oaiharvest.pl: Harvest from
+> >  >> http://hpds1.mit.edu/oai/ using POST
+> >  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=Identify
+> >  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> >  >> OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+> >  >>
+> >  >> [nice, DSpace implements gzip content coding]
+> >  >>
+> >  >> oaiharvest.pl: Identify reports OAI-PMH version 2.0
+> >  >> oaiharvest.pl: Doing complete harvest.
+> >  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+> >  >> verb=ListMetadataFormats
+> >  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> >  >> OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+> >  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListSets
+> >  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> >  >> OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+> >  >> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+> >  >> metadataPrefix=oai_dc&verb=ListRecords
+> >  >> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+> >  >> OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+> >  >> oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+> >  >>
+> >  >> [oops, expat parser fails on response
+> >  >>  my harvester now attempts to do replacement on bad XML/UTF8 bytes/chars
+> >  >>  using my utf8conditioner, details at
+> >  >>  http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/
+> >  >>  Unless the response can be parsed we can't even know if there is a
+> >  >>  resumptionToken...]
+> >  >> utf8conditioner: Line 320, char 81453, byte 81491: code not allowed in
+> >  >> XML: 0x000C, substituted 0x3F
+> >  >> Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 1839, char 559834, byte 559890: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 1840, char 559919, byte 559975: code not allowed in XML: 0x000C,
+> >  >> substituted 0x3F
+> >  >> Line 1843, char 560213, byte 560269: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 1846, char 560475, byte 560531: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 1850, char 560807, byte 560863: code not allowed in XML: 0x000C,
+> >  >> substituted 0x3F
+> >  >> Line 1851, char 560911, byte 560967: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 2249, char 658132, byte 658188: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 2250, char 658230, byte 658286: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 2253, char 658449, byte 658505: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 2271, char 662207, byte 662263: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >> Line 2274, char 662411, byte 662467: code not allowed in XML: 0x000E,
+> >  >> substituted 0x3F
+> >  >> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >>
+> >  >> [utf8conditioner detected and did replacements for a number of
+> >  >> characeters]
+> >  >> oaiharvest.pl: Got 752 records (running total: 752)
+> >  >> oaiharvest.pl: No resumptionToken, end of complete list.
+> >  >>
+> >  >> [expat could then parse response extracting 752 records, no
+> >  >> resumptionToken]
+> >  >>
+> >  >> oaiharvest.pl: Done.
+> >  >> simeon@ice 14Feb03>
+> >  >>
+> >  >>
+> >  >> [doing the same tests with Xerces...]
+> >  >>
+> >  >> simeon@ice 14Feb03>xercesCountElements lr
+> >  >> [Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was
+> >  >> found in the element content of the document.
+> >  >>
+> >  >> simeon@ice 14Feb03>cat lr | utf8conditioner -x > lrc
+> >  >> Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C,
+> >  >> substituted 0x3F
+> >  >> [..etc, same output as above...]
+> >  >> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B,
+> >  >> substituted 0x3F
+> >  >>
+> >  >> simeon@ice 14Feb03>xercesCountElements lrc
+> >  >> lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197 chars)
+> >  >>
+> >  >>
+> >  >> _______________________________________________
+> >  >> OAI-implementers mailing list
+> >  >> OAI-implementers@oaisrv.nsdl.cornell.edu
+> >  >> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >  >>
+> >  >
+> >  > _______________________________________________
+> >  > OAI-implementers mailing list
+> >  > OAI-implementers@oaisrv.nsdl.cornell.edu
+> >  > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> >
+> > --
+> > =====================================================================
+> > hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> > =====================================================================
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>
+
+From hussein@cs.uct.ac.za  Sat Feb 15 15:23:46 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Sat, 15 Feb 2003 17:23:46 +0200
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+References: <Pine.LNX.4.44.0302141606570.12670-100000@ice.cs.cornell.edu> <3E4E5442.1050007@tim.brody.btinternet.co.uk>
+Message-ID: <3E4E5B82.2000504@cs.uct.ac.za>
+
+hi
+
+i think Tim poses a very relevant question: do we deal with the 
+so-called "real-world" encoding problems or do we try to encourage 
+people to fix their implementations? (of course, for research purposes, 
+we may end up doing both :))
+
+personally, the code i distribute to others does quite a lot of XML 
+cleaning in the data provider, but none at all in the harvester. i think 
+the basic philosophy i'm following is: clean data as close to the source 
+as possible. also, i believe one of the reasons the adminEmail field in 
+Identify responses is required is so that a service provider can contact 
+the administrator if there are problems with the data.
+
+and now that the hype about OAI2 is dying down, i wonder how much (if 
+any) more testing we need. i have some ideas to enhance, complement and 
+possibly even replace the repository explorer in the next year ... it 
+all depends on finding time and/or students/colleagues with time :)
+
+ttfn,
+----hussein
+
+
+Tim Brody wrote:
+> http://celestial.eprints.org/cgi-bin/status?action=repository;metadataFormat=17 
+> 
+> 
+> Harvested 752 records - I've also implemented some 
+> character-substitution to fix encoding errors, although this is probably 
+> not as proficient as Simeon's!
+> 
+> The question is, the more harvesters implement fixes the less pressure 
+> there is on repositories to fix their output, so should harvesters 
+> accept bad-XML?
+> (once that question is answered, harvesters have to decide how much 
+> normalisation of metadata they do :-)
+> 
+> All the best,
+> Tim.
+> 
+> Simeon Warner wrote:
+> 
+>> In my recent post to oai-general
+>> http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html 
+>>
+>> I said I'd post a note about the current output of DSpace at MIT to this
+>> list (which seems a more appropriate forum). I just ran a harvest and got
+>> the log shown below, I've added comments in [].
+>>
+>> Cheers,
+>> Simeon.
+>>
+>>
+>>
+>> simeon@ice 14Feb03>more log oaiharvest.pl: Harvest from 
+>> http://hpds1.mit.edu/oai/ using POST
+>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=Identify
+>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>> OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+>>
+>> [nice, DSpace implements gzip content coding]
+>>
+>> oaiharvest.pl: Identify reports OAI-PMH version 2.0
+>> oaiharvest.pl: Doing complete harvest.
+>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: 
+>> verb=ListMetadataFormats
+>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>> OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListSets
+>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>> OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: 
+>> metadataPrefix=oai_dc&verb=ListRecords
+>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>> OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+>> oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+>>
+>> [oops, expat parser fails on response
+>>  my harvester now attempts to do replacement on bad XML/UTF8 bytes/chars
+>>  using my utf8conditioner, details at 
+>>  http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/ 
+>>  Unless the response can be parsed we can't even know if there is a
+>>  resumptionToken...]
+>> utf8conditioner: Line 320, char 81453, byte 81491: code not allowed in 
+>> XML: 0x000C, substituted 0x3F
+>> Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 1839, char 559834, byte 559890: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 1840, char 559919, byte 559975: code not allowed in XML: 0x000C, 
+>> substituted 0x3F
+>> Line 1843, char 560213, byte 560269: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 1846, char 560475, byte 560531: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 1850, char 560807, byte 560863: code not allowed in XML: 0x000C, 
+>> substituted 0x3F
+>> Line 1851, char 560911, byte 560967: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 2249, char 658132, byte 658188: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 2250, char 658230, byte 658286: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 2253, char 658449, byte 658505: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 2271, char 662207, byte 662263: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>> Line 2274, char 662411, byte 662467: code not allowed in XML: 0x000E, 
+>> substituted 0x3F
+>> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>>
+>> [utf8conditioner detected and did replacements for a number of 
+>> characeters]
+>> oaiharvest.pl: Got 752 records (running total: 752)
+>> oaiharvest.pl: No resumptionToken, end of complete list.
+>>
+>> [expat could then parse response extracting 752 records, no 
+>> resumptionToken]
+>>
+>> oaiharvest.pl: Done.
+>> simeon@ice 14Feb03>
+>>
+>>
+>> [doing the same tests with Xerces...]
+>>
+>> simeon@ice 14Feb03>xercesCountElements lr
+>> [Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was 
+>> found in the element content of the document.
+>>
+>> simeon@ice 14Feb03>cat lr | utf8conditioner -x > lrc
+>> Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C, 
+>> substituted 0x3F
+>> [..etc, same output as above...]
+>> Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, 
+>> substituted 0x3F
+>>
+>> simeon@ice 14Feb03>xercesCountElements lrc
+>> lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197 chars)
+>>
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> OAI-implementers@oaisrv.nsdl.cornell.edu
+>> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+
+From D.Casal@uea.ac.uk  Mon Feb 17 12:02:50 2003
+From: D.Casal@uea.ac.uk (david casal)
+Date: Mon, 17 Feb 2003 12:02:50 +0000 (GMT)
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <3E4E5B82.2000504@cs.uct.ac.za>
+Message-ID: <Pine.OSF.4.44.0302171139410.26928-100000@cpca7.uea.ac.uk>
+
+Hello all,
+
+On Sat, 15 Feb 2003, Hussein Suleman wrote:
+
+> personally, the code i distribute to others does quite a lot of XML
+> cleaning in the data provider, but none at all in the harvester. i think
+> the basic philosophy i'm following is: clean data as close to the source
+> as possible.
+
+We (luminas.co.uk) have implemented an OAI-PMH layer for Cocoon
+(xml.apache.org/cocoon). Since we use Cocoon in digital repository
+projects, some of which will use DSPACE, we needed to achieve separation
+of OAI harvesting and provision from the internal presenation and logic of
+applications. Some of the benefits of this approach, as we see it:
+
+- The OAI layer is built-in to Cocoon, so no separate implementation of
+client/service needed.
+
+- Cocoon's inherent Separation of Concerns means that one can map
+repository data to OAI through a simple stylesheet, and deal with encoding
+issues in the same way, through XSchema validation and further use of
+XSLT.
+
+- Built so as to achieve 'plug and play' funcionality within an
+application.
+
+- While it is primarily intended as a data provider layer, it can work the
+other way too (as a harvester, when the application point indexer at other
+sites).
+
+- OAI functionality within an established web publishing framework
+already being used successfully for digital repository applications.
+
+Since we are still working out some issues with regards to further
+integration of Cocoon within DSPACE (and doing extensive testing), we will
+be releasing the code for the OAI-Cocoon layer after the OAI (OAForum)
+meeting in Berlin.
+
+Note: this effort means in no way to parallel OAICat's integration into
+DSPACE, but offer a simple 'lego block' for use within Cocoon, when used
+as a standalone framework and/or within larger architectures such as
+DSPACE.
+
+Comments welcome.
+
+Cheers,
+
+David
+
+david casal                   --0+
+    ---
+d.casal@uea.ac.uk             --9+
+    ---
+ecdc.dyndns.org/dc	      --)+
+
+
+From stamer@uni-oldenburg.de  Mon Feb 17 13:04:14 2003
+From: stamer@uni-oldenburg.de (Heinrich Stamerjohanns)
+Date: Mon, 17 Feb 2003 14:04:14 +0100 (CET)
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <3E4E5D58.9000106@vt.edu>
+Message-ID: <Pine.LNX.4.44.0302171153260.28034-100000@alexandria.physik.uni-oldenburg.de>
+
+On Sat, 15 Feb 2003, Hussein Suleman wrote:
+
+>  > The question is, the more harvesters implement fixes the less pressure
+>  > there is on repositories to fix their output, so should harvesters
+>  > accept bad-XML?
+
+> hi
+>
+> i think Tim poses a very relevant question: do we deal with the
+> so-called "real-world" encoding problems or do we try to encourage
+> people to fix their implementations? (of course, for research purposes,
+> we may end up doing both :))
+>
+
+Hi,
+
+If you want a working protocol, you must insist that the data-providers
+deliver valid XML.
+If they don't deliver valid XML, they are not OAI-compliant, thus some
+harvesters will choke, some who try to fix the XML, might not.
+
+The most common problem seems to me (I cannot get to arc.cs.odu.edu, to
+see the parsing errors) that people create Unicode from their databases
+but forget to remove ISO-control characters, which are not valid in XML
+(the comment in XML 1.0 spec was irritating and has been changed in XML
+1.1 spec). Maybe this should be explicitly pointed out in the
+documentation of the protocol.
+
+So to produce valid xml, something like this should be applied before you
+send out the data (this is in php, but is a perlre pattern):
+
+
+        // just remove invalid characters
+        $pattern ="/[\x-\x8\xb-\xc\xe-\x1f]/";
+        $string = preg_replace($pattern,'',$string);
+
+
+Greetings, Heinrich
+
+
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  stamer@uni-oldenburg.de
+  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+
+
+
+
+From khage@umich.edu  Mon Feb 17 22:23:03 2003
+From: khage@umich.edu (Kat Hagedorn)
+Date: Mon, 17 Feb 2003 17:23:03 -0500
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <Pine.SOL.4.21.0302151111430.17414-100000@sun8.loc.gov>
+Message-ID: <616D8D91-42C6-11D7-A9D1-0003934CA344@umich.edu>
+
+I'm also with Hussein and Caroline. As a service provider, we do our  
+best to notify data providers when we run into errors that seem to not  
+be problems with our harvester. We can always clean the data at our end  
+if we can (and as close to the source as possible), but it's infinitely  
+easier in the long run for us to notify the data provider. As a result,  
+we don't waste time on our end and other service providers will harvest  
+cleaner data. The communication ends up benefitting everyone.
+
+- Kat
+
+On Saturday, Feb 15, 2003, at 11:25 America/Detroit, Caroline Arms  
+wrote:
+
+>
+> As a data provider, LC would like to know if it is generating invalid
+> characters.  The gradual migration to UNICODE is going to give us all
+> problems, in part BECAUSE some systems work so hard to recognize  
+> different
+> character encodings and adjust.  I'm with Hussein.  Notify data  
+> providers
+> of problems (even if you do adjust) so that the problem can be fixed as
+> close to home as possible.
+>
+> As a related aside, if anyone has a suggestion for an efficient way
+> (preferably unix-based) to check that the metadata in a PDF file is  
+> stored
+> in UTF-8 encoding (or consistently in any other UNICODE encoding), I'd  
+> be
+> interested.
+>
+> Caroline Arms
+> Office of Strategic Initiatives
+> Library of Congress
+>
+> On Sat, 15 Feb 2003, Hussein Suleman wrote:
+>
+>> hi
+>>
+>> i think Tim poses a very relevant question: do we deal with the
+>> so-called "real-world" encoding problems or do we try to encourage
+>> people to fix their implementations? (of course, for research  
+>> purposes,
+>> we may end up doing both :))
+>>
+>> personally, the code i distribute to others does quite a lot of XML
+>> cleaning in the data provider, but none at all in the harvester. i  
+>> think
+>> the basic philosophy i'm following is: clean data as close to the  
+>> source
+>> as possible. also, i believe one of the reasons the adminEmail field  
+>> in
+>> Identify responses is required is so that a service provider can  
+>> contact
+>> the administrator if there are problems with the data.
+>>
+>> and now that the hype about OAI2 is dying down, i wonder how much (if
+>> any) more testing we need. i have some ideas to enhance, complement  
+>> and
+>> possibly even replace the repository explorer in the next year ... it
+>> all depends on finding time and/or students/colleagues with time :)
+>>
+>> ttfn,
+>> ----hussein
+>>
+>>
+>> Tim Brody wrote:
+>>>
+>> http://celestial.eprints.org/cgi-bin/ 
+>> status?action=repository;metadataFormat=17
+>>
+>>>
+>>>
+>>> Harvested 752 records - I've also implemented some
+>>> character-substitution to fix encoding errors, although this is  
+>>> probably
+>>> not as proficient as Simeon's!
+>>>
+>>> The question is, the more harvesters implement fixes the less  
+>>> pressure
+>>> there is on repositories to fix their output, so should harvesters
+>>> accept bad-XML?
+>>> (once that question is answered, harvesters have to decide how much
+>>> normalisation of metadata they do :-)
+>>>
+>>> All the best,
+>>> Tim.
+>>>
+>>> Simeon Warner wrote:
+>>>
+>>>> In my recent post to oai-general
+>>>>
+>> http://www.openarchives.org/pipermail/oai-general/2003-February/ 
+>> 000258.html
+>>>>
+>>>> I said I'd post a note about the current output of DSpace at MIT to  
+>>>> this
+>>>> list (which seems a more appropriate forum). I just ran a harvest
+>> and got
+>>>> the log shown below, I've added comments in [].
+>>>>
+>>>> Cheers,
+>>>> Simeon.
+>>>>
+>>>>
+>>>>
+>>>> simeon@ice 14Feb03>more log oaiharvest.pl: Harvest from
+>>>> http://hpds1.mit.edu/oai/ using POST
+>>>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=Identify
+>>>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>>>> OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+>>>>
+>>>> [nice, DSpace implements gzip content coding]
+>>>>
+>>>> oaiharvest.pl: Identify reports OAI-PMH version 2.0
+>>>> oaiharvest.pl: Doing complete harvest.
+>>>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+>>>> verb=ListMetadataFormats
+>>>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>>>> OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+>>>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args: verb=ListSets
+>>>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>>>> OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+>>>> OAIGet: Doing POST to http://hpds1.mit.edu/oai/ args:
+>>>> metadataPrefix=oai_dc&verb=ListRecords
+>>>> OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+>>>> OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+>>>> oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+>>>>
+>>>> [oops, expat parser fails on response
+>>>>  my harvester now attempts to do replacement on bad XML/UTF8  
+>>>> bytes/chars
+>>>>  using my utf8conditioner, details at
+>>>>  http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/
+>>>>  Unless the response can be parsed we can't even know if there is a
+>>>>  resumptionToken...]
+>>>> utf8conditioner: Line 320, char 81453, byte 81491: code not allowed  
+>>>> in
+>>>> XML: 0x000C, substituted 0x3F
+>>>> Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B,
+>>>> substituted 0x3F
+>>>> Line 1839, char 559834, byte 559890: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 1840, char 559919, byte 559975: code not allowed in XML:  
+>>>> 0x000C,
+>>>> substituted 0x3F
+>>>> Line 1843, char 560213, byte 560269: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 1846, char 560475, byte 560531: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 1850, char 560807, byte 560863: code not allowed in XML:  
+>>>> 0x000C,
+>>>> substituted 0x3F
+>>>> Line 1851, char 560911, byte 560967: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 2249, char 658132, byte 658188: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 2250, char 658230, byte 658286: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 2253, char 658449, byte 658505: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 2271, char 662207, byte 662263: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>> Line 2274, char 662411, byte 662467: code not allowed in XML:  
+>>>> 0x000E,
+>>>> substituted 0x3F
+>>>> Line 2287, char 663373, byte 663429: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>>
+>>>> [utf8conditioner detected and did replacements for a number of
+>>>> characeters]
+>>>> oaiharvest.pl: Got 752 records (running total: 752)
+>>>> oaiharvest.pl: No resumptionToken, end of complete list.
+>>>>
+>>>> [expat could then parse response extracting 752 records, no
+>>>> resumptionToken]
+>>>>
+>>>> oaiharvest.pl: Done.
+>>>> simeon@ice 14Feb03>
+>>>>
+>>>>
+>>>> [doing the same tests with Xerces...]
+>>>>
+>>>> simeon@ice 14Feb03>xercesCountElements lr
+>>>> [Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was
+>>>> found in the element content of the document.
+>>>>
+>>>> simeon@ice 14Feb03>cat lr | utf8conditioner -x > lrc
+>>>> Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C,
+>>>> substituted 0x3F
+>>>> [..etc, same output as above...]
+>>>> Line 2287, char 663373, byte 663429: code not allowed in XML:  
+>>>> 0x000B,
+>>>> substituted 0x3F
+>>>>
+>>>> simeon@ice 14Feb03>xercesCountElements lrc
+>>>> lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197  
+>>>> chars)
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> OAI-implementers mailing list
+>>>> OAI-implementers@oaisrv.nsdl.cornell.edu
+>>>> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>>>
+>>>
+>>> _______________________________________________
+>>> OAI-implementers mailing list
+>>> OAI-implementers@oaisrv.nsdl.cornell.edu
+>>> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>
+>>
+>> -- 
+>> =====================================================================
+>> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+>> =====================================================================
+>>
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> OAI-implementers@oaisrv.nsdl.cornell.edu
+>> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>
+-------------------
+Kat Hagedorn
+OAIster/Metadata Harvesting Librarian
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+khage@umich.edu
+734-615-7618
+
+
+From tim@tim.brody.btinternet.co.uk  Tue Feb 18 15:30:15 2003
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Tue, 18 Feb 2003 15:30:15 +0000
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <Pine.SOL.4.21.0302151111430.17414-100000@sun8.loc.gov>
+References: <Pine.SOL.4.21.0302151111430.17414-100000@sun8.loc.gov>
+Message-ID: <3E525187.2060008@tim.brody.btinternet.co.uk>
+
+Celestial keeps a record of errors that occurred during harvesting:
+http://celestial.eprints.org/cgi-bin/status
+
+I reset the errors occasionally to save space.
+
+The mods format appears to be AWOL:
+http://celestial.eprints.org/cgi-bin/status?action=repository;metadataFormat=66
+
+The OAI 1.1 memory.loc.gov interface is returning internal server 
+errors, has this interface been removed (lcoa1 supercede it?)?
+
+How to determine what character encoding a PDF is in probably depends on 
+your PDF tool (unless you fancy writing a PDF parser :-)
+Reading the PDF spec:
+http://partners.adobe.com/asn/developer/acrosdk/docs/pdfspec.pdf
+
+The default encoding is ISOLatin1, otherwise quoting the doc:
+"If text is encoded in Unicode the first two bytes of the text must be 
+the Unicode Byte Order marker, <FE FF>."
+
+I guess that if a Text object in PDF is in Unicode it uses UTF-16. I've 
+not done anything with PDF metadata to know for certain.
+
+All the best,
+Tim.
+
+Caroline Arms wrote:
+
+> As a data provider, LC would like to know if it is generating invalid
+> characters.  The gradual migration to UNICODE is going to give us all
+> problems, in part BECAUSE some systems work so hard to recognize different
+> character encodings and adjust.  I'm with Hussein.  Notify data providers
+> of problems (even if you do adjust) so that the problem can be fixed as
+> close to home as possible.
+> 
+> As a related aside, if anyone has a suggestion for an efficient way
+> (preferably unix-based) to check that the metadata in a PDF file is stored
+> in UTF-8 encoding (or consistently in any other UNICODE encoding), I'd be
+> interested.  
+> 
+> Caroline Arms
+> Office of Strategic Initiatives
+> Library of Congress
+
+
+From simeon@cs.cornell.edu  Tue Feb 18 16:57:04 2003
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Tue, 18 Feb 2003 11:57:04 -0500 (EST)
+Subject: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <616D8D91-42C6-11D7-A9D1-0003934CA344@umich.edu>
+Message-ID: <Pine.LNX.4.44.0302181146430.25567-100000@ice.cs.cornell.edu>
+
+I agree that encoding problems should be corrected by the data provider. I
+have spent a considerable amount of time sending bug reports to data
+providers in the past (I haven't been doing this recently because I
+haven't been doing broad harvests).
+
+My point on the oai-general list was really that we shouldn't get hung-up
+on the notion of "compliance". The notion isn't well defined or policed
+and many server implementations have occasional problems (even mine...
+shock, horror!). The key is that initiatives such as eprints.org an dspace
+have built-in support for metadata sharing using OAI (notwithstanding the
+occasional bug) and that is very good for the open access movement and OAI
+service providers.
+
+Cheers,
+Simeon.
+
+
+On Mon, 17 Feb 2003, Kat Hagedorn wrote:
+> I'm also with Hussein and Caroline. As a service provider, we do our  
+> best to notify data providers when we run into errors that seem to not  
+> be problems with our harvester. We can always clean the data at our end  
+> if we can (and as close to the source as possible), but it's infinitely  
+> easier in the long run for us to notify the data provider. As a result,  
+> we don't waste time on our end and other service providers will harvest  
+> cleaner data. The communication ends up benefitting everyone.
+> 
+> - Kat
+> 
+> On Saturday, Feb 15, 2003, at 11:25 America/Detroit, Caroline Arms wrote:
+> > As a data provider, LC would like to know if it is generating invalid
+> > characters.  The gradual migration to UNICODE is going to give us all
+> > problems, in part BECAUSE some systems work so hard to recognize  
+> > different
+> > character encodings and adjust.  I'm with Hussein.  Notify data  
+> > providers
+> > of problems (even if you do adjust) so that the problem can be fixed as
+> > close to home as possible.
+> >
+> > As a related aside, if anyone has a suggestion for an efficient way
+> > (preferably unix-based) to check that the metadata in a PDF file is
+> > stored in UTF-8 encoding (or consistently in any other UNICODE
+> > encoding), I'd be interested.
+> >
+> > Caroline Arms
+> > Office of Strategic Initiatives
+> > Library of Congress
+> >
+> > On Sat, 15 Feb 2003, Hussein Suleman wrote:
+> >> hi
+> >>
+> >> i think Tim poses a very relevant question: do we deal with the
+> >> so-called "real-world" encoding problems or do we try to encourage
+> >> people to fix their implementations? (of course, for research  
+> >> purposes,
+> >> we may end up doing both :))
+> >>
+> >> personally, the code i distribute to others does quite a lot of XML
+> >> cleaning in the data provider, but none at all in the harvester. i
+> >> think the basic philosophy i'm following is: clean data as close to
+> >> the source as possible. also, i believe one of the reasons the
+> >> adminEmail field in Identify responses is required is so that a
+> >> service provider can contact the administrator if there are problems
+> >> with the data.
+> >>
+> >> and now that the hype about OAI2 is dying down, i wonder how much (if
+> >> any) more testing we need. i have some ideas to enhance, complement
+> >> and possibly even replace the repository explorer in the next year
+> >> ... it all depends on finding time and/or students/colleagues with
+> >> time :)
+> >>
+> >> ttfn,
+> >> ----hussein
+
+
+From klopferk@ohsu.edu  Tue Feb 18 22:36:09 2003
+From: klopferk@ohsu.edu (Keith C Klopfer)
+Date: Tue, 18 Feb 2003 14:36:09 -0800
+Subject: [OAI-implementers] Beginner Question - Schema Validation Problem
+Message-ID: <601B4D42-4391-11D7-9CDA-000393BA4D6A@ohsu.edu>
+
+Hello,
+
+I keep getting the same error when testing my implementation against  
+the Repository Explorer:
+
+XML Schema Validation Error !
+[Error] filed2FEGP:1:250: General Schema Error: Grammar with uri:  
+http://www.openarchives.org/OAI/2.0/ , can not be found; schema  
+namespace may be wrong:
+
+I'm at a loss for what's going on.  Any suggestions would be  
+appreciated.  It may have something to do with encoding, but I'm not  
+sure.  My implementation can be found here (temporarily):
+
+http://www.klopfer.kattare.com/oai/OAIServer
+
+Here is the output from "verb=Identify":
+
+<?xml version="1.0" encoding="UTF-8" ?><OAI-PMH  
+xmlns="http://www.openarchives.org/OAI/2.0/"  
+xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/  
+http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"  
+xmlns:xsi="http://www.w3c.org/2001/XMLSchema- 
+instance"><responseDate>2003-02-18</responseDate><request  
+verb="Identify"  
+ >http://www.klopfer.kattare.com/oai/OAIServer</ 
+request><Identify><repositoryName>Test OAI  
+Repository</repositoryName><baseURL>http://www.klopfer.kattare.com/oai/ 
+OAIServer</baseURL><protocolVersion>2.0</ 
+protocolVersion><adminEmail>klopferk@ohsu.edu</ 
+adminEmail><earliestDatestamp>2003-01-01</ 
+earliestDatestamp><deletedRecord>no</deletedRecord><granularity>YYYY- 
+MM-DD</granularity></Identify>
+</OAI-PMH>
+
+Has anyone else had this error?
+
+Thanks,
+
+Keith K.
+
+
+
+
+From btingle@hades.ucop.edu  Mon Feb 17 13:44:47 2003
+From: btingle@hades.ucop.edu (Brian Tingle)
+Date: Mon, 17 Feb 2003 05:44:47 -0800 (PST)
+Subject: regular expressions for cleanup was: Re: [OAI-implementers] XML encoding problems with DSpace at MIT
+In-Reply-To: <Pine.LNX.4.44.0302171153260.28034-100000@alexandria.physik.uni-oldenburg.de>
+Message-ID: <Pine.3.89.10302170543.C15966-0100000@hades.ucop.edu>
+
+The most common problems I've had as a provider so far have had to do 
+with the ampersands in non-XML data that I want to expose.
+
+This regular expression is what I use to take non-XML data that has lots 
+of ampersands and turn them to &amp; but it will not "duouble" escape
+&quot; &c. that might allready be in there allready.
+
+$content =
+(Dad& &Mac & &quot;Jake&quot; JonesMr. A. Birch--S.U.B.&T; B.&T. &T.; Co.  :127a) 
+
+turns to $content=
+(Dad&amp; &amp;Mac &amp; &quot;Jake&quot; JonesMr. A. Birch--S.U.B.&amp;T; B.&amp;T. &amp;T.; Co.  :127a)
+
+        my $ident = '[:_A-Za-z][:A-Za-z0-9\-\_]+';
+        $content =~ s,\&(?!$ident;),&amp;,sg;
+
+
+Heinrich Stamerjohanns <stamer@uni-oldenburg.de> wrote:
+> The most common problem seems to me (I cannot get to arc.cs.odu.edu, to
+> see the parsing errors) that people create Unicode from their databases
+> but forget to remove ISO-control characters, which are not valid in XML
+> (the comment in XML 1.0 spec was irritating and has been changed in XML
+> 1.1 spec). Maybe this should be explicitly pointed out in the
+> documentation of the protocol.
+> 
+> So to produce valid xml, something like this should be applied before 
+you
+> send out the data (this is in php, but is a perlre pattern):
+> 
+>   
+>         // just remove invalid characters
+>         $pattern ="/[\x-\x8\xb-\xc\xe-\x1f]/";
+>         $string = preg_replace($pattern,'',$string);
+
+
+
+
+On Mon, 17 Feb 2003, Heinrich Stamerjohanns wrote:
+
+> On Sat, 15 Feb 2003, Hussein Suleman wrote:
+> 
+> >  > The question is, the more harvesters implement fixes the less pressure
+> >  > there is on repositories to fix their output, so should harvesters
+> >  > accept bad-XML?
+> 
+> > hi
+> >
+> > i think Tim poses a very relevant question: do we deal with the
+> > so-called "real-world" encoding problems or do we try to encourage
+> > people to fix their implementations? (of course, for research purposes,
+> > we may end up doing both :))
+> >
+> 
+> Hi,
+> 
+> If you want a working protocol, you must insist that the data-providers
+> deliver valid XML.
+> If they don't deliver valid XML, they are not OAI-compliant, thus some
+> harvesters will choke, some who try to fix the XML, might not.
+> 
+> The most common problem seems to me (I cannot get to arc.cs.odu.edu, to
+> see the parsing errors) that people create Unicode from their databases
+> but forget to remove ISO-control characters, which are not valid in XML
+> (the comment in XML 1.0 spec was irritating and has been changed in XML
+> 1.1 spec). Maybe this should be explicitly pointed out in the
+> documentation of the protocol.
+> 
+> So to produce valid xml, something like this should be applied before you
+> send out the data (this is in php, but is a perlre pattern):
+> 
+> 
+>         // just remove invalid characters
+>         $pattern ="/[\x-\x8\xb-\xc\xe-\x1f]/";
+>         $string = preg_replace($pattern,'',$string);
+> 
+> 
+> Greetings, Heinrich
+> 
+> 
+> --
+>   Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+>   Institute for Science Networking  stamer@uni-oldenburg.de
+>   University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From hussein@cs.uct.ac.za  Wed Feb 19 09:24:14 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Wed, 19 Feb 2003 11:24:14 +0200
+Subject: [OAI-implementers] Beginner Question - Schema Validation Problem
+References: <601B4D42-4391-11D7-9CDA-000393BA4D6A@ohsu.edu>
+Message-ID: <3E534D3E.1020304@cs.uct.ac.za>
+
+hi Keith
+
+after reading your message i couldn't figure out what was wrong, but 
+when i tried "Identify" against your archive, i found out that the error 
+you quoted continued to say:
+   "Xerces supports schemas from the "http://www.w3.org/2001/XMLSchema"
+   and a bit more ...
+
+a quick glance confirmed you were using the wrong XMLSchema-instance 
+schema ... it is "w3.org" and not "w3c.org"
+
+in general (to everyone i guess) if you cant figure out a problem, 
+please give as much info as possible - i am sure there are lots of 
+people on this list who can spot errors without the RE ;-)
+
+ttfn,
+----hussein
+
+
+Keith C Klopfer wrote:
+> Hello,
+> 
+> I keep getting the same error when testing my implementation against  
+> the Repository Explorer:
+> 
+> XML Schema Validation Error !
+> [Error] filed2FEGP:1:250: General Schema Error: Grammar with uri:  
+> http://www.openarchives.org/OAI/2.0/ , can not be found; schema  
+> namespace may be wrong:
+> 
+> I'm at a loss for what's going on.  Any suggestions would be  
+> appreciated.  It may have something to do with encoding, but I'm not  
+> sure.  My implementation can be found here (temporarily):
+> 
+> http://www.klopfer.kattare.com/oai/OAIServer
+> 
+> Here is the output from "verb=Identify":
+> 
+> <?xml version="1.0" encoding="UTF-8" ?><OAI-PMH  
+> xmlns="http://www.openarchives.org/OAI/2.0/"  
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/  
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"  
+> xmlns:xsi="http://www.w3c.org/2001/XMLSchema- 
+> instance"><responseDate>2003-02-18</responseDate><request  
+> verb="Identify"  >http://www.klopfer.kattare.com/oai/OAIServer</ 
+> request><Identify><repositoryName>Test OAI  
+> Repository</repositoryName><baseURL>http://www.klopfer.kattare.com/oai/ 
+> OAIServer</baseURL><protocolVersion>2.0</ 
+> protocolVersion><adminEmail>klopferk@ohsu.edu</ 
+> adminEmail><earliestDatestamp>2003-01-01</ 
+> earliestDatestamp><deletedRecord>no</deletedRecord><granularity>YYYY- 
+> MM-DD</granularity></Identify>
+> </OAI-PMH>
+> 
+> Has anyone else had this error?
+> 
+> Thanks,
+> 
+> Keith K.
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From dwoo@loc.gov  Wed Feb 19 14:40:28 2003
+From: dwoo@loc.gov (David Woodward)
+Date: Wed, 19 Feb 2003 09:40:28 -0500
+Subject: [OAI-implementers] XML encoding problems with DSpace at
+ MIT
+Message-ID: <se5350b7.036@loc.gov>
+
+The 1.1 provider is back up and running at
+http://memory.loc.gov/cgi-bin/oai1_1  (and cgi-bin/oai for that
+matter). Sorry for any inconvenience. The 2.0 version
+(http://memory.loc.gov/cgi-bin/oai2_0) does supercede it, but we have
+not (except by accident) disabled support for the 1.1 repository.
+
+Dave
+
+
+>>> Tim Brody <tim@tim.brody.btinternet.co.uk> 02/18/03 10:30AM >>>
+Celestial keeps a record of errors that occurred during harvesting:
+http://celestial.eprints.org/cgi-bin/status 
+
+I reset the errors occasionally to save space.
+
+The mods format appears to be AWOL:
+http://celestial.eprints.org/cgi-bin/status?action=repository;metadataFormat=66
+
+
+The OAI 1.1 memory.loc.gov interface is returning internal server 
+errors, has this interface been removed (lcoa1 supercede it?)?
+
+How to determine what character encoding a PDF is in probably depends
+on 
+your PDF tool (unless you fancy writing a PDF parser :-)
+Reading the PDF spec:
+http://partners.adobe.com/asn/developer/acrosdk/docs/pdfspec.pdf 
+
+The default encoding is ISOLatin1, otherwise quoting the doc:
+"If text is encoded in Unicode the first two bytes of the text must be
+
+the Unicode Byte Order marker, <FE FF>."
+
+I guess that if a Text object in PDF is in Unicode it uses UTF-16. I've
+
+not done anything with PDF metadata to know for certain.
+
+All the best,
+Tim.
+
+Caroline Arms wrote:
+
+> As a data provider, LC would like to know if it is generating
+invalid
+> characters.  The gradual migration to UNICODE is going to give us
+all
+> problems, in part BECAUSE some systems work so hard to recognize
+different
+> character encodings and adjust.  I'm with Hussein.  Notify data
+providers
+> of problems (even if you do adjust) so that the problem can be fixed
+as
+> close to home as possible.
+> 
+> As a related aside, if anyone has a suggestion for an efficient way
+> (preferably unix-based) to check that the metadata in a PDF file is
+stored
+> in UTF-8 encoding (or consistently in any other UNICODE encoding),
+I'd be
+> interested.  
+> 
+> Caroline Arms
+> Office of Strategic Initiatives
+> Library of Congress
+
+_______________________________________________
+OAI-implementers mailing list
+OAI-implementers@oaisrv.nsdl.cornell.edu 
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+From daphne.charles@english-heritage.org.uk  Thu Feb 20 11:32:56 2003
+From: daphne.charles@english-heritage.org.uk (Charles, Daphne)
+Date: Thu, 20 Feb 2003 11:32:56 -0000
+Subject: [OAI-implementers] Resumption Tokens
+Message-ID: <2AD0C5E20039D61181800008C74B955112CDE4@swn15.rchme.uk>
+
+Hi Folks,
+
+Can any one help with my understanding of how Resumption Tokens work?
+
+The resumption token may be expected in the response whenever the list of
+records which might be returned exceeds a maximum no. of returns set by the
+repository.  The original request may include other arguments.  However,
+since the resumption token is an exclusive argument, it cannot then be
+issued as part of a request with any other argument, so unless the value of
+the resumption token includes the original request, then the list of records
+returned has lost its context.
+
+In the v.2.0 documentation the examples show a ListIdentifiers request with
+from, set and metadataPrefix arguments.  A set of records is issued in
+response, together with a resumption token which includes attribute names
+and values for completeListSize and cursor.  So far so good.
+
+However, when this resumption token is subsequently reused in a new request
+it contains only a value of xxx45abttyz and has lost the completeListSize
+and cursor attributes as well as the other arguments used in the original
+request.  My question is, how can the repository reconstruct all this from a
+resumption token value of xxx45abttyz in order to provide a set of records
+which logically continues from the previous list?
+
+Hoping for enlightenment!
+
+Daphne Charles
+
+From simeon@cs.cornell.edu  Thu Feb 20 14:20:40 2003
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Thu, 20 Feb 2003 09:20:40 -0500 (EST)
+Subject: [OAI-implementers] Resumption Tokens
+In-Reply-To: <2AD0C5E20039D61181800008C74B955112CDE4@swn15.rchme.uk>
+Message-ID: <Pine.LNX.4.44.0302200915060.32043-100000@ice.cs.cornell.edu>
+
+On Thu, 20 Feb 2003, Charles, Daphne wrote:
+> Hi Folks,
+> 
+> Can any one help with my understanding of how Resumption Tokens work?
+> 
+> The resumption token may be expected in the response whenever the list of
+> records which might be returned exceeds a maximum no. of returns set by the
+> repository.  The original request may include other arguments.  However,
+> since the resumption token is an exclusive argument, it cannot then be
+> issued as part of a request with any other argument, so unless the value of
+> the resumption token includes the original request, then the list of records
+> returned has lost its context.
+
+The resumptionToken must either encode all necessary context or be a key
+for information cached by the repository. Both schemes are used, brief
+discussion at
+http://www.openarchives.org/OAI/2.0/guidelines-repository.htm#resumptionToken
+ 
+> In the v.2.0 documentation the examples show a ListIdentifiers request with
+> from, set and metadataPrefix arguments.  A set of records is issued in
+> response, together with a resumption token which includes attribute names
+> and values for completeListSize and cursor.  So far so good.
+> 
+> However, when this resumption token is subsequently reused in a new request
+> it contains only a value of xxx45abttyz and has lost the completeListSize
+> and cursor attributes as well as the other arguments used in the original
+> request.  My question is, how can the repository reconstruct all this from a
+> resumption token value of xxx45abttyz in order to provide a set of records
+> which logically continues from the previous list?
+
+This token is (likely -- it is opaque to the harvester) a key for cached
+information about the result set. In this case the repository can store a
+much state as it wants.
+
+Cheers,
+Simeon.
+
+ 
+> Hoping for enlightenment!
+> 
+> Daphne Charles
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+From hussein@cs.uct.ac.za  Thu Feb 20 15:18:24 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Thu, 20 Feb 2003 17:18:24 +0200
+Subject: regular expressions for cleanup was: Re: [OAI-implementers] XML
+ encoding problems with DSpace at MIT
+References: <Pine.3.89.10302170543.C15966-0100000@hades.ucop.edu>
+Message-ID: <3E54F1C0.7020308@cs.uct.ac.za>
+
+hi
+
+Brian Tingle wrote:
+ > The most common problems I've had as a provider so far have had to do
+ > with the ampersands in non-XML data that I want to expose.
+... (see rest below)
+
+this will work some of the time, but there will be problems if you have 
+XML/HTML/SGML entities that are other than the standard ones (eg. i 
+believe &copy; will cause problems) ... maybe you are already addressing 
+this, but if not, read on ...
+
+XML has only 5 predefined entities (quot, lt, gt, amp, apos) - anything 
+else requires an external entity definition and OAI requires using 
+numerical entities instead of those (see start of section 3.2 of 
+protocol). the clean solution is either to convert any suspected 
+entities (Latin-1 seems to pop up in many places because of HTML) into 
+numerical Unicode entities, and then double-escape anything you dont 
+recognise ... best effort is probably not good enough - if in doubt, 
+it's better to produce slightly over-escaped valid XML than originally 
+encoded but possibly invalid XML :)
+
+but, hey, don't reinvent the wheel ... look at the code templates 
+available on the OAI website. most of the toolkits do some degree of 
+data cleaning. if you use Perl, the VTOAI template i wrote has a 
+"Utility.pm" module for data cleaning which does all of the above/below 
+plus much more.
+
+ttfn,
+----hussein
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+> This regular expression is what I use to take non-XML data that has lots 
+> of ampersands and turn them to &amp; but it will not "duouble" escape
+> &quot; &c. that might allready be in there allready.
+> 
+> $content =
+> (Dad& &Mac & &quot;Jake&quot; JonesMr. A. Birch--S.U.B.&T; B.&T. &T.; Co.  :127a) 
+> 
+> turns to $content=
+> (Dad&amp; &amp;Mac &amp; &quot;Jake&quot; JonesMr. A. Birch--S.U.B.&amp;T; B.&amp;T. &amp;T.; Co.  :127a)
+> 
+>         my $ident = '[:_A-Za-z][:A-Za-z0-9\-\_]+';
+>         $content =~ s,\&(?!$ident;),&amp;,sg;
+> 
+> 
+> Heinrich Stamerjohanns <stamer@uni-oldenburg.de> wrote:
+> 
+>>The most common problem seems to me (I cannot get to arc.cs.odu.edu, to
+>>see the parsing errors) that people create Unicode from their databases
+>>but forget to remove ISO-control characters, which are not valid in XML
+>>(the comment in XML 1.0 spec was irritating and has been changed in XML
+>>1.1 spec). Maybe this should be explicitly pointed out in the
+>>documentation of the protocol.
+>>
+>>So to produce valid xml, something like this should be applied before 
+> 
+> you
+> 
+>>send out the data (this is in php, but is a perlre pattern):
+>>
+>>  
+>>        // just remove invalid characters
+>>        $pattern ="/[\x-\x8\xb-\xc\xe-\x1f]/";
+>>        $string = preg_replace($pattern,'',$string);
+> 
+> 
+> 
+> 
+> 
+> On Mon, 17 Feb 2003, Heinrich Stamerjohanns wrote:
+> 
+> 
+>>On Sat, 15 Feb 2003, Hussein Suleman wrote:
+>>
+>>
+>>> > The question is, the more harvesters implement fixes the less pressure
+>>> > there is on repositories to fix their output, so should harvesters
+>>> > accept bad-XML?
+>>
+>>>hi
+>>>
+>>>i think Tim poses a very relevant question: do we deal with the
+>>>so-called "real-world" encoding problems or do we try to encourage
+>>>people to fix their implementations? (of course, for research purposes,
+>>>we may end up doing both :))
+>>>
+>>
+>>Hi,
+>>
+>>If you want a working protocol, you must insist that the data-providers
+>>deliver valid XML.
+>>If they don't deliver valid XML, they are not OAI-compliant, thus some
+>>harvesters will choke, some who try to fix the XML, might not.
+>>
+>>The most common problem seems to me (I cannot get to arc.cs.odu.edu, to
+>>see the parsing errors) that people create Unicode from their databases
+>>but forget to remove ISO-control characters, which are not valid in XML
+>>(the comment in XML 1.0 spec was irritating and has been changed in XML
+>>1.1 spec). Maybe this should be explicitly pointed out in the
+>>documentation of the protocol.
+>>
+>>So to produce valid xml, something like this should be applied before you
+>>send out the data (this is in php, but is a perlre pattern):
+>>
+>>
+>>        // just remove invalid characters
+>>        $pattern ="/[\x-\x8\xb-\xc\xe-\x1f]/";
+>>        $string = preg_replace($pattern,'',$string);
+>>
+>>
+>>Greetings, Heinrich
+>>
+>>
+>>--
+>>  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+>>  Institute for Science Networking  stamer@uni-oldenburg.de
+>>  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+>>
+>>
+>>
+>>_______________________________________________
+>>OAI-implementers mailing list
+>>OAI-implementers@oaisrv.nsdl.cornell.edu
+>>http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+
+From daphne.charles@english-heritage.org.uk  Thu Feb 20 16:29:36 2003
+From: daphne.charles@english-heritage.org.uk (Charles, Daphne)
+Date: Thu, 20 Feb 2003 16:29:36 -0000
+Subject: [OAI-implementers] Resumption Tokens
+Message-ID: <2AD0C5E20039D61181800008C74B955112CDEC@swn15.rchme.uk>
+
+Thanks to everyone who has replied off list, I think I have enough to go on
+now!
+
+Regards
+
+Daphne
+
+From caar@loc.gov  Mon Feb 24 14:52:05 2003
+From: caar@loc.gov (Caroline Arms)
+Date: Mon, 24 Feb 2003 09:52:05 -0500 (EST)
+Subject: [OAI-implementers] New collections from LC -- beyond American Memory
+In-Reply-To: <20020604102343.B10685@io.mds.rmit.edu.au>
+Message-ID: <Pine.SOL.4.21.0302240920320.9559-100000@sun8.loc.gov>
+
+LC has recently added several new sets (collections) of records for
+harvesting.  For the first time, digitized materials beyond those
+available through American Memory are being made available.  The new
+materials are three relatively small collections of digitized photographs
+from the Prints & Photographs Division.  More pictorial materials will be
+following soon, including some posters and drawings.  All the sets have
+set-level descriptive metadata (Dublin Core) in the setDescriptions.
+
+New sets (all also included in the lcphotos set) are:
+
+Glass negatives from the Papers of Wilbur and Orville Wright
+  Orville and Wilbur Wright, pioneers in early aviation, used photography
+to document their experiments with flight and to record family events.
+See http://lcweb2.loc.gov/pp/wrihtml/wribac.html
+
+Fenton Crimean War Photographs
+  Mainly portrait photographs of British, French, and Turkish
+military personnel in the Crimea in 1855. Roger Fenton was a British
+photographer.  See http://lcweb2.loc.gov/pp/ftncnwhtml/ftncnwback.html
+
+John C. H. Grabill Collection
+  Grabill's remarkably well-crafted, sepia-toned images capture the forces
+of western settlement in South Dakota and Wyoming and document its effects
+on the area's indigenous communities.  See
+http://lcweb2.loc.gov/pp/grabillhtml/grabillback.html
+  [Since this collection is included in LC's Russian collaboration,
+   "Meeting of Frontiers," there was already a description of the
+   collection in Russian.  The setDescription includes dc:title and
+   dc:description elements in both languages (distinguished by the
+   xml:lang attribute).]
+
+I am interested in hearing from anyone who is making use of the set
+description records.
+
+Caroline Arms
+Office of Strategic Initiatives
+Library of Congress
+caar@loc.gov
+
+
+From tim@tim.brody.btinternet.co.uk  Mon Feb 24 17:48:57 2003
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Mon, 24 Feb 2003 17:48:57 -0000
+Subject: [OAI-implementers] XML stylesheet for OAI responses
+Message-ID: <065101c2dc2d$019c3a50$14414e98@Shrek>
+
+Something for a rainy Friday afternoon ...
+
+I've had a play with XSLT to produce HTML output from Celestial's OAI-PMH
+interface (same as Jeff Young's OCLC OAI-PMH interface), e.g. from MS
+Internet Explorer:
+http://celestial.eprints.org/cgi-bin/oaia2-devel/cogprints.soton.ac.uk?verb=
+Identify
+
+This can be added to any OAI interface like so:
+After <?xml version="1.0" encoding="UTF-8"?> add:
+<?xml-stylesheet type="text/xsl"
+href="http://celestial.eprints.org/stylesheets/celestial.xsl"?>
+
+And when viewed in a browser that supports XSLT will be rendered into a web
+page.
+
+Still have a few bits missing, and probably could make it a bit smarter -
+but I think the principle is there.
+
+All the best,
+Tim.
+
+
+From marinb@gmx.net  Wed Feb 26 00:04:00 2003
+From: marinb@gmx.net (marinb@gmx.net)
+Date: Wed, 26 Feb 2003 01:04:00 +0100 (MET)
+Subject: [OAI-implementers] Perl regexp for validating 'identifier' (anyURI) needed
+Message-ID: <5532.1046217840@www2.gmx.net>
+
+Hi all.
+
+I am sure somebody has already written/found a reasonable good perl regexp
+for validating the identifier parameter. I only could find one for decoding
+
+m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|
+
+but it is not suitable for validating as no check is made for allowed
+characters
+within each 'fragment'. There must be a better solution instead of
+extracting
+the fragments and validating each of them separately?
+
+Can anybody also tell me where is the problem with following request?
+
+Response to this request did not give error code 'badArgument':
+verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=junk&until=1990-01-10
+
+Would appreciate very much any help,
+Cheers,
+Marin
+
+-- 
++++ GMX - Mail, Messaging & more  http://www.gmx.net +++
+Bitte lächeln! Fotogalerie online mit GMX ohne eigene Homepage!
+
+
+From bergmark@CS.Cornell.EDU  Wed Feb 26 01:15:24 2003
+From: bergmark@CS.Cornell.EDU (Donna Bergmark)
+Date: Tue, 25 Feb 2003 20:15:24 -0500
+Subject: [OAI-implementers] Perl regexp for validating 'identifier' (anyURI) needed
+In-Reply-To: Your message of "Wed, 26 Feb 2003 01:04:00 +0100."
+ <5532.1046217840@www2.gmx.net>
+Message-ID: <200302260115.h1Q1FOU23177@elgin.cs.cornell.edu>
+
+The problem with the request you gave is that resumptionToken
+is an exclusive argument.  There should not be metadataPrefix
+and until along with it.
+
+> Can anybody also tell me where is the problem with following request?
+
+> Response to this request did not give error code 'badArgument':
+> verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=junk&until=1990-01-10
+
+From rurie@transport.itb.ac.id  Wed Feb 26 09:47:30 2003
+From: rurie@transport.itb.ac.id (ruri muharto)
+Date: Wed, 26 Feb 2003 16:47:30 +0700 (JAVT)
+Subject: [OAI-implementers] OAI implementation
+In-Reply-To: <2AD0C5E20039D61181800008C74B955112CDEC@swn15.rchme.uk>
+Message-ID: <Pine.BSF.4.21.0302261632590.2906-100000@transport.itb.ac.id>
+
+Hi all,
+
+I'd like to implement any 'metadata exchange' protocol that provides some
+mechanisms in order to make our data provider integrated to some
+other larger community of digital library. In other words, our 'records
+provider', which contains about 5000 records, should also be harvested by
+'the world'.
+
+I am really interested in using OAI protocol. In my opinion, this
+protocol is made up to be more simple and accessible rather than, let say,
+web services or z.39.50.
+
+So I'd like to know any brief explanation related to:
+1. the features of OAI. How many providers or countries have been joint in
+such community mentioned before? The barriers commonly found that have
+obstructed the larger networks? and so on..
+
+2. few 'stumbling blocks' to the network implementation. Is there any
+obstacles to implement the protocol in the third world's internet
+community like my country, Indonesia? etc..
+
+3. Other stuffs not mentioned yet.. that could be essentially of use in
+general terms.
+
+
+thank you in advance for each response
+
+-rurie-
+
+
+From hussein@cs.uct.ac.za  Wed Feb 26 10:45:42 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Wed, 26 Feb 2003 12:45:42 +0200
+Subject: [OAI-implementers] OAI implementation
+References: <Pine.BSF.4.21.0302261632590.2906-100000@transport.itb.ac.id>
+Message-ID: <3E5C9AD6.7070708@cs.uct.ac.za>
+
+hi Rurie
+
+to expose your collection to "the world", I would recommend the OAI 
+protocol since it does not place great demands on the server, and the 
+server can control usage by outside clients.
+
+there is, alas, not much detailed analysis of the applicability of OAI 
+in situations with poor bandwidth and resource-poor archives - trying to 
+deal with this is one of my goals for the next year or so.
+
+as an attempt to answer some of your questions:
+
+1. go to the OAI website (www.openarchives.org) and read the paper by 
+Lagoze and Van de Sompel in JCDL2001. that will give you a good overview 
+of the features. the site also lists currently registered data 
+providers, though you have to read individual papers (all listed on the 
+site) to get an idea of barriers and problems faced by them.
+
+2. regarding network stumbling blocks, the short answer is nobody really 
+knows. if you are interested in doing experiments and tests on this in 
+the future, please keep in touch with me.
+
+also, i see you have published a paper at IIWAS2002 titled "Extending 
+The OAI Protocol as the Data Integration Framework for the Digital 
+Library Network in the Third World". i would really like to read this, 
+and would greatly appreciate it if you sent me a copy - or better yet - 
+submitted a copy to the OAI website. thanks!
+
+ttfn,
+----hussein
+
+
+ruri muharto wrote:
+> Hi all,
+> 
+> I'd like to implement any 'metadata exchange' protocol that provides some
+> mechanisms in order to make our data provider integrated to some
+> other larger community of digital library. In other words, our 'records
+> provider', which contains about 5000 records, should also be harvested by
+> 'the world'.
+> 
+> I am really interested in using OAI protocol. In my opinion, this
+> protocol is made up to be more simple and accessible rather than, let say,
+> web services or z.39.50.
+> 
+> So I'd like to know any brief explanation related to:
+> 1. the features of OAI. How many providers or countries have been joint in
+> such community mentioned before? The barriers commonly found that have
+> obstructed the larger networks? and so on..
+> 
+> 2. few 'stumbling blocks' to the network implementation. Is there any
+> obstacles to implement the protocol in the third world's internet
+> community like my country, Indonesia? etc..
+> 
+> 3. Other stuffs not mentioned yet.. that could be essentially of use in
+> general terms.
+> 
+> 
+> thank you in advance for each response
+> 
+> -rurie-
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From tim@tim.brody.btinternet.co.uk  Wed Feb 26 12:52:42 2003
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Wed, 26 Feb 2003 12:52:42 +0000
+Subject: [OAI-implementers] OAI implementation
+In-Reply-To: <Pine.BSF.4.21.0302261632590.2906-100000@transport.itb.ac.id>
+References: <Pine.BSF.4.21.0302261632590.2906-100000@transport.itb.ac.id>
+Message-ID: <3E5CB89A.7010502@tim.brody.btinternet.co.uk>
+
+ruri muharto wrote:
+
+> 2. few 'stumbling blocks' to the network implementation. Is there any
+> obstacles to implement the protocol in the third world's internet
+> community like my country, Indonesia? etc..
+
+OAI is a "discovery" protocol - in most cases you will only be exporting 
+metadata from your OAI-PMH interface, and then users will make a direct 
+connection to your site for the actual record (e.g. the full text). If 
+you want to expose your records to the global community, then you might 
+need to consider renting space on a commercial host (e.g. in the USA).
+
+That said, as long as your OAI interface is available most of the time, 
+harvesters will be able to get the data. OAI service providers are 
+always improving the ability of harvesters to work in adverse conditions!
+
+All the best,
+Tim.
+
+
+From tim@tim.brody.btinternet.co.uk  Wed Feb 26 13:15:50 2003
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Wed, 26 Feb 2003 13:15:50 +0000
+Subject: [OAI-implementers] Perl regexp for validating 'identifier' (anyURI)
+ needed
+In-Reply-To: <5532.1046217840@www2.gmx.net>
+References: <5532.1046217840@www2.gmx.net>
+Message-ID: <3E5CBE06.9010707@tim.brody.btinternet.co.uk>
+
+The regexps I use are:
+
+For identifier:
+/^[[:alpha:]][[:alnum:]\+\-\.]*:.+/
+
+For setspec:
+/([A-Za-z0-9_!'\$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'\$\(\)\+\-\.\*]+)*/
+
+For metadata prefix:
+/^[\w]+$/
+
+And date:
+/^(\d{4})-(\d{2})-(\d{2})(T\d{2}:\d{2}:\d{2}Z)?$/
+
+These are taken from my oai-perl libraries, which contains a module 
+"OAI2::Repository" with a method that determines whether OAI arguments 
+are valid (draws strongly on Simeon's DLib tutorial from all those years 
+ago :-).
+
+All the best,
+Tim.
+
+# Copied from Simeon Warner's tutotial at
+# http://library.cern.ch/HEPLW/4/papers/3/OAIServer.pm
+# (note: his is the wrong grammer for ListSets)
+# 0 = optional, 1 = required, 2 = exclusive
+my %grammer = (
+         'GetRecord' =>
+         {
+                 'identifier' => [1, \&validate_identifier],
+                 'metadataPrefix' => [1, \&validate_metadataPrefix]
+         },
+         'Identify' => {},
+         'ListIdentifiers' =>
+         {
+                 'from' => [0, \&validate_date],
+                 'until' => [0, \&validate_date],
+                 'set' => [0, \&validate_setSpec_2_0],
+                 'metadataPrefix' => [1, \&validate_metadataPrefix],
+                 'resumptionToken' => [2, sub { 1 }]
+         },
+         'ListMetadataFormats' =>
+         {
+                 'identifier' => [0, \&validate_identifier]
+         },
+         'ListRecords' =>
+         {
+                 'from' => [0, \&validate_date],
+                 'until' => [0, \&validate_date],
+                 'set' => [0, \&validate_setSpec_2_0],
+                 'metadataPrefix' => [1, \&validate_metadataPrefix],
+                 'resumptionToken' => [2, sub { 1 }]
+         },
+         'ListSets' =>
+         {
+                 'resumptionToken' => [2, sub { 1 }]
+         }
+);
+
+
+marinb@gmx.net wrote:
+> Hi all.
+> 
+> I am sure somebody has already written/found a reasonable good perl regexp
+> for validating the identifier parameter. I only could find one for decoding
+> 
+> m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|
+> 
+> but it is not suitable for validating as no check is made for allowed
+> characters
+> within each 'fragment'. There must be a better solution instead of
+> extracting
+> the fragments and validating each of them separately?
+> 
+> Can anybody also tell me where is the problem with following request?
+> 
+> Response to this request did not give error code 'badArgument':
+> verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=junk&until=1990-01-10
+> 
+> Would appreciate very much any help,
+> Cheers,
+> Marin
+> 
+
+
+From simeon@cs.cornell.edu  Wed Feb 26 15:49:03 2003
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Wed, 26 Feb 2003 10:49:03 -0500 (EST)
+Subject: [OAI-implementers] Perl regexp for validating 'identifier'
+ (anyURI) needed
+In-Reply-To: <5532.1046217840@www2.gmx.net>
+Message-ID: <Pine.LNX.4.44.0302261011200.15069-100000@ice.cs.cornell.edu>
+
+On Wed, 26 Feb 2003 marinb@gmx.net wrote:
+> I am sure somebody has already written/found a reasonable good perl regexp
+> for validating the identifier parameter. I only could find one for decoding
+> 
+> m|^(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?|
+> 
+> but it is not suitable for validating as no check is made for allowed
+> characters within each 'fragment'. There must be a better solution
+> instead of extracting the fragments and validating each of them
+> separately?
+
+I don't know whether you should take the following as an admission or as a
+suggestion. The pattern you give above pretty closely matches that given
+in http://www.ietf.org/rfc/rfc2396.txt (appendix B) as a match for generic
+URI syntax. I don't see why you can't add further validation for allowed
+characeters although it will make the match rather unweildy.  However, if
+you are creating a repository (as opposed to a service that automatically
+harvests and re-exports records), then from a practical point of view it
+isn't essential to validate all possible URIs (even the XML Schema docs
+point out issues with this, see
+http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#anyURI). What is
+essential is to do enough validation such that all identifiers you use are
+permitted and the resulting "validated" identifiers are safe to use as
+keys for lookup internally. This is acceptable because the OAI
+specification requires only that you report at least one error for an
+illegal request -- for an invalid identifier it might reasonably be
+badArgument and/or idDoesNotExist (see:  
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ErrorConditions)
+
+If you are creating a service that automatically harvests and re-exports
+records then incoming records must be carefully validated to avoid
+re-exporting bad data.
+ 
+> Can anybody also tell me where is the problem with following request?
+> 
+> Response to this request did not give error code 'badArgument':
+> verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=junk&until=1990-01-10
+
+As Donna points out, this request is certainly bad and should give at
+least one error code (the most obvious being badArgument). However, since
+the specification allows servers to respond with any appropriate error
+element it could reasonably give badResumptionToken if doesn't recognize
+the resumptionToken 'junk'.
+ 
+Cheers,
+Simeon.
+
+> Would appreciate very much any help,
+> Cheers,
+> Marin
+> 
+> 
+
+
+

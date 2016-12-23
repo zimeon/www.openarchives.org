@@ -1,0 +1,488 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE User Guide - HTTP Implementation and Multiple Serializations</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.3/ore-spec.css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - HTTP Implementation and Multiple Serializations</h2>
+  <h3 class="subTitle">02 April 2008</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of an alpha release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.3/http">http://www.openarchives.org/ore/0.3/http</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/http">http://www.openarchives.org/ore/http</a></dd>
+  <dt>Previous version:</dt>
+  <dd>none</dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE User Guide - HTTP Implementation and Multiple Serializations-->
+<!--VAR-SUBTITLE=02 April 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.3/http-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/http-->
+<!--VAR-PREVIOUSURI=none-->
+
+<div class="abstract">
+<h2><a name="abstract" id="abstract"></a>Abstract</h2>
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines standards 
+for the description and exchange of aggregations of Web resources.
+This document describes implementation of OAI-ORE using HTTP
+[<a href="#ref-rfc2616">RFC2616</a>], the must widely used protocol of the current
+World Wide Web. Mechanisms that support multiple Resource Maps in different 
+serializations are described in detail.
+This user guide is one of several documents comprising the
+<a href="http://www.openarchives.org/ore/0.3/toc">OAI-ORE specification and
+user guide</a>.</p>
+</div>
+
+
+<div class="toc">
+<h2><a name="contents" id="contents"></a>Table of Contents</h2>
+<p class="toc">1. <a href="#Introduction">Introduction</a> <br />
+2. <a href="#Cool">Cool URI implementation with some HTTP server support</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#CoolSimple">Cool URIs for one Resource Map describing an Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.2 <a href="#CoolMulti">Multiple Resource Maps with Cool URIs</a><br />
+3. <a href="#Simple">Simple implementation without server support for content negotiation or redirection</a><br />
+4. <a href="#WithMicroformats">Implementation with RDFa or microformats</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.1 <a href="#CoolWithMicroformats">RDFa or microformats with Cool URIs</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.2 <a href="#SimpleWithMicroformats">RDFa or microformats without server support</a><br />
+5. <a href="#References">References</a><br />
+</p>
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+<p class="toc">A. <a href="#acknowledgments">Acknowledgements</a><br />
+B. <a href="#changelog">Change Log</a></p>
+</div>
+<hr />
+
+<div class="body">
+<h2>1. <a name="Introduction">Introduction</a></h2>
+
+<p>The use of HTTP URIs to identify ORE Aggregations and Resource Maps
+leverages the extensive infrastructure and tools of the current World Wide
+Web [<a href="#Web_Architecture">Web Architecture</a>]. 
+HTTP is the best supported protocol of current web browsers, crawlers,
+search engines, feed aggregators, and many other tools. HTTP provides 
+mechanisms that allow the Aggregation
+<!--(a non-information resource in the sense of the Web Architecture)-->
+to yield or redirect to a Resource Map as 
+required by the ORE <a href="#ref-datamodel">Data Model</a>. HTTP is thus 
+the RECOMMENDED protocol and associated URI scheme for ORE Aggregations and 
+Resource Maps.</p>
+
+<p>There may be one or more Resource Maps that describe a particular 
+Aggregation. These will likely differ in their serialization format,
+serialization specific metadata (e.g. creation time) etc., and are thus
+separate resources from a Web Architecture standpoint. Each Resource Map
+should thus have a different URI (<code>ReM-1</code>, <code>ReM-2</code> etc.)
+and it is incorrect to make multiple Resource Maps available from a single
+URI via content negotiation.</p>
+
+<p>In application domains such as scholarly communication, there are already
+many <i>aggregations</i> of resources on the web. These are often described by
+HTML &quot;splash pages&quot; such as
+<a href="http://arxiv.org/abs/astro-ph/0601007">http://arxiv.org/abs/astro-ph/0601007</a>.
+which provide description and access to components. Splash pages and the URIs
+that identify them are NOT ORE Aggregations or Resource Maps. However, with
+RDFa and microformats it is possible to embed a Resource Map in a splash page
+and we discuss this case below. 
+If there exists a splash page that does not contain an RDFa or microformat 
+representation of a Resource Map then that page should not be available via 
+content negotiation from the Aggregation.</p>
+ 
+<p>This document is divided into several sections which describe different
+implementation scenarios. These scenarios differ in the server requirements
+needed to support them, and in the URI structure that results. 
+<a href="#Cool">Section 2</a> describes a clean and extensible implementation
+strategy requiring some HTTP server support. This is the RECOMMENDED strategy.
+<a href="#Simple">Section 3</a> describes a limited but very simple
+implementation strategy that requires no HTTP server support beyond the 
+ability to serve files.
+<a href="#WithMicroformats">Section 4</a> describes implementation with 
+RFDa or microformats either alone or in addition to other formats.</p>
+
+<div class="open-issue" id="Use_Information_and_Non-information_Resource_Terminology">Is
+is correct and/or helpful to use the information resource and non-information resource
+terminology when describing implementation strategies? Does the type of <code>A-1</code>
+change depending on implementation choice?</div>
+
+<h2>2. <a name="Cool" id="Cool">Cool URI implementation with some HTTP server 
+support</a></h2>
+
+<p>This implementation strategy is motivated by the desire to use
+<a href="#ref-CoolURIs">Cool URIs</a> and to allow easy extensibility to
+new or additional serializations. We first describe the simple case of
+one Resource Map available to describe an Aggregation, and the mechanisms 
+used to tie these two URIs together. <a href="#CoolMulti">Section 2.2</a> 
+then extends this to the case of multiple Resource Maps describing the same
+Aggregation.</p>
+
+<h3>2.1 <a name="CoolSimple" id="CoolSimple">Cool URIs for one Resource Map
+describing an Aggregation</a></h3>
+
+<p>Consider the following example Aggregation and Resource Map URIs:</p>
+
+<div class="exampleInner"><pre>Aggregation:   A-1   = http://example.org/foo
+Resource Map:  ReM-1 = http://example.org/foo.xml
+</pre></div>
+
+<!--p>Both <code>A-1</code> and <code>ReM-1</code> SHOULD be resolvable. 
+The Resource Map, with URI <code>ReM-1</code>, is an information resource
+and access SHOULD yield a representation of the Resource Map (in this case 
+an Atom serialization, see [<a href="#ref-atom">Atom Profile</a>]).
+The Aggregation, with URI <code>A-1</code>, is not an information resource 
+but is described by the Resource Map and SHOULD lead a user or agent to the
+Resource Map. There are two good mechanisms for doing this in HTTP -
+content negotiation and redirection:</p-->
+<p>Both <code>A-1</code> and <code>ReM-1</code> SHOULD be resolvable. 
+The Resource Map, with URI <code>ReM-1</code>, is an information resource
+and access SHOULD yield a representation of the Resource Map (in this case 
+an Atom serialization, see [<a href="#ref-atom">Atom Profile</a>]).
+The Aggregation, with URI <code>A-1</code>, is described by the Resource 
+Map available from <code>ReM-1</code> and access to <code>A-1</code> 
+SHOULD lead a user or agent to the Resource Map. There are two good mechanisms 
+for doing this in HTTP -- content negotiation and redirection:</p>
+
+<ul>
+<li><b>Content negotiation</b> -- even though there is just one Resource Map
+available to describe Aggregation <code>A-1</code>, HTTP transparent content 
+negotiation can be used to return the Resource Map from <code>A-1</code>. The
+mechanism is described in <a href="#ref-RFC2295">RDF2295</a> and see also
+<a href="#ref-apache-conneg">Apache Content Negotation</a> for an example 
+implementation. The key elements of the process are that when a client 
+requests <code>A-1</code>, the server may instead response with a Resource 
+Map. The response MUST include a <code>Content-Location</code> header that
+indicates that the response is actually from URI <code>ReM-1</code>.</li>
+<li><b>Redirection</b> -- as an alternative to content negotiation, a server
+may respond to a request for <code>A-1</code> with a 
+<code>303 See Other</code> redirect to <code>ReM-1</code>. This strategy
+is described in the <a href="ref-linked-data">Linked Data Tutorial</a>.</li>
+</ul>
+
+<p>The URIs <code>A-1</code> and <code>ReM-1</code> do not have to be related
+in the manner shown above although this is one common arrangement and is 
+supported by <a href="#ref-apache-conneg">Apache</a>. While appropriate choice
+for a given system will likely be influenced by other considerations, it 
+should not be forgotten that good URIs do not change 
+[<a href="#ref-uri-style">URI Style</a>] and that later expansion is often 
+required as systems evolve.</p>
+
+
+<h3>2.2 <a name="CoolMulti" id="CoolMulti">Multiple Resource Maps with Cool URIs</a></h3>
+
+<p>If more than one Resource Map is available to describe an Aggregation,
+perhaps and Atom serialization and an RDF/XML serialization, then each
+Resource Map SHOULD be available from a different URI. Consider adding 
+<code>ReM-2</code> to the example above:</p>
+
+<div class="exampleInner"><pre>Aggregation:   A-1   = http://example.org/foo
+Resource Map:  ReM-1 = http://example.org/foo.xml
+               ReM-2 = http://example.org/foo.rdf
+</pre></div>
+
+<p>The Aggregation and each Resource Map has a good URI, and the
+scheme is easily extensible for addition resource maps simply by
+adding new Resource Maps with <code>ReM-3</code> etc.. It is
+an implementation decision as to which Resource Map is considered the
+default. The serialization most useful to a simple web browser is likely
+the best choice and at present that is Atom if available. Either transparent
+content negotiation or redirect may be used to handle client accesses
+to the Aggregation URI.</p>
+
+<p>To aid in discovery, it is RECOMMENDED that where there are multiple
+Resource Maps available for an Aggregation and this is known when the a 
+Resource Map is generated, the availability of other Resource Maps should
+be indicated using the <code>ore:isDescribedBy</code> predicate. For example,
+<code>ReM-1</code> might include the triples (shown in N3 format):</p>
+
+<div class="exampleInner"><pre>ReM-1 ore:describes A-1.
+A-1 ore:isDescribedBy ReM-2.   #discovery of ReM-2 from ReM-1
+A-1 ore:isDescribedBy ReM-3.   #discovery of ReM-3 from ReM-1
+</pre></div>
+
+
+<h2>3. <a name="Simple">Simple implementation without server support for 
+content negotiation or redirection</a></h2>
+
+<p>Without support from a web server one cannot use the techniques 
+<a href="#Cool">above</a> to arrange that an attempt to access the Aggregation
+yields or redirects to a Resource Map. A way around this limitation is to
+relate the URIs with a fragment identifier [<a href="#ref-RFC3986">RFC3986</a>].
+For example, with URIs:</p>
+
+<div class="exampleInner"><pre>Aggregation:  A-1   = http://example.org/foo.xml
+Resource Map: ReM-1 = http://example.org/foo.xml#rem
+</pre></div>
+
+<div class="open-issue" id="hash_rem_or_hash_aggregation">
+The <code>#rem</code> approach to identify the Resource Map leads to clean references
+to the Aggregation without creating a second URI (once fragment identifier is removed)
+that must resolve. 
+Another option would be to suggest that in this case <code>A-1</code> and <code>ReM-1</code>
+should be completely different URIs (neither with a fragment identifier). Say 
+<code>A-1 = http://example.org/bar.xml</code> and 
+<code>ReM-1 = http://example.org/foo.xml</code>. <code>ReM-1</code> must return the 
+Resource Map as described and <code>A-1</code> should also return a Resource Map (though 
+not necessarily exactly the same one) or some other format with enough information to
+lead a client to <code>ReM-1</code>. 
+Yet another option would be use a fragment identifier for the Aggregation instead of
+for the Resource Map. This approach leads to ugly URIs for the Aggregation (which
+we expect to be linked to) but does provides cleaner migration path from the hash-approach
+to a Cool URI approach (can assert <code>foo owl:sameAs foo.xml#aggregation</code> when
+new <code>foo</code> URI for Aggregation is created). 
+</div>
+
+<p>Resolution of fragment identifiers is defined to be a client-side behavior so
+any client seeing an HTTP URI with fragment identifier, e.g. <code>uri#fragment</code>
+will remove the <code>#fragment</code> and access <code>uri</code>. Only when a 
+response is obtained might the client try to identify the correct fragment. In 
+practice this means that either <code>A-1</code> or <code>ReM-1</code> above 
+will yield a Resource Map at <code>http://example.org/foo.xml</code>.</p>
+
+<p>The fragment identifier permits precise differentiation between the Resource Map
+and the Aggregation so that statements can be made about the appropriate resource.
+However, it also satisfies the requirement that a Resource Map can be obtained both 
+via the Aggregation URI <code>A-1</code> and directly from <code>ReM-1</code>.</p>
+
+<p>The migration path from this approach to more complex solution with multiple
+serialization is somewhat messy. Later support for multiple serializations 
+can be done in one of two ways:</p>
+
+<ol>
+<li><p>Change URIs to adopt the <a href="#Cool">Cool URI</a> strategy. This will
+break existing assertions if <code>A-1</code> is renamed and the URI 
+<code>http://example.org/foo.xml</code> reused for a Resource Map. However,
+at least clients would get a Resource Map back so a sufficiently smart client might
+be able to unravel the inconsistency. After, migration to support both the 
+original <code>http://example.org/foo.xml</code> Atom Resource Map and a new
+<code>http://example.org/foo.rdf</code> RDF/XML Resource Map the set of URIs
+might be:</p>
+<div class="exampleInner"><pre>Aggregation:   A-1   = http://example.org/foo
+Resource Map:  ReM-1 = http://example.org/foo.xml
+               ReM-2 = http://example.org/foo.rdf
+</pre></div></li>
+
+<li><p>Preserve existing URIs while adding other formats. This leads to a rather
+ugly and non-standard set of URIs which would require custom server support. If
+we add a new <code>http://example.org/foo.rdf</code> RDF/XML Resource Map the 
+set of URIs might be:</p>
+<div class="exampleInner"><pre>Aggregation:   A-1   = http://example.org/foo.xml
+Resource Map:  ReM-1 = http://example.org/foo.xml#rem
+               ReM-2 = http://example.org/foo.rdf
+</pre></div>
+<!--ReM-3 = http://example.org/foo.other-->
+</li>
+</ol>
+
+<p>It would be possible to extend the fragment identifier scheme described in
+combination with content negotiation to handle multiple serializations. 
+However, this would go against standard web practices and is NOT RECOMMENDED.
+The <a href="#CoolMulti">Multiple Resource Maps with Cool URIs</a> strategy
+is a much better approach.</p>
+
+
+<h2>4. <a name="WithMicroformats" id="WithMicroformats">Implementation with RDFa or microformats</a></h2>
+
+<p><a href="#ref-rdfa">RDFa</a> and <a href="#ref-ufmt">microformats</a> provide
+means to include structured data, such as a Resource Map, within an XHTML or HTML
+page. A profile for use of RDFa to serialize Resource Maps is given in
+<a href="#ref-rdfsyntax">Representing Resource Maps Using RDF Syntaxes</a>.
+With RDFa and microformats an HTML "splash page" may also take on the dual role
+of a Resource Map serialization.</p>
+
+<h3>4.1 <a name="CoolWithMicroformats" id="CoolWithMicroformats">RDFa or microformats with Cool URIs</a></h3>
+
+<p>In the case of a <a href="#Cool">Cool URI implementation</a>, the (X)HTML page 
+with the RDFa or microformat then the URI of this page (and Resource Map) is 
+treated in the same way as any other Resource Map URI for a given Aggregation. 
+If the HTML page contains the only Resource Map serialization
+then one might have URIs:</p>
+
+<div class="exampleInner"><pre>Aggregation:   A-1   = http://example.org/foo
+Resource Map:  ReM-1 = http://example.org/foo.html   (includes RDFa Resource Map)
+</pre></div>
+
+<p>If there are multiple serializations then the default content-negotiated result or 
+redirect should be to the HTML page. This will ensure that a web browser receives the
+most helpful version of the Resource Map in response to an attempt to access the Aggregation
+with no preference information. If Resource Maps were available in XHTML/RDFa, Atom and
+RDF/XML the URIs might be:</p>
+
+<div class="exampleInner"><pre>Aggregation:   A-1   = http://example.org/foo
+Resource Map:  ReM-1 = http://example.org/foo.html   (includes RDFa Resource Map)
+               ReM-2 = http://example.org/foo.xml
+               ReM-3 = http://example.org/foo.rdf
+</pre></div>
+
+<h3>4.2 <a name="SimpleWithMicroformats" id="SimpleWithMicroformats">RDFa or microformats 
+without server support</a></h3>
+
+<p>In case of a <a href="#Simple">simple implementation without server support</a>, 
+the (X)HTML page containing the RDFa or microformat Resource Map serialization
+must have the Aggregation URI <code>A-1</code>:</p>
+
+<div class="exampleInner"><pre>Aggregation:   A-1   = http://example.org/foo.html
+Resource Map:  ReM-1 = http://example.org/foo.html#rem
+</pre></div>
+
+<p>The RDFa or microformat data must be written so that the URIs above are used
+in statements. The Resource Map URI is <code>http://example.org/foo.html#rem</code>
+and not the page URI <code>http://example.org/foo.html</code>. This is possible 
+using the <a href="http://www.w3.org/TR/rdfa-syntax/#T_evaluation_context">Evaluation
+Context</a> notion in <a href="#ref-rfda">RDFa</a>.</p>
+
+
+<h2>5. <a name="References">References</a></h2>
+
+<dl>
+<dt>[<a name="ref-apache-conneg" id="ref-apache-conneg">Apache Content Negotation</a>]</dt>
+<dd><cite><a href="http://httpd.apache.org/docs/2.2/content-negotiation.html">Apache HTTP Server Version 2.2 - Content Negotiation</a></cite>, The Apache Software Foundation, 2008. Available at http://httpd.apache.org/docs/2.2/content-negotiation.html</dd>
+<dt>[<a name="ref-atom" id="ref-atom">Atom Profile</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.3/atom">ORE Specification - Resource Map Profile of Atom</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner (editors),
+2008-02-28. Available at http://www.openarchives.org/ore/0.3/atom</dd>
+<dt>[<a name="ref-CoolURIs" id="ref-CoolURIs">Cool URIs</a>]</dt>
+<dd><cite><a href="http://www.dfki.uni-kl.de/~sauermann/2006/11/cooluris/">Cool URIs for the Semantic Web</a></cite> Leo Sauermann, Richard Cyganiak, Max V&#xf6;lkel, 2007-08-09. 
+Available at http://www.dfki.uni-kl.de/~sauermann/2006/11/cooluris/ . 
+Also being developed into a W3C Working Draft at http://www.w3.org/TR/cooluris/</dd>
+<dt>[<a name="ref-datamodel" id="ref-datamodel">Data Model</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.3/datamodel">ORE Specification - Abstract Data Model</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner (editors),
+2008-02-26. Available at http://www.openarchives.org/ore/0.3/datamodel</dd>
+<dt>[<a name="ref-linked-data" id="ref-linked-data">Linked Data Tutorial</a>]</dt>
+<dd><cite><a href="http://www4.wiwiss.fu-berlin.de/bizer/pub/LinkedDataTutorial/">Linked Data Tutorial</a></cite>,
+Chris Bizer, Richard Cyganiak, Tom Heath, 2007-07-27. 
+Available at http://www4.wiwiss.fu-berlin.de/bizer/pub/LinkedDataTutorial/</dd>
+<dt>[<a name="ref-RFC2295" id="ref-RFC2295">RFC2295</a>]</dt>
+<dd><cite>IETF <a href="http://www.ietf.org/rfc/rfc2295.txt">RFC 2295: Transparent Content Negotiation</a></cite>, 
+K. Holtman, A. Mutz, 1998-03. Available at http://www.ietf.org/rfc/rfc2295.txt</dd>
+<dt>[<a name="ref-RFC2616" id="ref-RFC2616">RFC2616</a>]</dt>
+<dd><cite>IETF <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616: Hypertext Transfer Protocol - HTTP/1.1</a></cite>,
+R. Fielding, J. Gettys, J. Mogul, H. Frystyk, L. Masinter, P. Leach, T. Berners-Lee, June 1999. Available at
+http://www.ietf.org/rfc/rfc2616.txt</dd>
+<dt>[<a name="ref-RFC3986" id="ref-RFC3986">RFC3986</a>]</dt>
+<dd><cite>IETF <a href="http://www.ietf.org/rfc/rfc3986.txt">RFC 3986: Uniform Resource Identifier (URI): Generic Syntax</a></cite>, T. Berners-Lee, R. Fielding, L. Masinter. Available at http://www.ietf.org/rfc/rfc3986.txt</dd>
+<dt>[<a name="ref-rdfa" id="ref-rdfa">RDFa</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/2007/WD-rdfa-syntax-20071018/">RDFa in XHTML: Syntax and Processing. 
+A collection of attributes and processing rules for extending XHTML to support RDF</a></cite>, 
+Ben Adida, Mark Birbeck, Shanne McCarron and Steven Pemberton (editors). W3C Working Draft, 2007-10-18,<br />
+Available at http://www.w3.org/TR/2007/WD-rdfa-syntax-20071018/ and 
+<a href="http://www.w3.org/TR/rdfa-syntax/">latest version</a> available
+at http://www.w3.org/TR/rdfa-syntax/.</dd>
+<dt>[<a name="ref-rdfsyntax" id="ref-rdfsyntax">RDF Resource Maps</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.3/rdfsyntax">ORE User Guide - Representing Resource Maps Using RDF Syntaxes</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner (editors),
+2008-02-29. Available at http://www.openarchives.org/ore/0.3/rdfsyntax</dd>
+<dt>[<a name="ref-uri-style" id="ref-uri-style">URI Style</a>]</dt>
+<dd><cite><a href="http://www.w3.org/Provider/Style/URI">Cool URIs don't change</a></cite>, Tim Berners-Lee, 1998.
+Available at http://www.w3.org/Provider/Style/URI</dd>
+<dt>[<a name="Web_Architecture" id="Web_Architecture">Web Architecture</a>]</dt>
+<dd><a href="http://www.w3.org/TR/webarch/"><em>Architecture of
+the World Wide Web, Volume One</em></a>, I. Jacobs and N. Walsh,
+Editors, World Wide Web Consortium, 15 January 2004. Available at
+http://www.w3.org/TR/webarch/</dd>
+</dl>
+</div>
+<div class="back">
+
+<!--START-INCLUDE=_acknowledgements.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+</div>
+<!--END-INCLUDE=_acknowledgements.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+       <tbody><tr>
+                <th>Date</th>
+                <th>Editor</th>
+                <th>Description</th>
+        </tr>
+	<tr>
+		<td>2008-04-02</td>
+		<td>simeon</td>
+		<td>public alpha 0.3 release</td>
+	</tr></tbody>
+</table>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

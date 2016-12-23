@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] oai:UTCdateTimeZType
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20oai%3AUTCdateTimeZType&In-Reply-To=EMEW3%7C9c92aa144bc15dcd6c3318addb9d4c75l3E9U706tdb01r%7Cecs.soton.ac.uk%7C.6443.5.camel%40dell-desktop.example.com">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001926.html">
+   <LINK REL="Next"  HREF="001928.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] oai:UTCdateTimeZType</H1>
+    <B>Simeon Warner</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20oai%3AUTCdateTimeZType&In-Reply-To=EMEW3%7C9c92aa144bc15dcd6c3318addb9d4c75l3E9U706tdb01r%7Cecs.soton.ac.uk%7C.6443.5.camel%40dell-desktop.example.com"
+       TITLE="[OAI-implementers] oai:UTCdateTimeZType">simeon.warner at cornell.edu
+       </A><BR>
+    <I>Wed Apr 15 09:05:56 EDT 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001926.html">[OAI-implementers] oai:UTCdateTimeZType
+</A></li>
+        <LI>Next message: <A HREF="001928.html">[OAI-implementers] joailib 0.1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1927">[ date ]</a>
+              <a href="thread.html#1927">[ thread ]</a>
+              <a href="subject.html#1927">[ subject ]</a>
+              <a href="author.html#1927">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Tim,
+
+It seems from my testing that xerces doesn't like the year zero. I get
+tests to work if I change to year 0001. XSV
+(<A HREF="http://www.w3.org/2001/03/webdata/xsv">http://www.w3.org/2001/03/webdata/xsv</A>) is happy with year zero.
+
+I used the following test file (simplified from the dspace URL you quote):
+
+<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">simeon at homebox</A> ~&gt;more c.xml
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;OAI-PMH xmlns=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/&quot;">http://www.openarchives.org/OAI/2.0/&quot;</A>
+         xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance&quot;">http://www.w3.org/2001/XMLSchema-instance&quot;</A>
+         xsi:schemaLocation=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/">http://www.openarchives.org/OAI/2.0/</A>
+                             <A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;">http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;</A>&gt;
+&lt;responseDate&gt;2009-04-15T12:45:43Z&lt;/responseDate&gt;
+&lt;request metadataPrefix=&quot;oai_dc&quot;
+         until=&quot;0000-01-01T00:00:00Z&quot;
+         verb=&quot;ListRecords&quot;&gt;<A HREF="http://dspace.mit.edu/oai/request&lt;/request">http://dspace.mit.edu/oai/request&lt;/request</A>&gt;
+&lt;ListRecords&gt;
+&lt;record&gt;
+  &lt;header&gt;
+    &lt;identifier&gt;1&lt;/identifier&gt;
+    &lt;datestamp&gt;2009-04-15T12:45:43Z&lt;/datestamp&gt;
+  &lt;/header&gt;
+&lt;/record&gt;
+&lt;/ListRecords&gt;
+&lt;/OAI-PMH&gt;
+
+the above give an error from xerces:
+
+<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">simeon at homebox</A> ~&gt;xerceslint c.xml
+[Error] c.xml:9:29: cvc-datatype-valid.1.2.2: '0000-01-01T00:00:00Z' is not a valid value of list type 'UTCdatetimeType'.
+[Error] c.xml:9:29: cvc-attribute.3: The value '0000-01-01T00:00:00Z' of attribute 'until' on element 'request' is not valid with respect to its type, 'UTCdatetimeType'.
+
+but if I change the year to 0001 xerces (2.6.2) is happy:
+
+<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">simeon at homebox</A> ~&gt;diff c.xml d.xml
+8c8
+&lt;          until=&quot;0000-01-01T00:00:00Z&quot;
+---
+&gt;<i>          until=&quot;0001-01-01T00:00:00Z&quot;
+</I>
+<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">simeon at homebox</A> ~&gt;xerceslint d.xml
+d.xml: 899;0;0 ms (8 elems, 6 attrs, 0 spaces, 97 chars)
+
+element[0]: OAI-PMH   in <A HREF="http://www.openarchives.org/OAI/2.0/">http://www.openarchives.org/OAI/2.0/</A>
+
+namespace[0]: <A HREF="http://www.openarchives.org/OAI/2.0/">http://www.openarchives.org/OAI/2.0/</A>
+              <A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd</A>
+namespace[1]: <A HREF="http://www.w3.org/2001/XMLSchema">http://www.w3.org/2001/XMLSchema</A>
+              [no schema doc]
+
+Do you get the same in your setup?
+
+
+
+I also did a couple of tests to probe the two parts of the definition of
+UTCdatetimeType. XSV prints out nice helpful messages which suggest to me
+that the base type and restruction work as planned:
+
+## with valid dateTime but not Z
+Invalid per cvc-attribute.1.2: attribute type check failed for {None}:until: 0001-01-01T00:00:00+0400 no members of union succeeded:  is not a valid date literal; does not match pattern .*Z
+
+## with valid patter for Z but invalid dateTime
+Invalid per cvc-attribute.1.2: attribute type check failed for {None}:until: A001-01-01T00:00:00Z no members of union succeeded:  is not a valid date literal; is not a valid dateTime literal
+
+
+Cheers,
+Simeon
+
+
+On Wed, Apr 15, 2009 at 09:29:56AM +0100, Tim Brody wrote:
+&gt;<i> We're having trouble validating against the OAI schema (testing with
+</I>&gt;<i> xmllint &amp; xerces).
+</I>&gt;<i>         
+</I>&gt;<i> It fails with any use of seconds-based granularity e.g.
+</I>&gt;<i> <A HREF="http://dspace.mit.edu/dspace-oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;until=2009-03-03T00:00:00Z">http://dspace.mit.edu/dspace-oai/request?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;until=2009-03-03T00:00:00Z</A>
+</I>&gt;<i>         
+</I>&gt;<i> <A HREF="http://espace.library.uq.edu.au/oai.php?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;until=2009-03-03T00:00:00Z">http://espace.library.uq.edu.au/oai.php?verb=ListRecords&amp;metadataPrefix=oai_dc&amp;until=2009-03-03T00:00:00Z</A>
+</I>&gt;<i>         
+</I>&gt;<i> The problem regexp is &quot;.*Z&quot;, which as far as we can tell is correct but
+</I>&gt;<i> doesn't work.
+</I>&gt;<i>         
+</I>&gt;<i> Any ideas?
+</I>&gt;<i>         
+</I>&gt;<i> foo.xml:6: element request: Schemas validity error : Element 
+</I>&gt;<i> '{<A HREF="http://www.openarchives.org/OAI/2.0/">http://www.openarchives.org/OAI/2.0/</A>
+</I>&gt;<i> }request', attribute 'until': '0000-01-01T00:00:00Z' is not a valid
+</I>&gt;<i> value of the union type '{<A HREF="http://www.openarchives.org/OAI/">http://www.openarchives.org/OAI/</A>
+</I>&gt;<i> 2.0/}UTCdatetimeType'.
+</I>&gt;<i> foo.xml fails to validate
+</I>&gt;<i>         
+</I>&gt;<i> All the best,
+</I>&gt;<i> Tim.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001926.html">[OAI-implementers] oai:UTCdateTimeZType
+</A></li>
+	<LI>Next message: <A HREF="001928.html">[OAI-implementers] joailib 0.1
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1927">[ date ]</a>
+              <a href="thread.html#1927">[ thread ]</a>
+              <a href="subject.html#1927">[ subject ]</a>
+              <a href="author.html#1927">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

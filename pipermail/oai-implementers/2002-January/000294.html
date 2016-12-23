@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] protocol comments, OAI 2.0
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:wunder%40inktomi.com">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000293.html">
+   <LINK REL="Next"  HREF="000295.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] protocol comments, OAI 2.0
+   </H1>
+    <B>Walter Underwood
+    </B> 
+    <A HREF="mailto:wunder%40inktomi.com"
+       TITLE="[OAI-implementers] protocol comments, OAI 2.0">wunder@inktomi.com
+       </A><BR>
+    <I>Fri, 25 Jan 2002 14:00:06 -0800</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000293.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+        <LI> Next message: <A HREF="000295.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#294">[ date ]</a>
+              <a href="thread.html#294">[ thread ]</a>
+              <a href="subject.html#294">[ subject ]</a>
+              <a href="author.html#294">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Themes: use SOAP, make it stateless, make it simpler.
+
+SOAP is being implemented everywhere. Even AppleScript can make SOAP
+calls. The last time I saw this many vendors use one standard was
+Ethernet. So replace the custom XML protocol with SOAP.
+
+A stateless protocol can be cached outside of the server,
+so that is a very valuable thing to do. The current spec
+has a defensive tone about load. That should not be necessary.
+A few modifications will make the protocols stateless and
+cache-friendly.
+
+ListIdentifiers and ListRecords are stateful now. They should be
+replaced with a &quot;paged list&quot; model, where the client requests a
+starting element number and a number of results. This is an exact
+match for the normal web results interface. It is also the
+approach used in the LDAP virtual list control.
+
+ListIdentifiers/Records also needs to be very clear about the
+contents of successive calls for different parts of the
+list. Consider a rapidly changing repository, like a newswire.
+The results for the list may change between calls. The list
+is not part of some transaction, where the contents don't change
+for the duration of the session. If a client really needs a
+consistant list, it can ask for the whole thing. Each request
+for a portion of the list is independent and can be cached.
+
+Datestamps are problematic in protocols, and should not be
+used. Computers insist that you choose some time for that
+day. Is it noon? One minute after midnight? How do you compare
+that to a time on the same day? So don't allow datestamps in
+protocols. Always use timestamps to the second, in UTC. Don't
+allow timezones or less precision.
+
+Of course, the metadata may contain date-only times.
+
+Since deleted record items are not reliable, they are not all
+that useful. After the robot is burned the first time, the
+implementors will switch to polling the entire repository.
+They are sort of useful as hints, but I can see serious
+problems in some uses. In the newswire example, it is common
+to have a limited time right to the news articles, perhaps
+two weeks. So a reliable list of deleted items would grow
+without bound. Not good.
+
+Robots can use something like the HTTP if-modified-since request.
+This would be a parameter for GetRecord. If the record has
+been modified since the timestamp, return it. Otherwise, return
+the info that it has not been modified. Implementors should try
+and make this request fast.
+
+I have not looked at the interaction between SOAP and HTTP caches.
+It is possibled that they can be cached. If so, take some extra care.
+A GET can be satisfied by a cache, but a POST cannot. Properly
+setting the HTTP headers on responses means that a server can rely
+on an external HTTP cache rather than managing an internal cache.
+This is a big win.
+
+The &quot;Set&quot; concept is optional and I don't see much motivation for it.
+I don't see a request which allows multiple sets, so there is no
+reason to have both sets and repositories. Except for listing them
+(ListSets), which is a limited sort of directory service.
+
+In SOAP-land, directory service is the job of UDDI, and it should
+not be re-implemented differently in a protocol. So remove Sets.
+A single SOAP server can still be registered for multiple repositories,
+or corpora, or collections, or whatever they are called.
+
+I have a few minor nits, like there is no reason to outlaw XML
+features which are required in all parsers, like UTF-16 or decimal
+entities. But switching to SOAP makes lexical issues moot.
+
+Overall, the protocol is good. Using URIs, Dublin Core, HTTP/XML,
+all those things are exactly right. The spec is clear and readable.
+And I'm delighted that it doesn't use RDF.
+
+wunder
+--
+Walter R. Underwood
+Senior Staff Engineer
+Inktomi Enterprise Search
+<A HREF="http://search.inktomi.com/">http://search.inktomi.com/</A>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000293.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+	<LI> Next message: <A HREF="000295.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#294">[ date ]</a>
+              <a href="thread.html#294">[ thread ]</a>
+              <a href="subject.html#294">[ subject ]</a>
+              <a href="author.html#294">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

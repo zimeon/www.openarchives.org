@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] resumptionToken Implementation
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20resumptionToken%20Implementation&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001306.html">
+   <LINK REL="Next"  HREF="001308.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] resumptionToken Implementation</H1>
+    <B>Matthew Cockerill</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20resumptionToken%20Implementation&In-Reply-To="
+       TITLE="[OAI-implementers] resumptionToken Implementation">matt at biomedcentral.com
+       </A><BR>
+    <I>Wed Sep 29 05:22:59 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001306.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+        <LI>Next message: <A HREF="001308.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1307">[ date ]</a>
+              <a href="thread.html#1307">[ thread ]</a>
+              <a href="subject.html#1307">[ subject ]</a>
+              <a href="author.html#1307">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>BioMed Central similarly uses a stateless approach for resumption tokens,
+and I too have been concerned about long term scaleability using 
+
+(a)  the stateless approach:
+Retrieving items 999,900 to 1,000,000 of an ordered set from a database
+tends can be a very expensive operation, and using 10,000 such 100 item
+requests in order to retrieve a full listing from an OAI-enabled database
+containing  a million records is clearly vastly more expensive (in terms of
+resources) than, say downloading a compressed file containing the data for
+all 1 million records in one go.
+
+(b) a stateful approach 
+Caching lots of resultsets is the middle tier doesn't really seem easily
+scaleable to very large sets, since cached resultsets tend to be inherently
+memory-resident. A database temporary table for each new request could be
+used, but would create its own resource issues.
+
+
+
+I guess that the best that can be done is to sort items by a unique ordered
+accession number/id/ (which doesn't change if an item is updated) and to use
+this value as the resumption token, rather than using &quot;offset within the
+ordered set&quot; as the resumption token. This should help both reliability and
+performance (since appropriate relational database indexes can allow the
+performance of  set=xxxx and accessionnumber&gt;yyyy this to be tuned pretty
+effectively, in a way that 
+
+set=xxxx and offset&gt;yyyyyy 
+
+cannot be
+
+
+Matt 
+ == 
+Matthew Cockerill Ph.D. 
+Technical Director
+BioMed Central ( <A HREF="http://www.biomedcentral.com/">http://www.biomedcentral.com/</A> ) 
+34-42, Cleveland Street 
+London 
+W1T 4LB 
+UK 
+
+Tel 020 7631 9127 
+Fax: 020 7580 1938 
+Email: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">matt at biomedcentral.com</A> 
+
+
+
+&gt;<i> DSpace uses the 'stateless' approach - see 
+</I>&gt;<i> <A HREF="http://dspace.org/technology/system-docs/application.html#oai">http://dspace.org/technology/system-docs/application.html#oai</A> 
+</I>&gt;<i> and scroll down a bit.  The sorting is done by (internal 
+</I>&gt;<i> database) ID so de-dupping shouldn't be an issue for the 
+</I>&gt;<i> harvester.  However your corner case may just cause a 
+</I>&gt;<i> problem, or weird side-effect.
+</I>&gt;<i> 
+</I>&gt;<i> Say you're harvesting date range X-Y.  When you first issue 
+</I>&gt;<i> the request, a certain set of items have a 'last modified' 
+</I>&gt;<i> date within that range, so DSpace returns a load, and a 
+</I>&gt;<i> resumption token.  If some items are then modified so that 
+</I>&gt;<i> their 'last modified' date is outside the date range X-Y, 
+</I>&gt;<i> they'll drop off that list, so suddenly item Z that was 
+</I>&gt;<i> result number 101 of those items is now result number 99, and 
+</I>&gt;<i> the next harvest request will miss it, since DSpace will 
+</I>&gt;<i> think that Z was already served up in the first request.
+</I>&gt;<i> 
+</I>&gt;<i> DSpace would probably work OK in the scenario you've 
+</I>&gt;<i> mentioned if the date range specified is X-(present) or no 
+</I>&gt;<i> date range; results are sorted by ID so the order wouldn't 
+</I>&gt;<i> change, new items would appear at the end of the list and 
+</I>&gt;<i> updated items wouldn't have 'moved'.
+</I>&gt;<i> 
+</I>&gt;<i> Deleted items might be a bit yucky though...
+</I>&gt;<i> 
+</I>&gt;<i> Maybe you could to 'freeze' a result set when a harvest comes 
+</I>&gt;<i> in, but that may not scale up when your repository is huge 
+</I>&gt;<i> and the number of harvests is large (caching dozens of 
+</I>&gt;<i> 100,000-long result sets?)
+</I>&gt;<i> 
+</I>&gt;<i> Solutions on a postcard to...
+</I>&gt;<i> 
+</I>&gt;<i>  Robert Tansley / Digital Media Systems Programme / HP Labs
+</I>&gt;<i>   <A HREF="http://www.hpl.hp.com/personal/Robert_Tansley/">http://www.hpl.hp.com/personal/Robert_Tansley/</A>
+</I>&gt;<i> 
+</I> 
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001306.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+	<LI>Next message: <A HREF="001308.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1307">[ date ]</a>
+              <a href="thread.html#1307">[ thread ]</a>
+              <a href="subject.html#1307">[ subject ]</a>
+              <a href="author.html#1307">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Better resumption mechanism - more important than ever!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ajk%40mds.rmit.edu.au">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000400.html">
+   <LINK REL="Next"  HREF="000405.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Better resumption mechanism - more important than ever!
+   </H1>
+    <B>'Alan Kent'
+    </B> 
+    <A HREF="mailto:ajk%40mds.rmit.edu.au"
+       TITLE="[OAI-implementers] Better resumption mechanism - more important than ever!">ajk@mds.rmit.edu.au
+       </A><BR>
+    <I>Tue, 5 Mar 2002 20:00:22 +1100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000400.html">[OAI-implementers] How to verify a download worked?
+</A></li>
+        <LI> Next message: <A HREF="000405.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#403">[ date ]</a>
+              <a href="thread.html#403">[ thread ]</a>
+              <a href="subject.html#403">[ subject ]</a>
+              <a href="author.html#403">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I just got some mail from Jeff at OCLC talking about ETDCat (hope
+you don't mind me quoting some of your mail Jeff). In particular,
+he just told me
+
+    ETDCat contains a lot of records (over 4 million), all of
+    which currently have the exact same datestamp from the initial load.
+
+He also told me that there were no sets. So basically, its all
+or nothing for this site because OAI has no standard way to resume
+if a transfer fails.
+
+If this has happened already, I think its likely to occur again.
+(That is, one very large database all with the same time stamp.)
+So any comments about having a single large collection like this
+is beside the point. The point is OAI does not handle it well.
+
+So I would like to resurrect the discussion again if people don't
+mind on how to do support restarts. My understanding of the general
+feeling so far is
+
+(1) Mandating support is not going to be acceptable
+
+(2) Mandating format of resumption tokens is not going to be acceptable
+
+(3) Mandating resumption tokens be long lifed (eg: can try again the
+    following day) is not acceptable
+
+(4) In fact, mandating that resumption tokens be unique (allowing
+    a token to be reused twice in quick succession to get the same
+    data) is not acceptable
+
+So any proposal needs to be optionally supported.
+
+Question time:
+
+Does anyone else think that this is a major hole in OAI? I personally
+do. After trying to crawl sites, things go wrong. The larger the site,
+the greater the probability that something will go wrong. The larger
+the site, the greater the pain of starting all over again. I do not
+think it is practical for anyone to harvest ETDCat if is really got
+4,000,000 records. Any fault, and start downloading that 4gb again!
+So I feel strongly on this one. In fact, I think this is the most
+major problem OAI has.
+
+Do people think its better to reuse resumption tokens for this purpose,
+or introduce a different sort of token? ETDCat for example I think
+allocates a session id in resumption tokens, meaning they cannot
+be reused when the session times out in the server (similar semantics
+anyway). This is a reasonable implementation decision to make.
+So maybe its better for servers to return an additional token,
+which is a &lt;restartToken&gt; which means a client can instead of
+specifying from= and to= again, specify restartToken= instead where
+the server then automatically works out whatever other parameters
+it needs, creates a new session etc internally. The new 'session'
+(ListXXX verb) then can use resumptionTokens to manage that new
+transfer.
+
+The idea is for a &lt;restartToken&gt; to be long lifed. It may be less
+efficient to use than a resumptionToken, but its only purpose is
+if the client fails the download. If a server does not support
+restartToken, it simply never returns one. Large collections *should*
+support restartTokens.
+
+For my harvester, I can then remember (to disk) the restartToken for
+every packet I get back, allowing me to recover much more easily
+if anything crashes. If restartToken's are too hard for someone
+to implement, then they don't. If you have a large data collection
+on the other hand, to reduce network load, I think its probably worth
+the extra effort of supporting restartTokens.
+
+Any comments? Better suggesions?
+
+Alan
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000400.html">[OAI-implementers] How to verify a download worked?
+</A></li>
+	<LI> Next message: <A HREF="000405.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#403">[ date ]</a>
+              <a href="thread.html#403">[ thread ]</a>
+              <a href="subject.html#403">[ subject ]</a>
+              <a href="author.html#403">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

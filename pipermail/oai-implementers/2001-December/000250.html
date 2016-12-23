@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML Schema
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:lagoze%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000249.html">
+   <LINK REL="Next"  HREF="000251.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML Schema
+   </H1>
+    <B>Carl Lagoze
+    </B> 
+    <A HREF="mailto:lagoze%40cs.cornell.edu"
+       TITLE="[OAI-implementers] XML Schema">lagoze@cs.cornell.edu
+       </A><BR>
+    <I>Fri, 7 Dec 2001 09:32:02 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000249.html">[OAI-implementers] XML Schema
+</A></li>
+        <LI> Next message: <A HREF="000251.html">[OAI-implementers] XML Schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#250">[ date ]</a>
+              <a href="thread.html#250">[ thread ]</a>
+              <a href="subject.html#250">[ subject ]</a>
+              <a href="author.html#250">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Leigh,
+
+Thanks for your comments.  Allow me to add my two cents:
+
+As described in the protocol document at
+<A HREF="http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html#ListM">http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html#ListM</A>
+etadataFormats and the xml schema for the response to
+ListMetadataFormats at
+<A HREF="http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd,">http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd,</A> the
+response to ListMetadataFormats returns a list of triples:
+
+1. The single token metadata prefix, intended as the local (in the scope
+of the responding server) key for the respective metadata format.
+2. The URL of the xsd for the metadata format, intended to describe the
+data format of the metadata instances returned by this server in
+response to requests for the respective metadata format.
+3. The namespace URI, intended as the global identification for this
+metadata format.
+
+Your comment is correct about the 1st item in the trip, the metadata
+prefix, that its scope is local to the server.  However, you imply that
+we are using the xsd URL as a means of global identification and are
+ignoring the semantics of namespace URIs.  In fact, we are not, as
+indicated by my descriptions of the 2nd and 3rd items of the triple
+above.  So, for example, a client upon getting a triple such as:
+
+(foo, <A HREF="http://foometa.org/foo.xsd,">http://foometa.org/foo.xsd,</A> <A HREF="http://foometa.org/foo#">http://foometa.org/foo#</A>) should
+interpret this as:
+
+&quot;This server locally uses the name foo to indicate the metadata concept
+globally known as <A HREF="http://foometa.org/foo#">http://foometa.org/foo#</A> and marks up instance data for
+the metadata concept foo according to the rules defined by
+<A HREF="http://foometa.org/foo.xsd."">http://foometa.org/foo.xsd.&quot;</A>
+
+Another server may return:
+
+(fooalt, <A HREF="http://altfoometa.org/fooall.xsd,">http://altfoometa.org/fooall.xsd,</A> <A HREF="http://foometa.org/foo#">http://foometa.org/foo#</A>)
+indicating a different markup of the same metadata concept.
+
+As for XML schema and RDDL, we have talked about this.  A couple of
+points of note here:
+
+1. If I understand correctly, an RDDL instance document is meant to sit
+at the end of a namespace URI.  By requiring a namespace URI for each
+metadata format, OAI therefore allows extensibility to RDDL - an
+implementor employ RDDL to index multiple descriptions of their metadata
+format used in OAI.
+2. Since RDDL is at the end of a namespace URI, there is no conflict
+between requiring xml schema and the allowance for RDDL (i.e., other
+schema description types - RDFS, RELAX, schematron, etc.)
+3. The requirement for an XML schema is quite flexible in that one can
+employ it to express rather tight data format constraints for a metadata
+instance, or essentially &quot;null it out&quot; and express a schema that allows
+any legal xml.
+
+In summary, I think that the current means in OAI-PMH for describing
+metadata formats achieves the goals of global identification, flexible
+data formating rules, and extension to other schema tools.
+
+I may be missing something here and welcome any comments.
+
+Carl
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Leigh Dodds [mailto:<A HREF="mailto:ldodds@ingenta.com">ldodds@ingenta.com</A>]
+</I>&gt;<i> Sent: Friday, December 07, 2001 6:01 AM
+</I>&gt;<i> To: Van de Sompel, Herbert; <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: RE: [OAI-implementers] XML Schema
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> &gt; This issue is currently being discussed by the oai-tech 
+</I>&gt;<i> group, as part of
+</I>&gt;<i> &gt; the ongoing revision/stabilization of the metadata harvesting
+</I>&gt;<i> &gt; protocol.  we hope to conclude that work with the release 
+</I>&gt;<i> of a version 2.0
+</I>&gt;<i> of
+</I>&gt;<i> &gt; the protocol around April/May 2002.
+</I>&gt;<i> 
+</I>&gt;<i> Thanks, it's useful to know that this is an open issue.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; it would be good to hear from other implementers on this 
+</I>&gt;<i> list whether they
+</I>&gt;<i> &gt; see the need to allow for other schema languagues for metadata
+</I>&gt;<i> &gt; containers in the protocol.
+</I>&gt;<i> 
+</I>&gt;<i> Another way to ask this question is: should OA-MHP care about what
+</I>&gt;<i> schema might be used to validate the metadata returned in a record?
+</I>&gt;<i> 
+</I>&gt;<i> I think a perfectly valid answer is, no. Some reasoning:
+</I>&gt;<i> 
+</I>&gt;<i> The protocol is designed to support multiple metadata formats, with
+</I>&gt;<i> DC as a minimum. The metadata prefix is a handy way to request
+</I>&gt;<i> that a Data Provider returns responses conforming to a 
+</I>&gt;<i> particular metadata
+</I>&gt;<i> format.
+</I>&gt;<i> 
+</I>&gt;<i> As prefixes have an undefined scope (they may become standardised,
+</I>&gt;<i> they may not), the only identifier for the metadata format that an
+</I>&gt;<i> application
+</I>&gt;<i> can currently rely on is the metadata schema (i.e. the URI of 
+</I>&gt;<i> the schema).
+</I>&gt;<i> 
+</I>&gt;<i> For example,  one can envisage a form of negotiation where a Service
+</I>&gt;<i> Provider attempts to identify whether a Data Provider is capable of
+</I>&gt;<i> delivering
+</I>&gt;<i> metadata in one format, and if not, fall back to DC. The 
+</I>&gt;<i> application will
+</I>&gt;<i> therefore
+</I>&gt;<i> need to identify that a given prefix in this repository is 
+</I>&gt;<i> 'bound' to a
+</I>&gt;<i> format
+</I>&gt;<i> it understands, so that it can make this decision.
+</I>&gt;<i> 
+</I>&gt;<i> An alternative, and well-defined way of identifying a 
+</I>&gt;<i> particular vocabulary
+</I>&gt;<i> is by it's Namespace URI (NS-URI). This identifier has the 
+</I>&gt;<i> advantage of
+</I>&gt;<i> being
+</I>&gt;<i> agnostic to a particular schema language. Technologies such 
+</I>&gt;<i> as RDDL [1]
+</I>&gt;<i> provide
+</I>&gt;<i> other useful 'value-added' functionality with an NS-URI as a 
+</I>&gt;<i> starting point.
+</I>&gt;<i> E.g. human-readable documentation, and a machine processable 
+</I>&gt;<i> directory of
+</I>&gt;<i> resources (that may include multiple schema languages).
+</I>&gt;<i> 
+</I>&gt;<i> To conclude, one way to resolve this issue is to alter the 
+</I>&gt;<i> definition of
+</I>&gt;<i> ListMetadataFormats such that the metadataFormat/schema element
+</I>&gt;<i> contains not the URI for the schema, but the NS-URI. A 'best practice'
+</I>&gt;<i> recommendation to document namespaces using RDDL might also be useful.
+</I>&gt;<i> 
+</I>&gt;<i> This would make OA-MHP completely agnostic to the particular schema
+</I>&gt;<i> language that may be used to validate a response (assuming validation
+</I>&gt;<i> takes place at all), while retaining the ability to uniquely 
+</I>&gt;<i> define the
+</I>&gt;<i> format
+</I>&gt;<i> of metadata required.
+</I>&gt;<i> 
+</I>&gt;<i> [1] <A HREF="http://www.rddl.org">http://www.rddl.org</A>
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> 
+</I>&gt;<i> L.
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000249.html">[OAI-implementers] XML Schema
+</A></li>
+	<LI> Next message: <A HREF="000251.html">[OAI-implementers] XML Schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#250">[ date ]</a>
+              <a href="thread.html#250">[ thread ]</a>
+              <a href="subject.html#250">[ subject ]</a>
+              <a href="author.html#250">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

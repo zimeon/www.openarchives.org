@@ -1,0 +1,2460 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE Specification - Resource Map Profile of Atom</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.1/ore-spec.css" />
+<link rel="resourcemap" type="application/atom+xml" href="http://www.openarchives.org/ore/0.1/atom_rem" />
+<link rel="indirectresourcemap" type="text/html" href="http://www.openarchives.org/ore/0.1/toc" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE Specification - Resource Map Profile of Atom</h2>
+  <h3 class="subTitle">10 December 2007</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the 
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of an alpha release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.1/atom">http://www.openarchives.org/ore/0.1/atom</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/atom">http://www.openarchives.org/ore/atom</a></dd>
+  <dt>Previous version:</dt>
+  <dd>none</dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE Specification - Resource Map Profile of Atom-->
+<!--VAR-SUBTITLE=10 December 2007-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.1/atom-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/atom-->
+<!--VAR-RESOURCEMAP=http://www.openarchives.org/ore/0.1/atom_rem-->
+<!--VAR-INDIRECTRESOURCEMAP=http://www.openarchives.org/ore/0.1/toc-->
+
+<div class="abstract">
+<h2><a name="abstract" id="abstract"></a>Abstract</h2>
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines
+standards for the description and exchange of aggregations of Web
+resources. OAI-ORE introduces the notion of a Resource Map, which is a
+specialization of a named graph that asserts a finite set of resources
+(the Aggregated Resources), their types, intra-relationships, and
+relationships with resources external to this finite set (the external
+resources). A Resource Map Document is a machine-readable
+representation of a Resource Map. A Resource Map Document can be
+serialized in different formats, and the purpose of this document is to
+specify a serialization based on, and compliant with the Atom
+syndication format. Hereby, a Resource Map Document is an Atom Feed
+Document with some ORE-specific ingredients. This Atom-based format to
+serialize Resource Map Documents may be referred to as the Resource Map
+Profile of Atom.
+This specification is one of several documents comprising the <a href="http://www.openarchives.org/ore/0.1/toc">OAI-ORE specification and
+user guide</a>.</p>
+</div>
+
+<hr />
+<div class="toc">
+<h2><a name="contents" id="contents"></a>Table of Contents</h2>
+<p class="toc">1. <a href="#introduction">Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#notation">Notational Conventions</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#compliance">Compliance</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.3 <a href="#example">Example</a><br />
+2. <a href="#ORE_ATOM">Correspondence between the ORE Model and the Atom Model</a><br />
+3. <a href="#OREconstructs">Use of Atom Constructs in the Resource Map Profile of Atom</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.1 <a href="#OREconstructs.text">Text Constructs</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.2 <a href="#OREconstructs.person">Person Constructs</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.3 <a href="#OREconstructs.date">Date Constructs</a><br />
+4. <a href="#OREelements">Use of Atom Elements in the Resource Map Profile of Atom</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.1 <a href="#OREcontainerelements">Container Elements</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.1.1 <a href="#ORE.element.feed">The &quot;atom:feed&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.1.2 <a href="#ORE.element.entry">The &quot;atom:entry&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.1.3 <a href="#ORE.element.content">The &quot;atom:content&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.2 <a href="#OREmetadataelements">Metadata Elements</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.1 <a href="#ORE.element.author">The &quot;atom:author&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.2 <a href="#ORE.element.category">The &quot;atom:category&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.3 <a href="#ORE.element.contributor">The &quot;atom:contributor&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.4 <a href="#ORE.element.generator">The &quot;atom:generator&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.5 <a href="#ORE.element.icon">The &quot;atom:icon&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.6 <a href="#ORE.element.id">The &quot;atom:id&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.7 <a href="#ORE.element.link">The &quot;atom:link&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.8 <a href="#ORE.element.logo">The &quot;atom:logo&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.9 <a href="#ORE.element.published">The &quot;atom:published&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.10 <a href="#ORE.element.rights">The &quot;atom:rights&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.11 <a href="#ORE.element.source">The &quot;atom:source&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.12 <a href="#ORE.element.subtitle">The &quot;atom:subtitle&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.13 <a href="#ORE.element.summary">The &quot;atom:summary&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.14 <a href="#ORE.element.title">The &quot;atom:title&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.15 <a href="#ORE.element.updated">The &quot;atom:updated&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.16 <a href="#ORE.element.extensions">Use of Atom Extension Elements in the Resource Map Profile of Atom </a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.16.1 <a href="#ORE.element.extensionsFeed">Extension Elements for the &quot;atom:feed&quot; Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.16.2 <a href="#ORE.element.extensionsEntry">Extension Elements for the &quot;atom:entry&quot; Element </a><br />
+5. <a href="#references">References</a></p>
+
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+<p class="toc">A. <a href="#acknowledgments">Acknowledgements</a><br />
+B. <a href="#extendedEx">Extended Example</a><br />
+C. <a href="#tron">Schematron Schema for Resource Map Profile of Atom</a><br />
+D. <a href="#GRDDL">GRDDL crosswalk from Atom XML to RDF/XML </a><br />
+E. <a href="#changelog">Change Log</a></p>
+</div>
+
+<hr />
+<div class="body">
+<div class="section">
+<h2><a name="introduction" id="introduction"></a>1. Introduction</h2>
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines
+standards for the description and exchange of aggregations of Web
+resources. OAI-ORE introduces the notion of a Resource Map, which is a
+specialization of a named graph that asserts a finite set of resources
+(the Aggregated Resources), their types, intra-relationships, and
+relationships with resources external to this finite set (the external
+resources). A Resource Map Document is a machine-readable
+representation of a Resource Map. A Resource Map Document can be
+serialized in different formats, and the purpose of this document is to
+specify a serialization based on, and compliant with the Atom
+syndication format [<a href="#RFC4287">RFC4287</a>]. Hereby, a Resource
+Map Document is an Atom Feed Document with some ORE-specific
+ingredients. This Atom-based format to serialize Resource Map Documents
+may be referred to as the Resource Map Profile of Atom.</p>
+
+<p>This specifcation uses concepts and terms introduced in the following ORE documents:</p>
+<ul>
+  <li><a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Specification -  Abstract Data Model</a>  [<a href="#ORE_Model">ORE Model</a>];</li>
+  <li><a href="http://www.openarchives.org/ore/0.1/vocabulary">ORE Specification - Vocabulary</a> [<a href="#ORE_Vocabulary">ORE Vocabulary</a>].</li>
+</ul>
+
+<p>The Resource Map Profile of Atom is fully compliant with the <a href="http://atompub.org/rfc4287.html">Atom Syndication Format</a> [<a href="#RFC4287">RFC4287</a>] but defines a specific profile of it:</p>
+	    <ul>
+	      <li><a href="#ORE_ATOM">Section 2 </a> defines how entities of the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a> relate to entities of the Atom model.</li>
+	      <li><a href="#OREconstructs">Section 3 </a> and <a href="#OREelements">Section 4</a>
+restrict the use of some Atom constructs and elements, and specify how
+to use the extensibility features of Atom to address ORE requirements.</li>
+        </ul>
+
+<p>The <a href="http://www.openarchives.org/ore/0.1/atom-implementation">ORE User Guide - Resource Map Implementation in Atom</a> [<a href="#ORE_User_Resource_Map">ORE User Guide Resource Map</a>] provides Atom implementation guidance to supplement this specification.</p>
+
+
+<h3><a name="notation" id="notation"></a>1.1 Notational Conventions </h3>
+<p>This specification uses the namespace prefix &quot;atom:&quot; for the Atom Namespace URI &quot;http://www.w3.org/2005/Atom&quot; as defined in <a href="http://atompub.org/rfc4287.html#namespace.and.version">Section 1.2</a> of [<a href="#RFC4287">RFC4287</a>]. Note that the choice of namespace prefix is arbitrary and not semantically significant.</p>
+	    
+<p>This specification uses the same shorthands to terms from the XML Infoset [<a href="#XML_Infoset">XML Infoset</a>] as used in [<a href="#RFC4287">RFC4287</a>]:
+the phrase &quot;Information Item&quot; is omitted when naming Element
+Information Items and Attribute Information Items. Therefore, when this
+specification uses the term &quot;element,&quot; it is referring to an Element
+Information Item in Infoset terms. Likewise, when it uses the term
+&quot;attribute,&quot; it is referring to an Attribute Information Item.</p>
+	    
+	    <p>This specification uses the common term URI [<a href="#RFC3986">RFC3986</a>] to mean both IRI [<a href="#RFC3987">RFC3987</a>] and URI.</p>
+	    
+	    <p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, 
+	      &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this 
+	      document are to be interpreted as described in [<a href="#RFC2119">RFC2119</a>].</p>
+	    <h3><a name="compliance" id="compliance"></a>1.2 Compliance</h3>
+	    <p>A Resource Map Document serialized according to the Resource Map Profile of Atom MUST be compliant with the <a href="http://atompub.org/rfc4287.html">Atom  Syndication Format</a> [<a href="#RFC4287">RFC4287</a>]. Moreover, it MUST adhere to the semantic mapping between the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a> and the Atom model detailed <a href="#ORE_ATOM">Section 2</a>, as well as to the restrictions and extensions of the Resource Map Profile of Atom detailed in <a href="#OREconstructs">Section 3</a> and <a href="#OREelements">Section 4</a>.</p>
+	    <p>Specifically, a Resource Map Document MUST be a well-formed XML document that is valid according to the <a href="http://atompub.org/rfc4287.html#schema">Relax NG Compact Schema</a> of [<a href="#RFC4287">RFC4287</a>]. Moreover, a Resource Map Document MUST be valid according to the more specific Schematron Schema of <a href="#tron">Appendix C </a> that further restricts the syntax of Resource Map Profile of Atom.</p>
+
+<h3><a name="example" id="example"></a>1.3 Example</h3>
+<p>Throughout the remainder of this document, the following scenario
+will be used to illustrate the specifics of the Resource Map Profile of
+Atom.</p>
+	    
+<div class="exampleInner">
+<p>D-Lib Magazine &lt;http://www.dlib.org&gt; decides to embrace the
+OAI-ORE interoperability specification by minting Resource Map URIs
+(URI-R) for each of its articles, and by making a Resource Map Document
+available from each of those URIs. A Resource Map Document lists all
+the Web resources of which a D-Lib article is composed. The scenario
+zooms in on the following article:</p>
+<p><cite>Joan A. Smith, Frank McCown, Michael L. Nelson. Observed Web
+Robot Behavior on Decaying Web Subsites. D-Lib Magazine, Volume 12,
+Number 2, February 2006. doi:10.1045/february2006-smith. &lt;<a href="http://dx.doi.org/10.1045/february2006-smith">http://dx.doi.org/10.1045/february2006-smith</a>&gt;.</cite></p>
+<p>When implementing the OAI-ORE interoperability layer, D-Lib Magazine
+mints a new URI (URI-R) from which the Resource Map Document listing
+all Web resources of the above D-Lib article is made available:
+&lt;http://www.dlib.org/dlib/february06/smith/rem/&gt;. In order to
+support discovery, D-Lib Magazine also implements one or more of the
+Resource Map discovery techniques described in the <a href="http://www.openarchives.org/ore/0.1/discovery">ORE User Guide - Resource Map Discovery</a> [<a href="#ORE_User_Discovery">ORE User Guide Discovery</a>].</p>
+<p>A minimal Resource Map Document for the D-Lib Magazine article is shown below. It is also available <a href="http://www.openarchives.org/ore/0.1/atom-examples/DLib_mini.xml">here</a>. It will be further elaborated throughout this document, and a rich version is provided in <a href="#extendedEx">Appendix B</a>.</p>
+<!--START-ESCAPEINCLUDEPRE=atom-examples/DLib_mini.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;atom:feed  xmlns:atom="http://www.w3.org/2005/Atom" 
+            xmlns:dc="http://purl.org/dc/" 
+            xmlns:dcterms="http://purl.org/dc/terms/" 
+            xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"&gt; 
+    &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585de&lt;/atom:id&gt;
+    &lt;atom:link rel="self" 
+               type="application/atom+xml" 
+               href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+    &lt;atom:author&gt;
+        &lt;atom:name&gt;D-Lib Magazine&lt;/atom:name&gt;
+        &lt;atom:uri&gt;http://www.dlib.org&lt;/atom:uri&gt;
+        &lt;atom:email&gt;dlib@cnri.reston.va.us&lt;/atom:email&gt;
+    &lt;/atom:author&gt;
+    &lt;atom:title&gt;Resource Map http://www.dlib.org/ore/dlib/february06/smith/rem/&lt;/atom:title&gt;
+    &lt;atom:updated&gt;2007-09-22T07:11:09Z&lt;/atom:updated&gt;
+    &lt;atom:category  scheme="http://www.openarchives.org/ore/terms/" 
+                    term="http://www.openarchives.org/ore/terms/ResourceMap" 
+                    label="Resource Map" /&gt;
+    &lt;atom:link rel="describes" 
+        href="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation" /&gt;
+    &lt;atom:link rel="related" 
+               href="info:doi/10.1045/february2006-smith" /&gt;
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c1&lt;/atom:id&gt;
+        &lt;atom:title&gt;02smith.html&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:link  rel="alternate" type="text/html" 
+                    href="http://www.dlib.org/dlib/february06/smith/02smith.html" 
+                    title="Observed Web Robot Behavior on Decaying Web Subsites" /&gt;
+    &lt;/atom:entry&gt;
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c2&lt;/atom:id&gt;
+        &lt;atom:title&gt;pg1-13.html&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:link  rel="alternate" 
+                    type="text/html" 
+                    href="http://www.dlib.org/dlib/february06/smith/pg1-13.html" /&gt;
+    &lt;/atom:entry&gt;
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c3&lt;/atom:id&gt;
+        &lt;atom:title&gt;pg1-13.pdf&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:link  rel="alternate" 
+                    type="application/pdf" 
+                    href="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf" /&gt;
+    &lt;/atom:entry&gt;
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c4&lt;/atom:id&gt;
+        &lt;atom:title&gt;MLN_Google.png&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-09-22T07:11:09Z&lt;/atom:updated&gt;
+        &lt;atom:link  rel="alternate" 
+                    type="image/png" 
+                    href="http://www.dlib.org/dlib/february06/smith/MLN_Google.png" /&gt;
+    &lt;/atom:entry&gt;
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c5&lt;/atom:id&gt;
+        &lt;atom:title&gt;Bibliographic metadata for info:doi/10.1045/february2006-smith&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:link rel="alternate" 
+                   type="application/xml" 
+         href="http://www.crossref.org/openurl?url_ver=Z39.88-2004&amp;amp;rft_id=info:doi/10.1045/february2006-smith&amp;amp;noredirect=true" /&gt;
+    &lt;/atom:entry&gt;
+&lt;/atom:feed&gt;
+
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-examples/DLib_mini.xml-->
+</div>
+</div>
+	  
+   
+<div class="section">
+<h2><a name="ORE_ATOM" id="ORE_ATOM"></a>2. Correspondence between the ORE Model and the Atom Model</h2>
+        <p><a href="#table1">Table 1</a> and <a href="#figure1">Figure 1</a> illustrate how entities from the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a> map to entities from the Atom model [<a href="#RFC4287">RFC4287</a>].</p>
+        <p>In
+general, an Atom feed corresponds to a Resource Map, and an Atom Feed
+Document corresponds to a Resource Map Document. Moreover, an Atom
+entry in the Atom feed exists for each Aggregated Resource of the
+aggregation described by the Resource Map. Each Aggregated Resource is
+conveyed in such an Atom entry by means of a unique <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.entry">atom:entry</a> that expresses a relationship with a value of &quot;related&quot;.</p>
+        <p>More specifically, the following holds with regard to the mapping: </p>
+        <ul>
+          <li>Child elements of <a href="#ORE.element.feed">atom:feed</a> that are in the Atom namespace pertain to the Resource Map.
+            The exceptions to this rule are: 
+            <ul>
+              <li>The <a href="#ORE.element.id">atom:id</a> child element of <a href="#ORE.element.feed">atom:feed</a> pertains to the Atom feed only and has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>;</li>
+              <li>The <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.feed">atom:feed</a> that expresses a relationship with a value of &quot;related&quot; pertains to the <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a> described by the Resource Map (see below).</li>
+            </ul>
+          </li>
+          <li>Child elements of <a href="#ORE.element.feed">atom:feed</a> that are not in the Atom namespace, i.e. extension child elements of <a href="#ORE.element.feed">atom:feed</a>, pertain to the <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a> described by the Resource Map;</li>
+          <li>Child elements of <a href="#ORE.element.entry">atom:entry</a> that are  in the Atom namespace pertain to the Atom entry only; they have no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>. The exceptions to this rule are:
+            <ul>
+              <li>The <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> that expresses a relationship with a value of &quot;alternate&quot; is used to convey an Aggregated Resource (see below);</li>
+              <li>The <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> that expresses a relationship with a value of &quot;via&quot; is used to convey the Lineage of an Aggregated Resource (see below).</li>
+            </ul>
+         </li>
+          <li>Child elements of <a href="#ORE.element.entry">atom:entry</a> that are not in the Atom namespace, i.e. extension child elements of <a href="#ORE.element.entry">atom:entry</a>, pertain to the Aggregated Resource that is conveyed using the <a href="#ORE.element.entry">atom:entry</a>;</li>
+          <li>Four types of <a href="#ORE.element.link">atom:link</a> elements used as a child elements of <a href="#ORE.element.feed">atom:feed</a> or <a href="#ORE.element.entry">atom:entry</a> make the connection between the ORE and the Atom world:
+            <ul>
+              <li>An <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.feed">atom:feed</a> that expresses a relationship with a value of &quot;describes&quot; conveys the URI (<a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">URI-A</a>) of the  <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a> described by the Resource Map;</li>
+              <li>An <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.feed">atom:feed</a> that expresses a relationship with a value of &quot;related&quot; conveys a URI (other than <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">URI-A</a>) by which the <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a> is known;</li>
+              <li>An <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> that expresses a relationship with a value of &quot;alternate&quot; conveys the URI of an Aggregated Resource (URI-AR) of the <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a> described by the Resource Map (URI-R);</li>
+              <li>An <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> that expresses a relationship with a value of &quot;via&quot; conveys that the Aggregated Resource of the <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a>
+described by the Resource Map is also an Aggregated Resource in another Resource Map. This <a href="#ORE.element.link">atom:link</a> element allows, for example, establishing a chain of provenance for an Aggregated Resource as it is being aggregated in different Aggregations over time. </li>
+            </ul>
+         </li>
+        </ul>
+        <p><a href="#figure1">Figure 1</a> illustrates this mapping. It shows a picture similar to <a href="datamodel-images/ORE_Model_20071007_Basis.jpg">the one illustrating the ORE Model</a> in the <a href="datamodel">ORE Abstract Model document</a>,
+but has Atom entities overlaid on it. The left hand of the picture
+shows the Atom feed that coincides with the Resource Map, while the
+right hand shows the Atom entries of that Atom feed that are introduced
+to convey the Aggregated Resources of the Aggregation described by the
+Resource Map. Typed relationships from the ORE Model are shown as black
+arrows, whereas the constructs from the Atom serialization are shown in
+red arrows. When a black arrow and a red arrow carry the same number,
+this indicates that the specific typed relationship from the ORE Model
+is implemented in Atom using the construct with the same number. For
+example the black arrow [2] asserts <code>&lt;A-1&gt; &lt;owl:sameAs&gt; &lt;DOI-1&gt;</code>
+according to the ORE Model, and conveys an identifier (DOI-1) that is
+associated with the Aggregation described by the Resource Map. In the
+Atom serialization, the corresponding construct is shown as a red arrow
+and also carries a [2]. It indicates that the assertion from the ORE
+Model is expressed in Atom by means of an <a href="#ORE.element.link">atom:link</a> child element of the <a href="#ORE.element.feed">atom:feed</a>
+that has a relationship attribute with a value of &quot;related&quot; and an href
+attribute with a value of &quot;DOI-1&quot;. Similarly, the black arrow [3]
+asserts <code>&lt;A-1&gt; &lt;ore:aggregates&gt; &lt;AR-1&gt;</code>
+according to the ORE Model. In the Atom serialization, the
+corresponding construct is shown as the red arrow that also carries the
+[3]. It indicates that the Aggregated Resource is conveyed by means of
+an <a href="#ORE.element.entry">atom:entry</a> that has an <a href="#ORE.element.link">atom:link</a>
+child element that has a relationship attribute with a value of
+&quot;alternate&quot; and an href attribute with a value of &quot;AR-1&quot;, which is the
+URI of the Aggregated Resource. </p>
+        
+        <p align="center"><em><a name="figure1" id="figure1"></a>Figure 1: Mapping between the ORE Model and the and Atom model</em><br />
+        <img src="atom-images/Model2Atom.jpg" alt="ORE Model in Atom" align="middle" height="534" width="836" /></p>
+        
+        <table summary="Correspondence between items from the ORE and Atom models" align="center" width="80%">
+          <caption><a name="table1" id="table1"></a>Table 1: Correspondence between items from the ORE and Atom models</caption>
+          <tbody><tr>
+            <th scope="col" width="50%">Entities from the ORE Model</th>
+            <th scope="col" width="50%">Entities from the Atom model</th>
+          </tr>
+          <tr>
+            <td>Resource Map</td>
+            <td>Atom feed</td>
+          </tr>
+          <tr>
+            <td>Resource Map Document</td>
+            <td>Atom Feed Document</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>Permanent, universally unique identifier of an Atom feed</td>
+          </tr>
+          <tr>
+            <td>URI-R from which a Resource Map Document is retrievable</td>
+            <td>The preferred URI for retrieving Atom Feed Documents representing an Atom feed</td>
+          </tr>
+          <tr>
+            <td>Metadata pertaining to the Resource Map</td>
+            <td>Atom-defined  elements to convey metadata pertaining to the Atom feed</td>
+          </tr>
+          <tr>
+            <td bgcolor="#ffffff">&nbsp;</td>
+            <td bgcolor="#ffffff">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>URI-A (= URI-R#aggregation) of the Aggregation</td>
+            <td>The
+URI of the resource that is linked to from the Atom feed by means of an
+Atom &lt;link&gt; that expresses a relationship with a value of
+&quot;describes&quot;</td>
+          </tr>
+          <tr>
+            <td>URI other than URI-A (= URI-R#aggregation) by which the Aggregation is known</td>
+            <td>The
+URI of the resource that is linked to from the Atom feed by means of an
+Atom &lt;link&gt; that expresses a relationship with a value of
+&quot;related&quot;</td>
+          </tr>
+          <tr>
+            <td>Relationships and Types pertaining to the Aggregation described by the Resource Map</td>
+            <td>Extension child elements (i.e. child elements that are not in the Atom namespace) of the Atom feed</td>
+          </tr>
+          <tr>
+            <td colspan="2">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>Atom entry</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>Atom Entry Document</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>Permanent, universally unique identifier of an Atom entry</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>The preferred URI for retrieving Atom Entry Documents representing an Atom entry</td>
+          </tr>
+          <tr>
+            <td>&nbsp;</td>
+            <td>Metadata pertaining to the Atom entry</td>
+          </tr>
+          <tr>
+            <td colspan="2">&nbsp;</td>
+          </tr>
+          <tr>
+            <td>Aggregated Resource</td>
+            <td>The
+sole resource that is linked to from an Atom entry by means of an Atom
+&lt;link&gt; that expresses a relationship with a value of &quot;alternate&quot;</td>
+          </tr>
+          <tr>
+            <td>URI-AR of the Aggregated Resource</td>
+            <td>The URI provided as the target of the aforementioned link</td>
+          </tr>
+          <tr>
+            <td>Relationships and Types pertaining to an Aggregated Resource</td>
+            <td>Extension
+child elements (i.e. child elements that are not in the Atom namespace)
+of the Atom entry that has the Aggregated Resource as the target of the
+link that expresses a relationship with a value of &quot;alternate&quot;</td>
+          </tr>
+          <tr>
+            <td>Relationship of an Aggregated Resource to another Aggregation </td>
+            <td>Expressed by means of a relationship between the Aggregated Resource and the Resource Map that describes the other Aggregation. This is achieved by using an Atom &lt;link&gt; child element of the entry that conveys the Aggregated Resource that hasan href attribute value set to the URI of that  Resource Map and a rel attribute value set to &quot;via&quot;</td>
+          </tr>
+        </tbody></table>
+        
+        <p><a href="#table2">Table 2</a> shows the elements of an Atom feed used to express a Resource Map. Elements that are mandatory are highlighted.</p>
+        <table summary="Table 2: The elements of an Atom feed used to express an ORE Resource Map" align="center" border="1" width="80%">
+          <caption><a name="table2" id="table2"></a>Table 2: The elements of an Atom feed used to express an ORE Resource Map</caption>
+          <tbody><tr>
+            <th scope="col" width="50%">Atom Feed Item</th>
+            <th scope="col" width="50%">Atom representation</th>
+            <th scope="col" width="50%">ORE Abstract Model</th>
+          </tr>
+          <tr>
+            <td scope="col">Feed ID</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/id</code></p>
+                                              <p>[RFC3987] [RFC3986]</p></td>
+            <th scope="col">&nbsp;</th>
+          </tr>
+          <tr>
+            <td scope="col">Feed Document link</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/link[@rel="self"]\<br />
+            [@type="application/atom+xml"]/@href</code></p>
+            
+            <p>[RFC3987] [RFC3986] </p></td>
+            <td scope="col"><p>URI-R</p>
+            <p>[URI-R identifies the Resource Map, and from which a Resource Map Document can be retrieved]</p></td>
+          </tr>
+          <tr>
+            <td scope="col">&nbsp;</td>
+            <td bgcolor="#ffffcc" scope="col"><p><code>/feed/link[@rel=&quot;describes&quot; and @href=&quot;</code>URI-R#aggregation<code>&quot;]\</code></p>
+            <p>[RFC3987] [RFC3986] </p></td>
+            <td scope="col"><p>The assertion:</p>
+              
+            <p><code>URI-R ore:describes URI-R#aggregation</code></p>
+            <p>[The Resource Map describes an Aggregation] </p></td>
+          </tr>
+          <tr>
+            <td scope="col">Feed &quot;related&quot; Link</td>
+            <td scope="col"><p><code>/feed/link[@rel="related"]/@href</code></p>
+              
+              <p>[RFC3987] [RFC3986]</p>
+              
+            <p>It
+is RECOMMENDED to convey other identifiers by which the Aggregation
+described by the Resource Map is known. Examples are info:doi/... ,
+http://dx.doi.org/... , etc.</p></td>
+            <td scope="col"><p>Resource that is the object of the assertion:</p>
+              
+            <p><code>URI-R#aggregation owl:sameAs URI-object</code></p>
+            <p>[URI other than URI-A (= URI-R#aggregation) by which the Aggregation conveyed by the Resource Map is known] </p></td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Author</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/author/name<br />
+            /feed/author/email</code></p>
+              <p><code>/feed/author/uri</code></p>
+              
+              <p>[RFC3987] [RFC3986] [RFC2822] </p>
+              
+              <p><code>/feed/author/name</code> is mandatory according to Atom; <code>/feed/author/uri</code> should be provided as it directly maps to the ORE model notion of dc:creator of the Resource Map.<br />
+              </p></td>
+            <td scope="col"><p>Resource that is the object of the assertion:</p>
+              
+            <p><code>URI-R dc:creator URI-object</code></p>
+            <p>[Authoring authority of the Resource Map]</p></td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Title</td>
+            <td scope="col" bgcolor="#ffffcc"><code>/feed/title</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Last Update Date-time</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/updated</code></p>
+              
+            <p>[RFC3339] </p>
+            
+            <p>Format should be &quot;YYYY-MM-DDThh:mm:ssZ&quot;</p></td>
+            <td scope="col"><p>Object of the assertion: </p>
+              
+            <p><code>URI-R dcterms:modified &quot;datetime&quot; </code></p>
+            <p>[Last modification datetimestamp of the Resource Map   Document] </p></td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Generator</td>
+            <td scope="col"><code>/feed/generator</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Copyright</td>
+            <td scope="col"><p><code>/feed/rights</code></p>
+              
+            <p>It is RECOMMENDED that this element contains the URI of a Rights license.</p></td>
+            <td scope="col"><p>Resource that is the object of the assertion:</p>
+              
+            <p><code>URI-R dc:rights URI-object</code></p>
+            <p>[Rights pertaining to the Resource Map]</p></td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Category</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/category/@term</code></p>
+              
+            <p>One
+Category must be provided with a term value set to
+&quot;http://www.openarchives.org/ore/terms/ResourceMap&quot;; see also Feed
+Category Scheme.</p></td>
+            <td scope="col"><p>Resource that is the object of the assertion:</p>
+              
+            <p><code>URI-R rdf:type URI-object</code></p>
+            
+            <p>A mandatory assertion is:</p>
+            
+            <p><code>URI-R rdf:type http://www.openarchives.org/ore/terms/ResourceMap</code></p>
+            <p>[Typing a resource as being a Resource Map] </p></td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Category Scheme</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/category/@scheme</code></p>
+              
+            <p>One Category must be provided with a scheme value set to &quot;http://www.openarchives.org/ore/terms/&quot;. See also Feed Category.</p></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Icon</td>
+            <td scope="col"><p><code>/feed/icon</code></p>
+            
+            <p>It
+is recommended that this element contains the URI of the ORE Resource
+Map Icon &quot;http://www.openarchives.org/ore/logos/ore_icon.png&quot;</p></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Logo</td>
+            <td scope="col"><p><code>/feed/logo</code></p>
+            
+            <p>It
+is recommended that this element contains the URI of the ORE Resource
+Map Logo &quot;http://www.openarchives.org/ore/logos/ore_logo.png&quot;</p></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Contributor</td>
+            <td scope="col"><code>/feed/contributor</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Description</td>
+            <td scope="col"><code>/feed/subtitle</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Feed Extension Elements</td>
+            <td scope="col"><code>/feed/*[namespace-uri()!=&quot;http://www.w3.org/2005/Atom&quot;]</code></td>
+            <td scope="col"><p>Assertions that have as subject URI-A (= URI-R#aggregation) other than the assertions with predicate ore:aggregates. </p>
+            <p>[Relationships and Types pertaining to the Aggregation described by the Resource Map]</p></td>
+          </tr>
+        </tbody></table>
+        
+        <p><a href="#table3">Table 3</a>
+shows the elements of an Atom entry used when expressing a Resource Map
+as an Atom feed. Elements that are mandatory are highlighted. </p>
+        
+        <table summary="The elements of an Atom entry used when expressing an ORE Resource Map as an Atom feed" align="center" border="1" width="80%">
+          <caption><a name="table3" id="table3"></a>Table 3: The elements of an Atom entry used when expressing an ORE Resource Map as an Atom feed</caption>
+          <tbody><tr>
+            <th scope="col" width="50%">Atom Entry  Item </th>
+            <th scope="col" width="50%">Atom representation </th>
+            <th scope="col" width="50%">ORE Abstract Model </th>
+          </tr>
+          <tr>
+            <td scope="col">Entry ID</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/entry/id</code></p>
+            
+            <p>[RFC3987] [RFC3986] </p></td>
+            <th scope="col">&nbsp;</th>
+          </tr>
+          <tr>
+            <td scope="col">Entry Document link</td>
+            <td scope="col"><p><code>/feed/entry/link[@rel=&quot;self&quot;]\<br />
+              [@type=&quot;application/atom+xml&quot;]/@href</code></p>
+              
+            <p>[RFC3987] [RFC3986] </p></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Entry &quot;alternate&quot; link</td>
+            <td scope="col"><p><code>/feed/entry/link[@rel=&quot;alternate&quot;]/@href</code></p>
+              
+              
+                <p>[RFC3987] [RFC3986] </p></td>
+            <td scope="col"><p>URI-AR, i.e. the resource that is the object of the assertion:</p>
+            
+            <p><code>URI-R#aggregation ore:aggregates URI-AR</code></p>
+            <p>[URI-AR of the Aggregated Resource]</p></td>
+          </tr>
+          <tr>
+            <td scope="col">Entry &quot;via&quot; link</td>
+            <td scope="col"><p><code>/feed/entry/link[@rel=&quot;via&quot;]/@href</code></p>
+              
+            <p>[RFC3987] [RFC3986] </p></td>
+            <td scope="col"><p>The resource (MUST be a Resource Map) identified by <code>URI-otherResourceMap</code> in the assertions:</p>
+              
+            <p><code>URI-AR ore:isAggregatedby URI-otherResourceMap#aggregation</code></p>
+            <p><code>URI-otherResourceMap ore:describes URI-otherResourceMap#aggregation</code> </p>
+            <p>[Relationship of an Aggregated Resource to another Aggregation]</p></td>
+          </tr>
+          <tr>
+            <td scope="col">Entry Title</td>
+            <td scope="col" bgcolor="#ffffcc"><code>/feed/entry/title</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+
+          <tr>
+            <td scope="col">Entry Publication Date-Time</td>
+            <td scope="col"><p><code>/feed/entry/published</code></p>
+            
+            <p>[RFC3339]</p>
+            
+            <p>Format should be &quot;YYYY-MM-DDThh:mm:ssZ&quot;</p></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Entry Last Update Date-time</td>
+            <td scope="col" bgcolor="#ffffcc"><p><code>/feed/entry/updated</code></p>
+                
+              <p>[RFC3339]</p>
+              
+              <p>Format should be &quot;YYYY-MM-DDThh:mm:ssZ&quot;</p></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+
+          <tr>
+            <td scope="col">Entry Category</td>
+            <td scope="col"><code>/feed/entry/category/@term</code></td>
+            <td scope="col"><p>The assertion:</p>
+              
+            <p><code>URI-AR rdf:type http://www.openarchives.org/ore/terms/AggregatedResource</code></p>
+            
+            <p>is
+implicit, and can be dervied from the fact that the Atom feed is typed
+as a Resource Map via the atom:category child element of atom:feed. </p>
+            <p>[Typing a resource as being an Aggregated Resource]</p></td>
+          </tr>
+          <tr>
+            <td scope="col">Entry Category Scheme</td>
+            <td scope="col"><p><code>/feed/entry/category/@scheme</code></p></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+
+          <tr>
+            <td scope="col">Entry Contributor</td>
+            <td scope="col"><code>/feed/entry/contributor</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Entry Description</td>
+            <td scope="col"><code>/feed/entry/summary</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Entry Source</td>
+            <td scope="col"><code>/feed/entry/source</code></td>
+            <td scope="col">&nbsp;</td>
+          </tr>
+          <tr>
+            <td scope="col">Entry Extension Elements</td>
+            <td scope="col"><code>/feed/entry[./link/@href=&quot;</code>URI-AR<code>&quot;<br />
+  and ./link/@rel=&quot;alternate&quot;]/*[<br />
+  namespace-uri()!=&quot;http://www.w3.org/2005/Atom&quot;]<br />
+            </code></td>
+            <td scope="col"><p>Assertions that have as subject URI-AR. </p>
+            <p>[Relationships and Types pertaining to an Aggregated Resource]</p></td>
+          </tr>
+        </tbody></table>
+        
+    <p>The ORE Abstract Data Model imposes <a href="http://www.openarchives.org/ore/0.1/datamodel#Constraints">constraints on the types of triples</a> that can be expressed in the Resource Map RDF Graph. The Atom-based serialization of the Abstract Data Model imposes some further constraints  resulting from limitations in the expressiveness of  the Atom syndication format. In addition to that, as already indicated in <a href="#table2">Table 2</a> and <a href="#table3">Table 3</a>, the Atom-based serialization does not necessarily literally use the triples introduced in the Abstract data Model, but sometimes uses Atom constructs to convey the information intended by those triples. <a href="#table4">Table 4</a> summarizes the constraints in the Atom serialization, as well as instances in which the triples of the Abstract Data Model are expressed using Atom constructs; the differences with the ORE Abstract Data Model are highlighted. The convention used in the <a href="#table4">Table 4</a> is that:</p>
+    <ul>
+      <li><code>ReM-1</code> is the URI of the Resource Map</li>
+      <li><code>A-1</code> is the URI of the Aggregation described by the Resource Map</li>
+      <li><code>AR-i</code> is the URI of an Aggregated Resource which is aggregated into that Aggregation</li>
+      <li><code>URI-S</code> is the URI of a Resource</li>
+      <li><code>URI-P</code> is the URI of a type of Relationship</li>
+      <li><code>URI-O</code> is the URI of a Resource</li>
+      <li><code>A-k</code> is the URI of an Aggregation other than the Aggregation described by the Resource Map</li>
+    </ul>
+    <table width="80%" align="center" id="constraints-table" summary="Resource Map constraints table">
+	<caption>
+	<a name="table4" id="table4"></a>Table 4: Constraints in the Atom serialization compared with constraints in the ORE Abstract Data Model
+	</caption>
+      <tbody>
+        <tr>
+          <th width="7%">Subject</th>
+          <th width="14%">Predicate</th>
+          <th width="17%">Object</th>
+          <th width="8%"><div align="center">
+            <p>Abstract Data Model </p>
+            <p>Occurs (Min, Max)</p>
+          </div></th>
+          <th width="8%"><p>Resource Map Profile of Atom</p>
+          <p>Occurs (Min, Max)</p></th>
+          <th width="46%">Note</th>
+        </tr>
+        <tr>
+          <td>ReM-1</td>
+          <td><code>ore:describes</code></td>
+          <td>A-1</td>
+          <td><div align="center">(1, 1)</div></td>
+          <td><div align="center">(1, 1)</div></td>
+          <td>Relationship between Resource Map and Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#ReM-to-aggr">5.1</a>)</td>
+        </tr>
+        <tr>
+          <td>ReM-1</td>
+          <td><code>rdf:type</code></td>
+          <td><code>ore:ResourceMap</code></td>
+          <td><div align="center">(0, 1)</div></td>
+          <td bgcolor="#ffffcc"><div align="center">(1, 1)</div></td>
+          <td bgcolor="#ffffcc">Mandatory typing of the Resource Map (<a href="http://www.openarchives.org/ore/0.1/datamodel#ReM-to-aggr">5.1</a>) in Atom via the <a href="#ORE.element.category">atom:category</a> element. </td>
+        </tr>
+        <tr>
+          <td>ReM-1</td>
+          <td><code>dc:creator</code></td>
+          <td>literal or URI-O</td>
+          <td><div align="center">(1, 1)</div></td>
+          <td><div align="center">(1, 1)</div></td>
+          <td bgcolor="#ffffcc">Metadata about Resource Map (Required) (<a href="http://www.openarchives.org/ore/0.1/datamodel#Metadata_about_the_ReM">5.2</a>). Expressed via the <a href="#ORE.element.author">atom:author</a> element. </td>
+        </tr>
+        <tr>
+          <td>ReM-1</td>
+          <td><code>dcterms:modified</code></td>
+          <td>literal</td>
+          <td><div align="center">(1, 1)</div></td>
+          <td><div align="center">(1, 1)</div></td>
+          <td bgcolor="#ffffcc">Metadata about Resource Map (Required) (<a href="http://www.openarchives.org/ore/0.1/datamodel#Metadata_about_the_ReM">5.2</a>). Expressed via the <a href="#ORE.element.updated">atom:updated</a> element. </td>
+        </tr>
+        <tr>
+          <td>ReM-1</td>
+          <td>URI-P</td>
+          <td>literal or URI-O</td>
+          <td><div align="center">(0, *)</div></td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc">Metadata about Resource Map (Optional) (<a href="http://www.openarchives.org/ore/0.1/datamodel#Metadata_about_the_ReM">5.2</a>). Limited to child elements of the <a href="#ORE.element.feed">atom:feed</a> element that are in the Atom namespace. </td>
+        </tr>
+        <tr>
+          <td>URI-S</td>
+          <td>URI-P</td>
+          <td>ReM-1</td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc"><div align="center">(0, 0)</div></td>
+          <td>Metadata about Resource Map (Optional) (<a href="http://www.openarchives.org/ore/0.1/datamodel#Metadata_about_the_ReM">5.2</a>)</td>
+        </tr>
+        <tr>
+          <td>A-1</td>
+          <td><code>ore:aggregates</code></td>
+          <td>AR-i</td>
+          <td><div align="center">(1, *)</div></td>
+          <td bgcolor="#ffffcc"><div align="center">(0, 0)</div></td>
+          <td bgcolor="#ffffcc">Relationship between Aggregation and Aggregated Resource (<a href="http://www.openarchives.org/ore/0.1/datamodel#Defining_the_aggregated_resources">5.3</a>). Aggregated Resources are conveyed by introducing an <a href="#ORE.element.entry">atom:entry</a> per Aggregated Resource. As a result, the <code>ore:aggregates</code> relationship is implicit. </td>
+        </tr>
+        <tr>
+          <td>AR-i</td>
+          <td><code>ore:isAggregatedBy</code></td>
+          <td>A-1</td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc"><div align="center">(0, 0)</div></td>
+          <td bgcolor="#ffffcc">Relationship between Aggregated Resource and Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#Defining_the_aggregated_resources">5.3</a>). Aggregated Resources are conveyed by introducing an <a href="#ORE.element.entry">atom:entry</a> per Aggregated Resource. As a result, the <code>ore:isAggregatedBy</code> relationship is implicit. </td>
+        </tr>
+        <tr>
+          <td>A-1</td>
+          <td><code>rdf:type</code></td>
+          <td><code>ore:Aggregation</code></td>
+          <td><div align="center">(0, 1)</div></td>
+          <td><div align="center">(0, 1)</div></td>
+          <td>Typing of Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#ReM-to-aggr">5.1</a>)</td>
+        </tr>
+        <tr>
+          <td>A-1</td>
+          <td><code>owl:sameAs</code></td>
+          <td><code>URI-O</code></td>
+          <td><div align="center">(0, *)</div></td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc">Other identifiers of the Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#Other_ids">5.3</a>). Expressed via the <a href="#ORE.element.link">atom:link</a> element with a value of the rel attribute set to &quot;related&quot;. </td>
+        </tr>
+        <tr>
+          <td>A-1</td>
+          <td>URI-P</td>
+          <td>literal or URI-O</td>
+          <td><div align="center">(0, *)</div></td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc">Other properties of the Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#Other_ids">5.3</a>)/External Relationships of an Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#context">5.6</a>). Limited to child elements of the <a href="#ORE.element.feed">atom:feed</a> element that are not in the Atom namespace. </td>
+        </tr>
+        <tr>
+          <td>URI-S</td>
+          <td>URI-P</td>
+          <td>A-1</td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc"><div align="center">(0, 0)</div></td>
+          <td>Other properties of the Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#Other_ids">5.3</a>)/External Relationships of an Aggregation (<a href="http://www.openarchives.org/ore/0.1/datamodel#context">5.6</a>)</td>
+        </tr>
+        <tr>
+          <td>AR-i</td>
+          <td><code>rdf:type</code></td>
+          <td><code>ore:AggregatedResource</code></td>
+          <td><div align="center">(0, 1)</div></td>
+          <td><div align="center">(0, 1)</div></td>
+          <td>Typing of Aggregated Resource (<a href="http://www.openarchives.org/ore/0.1/datamodel#ReM-to-aggr">5.1</a>)</td>
+        </tr>
+        <tr>
+          <td>AR-i</td>
+          <td><code>ore:isAggregatedBy</code></td>
+          <td>A-k</td>
+          <td><div align="center">(0, *)</div></td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc">Relationship between Aggregated Resource and Other Aggregations (<a href="http://www.openarchives.org/ore/0.1/datamodel#isAggregatedBy">5.7</a>). Expressed via the <a href="#ORE.element.link">atom:link</a> element with a value of the rel attribute set to &quot;via&quot;. </td>
+        </tr>
+        <tr>
+          <td>AR-i</td>
+          <td>URI-P</td>
+          <td>literal or URI-O</td>
+          <td><div align="center">(0, *)</div></td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc">External Relationships of an Aggregated Resource (<a href="http://www.openarchives.org/ore/0.1/datamodel#context">5.6</a>). Limited to child elements of the <a href="#ORE.element.entry">atom:feed</a> element that are not in the Atom namespace. </td>
+        </tr>
+        <tr>
+          <td>URI-S</td>
+          <td>URI-P</td>
+          <td>AR-i</td>
+          <td><div align="center">(0, *)</div></td>
+          <td bgcolor="#ffffcc"><div align="center">(0, 0)</div></td>
+          <td>External Relationships of an Aggregated Resource (<a href="http://www.openarchives.org/ore/0.1/datamodel#context">5.6</a>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><a href="#OREconstructs">Section 3</a> and <a href="#OREelements">Section 4</a>,
+          which detail the Resource Map Profile of Atom will predominantly use
+          terms from the Atom vocabulary, and will use terms from the ORE
+          vocabulary for further clarification, when necessary. </p>
+</div>
+	  
+
+<div class="section">
+<h2><a name="OREconstructs" id="OREconstructs"></a>3. Use of Atom Constructs in the Resource Map Profile of Atom</h2>
+<p>This Section specifies the use of common <a href="http://atompub.org/rfc4287.html#rfc.section.3">Atom Constructs</a>
+in the Resource Map Profile of Atom. When, in the remainder of this
+document, an Atom element is identified as being a particular kind of
+construct, it inherits the corresponding requirements from that
+construct's definition in this <a href="#OREconstructs">Section 3</a>.</p>
+
+<h3><a name="OREconstructs.text" id="OREconstructs.text"></a>3.1 Text Constructs </h3>
+<p>In the Resource Map Profile of Atom:</p>
+        <ul>
+          <li>The Text construct MUST be used in a manner described in the <a href="http://atompub.org/rfc4287.html#date.constructs">Text Construct</a> section of [<a href="#RFC4287">RFC4287</a>].</li>
+        </ul>
+
+<h3><a name="OREconstructs.person" id="OREconstructs.person"></a>3.2 Person Constructs </h3>
+        <p>In the Resource Map Profile of Atom: </p>
+        <ul>
+          <li>The Person construct MUST be used in a manner described in the <a href="http://atompub.org/rfc4287.html#date.constructs">Person Construct </a>section of [<a href="#RFC4287">RFC4287</a>].</li>
+        </ul>
+        <h3><a name="OREconstructs.date" id="OREconstructs.date"></a>3.3 Date   Constructs</h3>
+        <p>In the Resource Map Profile of Atom: </p>
+        <ul>
+          <li>The Date construct MUST be used in a manner described in the <a href="http://atompub.org/rfc4287.html#date.constructs">Date Construct</a> section of [<a href="#RFC4287">RFC4287</a>].</li>
+          <li>In
+the Resource Map Profile of Atom, expressing date-times in UTC is
+RECOMMENDED. As a result, the use of the special UTC designator (&quot;Z&quot;)
+is RECOMMENDED over the notation using a numeric time zone offset.
+Hence, the RECOMMENDED format is YYYY-MM-DDThh:mm:ssZ.</li>
+        </ul>
+      </div>
+
+<div class="section">
+<h2><a name="OREelements" id="OREelements"></a>4. Use of Atom Elements in the Resource Map Profile of Atom</h2>
+
+<h3><a name="OREcontainerelements" id="OREcontainerelements"></a>4.1 Container Elements</h3>
+
+<h4><a name="ORE.element.feed" id="ORE.element.feed"></a>4.1.1 The "atom:feed" Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+<ul>
+  <li>The &quot;atom:feed&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.feed">atom:feed Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+  <li>An Atom feed corresponds with a Resource Map of the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>, and an Atom Feed Document corresponds with the Resource Map Document of the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+  <li>The following rules apply regarding child elements of the <a href="#ORE.element.feed">atom:feed</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in <span class="orespecfic">italic</span>:
+    <ul>
+      <li class="orespecific">Child elements of <a href="#ORE.element.feed">atom:feed</a> that are in the Atom namespace pertain to the Resource Map. The exceptions to this rule are:
+        <ul>
+          <li class="orespecific">The <a href="#ORE.element.id">atom:id</a> child element of <a href="#ORE.element.feed">atom:feed</a> pertains to the Atom feed only and has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>;</li>
+          <li class="orespecific">The <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.feed">atom:feed</a> that expresses a relationship with a value of &quot;related&quot; pertains to the <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a> described by the Resource Map (see below).</li>
+        </ul>
+     </li>
+      <li class="orespecific">Child elements of <a href="#ORE.element.feed">atom:feed</a> that are not in the Atom namespace, i.e. extension child elements of <a href="#ORE.element.feed">atom:feed</a>, pertain to the <a href="http://www.openarchives.org/ore/0.1/datamodel#Identification_of_an_Aggregation">Aggregation</a> described by the Resource Map, i.e. Atom feed;</li>
+      <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain one or more <a href="#ORE.element.author">atom:author</a> elements.
+        <ul>
+          <li class="orespecific">The <a href="#ORE.element.author">atom:author</a> element conveys the authoring authority of the Resource Map.</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.category">atom:category</a>
+element identifying the Atom Feed Document as a Resource Map Document.
+This element has a scheme attribute value of
+&quot;http://www.openarchives.org/ore/terms/&quot;, a term attribute value of
+&quot;http://www.openarchives.org/ore/terms/ResourceMap&quot;, and a label
+attribute value of &quot;Resource Map&quot;.</li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MAY contain any number of <a href="#ORE.element.category">atom:category</a> elements in addition to the aforementioned one.</li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MAY contain any number of <a href="#ORE.element.contributor">atom:contributor</a> elements.</li>
+      <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain one or more <a href="#ORE.element.entry">atom:entry</a> elements.
+        <ul>
+          <li class="orespecific">Each <a href="#ORE.element.entry">atom:entry</a> element is used to convey an Aggregated Resource.</li>
+        </ul>
+     </li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.generator">atom:generator</a> element.</li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.icon">atom:icon</a> element.
+        <ul>
+          <li class="orespecific">Use of an <a href="#ORE.element.icon">atom:icon</a>
+element with content of
+&quot;http://www.openarchives.org/ore/logos/ore_icon.png&quot; is RECOMMENDED to
+allow recognition of the Atom Feed Document as a Resource Map Document.</li>
+        </ul>
+     </li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.logo">atom:logo</a> element.
+        <ul>
+          <li class="orespecific">Use of an <a href="#ORE.element.logo">atom:logo</a>
+element with content of
+&quot;http://www.openarchives.org/ore/logos/ore_logo.png&quot; is RECOMMENDED to
+allow recognition of the Atom Feed Document as a Resource Map Document.</li>
+        </ul>
+     </li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.id">atom:id</a> element.
+        <ul>
+          <li class="orespecific">The <a href="#ORE.element.id">atom:id</a> element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain one <a href="#ORE.element.link">atom:link</a>
+element with a rel attribute value of &quot;self&quot;. This conveys the
+preferred URI for retrieving Atom Feed Documents representing this Atom
+feed. <ul class="orespecific">
+          <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST be the URI of the Resource Map (URI-R).</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of &quot;describes&quot;. Such an <a href="#ORE.element.link">atom:link</a> element is used to convey the URI-A (= URI-R#aggregation)
+of the Aggregation described by the Resource Map.
+        <ul>
+          <li class="orespecific">The
+            href attribute value of this <a href="#ORE.element.link">atom:link</a> element must be URI-A (= URI-R#aggregation)
+            .</li>
+        </ul>
+      </li>
+      <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MAY contain any number of <a href="#ORE.element.link">atom:link</a> elements with a rel attribute value of &quot;related&quot;. Such an <a href="#ORE.element.link">atom:link</a>
+        element is used to convey URIs other than URI-A (= URI-R#aggregation)
+        by which the Aggregation described by the Resource Map is known. The
+        href attribute value of this <a href="#ORE.element.link">atom:link</a> element must be a URI other than URI-A by which the Aggregation described by the Resource Map is known.</li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MAY contain additional <a href="#ORE.element.link">atom:link</a> elements beyond those described above.
+        <ul>
+          <li class="orespecific">These <a href="#ORE.element.link">atom:link</a> elements have no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+        </ul>
+      </li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of &quot;alternate&quot; that has the same combination of type and hreflang attribute values.</li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.rights">atom:rights</a> element.
+        <ul>
+          <li class="orespecific">It is RECOMMENDED to express the rights pertaining to the Resource Map  by setting the content of the <a href="#ORE.element.rights">atom:rights</a> element to the URI of a rights license.</li>
+        </ul>
+     </li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.subtitle">atom:subtitle</a> element.</li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.title">atom:title</a> element.</li>
+      <li class="atomgeneric"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.updated">atom:updated</a> element.</li>
+      <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a>
+elements MAY contain any number of child elements from namespaces other
+than the Atom namespace. These elements convey Types and Relationships
+pertaining to the Aggregation (URI-A = URI-R#aggregation) described by
+the Resource Map.</li>
+      <li class="orespecific">An Atom Feed Document MUST NOT have multiple <a href="#ORE.element.entry">atom:entry</a> elements with the same <a href="#ORE.element.id">atom:id</a> value, as is permitted by [<a href="#RFC4287">RFC4287</a>].
+Such entries would convey the same Aggregated Resource, and might
+contain conflicting assertions about that Aggregated Resource within
+the confines of the same Resource Map. As a result, updating an <a href="#ORE.element.entry">atom:entry</a> in the Resource Map Profile of Atom MUST always be achieved by editing the existing <a href="#ORE.element.entry">atom:entry</a> and by changing the value of its <a href="#ORE.element.updated">atom:updated </a>child element. It MUST NOT be achieved by adding an additional <a href="#ORE.element.entry">atom:entry</a> with the same <a href="#ORE.element.id">atom:id</a> as the already existing one.</li>
+    </ul>
+ </li>
+</ul>
+
+
+<h4><a name="ORE.element.entry" id="ORE.element.entry"></a>4.1.2 The &quot;atom:entry&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+<ul>
+  <li>The &quot;atom:entry&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.entry">atom:entry Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+  <li>An Atom entry conveys an Aggregated Resource and Types and Relationships pertaining to the Aggregated Resource.</li>
+  <li>The following rules apply regarding child elements of the <a href="#ORE.element.entry">atom:entry</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+    <ul>
+      <li class="orespecific">Child elements of <a href="#ORE.element.entry">atom:entry</a> that are  in the Atom namespace pertain to the Atom entry only; they have no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>. The exceptions to this rule are:
+        <ul>
+          <li class="orespecific">The <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.entry">atom:entry</a> that expresses a relationship with a value of &quot;alternate&quot; is used to convey an Aggregated Resource of the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a> (see also below);</li>
+          <li class="orespecific">The <a href="#ORE.element.link">atom:link</a> child element of <a href="#ORE.element.entry">atom:entry</a>
+that expresses a relationship with a value of &quot;via&quot; is used to convey
+the Lineage of an Aggregated Resource, as defined in the the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a> (see also below).</li>
+        </ul>
+     </li>
+      <li class="orespecific">Child elements of <a href="#ORE.element.entry">atom:entry</a> that  are not not in the Atom namespace, i.e. extension child elements of <a href="#ORE.element.entry">atom:entry</a>, pertain to the Aggregated Resource that is conveyed using the <a href="#ORE.element.entry">atom:entry</a>. They correspond to Types and Relationships pertaining to the Aggregated Rersource, as defined in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain any <a href="#ORE.element.author">atom:author</a> elements. Authorship information is inherited in the following order:
+        <ul>
+          <li class="orespecific">from the <a href="#ORE.element.author">atom:author</a> element contained in an <a href="#ORE.element.source">atom:source</a> child element of the <a href="#ORE.element.entry">atom:entry</a> if such <a href="#ORE.element.source">atom:source</a> element exists;</li>
+          <li class="orespecific">from the <a href="#ORE.element.author">atom:author</a> elements of the <a href="#ORE.element.feed">atom:feed</a> element if no such <a href="#ORE.element.source">atom:source</a> element exists.</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MAY contain any number of <a href="#ORE.element.category">atom:category</a> elements.
+        <ul>
+          <li class="orespecific">The <a href="#ORE.element.category">atom:category</a> element to express that the <a href="#ORE.element.entry">atom:entry</a> conveys an Aggregated Resource is implicit and can be derived from the fact that the <a href="#ORE.element.feed">atom:feed</a> of which the <a href="#ORE.element.entry">atom:entry</a> is a child element has an <a href="#ORE.element.category">atom:category</a> that types it as a Resource Map.</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain any <a href="#ORE.element.content">atom:content</a> elements.</li>
+      <li><a href="#ORE.element.entry">atom:entry</a> elements MAY contain any number of <a href="#ORE.element.contributor">atom:contributor</a> elements.</li>
+      <li><a href="#ORE.element.entry">atom:entry</a> elements MUST contain exactly one <a href="#ORE.element.id">atom:id</a> element.
+        <ul>
+          <li class="orespecific">The <a href="#ORE.element.id">atom:id</a> element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+          <li class="orespecific">The content of this <a href="#ORE.element.id">atom:id</a> element MUST NOT be the URI of the Aggregated Resource (URI-AR).</li>
+         </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST contain one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of "alternate". This link conveys the Aggregated Resource.
+        <ul class="orespecific">
+          <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST be the URI of the Aggregated Resource (URI-AR).</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of "via". This link conveys the Lineage of the Aggregated Resource.
+        <ul>
+          <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST be the URI of a /Resource Map with which the Aggregated Resource has a Lineage relationship.</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.link">atom:link</a>
+element with a rel attribute value of &quot;self&quot;. This is the preferred URI
+for retrieving Atom Entry Documents representing this Atom entry. <ul class="orespecific">
+          <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST NOT be the URI of the aggregated resource (URI-AR).</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain any <a href="#ORE.element.link">atom:link</a> elements other than the aformentioned ones.</li>
+      <li><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.published">atom:published</a> element.</li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain any <a href="#ORE.element.rights">atom:rights</a> elements. Rights information is inherited in the following order:
+        <ul class="orespecific">
+          <li class="orespecific">from the <a href="#ORE.element.rights">atom:rights</a> element contained in an <a href="#ORE.element.source">atom:source</a> child element of the <a href="#ORE.element.entry">atom:entry</a> if such <a href="#ORE.element.source">atom:source</a> element exists;</li>
+          <li class="orespecific">from the<a href="#ORE.element.rights"> atom:rights</a> elements of the <a href="#ORE.element.feed">atom:feed</a> element if no such <a href="#ORE.element.source">atom:source</a> element exists.</li>
+        </ul>
+     </li>
+      <li class="atomgeneric"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.source">atom:source</a> element.</li>
+      <li class="atomgeneric"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.summary">atom:summary</a> element.</li>
+      <li class="atomgeneric"><a href="#ORE.element.entry">atom:entry</a> elements MUST contain exactly one <a href="#ORE.element.title">atom:title</a> element.</li>
+      <li class="atomgeneric"><a href="#ORE.element.entry">atom:entry</a> elements MUST contain exactly one <a href="#ORE.element.updated">atom:updated</a> element.</li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a>
+elements MAY contain any number of child elements from namespaces other
+than the Atom namespace. These elements convey Types and Relationships
+pertaining to the Aggregated Resource (URI-AR) conveyed by the Atom
+entry.</li>
+    </ul>
+ </li>  
+</ul>
+
+	    <h4><a name="ORE.element.content" id="ORE.element.content"></a>4.1.3 The &quot;atom:content&quot; Element</h4>
+	    <p>In the Resource Map Profile of Atom: </p>
+	    <ul>
+            <li class="orespecific">The &quot;atom:content&quot; element MUST NOT be used.</li>
+    </ul>
+
+	    <h3><a name="OREmetadataelements" id="OREmetadataelements"></a>4.2 Metadata Elements</h3>
+
+	    <h4><a name="ORE.element.author" id="ORE.element.author"></a>4.2.1 The &quot;atom:author&quot; Element</h4>
+
+	    <p>In the Resource Map Profile of Atom:</p>
+	    <ul>
+              <li>The &quot;atom:author&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.author">atom:author Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:author&quot; element is a <a href="#OREconstructs.person">Person construct</a> that indicates the author of the Atom feed. It corresponds to the authoring authority of the Resource Map as defined in the  <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.author">atom:author</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic: 
+	        <ul>
+	          <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain one or more <a href="#ORE.element.author">atom:author</a> elements.</li>
+	          <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain any <a href="#ORE.element.author">atom:author</a> elements. Authorship information is inherited:
+                  <ul>
+                    <li class="orespecific"> from the <a href="#ORE.element.author">atom:author</a> element contained in an <a href="#ORE.element.source">atom:source</a> child element of the <a href="#ORE.element.entry">atom:entry</a> if such <a href="#ORE.element.source">atom:source</a> element exists;</li>
+                    <li class="orespecific">from the <a href="#ORE.element.author">atom:author</a> elements of the <a href="#ORE.element.feed">atom:feed</a> element if no such <a href="#ORE.element.source">atom:source</a> element exists.</li>
+                  </ul>
+             </li>
+            </ul>
+         </li>
+        </ul>
+	    
+<div class="exampleInner">
+<p>In the D-Lib Magazine example, D-Lib Magazine itself is the author of the Resource Map.</p>
+	    
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br /> 
+...
+<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;!-- The authoring authority of the Resource Map --&gt; <br />
+&lt;!-- --&gt;<br />
+  &lt;atom:author&gt;<br />
+  &lt;atom:name&gt;D-Lib Magazine&lt;/atom:name&gt;<br />
+  &lt;!-- The URI identifying the author of the Resource Map <br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: dc:creator) --&gt;<br />
+  &lt;atom:uri&gt;http://www.dlib.org&lt;/atom:uri&gt;<br />
+  &lt;atom:email&gt;dlib@cnri.reston.va.us&lt;/atom:email&gt;<br />
+  &lt;/atom:author&gt;<br />
+	    ...
+</code></p>
+</div>
+
+	    
+<h4><a name="ORE.element.category" id="ORE.element.category"></a>4.2.2 The &quot;atom:category&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+    <ul>
+          <li>The &quot;atom:category&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.category">atom:category Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:category&quot; element conveys types pertaining to a Resource Map (Atom feed) or an Atom entry.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.category">atom:category</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic: 
+	        <ul>
+	          <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.category">atom:category</a>
+element identifying the Atom Feed Document as a Resource Map Document.
+This element has a scheme attribute value of
+&quot;http://www.openarchives.org/ore/terms/&quot;, a term attribute value of
+&quot;http://www.openarchives.org/ore/terms/ResourceMap&quot;, and a label
+attribute value of &quot;Resource Map&quot;.</li>
+	          <li><a href="#ORE.element.feed">atom:feed</a> elements MAY contain any number of <a href="#ORE.element.category">atom:category</a> elements in addition to the aforementioned one. </li>
+	          <li><a href="#ORE.element.entry">atom:entry</a> elements MAY contain any number of <a href="#ORE.element.category">atom:category</a> elements.
+                <ul>
+                  <li class="orespecific">The <a href="#ORE.element.category">atom:category</a> element to express that the <a href="#ORE.element.entry">atom:entry</a> conveys an Aggregated Resource is implicit and can be derived from the fact that the <a href="#ORE.element.feed">atom:feed</a> of which the <a href="#ORE.element.entry">atom:entry</a> is a child element has an <a href="#ORE.element.category">atom:category</a> that types it as a Resource Map.</li>
+                </ul>
+	         </li>
+            </ul>
+	     </li>
+    </ul>
+<div class="exampleInner"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br /> 
+        ...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br /> 
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- The Atom feed is typed as an ORE Resource Map<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: rdf:type for URI-R) --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;atom:category scheme=&quot;http://www.openarchives.org/ore/terms/&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;term=&quot;http://www.openarchives.org/ore/terms/ResourceMap&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;label=&quot;ResourceMap&quot; /&gt;<br />
+...</code></div>
+
+
+<h4><a name="ORE.element.contributor" id="ORE.element.contributor"></a>4.2.3 The &quot;atom:contributor&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+   <ul>
+          <li>The &quot;atom:contributor&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.contributor">atom:contributor Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:contributor&quot; element is a  <a href="#OREconstructs.person">Person construct</a> that indicates a person or other entity who contributed to the Resource Map  (Atom feed) or Atom entry.</li>
+	      <li>The &quot;atom:contributor&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.contributor">atom:contributor</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul><li><a href="#ORE.element.feed">atom:feed</a> elements MAY contain any number of <a href="#ORE.element.contributor">atom:contributor</a> elements.</li>
+              <li><a href="#ORE.element.entry">atom:entry</a> elements MAY contain any number of <a href="#ORE.element.contributor">atom:contributor</a> elements.</li>
+            </ul>
+         </li>
+    </ul>
+
+<h4><a name="ORE.element.generator" id="ORE.element.generator"></a>4.2.4 The &quot;atom:generator&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+	    <ul>
+          <li>The &quot;atom:generator&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.generator">atom:generator Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The
+&quot;atom:generator&quot; element's content identifies the agent used to
+generate a Resource Map Document (Atom Feed Document), for debugging
+and other purposes.</li>
+	      <li>The &quot;atom:generator&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.generator">atom:generator</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+	          <li><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.generator">atom:generator</a> element.</li>
+            </ul>
+         </li>
+        </ul>
+
+<div class="exampleInner">
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br />
+...<br />
+&lt;generator uri=&quot;http://www.dlib.org/ore/generator&quot;&gt;D-Lib Magazine Resource Map Document creator software&lt;/generator&gt;<br />
+...</code></p>
+</div>
+
+<h4><a name="ORE.element.icon" id="ORE.element.icon"></a>4.2.5 The &quot;atom:icon&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+<ul>
+          <li>The &quot;atom:icon&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.icon">atom:icon Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The
+&quot;atom:icon&quot; is an IRI reference [RFC3987] that identifies an image that
+provides iconic visual identification for a Resource Map (Atom feed).</li>
+	      <li>The &quot;atom:icon&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.icon">atom:icon</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+                <li><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.icon">atom:icon</a> element.             </li>
+                <li class="orespecific">Use of an <a href="#ORE.element.icon">atom:icon</a>
+element with content of
+&quot;http://www.openarchives.org/ore/logos/ore_icon.png&quot; is RECOMMENDED to
+allow recognition of the Atom Feed Document as a Resource Map Document.</li>
+	        </ul>
+         </li>
+    </ul>
+
+<div class="exampleInner">
+<code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br />
+...<br />
+&lt;atom:icon&gt;http://www.openarchives.org/ore/logos/ore_icon.png&lt;/atom:icon&gt;<br />
+...</code>
+</div>
+
+<h4><a name="ORE.element.id" id="ORE.element.id"></a>4.2.6 The &quot;atom:id&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+    <ul>
+          <li>The &quot;atom:id&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.id">atom:id Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:id&quot; element conveys a permanent, universally unique identifier for an Atom feed or Atom entry.</li>
+	      <li>The &quot;atom:id&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The normalization guidelines for generating <a href="#ORE.element.id">atom:id</a> elements are as described in  the <a href="http://atompub.org/rfc4287.html#element.id">atom:id Element</a> section of [<a href="#RFC4287">RFC4287</a>].</li>
+	      <li>The rules for comparing <a href="#ORE.element.id">atom:id</a> are as expressed in the <a href="http://atompub.org/rfc4287.html#idCompare">Comparing atom:id </a>section of [<a href="#RFC4287">RFC4287</a>].</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.id">atom:id</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+	          <li>The content of the <a href="#ORE.element.id">atom:id</a> element MUST be a IRI reference [RFC3987].</li>
+              <li><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.id">atom:id</a> element.</li>
+	          <li><a href="#ORE.element.entry">atom:entry</a> elements MUST contain exactly one <a href="#ORE.element.id">atom:id</a> element.<ul>
+	            <li class="orespecific">The content of this <a href="#ORE.element.id">atom:id</a> element MUST NOT be the URI of the aggregated resource (URI-AR).</li>
+                </ul>
+	         </li>
+              <li class="orespecific">An Atom Feed Document MUST NOT have multiple <a href="#ORE.element.entry">atom:entry</a> elements with the same <a href="#ORE.element.id">atom:id</a> value, as is permitted by [<a href="#RFC4287">RFC4287</a>].
+Such entries would convey the same Aggregated Resource, and might
+contain conflicting assertions about that Aggregated Resource within
+the confines of the same Resource Map. As a result, updating an <a href="#ORE.element.entry">atom:entry</a> in the Resource Map Profile of Atom MUST always be achieved by editing the existing <a href="#ORE.element.entry">atom:entry</a> and by changing the value of its <a href="#ORE.element.updated">atom:updated </a>child element. It MUST NOT be achieved by adding an additional <a href="#ORE.element.entry">atom:entry</a> with the same <a href="#ORE.element.id">atom:id</a> as the already existing one.</li>
+	        </ul>
+         </li>
+    </ul>
+<p>The <a href="http://www.openarchives.org/ore/0.1/atom-implementation">ORE User Guide - Resource Map Implementation in Atom</a> [<a href="#ORE_User_Resource_Map">ORE User Guide Resource Map</a>] contains useful tips regarding the implementation of the <a href="#ORE.element.id">atom:id</a> element.</p>
+	    
+<div class="exampleInner">
+<p>In the D-Lib Magazine example,
+&lt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585de&gt; is the
+Atom-specific identifier of the Atom feed. This identifier is important
+for Atom applications but has no ORE semantics. The identifier of the
+Resource Map (URI-R) is provided as the preferred URI from which the
+Atom Feed Document can be retrieved,
+&lt;http://www.dlib.org/dlib/february06/smith/rem/&gt;.
+</p>
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+  &lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- Atom-specific identifier of the Atom feed --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585de&lt;/atom:id&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- About the Resource Map --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- The URI identifying the Resource Map,<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i.e. the URI from which the Resource Map Document is retrievable<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: URI-R) --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:link rel=&quot;self&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type=&quot;application/atom+xml&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/02smith/rem/&quot; /&gt;<br />
+          ...</code></p>
+</div>
+
+<h4><a name="ORE.element.link" id="ORE.element.link"></a>4.2.7 The &quot;atom:link&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+<ul>
+<li>The &quot;atom:link&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.link">atom:link Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:link&quot; element makes the connection between the Atom and the ORE world. It is used to convey:
+	        <ul>
+	          <li>The URI of the Aggregation (URI-A=URI-R#aggregation) described by the Resource Map. </li>
+                  <li>URIs (other than URI-A=URI-R#aggregation) that are associated with the Aggregation described by the Resource Map;</li>
+                  <li>The URIs of the Aggregated Resources of the Aggregation described by the Resource Map;</li>
+	          <li> The URIs of other Resource Maps that also aggregate an Aggregated Resource of the  Aggregation described by the Resource Map (URI-R) at hand. </li>
+            </ul>
+	     </li>
+	      <li>The <a href="#ORE.element.link">atom:link</a> element has attributes as described in the sections <a href="http://atompub.org/rfc4287.html#rfc.section.4.2.7.1">The &quot;href&quot; Attribute</a>, <a href="http://atompub.org/rfc4287.html#rfc.section.4.2.7.2">The &quot;rel&quot; Attribute</a>, <a href="http://atompub.org/rfc4287.html#rfc.section.4.2.7.3">The &quot;type&quot; Attribute</a>, <a href="http://atompub.org/rfc4287.html#rfc.section.4.2.7.4">The &quot;hreflang&quot; Attribute</a>, <a href="http://atompub.org/rfc4287.html#rfc.section.4.2.7.5">The &quot;title&quot; Attribute</a> and <a href="http://atompub.org/rfc4287.html#rfc.section.4.2.7.6">The &quot;length&quot; Attribute</a> of [<a href="#RFC4287">RFC4287</a>].</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.link">atom:link</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic: 
+	        <ul>
+	          <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain one <a href="#ORE.element.link">atom:link</a>
+element with a rel attribute value of &quot;self&quot;. This conveys the
+preferred URI for retrieving Atom Feed Documents representing this Atom
+feed. <ul>
+	              <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST be the URI of the Resource Map (URI-R);</li>
+	              <li class="atomgeneric">The rel attribute value MUST be &quot;self&quot;;</li>
+	              <li class="atomgeneric">The type attribute value MUST be &quot;application/atom+xml&quot;.</li>
+                    </ul>
+	         </li>
+	          <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of &quot;describes&quot;. Such an <a href="#ORE.element.link">atom:link</a> element is used to convey the URI-A (= URI-R#aggregation)
+	            of the Aggregation described by the Resource Map.
+	            <ul>
+                    <li class="orespecific">The
+                      href attribute value of this <a href="#ORE.element.link">atom:link</a> element must be URI-A (= URI-R#aggregation)
+                      of the Aggregation described by the Resource Map.</li>
+                    <li class="orespecific">The rel attribute value MUST be &quot;describes&quot;.</li>
+	            </ul>
+              </li>
+	          <li class="orespecific"><a href="#ORE.element.feed">atom:feed</a> elements MAY contain any number of <a href="#ORE.element.link">atom:link</a> elements with a rel attribute value of &quot;related&quot;. Such an <a href="#ORE.element.link">atom:link</a>
+	            element is used to convey URIs other than URI-A (= URI-R#aggregation)
+	            by which the Aggregation described by the Resource Map is known. 
+	            <ul>
+	              <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element must be a URI other than URI-A by which the Aggregation described by the Resource Map is known;</li>
+                    <li class="orespecific">The rel attribute value MUST be &quot;related&quot;.</li>
+                </ul>
+              </li>
+	          <li><a href="#ORE.element.feed">atom:feed</a> elements MAY contain additional <a href="#ORE.element.link">atom:link</a> elements beyond those described above.
+	            <ul>
+	              <li><span class="orespecific">These <a href="#ORE.element.link">atom:link</a> elements have no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</span></li>
+                </ul>
+	          </li>
+	          <li><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of &quot;alternate&quot; that has the same combination of type and hreflang attribute values.</li>
+	          <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST contain one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of &quot;alternate&quot;. This link conveys an Aggregated Resource.
+                <ul class="orespecific">
+                  <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST be the URI of the Aggregated Resource (URI-AR).</li>
+                  <li class="orespecific">The rel attribute value MUST be &quot;alternate&quot;.</li>
+                  <li class="orespecific">The
+type attribute SHOULD be used to express the media type of the
+Aggregated Resource if it is known to the authoring authority of the
+Resource Map.</li>
+                </ul>
+             </li>
+              <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.link">atom:link</a> element with a rel attribute value of &quot;via&quot;. This link conveys the Lineage of the Aggregated Resource. As explained in the <a href="http://www.openarchives.org/ore/0.1/OREelement.source">atom:source</a> section, the ORE Lineage notion is distinct from the Atom source notion.
+                <ul>
+                  <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST be the URI of a Resource Map with which the Aggregated Resource has a Lineage relationship;</li>
+                  <li class="orespecific">The rel attribute value MUST be &quot;via&quot;;</li>
+                  <li class="orespecific">The type attribute value MUST be &quot;application/atom+xml&quot;.</li>
+                </ul>
+             </li>
+              <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.link">atom:link</a>
+element with a rel attribute value of &quot;self&quot;. This is the preferred URI
+for retrieving Atom Entry Documents representing this Atom entry. <ul class="orespecific">
+                  <li class="orespecific">The href attribute value of this <a href="#ORE.element.link">atom:link</a> element MUST NOT be the URI of the aggregated resource (URI-AR) that is provided in another <a href="#ORE.element.link">atom:link</a> child element of the <a href="#ORE.element.entry">atom:entry</a>;</li>
+                  <li class="orespecific">The rel attribute value MUST be &quot;self&quot;;</li>
+                  <li class="orespecific">The type attribute value MUST be &quot;application/atom+xml&quot;.</li>
+                </ul>
+             </li>
+              <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain any <a href="#ORE.element.link">atom:link</a> elements other than the aformentioned ones.</li>
+            </ul>
+         </li>
+    </ul>
+
+<div class="exampleInner">
+<p>In the D-Lib Magazine example, the URI of the Resource Map (URI-R)
+is provided as the preferred URI from which the Atom Feed Document can
+be retrieved. This is achieved by means of an <a href="#ORE.element.link">atom:link</a> child element of the <a href="#ORE.element.feed">atom:feed</a> element with a rel attribute of &quot;self&quot; and a href value of &quot;http://www.dlib.org/dlib/february06/smith/rem/&quot;. </p>
+<p>The URI of the Aggregation described by this Resource Map (URI-A) is provided by means of an <a href="#ORE.element.link">atom:link</a> child element of the <a href="#ORE.element.feed">atom:feed</a> element with a rel attribute of &quot;describes&quot; and a href value of &quot;http://www.dlib.org/dlib/february06/smith/rem/#aggregation&quot;.</p>
+<p>Other URIs (e.g. DOI) that are associated with the Aggregation
+described by the Resource Map Document are also provided using an <a href="#ORE.element.link">atom:link</a>
+element. These elements have a rel attribute value of &quot;related&quot; and a
+href attribute value set to another URI associated with the
+Aggregation, e.g. &quot;info:doi/10.1045/february2006-smith&quot;.</p>
+<p>The first entry of the Atom feed conveys the
+Aggregated Resource
+&quot;http://www.dlib.org/dlib/february06/smith/02smith.html&quot;. The URI of
+this resource (URI-AR) is provided as the value of the href attribute
+of the <a href="#ORE.element.link">atom:link</a> child element of the  <a href="#ORE.element.entry">atom:entry</a> element that has a rel attribute with a value of &quot;alternate&quot;. The approach to point at other Resource Maps that also aggregate this resource, by using an <a href="#ORE.element.link">atom:link</a> element with a rel attribute set to &quot;via&quot; is explained in detail in the section on the <a href="#ORE.element.link">atom:source</a> element. </p>
+<p>Moreover, D-Lib Magazine supports obtaining individual Atom entry
+documents. The URI from which the first Atom entry is available is
+&quot;http://www.dlib.org/dlib/february06/smith/02smith/rem/1/&quot;. This URI is
+provided as the value of the href attribute of the <a href="#ORE.element.link">atom:link</a> child element of the <a href="#ORE.element.entry">atom:entry</a> element that has a rel attribute with a value of &quot;self&quot;.</p>
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br /> 
+...
+<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;!-- The URI identifying the Resource Map,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;i.e. the URI from which the Resource Map Document is retrievable<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: URI-R) --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;atom:link rel=&quot;self&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type=&quot;application/atom+xml&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/02smith/rem/&quot; /&gt;<br />
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Aggregation described by the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;!-- This Resource Map describes the Aggregation<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: URI-R#aggregation) --&gt;</code></p>
+<p><code>&lt;!-- --&gt;<br />
+&lt;atom:link rel=&quot;describes&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation&quot; /&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- Other URIs that are associated with the aggregation described by this Resource Map Document<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: owl:sameAs) --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:link rel=&quot;related&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;info:doi/10.1045/february2006-smith&quot; /&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- Atom entry conveying the first Aggregated Resource --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:entry&gt;<br />
+  ... <br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- The Aggregated Resource (ORE Model: Aggregated Resource) --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:link rel=&quot;alternate&quot; type=&quot;text/html&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/02smith.html&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title=&quot;Observed Web Robot Behavior on Decaying Web Subsites&quot; /&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:link rel=&quot;self&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type=&quot;text/html&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/02smith/rem/1/&quot;/&gt;<br />
+  ...<br />
+  &lt;/atom:entry&gt;<br />
+  ...</code></p>
+</div>
+	    
+
+<h4><a name="ORE.element.logo" id="ORE.element.logo"></a>4.2.8 The &quot;atom:logo&quot; Element</h4>
+    <p>In the Resource Map Profile of Atom:</p>
+	    <ul>
+          <li>The &quot;atom:logo&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.icon">atom:icon Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:logo&quot; is an IRI reference [RFC3987] that identifies an image that provides  visual identification for a Resource Map.</li>
+	      <li>The &quot;atom:logo&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.logo">atom:logo</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+                <li><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.logo">atom:logo</a> element.</li>
+	          <li class="orespecific">Use of an <a href="#ORE.element.logo">atom:logo</a>
+element with content of
+&quot;http://www.openarchives.org/ore/logos/ore_logo.png&quot; is RECOMMENDED to
+allow recognition of the Atom Feed Document as a Resource Map Document.</li>
+            </ul>
+         </li>
+        </ul>
+
+<div class="exampleInner"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br />
+...<br />&lt;atom:icon&gt;http://www.openarchives.org/ore/logos/ore_logo.png&lt;/atom:icon&gt;<br />...</code>
+</div>
+	    
+
+<h4><a name="ORE.element.published" id="ORE.element.published"></a>4.2.9 The &quot;atom:published&quot; Element</h4>
+    <p>In the Resource Map Profile of Atom:</p>
+    <ul>
+          <li>The &quot;atom:published&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.published">atom:published Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:published&quot; element is a <a href="#OREconstructs.date">Date construct</a> indicating an instant in time associated with an event early in the life cycle of the Atom entry.</li>
+	      <li>The &quot;atom:published&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.published">atom:published</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+                <li><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.published">atom:published</a> element.</li>
+	            <li class="orespecific">The <a href="#ORE.element.published">atom:published</a>
+element SHOULD indicate the date-time when an Atom entry was first
+created, i.e. when it was first included in the Resource Map Document.
+Since the reason of the creation of an Atom entry is the aggregation of
+a resource, this approach allows tracking back when a resource was
+first aggregated by the Resource Map. Note that the date-time when a
+resource was first created is conceptually different than the date-time
+when it was first included in the Aggregation described by a Resource
+Map.</li>
+            </ul>
+         </li>
+    </ul>
+
+<div class="exampleInner">
+<p>In the D-Lib Magazine example, the fourth entry was first published
+on 2007-08-17T21:12:44Z as a means to aggregate the resource
+&quot;http://www.dlib.org/dlib/february06/smith/MLN_Google.png&quot;. Note that
+this resource existed a long time before the entry was first published,
+as it is part of the D-Lib Magazine paper that was published in
+February 2006.</p>
+	      
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- Atom entry conveying the fourth Aggregated Resource --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;atom:entry&gt;<br /> 
+...
+<br />
+&lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;<br /> 
+...
+<br />
+&lt;/atom:entry&gt;<br />
+...<br /></code></p>
+</div>
+	    
+
+<h4><a name="ORE.element.rights" id="ORE.element.rights"></a>4.2.10 The &quot;atom:rights&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+<ul>
+  <li>The &quot;atom:rights&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.rights">atom:rights Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+  <li>The &quot;atom:rights&quot; element  is a <a href="#OREconstructs.text">Text construct</a>
+that conveys information about the rights pertaining to a Resource Map
+(Atom feed). It corresponds to the rights related to a Resource Map as
+defined in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+  <li>The following rules apply regarding the <a href="#ORE.element.rights">atom:rights</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+    <ul>
+      <li><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.rights">atom:rights</a> element.</li>
+      <li class="orespecific">Although the Atom specification suggests that the  <a href="#ORE.element.rights">atom:rights</a>
+element should be used to convey human readable rights information, the
+machine-oriented use case of the Resource Map Profile of Atom justifies
+the following best practice approach: <ul>
+          <li class="orespecific">It is RECOMMENDED to use the <a href="#ORE.element.rights">atom:rights</a> element.</li>
+          <li class="orespecific"> It is RECOMMENDED to provide as the content of the <a href="#ORE.element.rights">atom:rights</a>
+element a URI identifying the rights license that pertains to the
+Resource Map. This could, for example, be a Creative Commons License
+URI.</li>
+          <li class="orespecific">The content of the <a href="#ORE.element.rights">atom:rights</a> element SHOULD NOT be used to convey in-line machine-readable licensing information.</li>
+        </ul>
+     </li>
+      <li class="orespecific"><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain any <a href="#ORE.element.rights">atom:rights</a> elements. Rights information is inherited in the following order:
+        <ul>
+          <li class="orespecific">from the<a href="#ORE.element.rights"> atom:rights</a> element contained in an <a href="#ORE.element.source">atom:source</a> child element of the <a href="#ORE.element.entry">atom:entry</a> if such <a href="#ORE.element.source">atom:source</a> element exists;</li>
+          <li class="orespecific">from the <a href="#ORE.element.rights">atom:rights</a> elements of the <a href="#ORE.element.feed">atom:feed</a> element if no such <a href="#ORE.element.source">atom:source</a> element exists.</li>
+        </ul>
+     </li>
+    </ul>
+ </li>
+</ul>
+
+<div class="exampleInner"><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+...<br />
+        &lt;!-- --&gt;<br />
+        &lt;!-- About the Resource Map --&gt;<br />
+        &lt;!-- --&gt;<br /> 
+        ...
+<br />
+        &lt;atom:rights&gt;http://creativecommons.org/licenses/by-nc-sa/2.5/&lt;/atom:rights&gt;<br />
+		...</code>
+</div>
+	    
+
+<h4><a name="ORE.element.source" id="ORE.element.source"></a>4.2.11 The &quot;atom:source&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+<ul>
+  <li>The &quot;atom:source&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.source">atom:source Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+  <li>The <a href="#ORE.element.source">atom:source</a>
+element is used to allow the re-use of Atom entries in Atom feeds other
+than the one in which the entry was first published, while retaining
+information about an Atom entry's origin Atom feed.</li>
+  <li>The &quot;atom:source&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>; it is distinct from the <a href="http://www.openarchives.org/ore/0.1/datamodel#Aggregated_Resources_and_external_Aggregations">Aggregated Resources and External Aggregations </a> notion of the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+  <li class="orespecific">The <a href="#ORE.element.source">atom:source</a>
+element provides a way to tie an Aggregated Resource to a Resource Map
+in which it was aggregated. This tie remains in place even when the <a href="#ORE.element.entry">atom:entry</a> that conveys the Aggregated Resource is re-used in one or more <a href="#ORE.element.feed">atom:feed</a> (Resource Map or other) that are not the Resource Map in which that <a href="#ORE.element.entry">atom:entry</a>  was first published.</li>
+  <li>The following rules apply regarding the <a href="#ORE.element.source">atom:source</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:          
+    <ul>
+      <li><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.source">atom:source</a> element.</li>
+      <li class="orespecific">If an <a href="#ORE.element.entry">atom:entry</a>
+is copied from an origin Atom Feed Document (Resource Map Document)
+into a target Atom Feed Document, then the origin Atom Feed Document's
+metadata (all child elements of <a href="#ORE.element.feed">atom:feed</a> that are in the Atom namespace, other than the <a href="#ORE.element.entry">atom:entry</a> elements) SHOULD be preserved within the copied entry. This is achieved by adding an <a href="#ORE.element.source">atom:source</a> child element, if it is not already present, to the <a href="#ORE.element.entry">atom:entry</a> and including some or all of the origin Atom Feed Document's metadata elements as the <a href="#ORE.element.source">atom:source</a> element's children. The following child elements of the origin Atom Feed Document's (Resource Map'Document) <a href="#ORE.element.feed">atom:feed</a> element MUST be preserved in this manner: <a href="#ORE.element.id">atom:id</a>, <a href="#ORE.element.link">atom:link</a>, <a href="#ORE.element.title">atom:title</a>, <a href="#ORE.element.rights">atom:rights</a>, <a href="#ORE.element.category">atom:category</a>, and <a href="#ORE.element.updated">atom:updated</a>.</li>
+    </ul>
+ </li>
+</ul>
+
+<div class="exampleInner">
+<p>Presume Alice creates a Resource Map in which she wants to aggregate
+the PDF file &quot;http://www.dlib.org/dlib/february06/smith/pg1-13.pdf&quot; of
+the D-Lib Magazine article. Alice could obviously start from scratch
+and create an <a href="#ORE.element.entry">atom:entry</a> in her
+Resource Map to convey the PDF file. But, she might also have come
+across the Resource Map published for the article by D-Lib Magazine,
+and decide to re-use its <a href="#ORE.element.entry">atom:entry</a> that conveys the PDF file. In this case, Alice (well, Alice's software that is) would copy the respective <a href="#ORE.element.entry">atom:entry</a> from  D-Lib Magazine's Resource Map Document and paste it into hers. The pasted <a href="#ORE.element.entry">atom:entry</a>
+is identical to the one from the D-Lib Magzine Resource Map, except for
+the (automatic) addition of crucial metadata to the copied entry's <a href="#ORE.element.source">atom:source</a> child element (in this case the <a href="#ORE.element.author">atom:author</a>, <a href="#ORE.element.category">atom:category</a>, <a href="#ORE.element.id">atom:id</a>, <a href="#ORE.element.link">atom:link</a>, <a href="#ORE.element.update">atom:update</a> and <a href="#ORE.element.rights">atom:rights</a>
+from the D-Lib Resource Map Document). Alice's pasted entry aggregates
+the PDF file, as was her intent, but can also unambiguously be traced
+back to its origin in the D-Lib Magazine Resource Map. </p>
+<p>If later, Bob discovers Alice's Resource Map and wants to re-use her
+copy/pasted entry that conveys the PDF file in his Resource Map, he can
+perform a similar copy/paste operation. Note that in Bob's case the
+source information is already available in Alice's Resource Map and
+must not be overwritten. The same situation occurs when Carol re-uses
+the entry from Bob's Resource Map: because source information is
+already present, the <a href="#ORE.element.entry">atom:entry</a> is copied &quot;as is&quot;, 
+with inclusion of the <a href="#ORE.element.source">atom:source</a> child element.</p>
+
+<!--START-ESCAPETRIMINCLUDESTARTPRE=atom-examples/sec4.2.11a.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;atom:feed xmlns:atom="http://www.w3.org/2005/Atom"&gt;
+&lt;!-- --&gt;
+&lt;!-- Atom-specific identifier of Alice's Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:id&gt;urn:uuid:45afe620-4c4d-11dc-a9c2-0002a5d585aa&lt;/atom:id&gt;
+&lt;!-- --&gt;
+&lt;!-- URI-R of Alice's Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:link rel="self" type="application/atom+xml"
+      href="http://www.jane.com/rems/334" /&gt;
+  ...
+&lt;!-- --&gt;
+&lt;!-- Alice's first Aggregated Resource. --&gt;
+&lt;!-- The entry that conveys the PDF file is a copy of the entry
+     from the D-Lib Magazine Resource Map that conveys the PDF file. --&gt;
+&lt;!-- Source information is added when the entry is copied --&gt;
+&lt;!-- --&gt;
+&lt;atom:entry&gt;
+&lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c3&lt;/atom:id&gt;
+&lt;atom:title&gt;pg1-13.pdf&lt;/atom:title&gt;
+&lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+&lt;atom:link rel="alternate"
+      type="application/pdf"
+      href="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf" /&gt;
+&lt;!-- --&gt;
+&lt;!-- Metadata pertaining to the origin D-Lib Magazine Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:source&gt;
+&lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585de&lt;/atom:id&gt;
+&lt;atom:link rel="self"
+      type="application/atom+xml"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+&lt;atom:link rel="describes"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation" /&gt;
+&lt;atom:author&gt;
+&lt;atom:name&gt;D-Lib Magazine&lt;/atom:name&gt;
+&lt;atom:uri&gt;http://www.dlib.org&lt;/atom:uri&gt;
+&lt;atom:email&gt;dlib@cnri.reston.va.us&lt;/atom:email&gt;
+&lt;/atom:author&gt;
+&lt;atom:title&gt;Resource Map http://www.dlib.org/ore/dlib/february06/smith/rem/&lt;/atom:title&gt;
+&lt;atom:updated&gt;2007-09-22T07:11:09Z&lt;/atom:updated&gt;
+&lt;atom:category scheme="http://www.openarchives.org/ore/terms/"
+      term="http://www.openarchives.org/ore/terms/ResourceMap"
+      label="Resource Map" /&gt;
+&lt;atom:link rel="related"
+      href="info:doi/10.1045/february2006-smith" /&gt;
+&lt;atom:link rel="self"
+      type="application/atom+xml"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+&lt;/atom:source&gt;
+&lt;/atom:entry&gt;
+  ...
+</pre>
+<!--END-ESCAPETRIMINCLUDESTARTPRE=atom-examples/sec4.2.11a.xml-->
+
+<p>The Atom &quot;source&quot; notion is different from the 
+<a href="http://www.openarchives.org/ore/0.1/datamodel#Aggregated_Resources_and_external_Aggregations">Aggregated Resources and External Aggregations</a> 
+notion of the ORE Model. When Alice wants to express that the PDF file that she
+uses as an Aggregated Resource in her Resource Map is also aggregated by the D-Lib
+Magazine Resource Map (as a matter of fact, she may have discovered the PDF file via that D-Lib Magazine Resource Map and wants to express that provenance), she adds a  relationship from the PDF file that is her Aggregated Resource to the D-Lib Magazine Resource Map. This is
+achieved by adding an <a href="#ORE.element.link">atom:link</a> element with a value of &quot;via&quot; for the
+rel attribute. As can be seen, at this stage, this <a href="#ORE.element.link">atom:link</a> element and the <a href="#ORE.element.source">atom:source</a> both point at the D-Lib Magazine Resource Map:</p>
+
+<!--START-ESCAPETRIMINCLUDESTARTPRE=atom-examples/sec4.2.11b.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;atom:feed xmlns:atom="http://www.w3.org/2005/Atom"&gt;
+&lt;!-- --&gt;
+&lt;!-- Atom-specific identifier of Alice's Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:id&gt;urn:uuid:45afe620-4c4d-11dc-a9c2-0002a5d585aa&lt;/atom:id&gt;
+&lt;!-- --&gt;
+&lt;!-- URI-R of Alice's Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:link rel="self"
+      type="application/atom+xml"
+      href="http://www.jane.com/rems/334" /&gt;
+  ...
+&lt;!-- --&gt;
+&lt;!-- Alice's first Aggregated Resource. --&gt;
+&lt;!-- The entry that conveys the PDF file is a copy of the entry from the D-Lib Magazine Resource Map that conveys the PDF file. --&gt;
+&lt;!-- Source information is added when the entry is copied --&gt;
+&lt;!-- --&gt;
+&lt;atom:entry&gt;
+&lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c3&lt;/atom:id&gt;
+&lt;atom:title&gt;pg1-13.pdf&lt;/atom:title&gt;
+&lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+&lt;atom:link rel="alternate"
+      type="application/pdf"
+      href="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf" /&gt;
+&lt;!-- --&gt;
+&lt;!-- Express that the D-Lib Magazine Resource Map also aggregates this resource --&gt;
+&lt;!-- --&gt;
+&lt;atom:link rel="via"
+      type="application/atom+xml"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+&lt;!-- --&gt;
+&lt;!-- Metadata pertaining to the origin D-Lib Magazine Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:source&gt;
+&lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585de&lt;/atom:id&gt;
+  ...
+&lt;atom:link rel="related"
+      href="info:doi/10.1045/february2006-smith" /&gt;
+&lt;atom:link rel="self"
+      type="application/atom+xml"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+&lt;atom:link rel="describes"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation" /&gt;
+&lt;/atom:source&gt;
+&lt;/atom:entry&gt;
+  ...
+</pre>
+<!--END-ESCAPETRIMINCLUDESTARTPRE=atom-examples/sec4.2.11b.xml-->
+	    
+<p>However, when Bob comes in and copy/pastes Alice's entry the difference between
+<a href="#ORE.element.source">atom:source</a> and the ORE <a href="http://www.openarchives.org/ore/0.1/datamodel#Aggregated_Resources_and_external_Aggregations">Aggregated Resources and External Aggregations</a> notion become clear. Indeed, Bob's <a href="#ORE.element.source">atom:source</a>  still
+points at the D-Lib Magazine Resource Map, whereas the <a href="#ORE.element.link">atom:link</a> with the rel=&quot;via&quot; attribute points at Alice's Resource Map. Note that, in addition to this, another <a href="#ORE.element.link">atom:link</a> with a rel=&quot;via&quot; attribute could point at the D-Lib Magazine Resource Map.</p>
+
+<!--START-ESCAPETRIMINCLUDESTARTPRE=atom-examples/sec4.2.11c.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;atom:feed xmlns:atom="http://www.w3.org/2005/Atom"&gt;
+&lt;!-- --&gt;
+&lt;!-- Atom-specific identifier of Bob's Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:id&gt;tag:www.bob.org,2007:my_finest&lt;/atom:id&gt;
+&lt;!-- --&gt;
+&lt;!-- URI-R of Bob's Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:link rel="self"
+      type="application/atom+xml"
+      href="http://www.bob.org/my_rems/my_finest" /&gt;
+  ...
+&lt;!-- --&gt;
+&lt;!-- Bob's first Aggregated Resource. --&gt;
+&lt;!-- The entry that conveys the PDF file is a copy of the entry from the D-Lib Magazine Resource Map that conveys the PDF file. --&gt;
+&lt;!-- The entry was obtained from Alice's Resource Map --&gt;
+&lt;!-- Source information was added by Alice and is not overwritten by Bob --&gt;
+&lt;!-- --&gt;
+&lt;atom:entry&gt;
+&lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c3&lt;/atom:id&gt;
+&lt;atom:title&gt;pg1-13.pdf&lt;/atom:title&gt;
+&lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+&lt;atom:link rel="alternate"
+      type="application/pdf"
+      href="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf" /&gt;
+&lt;!-- --&gt;
+&lt;!-- Express that Jane's Resource Map also aggregates this resource --&gt;
+&lt;!-- --&gt;
+&lt;atom:link rel="via"
+      type="application/atom+xml"
+      href="http://www.jane.com/rems/334" /&gt;
+&lt;!-- --&gt;
+&lt;!-- Metadata pertaining to the origin D-Lib Magazine Resource Map --&gt;
+&lt;!-- --&gt;
+&lt;atom:source&gt;
+&lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585de&lt;/atom:id&gt;
+  ...
+&lt;atom:link rel="related"
+      href="info:doi/10.1045/february2006-smith" /&gt;
+&lt;atom:link rel="self"
+      type="application/atom+xml"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+&lt;atom:link rel="describes"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation" /&gt;
+&lt;/atom:source&gt;
+&lt;/atom:entry&gt;
+  ...
+</pre>
+<!--END-ESCAPETRIMINCLUDESTARTPRE=atom-examples/sec4.2.11c.xml-->
+	    
+<p>When Carol now re-uses Bob's entry, Carol's Resource Map may
+express a provenance in Bob's Resource Map, while the <a href="#ORE.element.source">atom:source</a> of Carol's entry will still point at the origin D-Lib Magazine Resource
+Map:</p>
+	    
+<!--START-ESCAPETRIMINCLUDEPRE=atom-examples/sec4.2.11d.xml-->
+<pre>
+  ...
+&lt;atom:entry&gt;
+  ...
+&lt;atom:link rel="alternate"
+      type="application/pdf"
+      href="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf" /&gt;
+&lt;atom:link rel="via"
+      type="application/atom+xml"
+      href="http://www.bob.org/my_rems/my_finest" /&gt;
+  ...
+&lt;atom:source&gt;
+  ...
+&lt;atom:link rel="related"
+      href="info:doi/10.1045/february2006-smith" /&gt;
+&lt;atom:link rel="self"
+      type="application/atom+xml"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+&lt;atom:link rel="describes"
+      href="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation" /&gt;
+  ...
+&lt;/atom:source&gt;
+&lt;/atom:entry&gt;
+  ...
+</pre>
+<!--END-ESCAPETRIMINCLUDEPRE=atom-examples/sec4.2.11d.xml-->
+
+</div>
+
+<h4><a name="ORE.element.subtitle" id="ORE.element.subtitle"></a>4.2.12 The &quot;atom:subtitle&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+    <ul>
+          <li>The &quot;atom:subtitle&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.subtitle">atom:subtitle Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:subtitle&quot; is a <a href="#OREconstructs.text">Text construct</a> that conveys a human-readable description or subtitle for a Resource Map (Atom feed).</li>
+	      <li>The &quot;atom:subtitle&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.subtitle">atom:subtitle</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+	          <li><a href="#ORE.element.feed">atom:feed</a> elements MUST NOT contain more than one <a href="#ORE.element.subtitle">atom:subtitle</a> element.</li>
+            </ul>
+         </li>
+    </ul>
+
+
+<h4><a name="ORE.element.summary" id="ORE.element.summary"></a>4.2.13 The &quot;atom:summary&quot; Element</h4>
+<p>In the Resource Map Profile of Atom:</p>
+    <ul>
+          <li>The &quot;atom:summary&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.summary">atom:summary Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:summary&quot; is a <a href="#OREconstructs.text">Text construct</a> that conveys a short summary, abstract, or excerpt of an Atom entry.</li>
+	      <li>The &quot;atom:summary&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.summary">atom:summary</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+                <li><a href="#ORE.element.entry">atom:entry</a> elements MUST NOT contain more than one <a href="#ORE.element.summary">atom:summary</a> element.</li>
+            </ul>
+         </li>
+    </ul>
+
+
+<h4><a name="ORE.element.title" id="ORE.element.title"></a>4.2.14 The &quot;atom:title&quot; Element</h4>
+    <p>In the Resource Map Profile of Atom:</p>
+	    <ul>
+          <li>The &quot;atom:title&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.title">atom:title Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:title&quot; is a <a href="#OREconstructs.text">Text construct</a> that conveys a human-readable title for an Atom feed (Resource Map) or Atom entry.</li>
+	      <li>The &quot;atom:title&quot; element has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.title">atom:title</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+                <li><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.title">atom:title</a> element.</li>
+                <li><a href="#ORE.element.entry">atom:entry</a> elements MUST contain exactly one <a href="#ORE.element.title">atom:title</a> element.</li>
+            </ul>
+         </li>
+        </ul>
+    <p>The <a href="http://www.openarchives.org/ore/0.1/atom-implementation">ORE User Guide - Resource Map Implementation in Atom</a> [<a href="#ORE_User_Resource_Map">ORE User Guide Resource Map</a>] contains useful tips regarding the implementation of the <a href="#ORE.element.title">atom:title</a> element.</p>
+
+
+<h4><a name="ORE.element.updated" id="ORE.element.updated"></a>4.2.15 The &quot;atom:updated&quot; Element</h4>
+    <p>In the Resource Map Profile of Atom:</p>
+	    <ul>
+          <li>The &quot;atom:updated&quot; element has semantics and properties as described in the <a href="http://atompub.org/rfc4287.html#element.updated">atom:updated Element</a> section of [<a href="#RFC4287">RFC4287</a>] unless specified differently below.</li>
+	      <li>The &quot;atom:updated&quot; element is a <a href="#OREconstructs.date">Date construct</a>
+indicating the most recent instant in time when an Atom Feed (Resource
+Map ) or Atom Entry was modified in a way the authoring authority
+considers significant. Therefore, not all modifications necessarily
+result in a changed <a href="#ORE.element.updated">atom:updated</a>  value.</li>
+	      <li>The
+&quot;atom:updated&quot; element, when used as a child element of an Atom feed
+corresponds to the last modification datetimestamp of the Resource Map
+as defined in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The &quot;atom:updated&quot; element, when used as a child element of an Atom entry, has no correspondence in the <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Model</a>.</li>
+	      <li>The following rules apply regarding the <a href="#ORE.element.updated">atom:updated</a> element; rules that are more specific than the ones of [<a href="#RFC4287">RFC4287</a>] are shown in italic:
+	        <ul>
+                <li><a href="#ORE.element.feed">atom:feed</a> elements MUST contain exactly one <a href="#ORE.element.updated">atom:updated</a> element.</li>
+	            <li><a href="#ORE.element.entry">atom:entry</a> elements MUST contain exactly one <a href="#ORE.element.updated">atom:updated</a> element.</li>
+              <li class="orespecific">The content of <a href="#ORE.element.updated">atom:updated</a> SHOULD be set to a new value when relevant changes are made to an <a href="#ORE.element.feed">atom:feed</a> or an <a href="#ORE.element.feed">atom:entry</a>. Examples of such relevant changes MAY include the following:
+                <ul>
+                  <li>the aggregation of an additional resource  (i.e. the creation of a new <a href="#ORE.element.entry">atom:entry</a> that acts as a container for an additional Aggregated Resource);</li>
+                  <li>the removal of an Aggregated Resource (i.e. deletion of the <a href="#ORE.element.entry">atom:entry</a> that acts as a container for the Aggregated Resource) ;</li>
+                  <li>the addition or deletion of Resource Map Relationships and/or Resource Map Types expressed in the Resource Map;</li>
+                  <li>the addition of URIs that are asscoiated with the Aggregation described by the Resource Map;</li>
+                  <li>the update of an Aggregated Resource.</li>
+                </ul>
+             </li>
+	          <li class="orespecific">The content of <a href="#ORE.element.updated">atom:updated</a> child element of <a href="#ORE.element.feed">atom:feed</a> MUST be set to a new value if the <a href="#ORE.element.updated">atom:updated</a> child element of one of its <a href="#ORE.element.feed">atom:entry</a> elements is set to a new value.</li>
+            </ul>
+         </li>
+        </ul>
+
+<div class="exampleInner">
+<p>In the D-Lib Magazine example, a Resource Map for the article was
+first published on August 17th of 2007, more than a year after the
+publication of the journal article itself. This date of publication of
+the Resource Map can be observed in the <a href="#ORE.element.published">atom:published</a> element of the third and fourth <a href="#ORE.element.entry">atom:entry</a>. It also shows up as the value of the <a href="#ORE.element.updated">atom:updated</a>
+element of the third entry, indicating no changes occurred to that
+entry since its publication. However, on September 22nd of 2007, the
+authors of the article requested to update an image used in their
+paper; that image is the Aggregated Resource conveyd by the fourth <a href="#ORE.element.entry">atom:entry</a>. As a result, D-Lib Magazine changed the date-time of the associated <a href="#ORE.element.updated">atom:updated</a> element, leaving the date-time of the associated <a href="#ORE.element.published">atom:published</a> element unchanged.  The change in the <a href="#ORE.element.updated">atom:updated</a> element of this one <a href="#ORE.element.entry">atom:entry</a> caused D-Lib Magazine to also change the date-time of the <a href="#ORE.element.updated">atom:updated</a> element of the <a href="#ORE.element.feed">atom:feed</a>.</p>
+	    
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+  &lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br /> 
+  ...<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- About the Resource Map --&gt;<br />
+  &lt;!-- --&gt;<br /> 
+  ...<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- The date of most recent modification of the Resource Map<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: dc:modified) --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:updated&gt;2007-09-22T07:11:09Z&lt;/atom:updated&gt;<br />
+  ...<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- Atom entry conveying the third Aggregated Resource --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:entry&gt;<br /> 
+  ...
+ <br />
+  &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;<br />
+  &lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;<br /> 
+  ...
+ <br />
+  &lt;/atom:entry&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- Atom entry conveying the fourth Aggregated Resource --&gt;<br />
+  &lt;!-- --&gt;<br />
+  &lt;atom:entry&gt;<br /> 
+  ...
+ <br />
+  &lt;atom:updated&gt;2007-09-22T07:11:09Z&lt;/atom:updated&gt;<br />
+  &lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;<br />
+  &lt;atom:link rel=&quot;alternate&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type=&quot;image/png&quot;<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/MLN_Google.png&quot; /&gt;<br /> 
+  ...
+ <br />
+  &lt;/atom:entry&gt;<br />
+  ...<br />
+</code></p>
+</div>
+	    
+<h4><a name="ORE.element.extensions" id="ORE.element.extensions"></a>4.2.16 Use of Atom Extension Elements in the Resource Map Profile of Atom</h4>
+<p>This Section specifies how the Resource Map Profile of Atom makes use of the extension elements allowed by  [<a href="#RFC4287">RFC4287</a>]. The use of extension elements of an <a href="#ORE.element.feed">atom:feed</a> element are discussed in <a href="#ORE.element.extensionsFeed">Section 4.2.16.1</a>, and extension elements of an <a href="#ORE.element.entry">atom:entry</a> element are discussed in <a href="#ORE.element.extensionsEntry">Section 4.2.16.2</a>. </p>
+
+<h5><a name="ORE.element.extensionsFeed" id="ORE.element.extensionsFeed"></a>4.2.16.1 Extension Elements for the &quot;atom:feed&quot; Element</h5>
+	    <p>The Resource Map Profile of Atom allows the use of OPTIONAL extension elements for the <a href="#ORE.element.feed">atom:feed</a>
+element to convey Relationships and Types pertaining to the Aggregation
+described by the Resource Map. These Relationships and Types are
+conveyed as child elements of <a href="#ORE.element.feed">atom:feed</a> that are not in the Atom namespace.</p>
+	    <p>In the Resource Map Profile of Atom:</p>
+	    <ul>
+	      <li><a href="#ORE.element.feed">atom:feed</a> elements MAY have any number of child elements from namespaces other than the Atom namespace.</li>
+          <li>All non-Atom child elements of <a href="#ORE.element.feed">atom:feed</a>
+MUST assert Relationships and Types pertaining to the Aggregation
+described by the Resource Map, i.e. they MUST all pertain to the
+resource identified by URI-A (= URI-R#aggregation).</li>
+          <li>The content of these non-Atom child elements of <a href="#ORE.element.feed">atom:feed</a> SHOULD be a URI in order to allow for unambiguous machine processing.</li>
+	    </ul>
+
+<div class="exampleInner">
+<p>In the D-Lib Magazine example, the extension child elements of the <a href="#ORE.element.feed">atom:feed</a>
+element are used to convey several Types and Relationships of the
+Aggregation described by the Resource Map. The elements express
+authorship of the Aggregation, the type of the Aggregation as being a
+journal article, and the fact that the journal article is part of D-Lib
+Magazine.</p>
+<p><code>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Aggregation described by the Resource Map --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;!-- Implicit: this Resource Map describes the Aggregation<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: URI-R#aggregation) --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;!-- About the Aggregation described by this Resource Map<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: Relationships and Types pertaining to the Aggregation) --&gt;<br />
+&lt;!-- --&gt;<br />
+  &lt;rdf:type&gt;http://purl.org/eprint/type/JournalArticle&lt;/rdf:type&gt;<br />
+  &lt;dcterms:isPartOf&gt;http://www.dlib.org&lt;/dcterms:isPartOf&gt;<br />
+  &lt;dc:creator&gt;http://www.cs.odu.edu/~mln/&lt;/dc:creator&gt;<br />
+  &lt;dc:creator&gt;http://www.joanasmith.com/&lt;/dc:creator&gt;<br />
+  &lt;dc:creator&gt;http://www.cs.odu.edu/~fmccown/&lt;/dc:creator&gt;<br />
+  ...	    </code></p>
+</div>
+
+<h5><a name="ORE.element.extensionsEntry" id="ORE.element.extensionsEntry"></a>4.2.16.2 Extension Elements for the &quot;atom:entry&quot; Element</h5>
+<p>The Resource Map Profile of Atom allows the use of OPTIONAL extension elements for the <a href="#ORE.element.entry">atom:entry</a> element to convey Relationships and Types pertaining to the Aggregated Resource conveyed by the <a href="#ORE.element.entry">atom:entry</a>. These Relationships and Types are conveyed as child elements of <a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> that are not in the Atom namespace.</p>
+	    <p>In the Resource Map Profile of Atom:</p>
+	    <ul>
+          <li><a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> elements MAY have any number of child elements from namespaces other than the Atom namespace.</li>
+	      <li>All non-Atom child elements of <a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> MUST assert Relationships and Types pertaining to the Aggregated Resource conveyed by the <a href="#ORE.element.entry">atom:entry</a>, i.e. they MUST all pertain to the resource identified by URI-AR.</li>
+          <li>The content of these non-Atom child elements of <a href="#ORE.element.entry">atom:entry</a><a href="#ORE.element.feed"></a> SHOULD be a URI in order to allow for unambiguous machine processing.</li>
+	    </ul>
+
+<div class="exampleInner">
+<p>In the D-Lib Magazine example, the extension child elements of the <a href="#ORE.element.entry">atom:entry</a> element are used to express several Types and Relationships for the Aggregated Resource conveyed by the respective <a href="#ORE.element.entry">atom:entry</a>. </p>
+<p>For the first Aggregated Resource, authorship and creation date are
+expressed, and URIs are provided of resources that are referenced by
+the Aggregated Resource. Furthermore, the Aggregated Resource is
+asserted to be a Web page and to contain mainly textual information.
+Lastly, the &quot;info:eu-repo/semantics/humanStartPage&quot; Type indicates
+that of all the Aggregated Resources of this Aggregation, this resource
+is the best entry point for human consumption. </p>
+<p>For the fourth Aggregated Resource, the type is asserted to be an
+image. Furthermore, it is asserted that this Aggregated Resource
+conforms to the digital format identified by &quot;info:pronom/fmt/13&quot;,
+which is the format identifier for Portable Network Graphic version 1.2.</p>
+          
+<p><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;<br />
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;&gt;<br />
+...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- Atom entry conveying the first Aggregated Resource --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;atom:entry&gt;<br /> 
+...
+<br />
+&lt;atom:link rel=&quot;alternate&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type=&quot;text/html&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/02smith.html&quot;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;title=&quot;Observed Web Robot Behavior on Decaying Web Subsites&quot; /&gt;<br />
+...<br />
+  &lt;!-- --&gt;<br />
+  &lt;!-- About the Aggregated Resource<br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: Relationships and types pertaining to the Aggregated Resource) --&gt;<br />
+  &lt;!-- --&gt;<br />
+&lt;dc:creator&gt;http://www.cs.odu.edu/~mln/&lt;/dc:creator&gt;<br />
+&lt;dc:creator&gt;http://www.joanasmith.com/&lt;/dc:creator&gt;<br />
+&lt;dc:creator&gt;http://www.cs.odu.edu/~fmccown/&lt;/dc:creator&gt;<br />
+  &lt;dc:created&gt;2006-02-15&lt;/dc:created&gt; <br />
+  &lt;dcterms:references&gt;http://dx.doi.org/10.1023/A:1019213109274&lt;/dcterms:references&gt;<br />
+  &lt;dcterms:references&gt;http://arxiv.org/abs/cs.IR/0512069&lt;/dcterms:references&gt;<br />
+  &lt;dcterms:references&gt;http://doi.acm.org/10.1145/362883.362894&lt;/dcterms:references&gt;	     <br />
+  &lt;rdf:type&gt;http://purl.org/ontology/bibo/WebPage&lt;/rdf:type&gt;<br />
+&lt;rdf:type&gt;http://purl.org/dc/dcmitype/Text&lt;/rdf:type&gt;<br />
+&lt;rdf:type&gt;info:eu-repo/semantics/humanStartPage&lt;/rdf:type&gt;<br />
+  &lt;/atom:entry&gt;<br />
+  ...<br />
+&lt;!-- --&gt;<br />
+&lt;!-- Atom entry conveying the fourth Aggregated Resource --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;atom:entry&gt;<br />
+          ...<br />
+          &lt;atom:link rel=&quot;alternate&quot;<br />
+		 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type=&quot;image/png&quot;<br />
+		 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;href=&quot;http://www.dlib.org/dlib/february06/smith/MLN_Google.png&quot; /&gt;<br />
+		 ...<br />
+		 &lt;!-- --&gt;<br />
+&lt;!-- About the Aggregated Resource<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(ORE Model: Relationships and types pertaining to the Aggregated Resource) --&gt;<br />
+&lt;!-- --&gt;<br />
+&lt;rdf:type&gt;http://purl.org/dc/dcmitype/Image&lt;/rdf:type&gt;<br />
+&lt;dc:format&gt;info:pronom/fmt/13&lt;/dc:format&gt;<br />
+  &lt;/atom:entry&gt;<br />
+  ...</code></p>
+</div>
+</div>
+
+<div class="section">
+<h2><a name="references" id="references"></a>5. References </h2>
+<dl>
+<dt><a name="Named_Graph" id="Named_Graph"></a>[Named Graph]</dt>
+<dd> <a href="http://dx.doi.org/10.1145/1060745.1060835">Named graphs, provenance and trust</a>,
+J. Carroll, C. Bizer, P. Hayes, P. Stickler, Proceedings of the 14th
+international conference on World Wide Web, 2005.
+doi:10.1145/1060745.1060835. Available at
+http://dx.doi.org/10.1145/1060745.1060835.</dd>
+<dt><a name="ORE_Model" id="ORE_Model"></a>[ORE Model]</dt>
+<dd> <a href="http://www.openarchives.org/ore/0.1/datamodel">ORE Specification -  Abstract Data Model</a>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2007,
+Available at http://www.openarchives.org/ore/0.1/datamodel.</dd>
+<dt><a name="ORE_Vocabulary" id="ORE_Vocabulary"></a>[ORE Vocabulary]</dt>
+<dd> <a href="http://www.openarchives.org/ore/0.1/vocabulary">ORE Specification - Vocabulary, </a>C.
+Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2007,
+Available at http://www.openarchives.org/ore/0.1/vocabulary.</dd>
+<dt><a name="ORE_User_Resource_Map" id="ORE_User_Resource_Map"></a>[ORE User Guide Resource Map]</dt>
+<dd><a href="http://www.openarchives.org/ore/0.1/atom-implementation">ORE User Guide - Resource Map Implementation in Atom</a>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2007,
+Available at http://www.openarchives.org/ore/0.1/atom-implementation.</dd>
+<dt><a name="ORE_User_Discovery" id="ORE_User_Discovery"></a>[ORE User Guide Discovery]</dt>
+<dd> <a href="http://www.openarchives.org/ore/0.1/atom-implementation">ORE User Guide - </a><a href="http://www.openarchives.org/ore/0.1/discovery">ORE User Guide - Resource Map Discovery</a><a href="http://www.openarchives.org/ore/0.1/datamodel"></a>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2007,
+Available at http://www.openarchives.org/ore/0.1/discovery.</dd>
+<dt><a name="RFC2119" id="RFC2119"></a>[RFC2119]</dt>
+<dd> <a href="http://www.ietf.org/rfc/rfc2119.txt">IETF RFC 2119: Key words for use in RFCs to Indicate Requirement Levels</a>, S. Bradner, March 1997. Available at http://www.ietf.org/rfc/rfc2119.txt.</dd>
+<dt><a name="RFC2822" id="RFC2822"></a>[RFC2822]</dt>
+<dd> <a href="http://www.ietf.org/rfc/rfc2822.txt">IETF 2822: Internet Message Format</a>, P. Resnick, April 2001. Available at http://www.ietf.org/rfc/rfc2822.txt.</dd>
+<dt><a name="RFC3339" id="RFC3339"></a>[RFC3339]</dt>
+<dd> <a href="http://www.ietf.org/rfc/rfc3339.txt">IETF 3339: Date and Time on the Internet: Timestamps</a>, G. Klyne, C. Newman, July 2002, Available at http://www.ietf.org/rfc/rfc3339.txt.</dd>
+<dt><a name="RFC3986" id="RFC3986"></a>[RFC3986]</dt>
+<dd> <a href="http://www.ietf.org/rfc/rfc3986.txt">IETF RFC 3986: Uniform Resource Identifier (URI): Generic Syntax</a>, T. Berners-Lee, R. Fielding, L. Masinter, January 2005. Available at http://www.ietf.org/rfc/rfc3986.txt.</dd>
+<dt><a name="RFC3987" id="RFC3987"></a>[RFC3987]</dt>
+<dd> <a href="http://www.ietf.org/rfc/rfc3987.txt">IETF RFC 3987: Internationalized Resource Identifiers (IRIs)</a>, M. Duerst, M. Suignard, January 2005. Available at http://www.ietf.org/rfc/rfc3987.txt.</dd>
+<dt><a name="RFC4287" id="RFC4287"></a>[RFC4287]</dt>
+<dd> <a href="http://www.ietf.org/rfc/rfc4287.txt">IETF RFC 4287: The Atom Syndication Format</a>, M. Nottingham, R. Sayre, December 2005. Available at http://www.ietf.org/rfc/rfc4287.txt.</dd>
+<dt><a name="XML_Infoset" id="XML_Infoset"></a>[XML Infoset]</dt>
+<dd> <a href="http://www.w3.org/TR/xml-infoset/">W3C XML Infoset (Second Edition)</a>, J. Cowan, R. Tobin, February 2004, Available at http://www.w3.org/TR/xml-infoset/.</dd>
+</dl>
+</div>
+</div>
+
+<div class="back">
+<!--START-INCLUDE=_acknowledgements_with_lanl.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+<p>Many thanks to the Digital Library Research &amp; Prototyping Team of the Los Alamos 
+National Laboratory for their inspiring explorations into Atom and ORE space: Lyudmilla 
+Balakireva, Ryan Chute, Stephan Drescher, Alberto Pepe, Zhiwu Xie.</p>
+</div>
+<!--END-INCLUDE=_acknowledgements_with_lanl.inc-->
+
+<div class="section">
+<h2><a name="extendedEx" id="extendedEx"></a>B. Extended Example </h2>
+<div class="exampleInner">
+<p>A rich Resource Map Document for the D-Lib Magazine article is shown below and is available <a href="http://www.openarchives.org/ore/0.1/atom-examples/DLib_maxi.xml">here</a>.</p>
+<!--START-ESCAPEINCLUDEPRE=atom-examples/DLib_maxi.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;atom:feed xmlns:atom="http://www.w3.org/2005/Atom" 
+           xmlns:dc="http://purl.org/dc/" 
+           xmlns:dcterms="http://purl.org/dc/terms/" 
+           xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+           xmlns:grddl="http://www.w3.org/2003/g/data-view#" 
+           grddl:transformation="http://www.openarchives.org/ore/atom/atom-grddl.xsl"&gt; 
+    &lt;!-- --&gt; 
+    &lt;!-- Atom-specific identifier of the Atom feed --&gt; 
+    &lt;!-- --&gt;
+    &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585de&lt;/atom:id&gt;
+    &lt;!-- --&gt;
+    &lt;!-- About the Resource Map --&gt; 
+    &lt;!-- --&gt;
+    &lt;!-- The URI identifying the Resource Map, 
+          i.e. the URI from which the Resource Map Document is retrievable 
+          (ORE Model: URI-R) --&gt; 
+    &lt;atom:link rel="self" 
+               type="application/atom+xml" 
+               href="http://www.dlib.org/dlib/february06/smith/02smith/rem/" /&gt;
+    &lt;!-- The authoring authority of the Resource Map --&gt; 
+    &lt;atom:author&gt;
+        &lt;atom:name&gt;D-Lib Magazine&lt;/atom:name&gt;
+        &lt;!-- The URI identifying the author of the Resource Map (ORE Model: dc:creator) --&gt; 
+        &lt;atom:uri&gt;http://www.dlib.org&lt;/atom:uri&gt;
+        &lt;atom:email&gt;dlib@cnri.reston.va.us&lt;/atom:email&gt;
+    &lt;/atom:author&gt;
+    &lt;!-- The URI expressing the rights pertaining to the Resource Map 
+         (ORE Model: dc:rights) --&gt; 
+    &lt;atom:rights&gt;http://creativecommons.org/licenses/by-nc-sa/2.5/&lt;/atom:rights&gt;
+    &lt;!-- The date of most recent modification of the Resource Map 
+         (ORE Model: dc:modified) --&gt; 
+    &lt;atom:updated&gt;2007-09-22T07:11:09Z&lt;/atom:updated&gt;
+    &lt;!-- The Atom feed is typed as an ORE Resource Map 
+         (ORE Model: rdf:type for URI-R --&gt; 
+    &lt;atom:category scheme="http://www.openarchives.org/ore/terms/" 
+                   term="http://www.openarchives.org/ore/terms/ResourceMap" 
+                   label="Resource Map" /&gt;
+    &lt;atom:title&gt;Resource Map http://www.dlib.org/ore/dlib/february06/smith/rem/&lt;/atom:title&gt;
+    &lt;atom:icon&gt;http://www.openarchives.org/ore/logos/ore_icon.png&lt;/atom:icon&gt;
+    &lt;!-- --&gt;
+    &lt;!-- About the Aggregation described by the Resource Map --&gt; 
+    &lt;!-- --&gt;
+    &lt;!-- This Resource Map describes the Aggregation 
+            http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation 
+            (ORE Model: URI-R#aggregation) --&gt; 
+    &lt;atom:link rel="describes" 
+        href="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation" /&gt;
+    &lt;!-- --&gt;
+    &lt;!-- Other URIs that are associated with the aggregation 
+            described by this Resource Map Document 
+            (ORE Model: owl:sameAs) --&gt; 
+    &lt;atom:link rel="related" 
+               href="info:doi/10.1045/february2006-smith" /&gt;
+    &lt;!-- About the Aggregation described by this Resource Map 
+        (ORE Model: Relationships and Types pertaining to the Aggregation) --&gt;
+    &lt;rdf:type&gt;http://purl.org/eprint/type/JournalArticle&lt;/rdf:type&gt;
+    &lt;dcterms:isPartOf&gt;http://www.dlib.org&lt;/dcterms:isPartOf&gt;
+    &lt;dc:creator&gt;http://www.cs.odu.edu/~mln/&lt;/dc:creator&gt;
+    &lt;dc:creator&gt;http://www.joanasmith.com/&lt;/dc:creator&gt;
+    &lt;dc:creator&gt;http://www.cs.odu.edu/~fmccown/&lt;/dc:creator&gt;
+    &lt;!-- --&gt; 
+    &lt;!-- The Aggregated Resources, their Types and Relationships --&gt; 
+    &lt;!-- --&gt;
+    &lt;!-- Atom entry conveying the first Aggregated Resource --&gt;
+    &lt;!-- --&gt; 
+    &lt;atom:entry&gt;
+        &lt;!-- --&gt;
+        &lt;!-- About the ATOM entry that conveys the Aggregated Resource --&gt;
+        &lt;!-- --&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c1&lt;/atom:id&gt;
+        &lt;atom:title&gt;02smith.html&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;
+        &lt;!-- --&gt;
+        &lt;!-- The Aggregated Resource 
+             (ORE Model: Aggregated Resource) --&gt; 
+        &lt;!-- --&gt;
+        &lt;atom:link rel="alternate" type="text/html" 
+                   href="http://www.dlib.org/dlib/february06/smith/02smith.html" 
+                   title="Observed Web Robot Behavior on Decaying Web Subsites" /&gt;
+        &lt;!-- --&gt;
+        &lt;!-- About the Aggregated Resource 
+             (ORE Model: Relationships and types pertaining to the Aggregated Resource) --&gt; 
+        &lt;!-- --&gt;
+        &lt;dc:created&gt;2006-02-15&lt;/dc:created&gt;
+        &lt;rdf:type&gt;http://purl.org/ontology/bibo/WebPage&lt;/rdf:type&gt;
+        &lt;rdf:type&gt;http://purl.org/dc/dcmitype/Text&lt;/rdf:type&gt;
+        &lt;dcterms:references&gt;http://dx.doi.org/10.1023/A:1019213109274&lt;/dcterms:references&gt;
+        &lt;dcterms:references&gt;http://arxiv.org/abs/cs.IR/0512069&lt;/dcterms:references&gt;
+        &lt;dcterms:references&gt;http://doi.acm.org/10.1145/362883.362894&lt;/dcterms:references&gt;
+        &lt;dc:creator&gt;http://www.cs.odu.edu/~mln/&lt;/dc:creator&gt;
+        &lt;dc:creator&gt;http://www.joanasmith.com/&lt;/dc:creator&gt;
+        &lt;dc:creator&gt;http://www.cs.odu.edu/~fmccown/&lt;/dc:creator&gt;
+        &lt;rdf:type&gt;info:eu-repo/semantics/humanStartPage&lt;/rdf:type&gt;
+    &lt;/atom:entry&gt;
+    &lt;!-- --&gt;
+    &lt;!-- Atom entry conveying the second Aggregated Resource --&gt;
+    &lt;!-- --&gt; 
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c2&lt;/atom:id&gt;
+        &lt;atom:title&gt;pg1-13.html&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;
+        &lt;atom:link rel="alternate" 
+                   type="text/html" 
+                   href="http://www.dlib.org/dlib/february06/smith/pg1-13.html" /&gt;
+        &lt;rdf:type&gt;http://purl.org/ontology/bibo/WebPage&lt;/rdf:type&gt;
+        &lt;rdf:type&gt;http://purl.org/dc/dcmitype/Text&lt;/rdf:type&gt;
+        &lt;dcterms:hasFormat&gt;http://www.dlib.org/dlib/february06/smith/pg1-13.pdf&lt;/dcterms:hasFormat&gt;
+    &lt;/atom:entry&gt;
+    &lt;!-- --&gt;
+    &lt;!-- Atom entry conveying the third Aggregated Resource --&gt;
+    &lt;!-- --&gt; 
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c3&lt;/atom:id&gt;
+        &lt;atom:title&gt;pg1-13.pdf&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;
+        &lt;atom:link rel="alternate" 
+                   type="application/pdf" 
+                   href="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf" /&gt;
+        &lt;rdf:type&gt;http://purl.org/dc/dcmitype/Text&lt;/rdf:type&gt;
+        &lt;dc:format&gt;info:pronom/fmt/18&lt;/dc:format&gt;
+    &lt;/atom:entry&gt;
+    &lt;!-- --&gt;
+    &lt;!-- Atom entry conveying the fourth Aggregated Resource --&gt;
+    &lt;!-- --&gt; 
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c4&lt;/atom:id&gt;
+        &lt;atom:title&gt;MLN_Google.png&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-09-22T07:11:09Z&lt;/atom:updated&gt;
+        &lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;
+        &lt;atom:link rel="alternate" 
+                   type="image/png" 
+                   href="http://www.dlib.org/dlib/february06/smith/MLN_Google.png" /&gt;
+        &lt;rdf:type&gt;http://purl.org/dc/dcmitype/Image&lt;/rdf:type&gt;
+        &lt;dc:format&gt;info:pronom/fmt/13&lt;/dc:format&gt;
+    &lt;/atom:entry&gt;
+    &lt;!-- --&gt;
+    &lt;!-- Atom entry conveying the fifth Aggregated Resource --&gt;
+    &lt;!-- --&gt; 
+    &lt;atom:entry&gt;
+        &lt;atom:id&gt;urn:uuid:abcefc20-4c4d-11dc-a9c2-0002a5d585c5&lt;/atom:id&gt;
+        &lt;atom:title&gt;Bibliographic metadata for info:doi/10.1045/february2006-smith&lt;/atom:title&gt;
+        &lt;atom:updated&gt;2007-08-17T21:12:44Z&lt;/atom:updated&gt;
+        &lt;atom:published&gt;2007-08-17T21:12:44Z&lt;/atom:published&gt;
+        &lt;atom:link rel="alternate" 
+                   type="application/xml" 
+         href="http://www.crossref.org/openurl?url_ver=Z39.88-2004&amp;amp;rft_id=info:doi/10.1045/february2006-smith&amp;amp;noredirect=true" /&gt;
+        &lt;rdf:type&gt;info:eu-repo/semantics/descriptiveMetadata&lt;/rdf:type&gt;
+    &lt;/atom:entry&gt;
+&lt;/atom:feed&gt;
+
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-examples/DLib_maxi.xml-->
+</div>
+</div>
+
+<div class="section">
+<h2><a name="tron" id="tron"></a>C. Schematron Schema for the Resource Map Profile of Atom</h2>
+<p>The up-to-date version of the Schematron schema for the Resource Map Profile of Atom is available at <a href="http://www.openarchives.org/ore/0.1/atom-tron">http://www.openarchives.org/ore/0.1/atom-tron</a>.</p>
+</div>
+
+<div class="section">
+<h2><a name="GRDDL" id="GRDDL"></a>D. GRDDL crosswalk from Atom XML to RDF/XML</h2>
+<p>The up-to-date version of the GRDDL-compliant XSLT to transform an
+Atom-based serialization of a Resource Map into a serialization in
+RDF/XML is available at
+<a href="http://www.openarchives.org/ore/0.1/atom-grddl.xsl">http://www.openarchives.org/ore/0.1/atom-grddl.xsl</a>.
+This XSLT uses XSLT 2.0 functionality. In order to allow Atom-based Resource Maps to be
+readily transformed in this manner, it is RECOMMENDED to add GRDDL
+namespace and transformation information as attributes to the 
+<a href="#ORE.element.feed">atom:feed</a> element, as shown below.</p>
+
+<div class="exampleInner">
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;atom:feed xmlns:atom=&quot;http://www.w3.org/2005/Atom&quot;
+      xmlns:grddl=&quot;http://www.w3.org/2003/g/data-view#&quot;
+      grddl:transformation=&quot;http://www.openarchives.org/ore/atom/atom-grddl.xsl&quot;&gt;
+...</pre>
+</div>
+
+<p>The result of transforming the extended example of <a href="#extendedEx">Appendix B</a> 
+in this manner is shown below and is also available 
+<a href="http://www.openarchives.org/ore/0.1/atom-examples/DLib_maxi.rdf">here</a>. 
+Online transformation engines exist. For example, the 
+<a href="http://www.w3.org/2005/08/online_xslt/">W3C's Online XSLT 2.0 service</a> 
+takes the URIs of a stylesheet and an XML document as input.</p>
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-examples/DLib_maxi.rdf-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rdf:RDF xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:atom="http://www.w3.org/2005/Atom"
+    xmlns:ore="http://openarchives.org/ore/terms/"
+    xmlns:owl="http://wwww.w3.org/2002/07/owl#"&gt;
+    &lt;rdf:Description rdf:about="http://www.dlib.org/dlib/february06/smith/02smith/rem/"&gt;
+        &lt;rdf:type rdf:resource="http://openarchives.org/ore/terms/ResourceMap"/&gt;
+        &lt;ore:describes rdf:resource="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation"/&gt;
+        &lt;dcterms:modified&gt;2007-09-22T07:11:09Z&lt;/dcterms:modified&gt;
+        &lt;dc:creator rdf:resource="http://www.dlib.org"/&gt;
+        &lt;dc:creator&gt;D-Lib Magazine&lt;/dc:creator&gt;
+        &lt;dc:creator&gt;dlib@cnri.reston.va.us&lt;/dc:creator&gt;
+        &lt;dc:rights rdf:resource="http://creativecommons.org/licenses/by-nc-sa/2.5/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.dlib.org/dlib/february06/smith/02smith/rem/#aggregation"&gt;
+        &lt;rdf:type rdf:resource="http://openarchives.org/ore/terms/Aggregation"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.dlib.org/dlib/february06/smith/02smith.html"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.dlib.org/dlib/february06/smith/pg1-13.html"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.dlib.org/dlib/february06/smith/MLN_Google.png"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.crossref.org/openurl?url_ver=Z39.88-2004&amp;amp;rft_id=info:doi/10.1045/february2006-smith&amp;amp;noredirect=true"/&gt;
+        &lt;owl:sameAs rdf:resource="info:doi/10.1045/february2006-smith"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:isPartOf rdf:resource="http://www.dlib.org"/&gt;
+        &lt;dc:creator xmlns:dc="http://purl.org/dc/" rdf:resource="http://www.cs.odu.edu/~mln/"/&gt;
+        &lt;dc:creator xmlns:dc="http://purl.org/dc/" rdf:resource="http://www.joanasmith.com/"/&gt;
+        &lt;dc:creator xmlns:dc="http://purl.org/dc/" rdf:resource="http://www.cs.odu.edu/~fmccown/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.dlib.org/dlib/february06/smith/02smith.html"&gt;
+        &lt;rdf:type rdf:resource="http://openarchives.org/ore/terms/AggregatedResource"/&gt;
+        &lt;dc:created xmlns:dc="http://purl.org/dc/"&gt;2006-02-15&lt;/dc:created&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/ontology/bibo/WebPage"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+        &lt;dcterms:references rdf:resource="http://dx.doi.org/10.1023/A:1019213109274"/&gt;
+        &lt;dcterms:references rdf:resource="http://arxiv.org/abs/cs.IR/0512069"/&gt;
+        &lt;dcterms:references rdf:resource="http://doi.acm.org/10.1145/362883.362894"/&gt;
+        &lt;dc:creator xmlns:dc="http://purl.org/dc/" rdf:resource="http://www.cs.odu.edu/~mln/"/&gt;
+        &lt;dc:creator xmlns:dc="http://purl.org/dc/" rdf:resource="http://www.joanasmith.com/"/&gt;
+        &lt;dc:creator xmlns:dc="http://purl.org/dc/" rdf:resource="http://www.cs.odu.edu/~fmccown/"/&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/humanStartPage"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.dlib.org/dlib/february06/smith/pg1-13.html"&gt;
+        &lt;rdf:type rdf:resource="http://openarchives.org/ore/terms/AggregatedResource"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/ontology/bibo/WebPage"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.dlib.org/dlib/february06/smith/pg1-13.pdf"&gt;
+        &lt;rdf:type rdf:resource="http://openarchives.org/ore/terms/AggregatedResource"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+        &lt;dc:format xmlns:dc="http://purl.org/dc/" rdf:resource="info:pronom/fmt/18"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.dlib.org/dlib/february06/smith/MLN_Google.png"&gt;
+        &lt;rdf:type rdf:resource="http://openarchives.org/ore/terms/AggregatedResource"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Image"/&gt;
+        &lt;dc:format xmlns:dc="http://purl.org/dc/" rdf:resource="info:pronom/fmt/13"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.crossref.org/openurl?url_ver=Z39.88-2004&amp;amp;rft_id=info:doi/10.1045/february2006-smith&amp;amp;noredirect=true"&gt;
+        &lt;rdf:type rdf:resource="http://openarchives.org/ore/terms/AggregatedResource"/&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/descriptiveMetadata"/&gt;
+    &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-examples/DLib_maxi.rdf-->
+</div>
+</div>
+	    
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>E. Change Log</h2>
+<table class="changelog" summary="change log">
+	<tbody><tr>
+		<th>Date</th>
+		<th>Editor</th>
+		<th>Description</th>
+	</tr>
+		<tr>
+		<td>2007-12-10</td>
+		<td>herbertv</td>
+		<td>public alpha release</td>
+	</tr>
+	<tr>
+		<td>2007-10-15</td>
+		<td>herbertv</td>
+		<td>alpha release to ORE-TC</td>
+	</tr>
+	</tbody></table>
+</div>
+</div>
+
+<!--START-FOOTER-->
+<div id="rem">
+<img src="http://www.openarchives.org/ore/logos/ore_logo_28.png" alt="ORE" />A Resource Map for this page is available at <a href="http://www.openarchives.org/ore/0.1/atom_rem">http://www.openarchives.org/ore/0.1/atom_rem</a>.
+</div>
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

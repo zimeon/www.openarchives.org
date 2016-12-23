@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] doubts about xmlschema in OAI
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:hussein%40vt.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000240.html">
+   <LINK REL="Next"  HREF="000242.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] doubts about xmlschema in OAI
+   </H1>
+    <B>Hussein Suleman
+    </B> 
+    <A HREF="mailto:hussein%40vt.edu"
+       TITLE="[OAI-implementers] doubts about xmlschema in OAI">hussein@vt.edu
+       </A><BR>
+    <I>Sun, 18 Nov 2001 12:34:30 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000240.html">[OAI-implementers] doubts about xmlschema in OAI
+</A></li>
+        <LI> Next message: <A HREF="000242.html">[OAI-implementers] DP9- An OAI Gateway Service for Web Crawlers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#241">[ date ]</a>
+              <a href="thread.html#241">[ thread ]</a>
+              <a href="subject.html#241">[ subject ]</a>
+              <a href="author.html#241">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi
+
+while it is true that namespace attributes can be used to disambiguate, 
+the root tag of the metadata (&quot;dc&quot; or &quot;oai_dc&quot;) has to belong to some 
+namespace to be validifiable.
+
+as it stands, that tag is defined in the schema for dc, and it is named 
+&quot;dc&quot; so i believe that if you use &quot;oai_dc&quot; it is just simply not correct 
+as far as schema validity goes.
+
+and the problem doesnt end here, because with &quot;lax&quot; validation you can 
+put any nonsense into your record and call it &quot;dc&quot; xml ...
+
+i agree somewhat with Xiaoming and i have raised this issue before in 
+the context of the repository explorer. the problem is that people with 
+exotic data types may not have the know-how to write schemas. so its a 
+dilemma: either we exclude people who cant write schemas or we allow 
+people to ignore schemas altogether ... right now we are doing the 
+latter and i dont know if that is reasonable.
+
+we need to think this through more carefully ...
+
+ttfn
+----hussein
+
+Tim Brody wrote:
+
+&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> If I understand your query correctly, Chris (of e-prints) and I had a
+</I>&gt;<i> discussion about this some time ago.
+</I>&gt;<i> 
+</I>&gt;<i> The conclusion we came to was that you should use the namespace attribute
+</I>&gt;<i> rather than the name of the metadata enclosure (be it &quot;dc&quot; or &quot;oai_dc&quot;), to
+</I>&gt;<i> identify the type of metadata.
+</I>&gt;<i> 
+</I>&gt;<i> I believe you can perform XSLT based on attribute values?
+</I>&gt;<i> 
+</I>&gt;<i> All the best,
+</I>&gt;<i> Tim Brody
+</I>&gt;<i> 
+</I>&gt;<i> ----- Original Message -----
+</I>&gt;<i> From: &quot;Xiaoming Liu&quot; &lt;<A HREF="mailto:liu_x@cs.odu.edu">liu_x@cs.odu.edu</A>&gt;
+</I>&gt;<i> To: &lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+</I>&gt;<i> Sent: Saturday, November 17, 2001 7:11 AM
+</I>&gt;<i> Subject: [OAI-implementers] doubts about xmlschema in OAI
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;&gt;<i>hi,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>In OAI_GetRecord.xsd, it specifies
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>&lt;complexType name=&quot;metadataType&quot;&gt;
+</I>&gt;&gt;<i> &lt;sequence&gt;
+</I>&gt;&gt;<i>  &lt;any namespace=&quot;##other&quot; processContents=&quot;lax&quot;/&gt;
+</I>&gt;&gt;<i> &lt;/sequence&gt;
+</I>&gt;&gt;<i>&lt;/complexType&gt;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>and in dc.xsd, it specifies like
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>&lt;element name=&quot;dc&quot; type=&quot;dc:dublincoreType&quot;/&gt;
+</I>&gt;&gt;<i>&lt;complexType name=&quot;dublincoreType&quot;&gt;
+</I>&gt;&gt;<i>....
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>The question is: If we use &quot;processContents=&quot;lax&quot; in OAI_GetRecord.xsd,
+</I>&gt;&gt;<i>xmlschema validator will treat
+</I>&gt;&gt;<i>&lt;GetRecord&gt;....&lt;xxx_dc&gt;&lt;title&gt;...&lt;/title&gt;&lt;/xxx_dc&gt;..&lt;/GetRecord&gt;  as
+</I>&gt;&gt;<i>valid,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>but &lt;xxx_dc&gt;...&lt;/xxx_dc&gt; may not be the right format in our intention, it
+</I>&gt;&gt;<i>passes schema validator only because processContents=&quot;lax&quot; is used in
+</I>&gt;&gt;<i>Get_Record.xsd. We probably want to always use &lt;dc&gt;....&lt;dc&gt;.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>I have this doubt when I try to process OAI response with XSLT, the arXiv
+</I>&gt;&gt;<i>uses &lt;oai_dc&gt;...&lt;/oai_dc&gt;, it passed oaiexplorer test and other schema
+</I>&gt;&gt;<i>validator (oracle and XMLSpy). But this really brings some troubles to
+</I>&gt;&gt;<i>XSLT processing.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>If I change Get_record.xsd to processContents=&quot;strict&quot;, this problem will
+</I>&gt;&gt;<i>be reported by schema validator.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>Do we have special reason of using processContents=&quot;lax&quot;?
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>regards,
+</I>&gt;&gt;<i>Xiaoming Liu
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>_______________________________________________
+</I>&gt;&gt;<i>OAI-implementers mailing list
+</I>&gt;&gt;<i><A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;&gt;<i><A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+-- 
+======================================================================
+hussein suleman - <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> - vtcs - <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+======================================================================
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000240.html">[OAI-implementers] doubts about xmlschema in OAI
+</A></li>
+	<LI> Next message: <A HREF="000242.html">[OAI-implementers] DP9- An OAI Gateway Service for Web Crawlers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#241">[ date ]</a>
+              <a href="thread.html#241">[ thread ]</a>
+              <a href="subject.html#241">[ subject ]</a>
+              <a href="author.html#241">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

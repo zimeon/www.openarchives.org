@@ -1,0 +1,861 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE Specification - Abstract Data Model</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.3/ore-spec.css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE Specification - Abstract Data Model</h2>
+  <h3 class="subTitle">28 March 2008</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of an alpha release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.3/datamodel">http://www.openarchives.org/ore/0.3/datamodel</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/datamodel">http://www.openarchives.org/ore/datamodel</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.2/datamodel">http://www.openarchives.org/ore/0.2/datamodel</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE Specification - Abstract Data Model-->
+<!--VAR-SUBTITLE=28 March 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.3/datamodel-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/datamodel-->
+<!--VAR-PREVIOUSURI=http://www.openarchives.org/ore/0.2/datamodel-->
+	<div class="abstract">
+	  <h2><a name="abstract" id="abstract"></a>Abstract</h2>
+	  <p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines 
+		standards for the description and exchange of aggregations of Web resources.&nbsp; 
+		This document describes the abstract data model that is the foundation for 
+		these standards.&nbsp; This model is conformant with the Architecture of 
+		the World Wide Web&nbsp; [<a href="#Web_Architecture">Web Architecture</a>] 
+		and leverages Named Graphs [<a href="#Named_Graph">Named Graph</a>] as a 
+		mechanism for encapsulating RDF descriptions [<a href="#RDF_Concepts">RDF 
+		Concepts</a>] about aggregations.&nbsp; This specification is one of several documents comprising the
+		<a href="http://www.openarchives.org/ore/0.3/toc">OAI-ORE specification and 
+		user guide</a>.</p>
+		<hr />
+	</div>
+
+<h2><a name="contents" id="contents"></a>Table of Contents</h2>
+		<p class="toc">1. <a href="#Introduction">Introduction</a> <br />
+&nbsp;&nbsp;&nbsp; 1.1 <a href="#Notational_Conventions">Notational Conventions</a>
+		<br />
+&nbsp;&nbsp;&nbsp; 1.2 <a href="#Namespaces">Namespaces</a><br />
+		2. <a href="#Foundations">Foundations</a><br />
+3. <a href="#Entities">Data Model Entities</a><br />
+&nbsp;&nbsp;&nbsp; 3.1 <a href="#Aggregation">Aggregation</a><br />
+&nbsp;&nbsp;&nbsp; 3.2 <a href="#Aggregated_Resource">Aggregated Resource</a><br />
+&nbsp;&nbsp;&nbsp; 3.3 <a href="#Resource_Map">Resource Map</a><br />
+&nbsp;&nbsp;&nbsp; 3.4 <a href="#Resource_Map_Document">Resource Map Document</a><br />
+&nbsp;&nbsp;&nbsp; 3.5 <a href="#Proxy">Proxy<br />
+ </a>&nbsp;&nbsp;&nbsp;&nbsp;3.6 <a href="#ProxyDocument">Proxy Document</a><br />
+4. <a href="#RDF_Graph">Basic RDF Graph of a Resource Map</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 4.1 <a href="#ReM-to-aggr">Relationship between a Resource 
+		Map and an Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 4.2 <a href="#Metadata_about_the_ReM">Metadata about the 
+		Resource Map</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 4.3 <a href="#ore:similarTo">Relationships between the Aggregation and Similar Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 4.4 <a href="#ore:aggregates">Aggregated 
+		Resources and the Aggregation Graph</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 4.5<a href="#GlobalRels"> Relationships to other Resources and Types</a><br />
+5. <a href="#AggrToAggr">Extending a Resource Map to express Relationships between Aggregations</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1 <a href="#ore:isAggregatedBy">Asserting that an Aggregated Resource is a Constituent of another Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 5.2 <a href="#ore:isDescribedBy">Nesting Aggregations</a><br />
+6. <a href="#Proxies">Proxies to establish Aggregation-Specific Identities for Aggregated Resources</a> <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.1 <a href="#InterAggr">Using Proxies for Relationships among Aggregated Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 6.2 <a href="#ProxyTarget">Using  Proxies as the Target of other Relationships</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.3 <a href="#Lineage">Expressing the Lineage of an Aggregated Resource</a><a href="#Constraints"></a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />
+7. <a href="#Constraints">Structural Constraints on a Resource Map</a><br />
+8. <a href="#References">References</a></p>
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+		<p class="toc">A. <a href="#acknowledgments">Acknowledgements</a> <br />
+		B. <a href="#changelog">Change Log</a>&nbsp; 
+		<br />
+		</p>
+
+	<hr />
+	<div class="body">
+	  <h2>0. Note to Readers</h2>
+	  <p>This specification is one of several documents comprising the 
+                <a href="toc">ORE specification and user guide</a>. It describes the details of 
+                the <em>ORE Model</em> and may not be the appropriate for readers who are interested in 
+		a high-level overview, or who are mainly interested in implementing applications that 
+		make use of the model. The <a href="overview">ORE User Guide - Resource Map Overview</a> 
+		is a more appropriate starting point for those readers.</p>
+
+		<h2>1. <a name="Introduction">Introduction</a></h2>
+		<p>The Architecture of the World Wide Web [<a href="#Web_Architecture">Web
+		Architecture</a>]  uses the term <em>Resource</em> to refer to any item of interest. Some web content, such as a stand-alone HTML document, is contained within one Resource. But frequently a logical unit of web information  is actually an aggregation of Resources. Examples of these aggregations are:</p>
+<ul>
+			<li>A simple unordered set, or bag, of Resources, such as a collection 
+			of favorite images from various Web sites.</li>
+			<li>A multi-page, HTML document where the pages are linked together 
+			by hyperlinks that provide &quot;previous page&quot; and &quot;next page&quot; access.</li>
+			<li>Information available from &quot;social networking&quot; sites, such as
+			<a href="http://flickr.com">flickr</a>, <a href="http://youtube.com">
+			YouTube</a>, and <a href="http://www.myspace.com">myspace</a>.&nbsp; 
+			Information in flickr, for example, consists of an entry page, a single 
+			Resource, that links to comments or annotations (each existing as a 
+			separate Resource), and&nbsp; an image in&nbsp; multiple sizes and resolutions, 
+			each also existing as a separate Resource.&nbsp; </li>
+			<li>A scholarly publication stored in an ePrint repository such as
+			<a href="http://arxiv.org">arXiv</a> or in a
+			<a href="http://www.dspace.org">DSpace</a>,
+			<a href="http://www.eprints.org">ePrints</a>, or
+			<a href="http://www.fedora-commons.org/">Fedora</a> repository.&nbsp; 
+			Such a publication may appear on the Web as multiple Resources, each 
+			with an individual URI.&nbsp; The set of Resources typically consists 
+			of a human readable &quot;splash page&quot;, that links to the body of the publication 
+			in multiple formats such as LaTeX, PDF, and HTML.&nbsp; In addition, 
+			the publication may have citation links to other publications, each 
+			existing as one or more Resources.</li>
+			<li>An <em>overlay journal issue </em>that aggregates multiple scholarly 
+			publications as described above, each located in their origin repository, 
+			into an <em>issue</em>.&nbsp; Issues may be recursively aggregated themselves 
+			into <em>volumes</em>, and then into the <em>journal </em>itself.</li>
+			<li>A semantically-linked group of cellular images - each available 
+			as a Resource resident in repositories from research laboratories, museums, 
+			libraries, and the like - in the manner implemented in the
+			<a href="http://imageweb.zoo.ox.ac.uk">ImageWeb Project</a>.</li>
+			<li>Published scientific results such as those envisioned by&nbsp; [<a href="#Lynch_CTWatch">Lynch 
+			CTWatch</a>] that, in addition to the features of the scholarly publication 
+			described above, incorporate data plus the tools to visualize and analyze 
+			that data.</li>
+		</ul>
+		<p>These aggregations exhibit the following characteristics:</p>
+		<ul>
+          <li>They consist of one or more Resources, which all may be 
+            located on one web server, or may be distributed over the Web.</li>
+		  <li>Relationships  may exist  between  Resources in the aggregation
+		    that express semantics indicating that one Resource has a containment 
+		    relationship to another, one is an alternate version or format of another, 
+		    and the like.</li>
+		  <li>One or more of the  Resources in the aggregation may have types, where the types are  
+		    defined by various vocabularies.&nbsp; Informal examples of such types 
+		    are &quot;splash page&quot;, &quot;bibliography&quot;, or &quot;table of contents&quot;.</li>
+		  <li>Relationships may exist  between the aggregation and/or the 
+		    individual  Resources in the aggregation and information units external to the 
+		    Aggregation.&nbsp; 
+		    These external resources may be individual Resources or aggregations 
+		    themselves.&nbsp; Examples of such relationships include citation, mirrors, 
+		    and translations.</li>
+	  </ul>
+	  <p>A mechanism to associate identities with these aggregations and describe 
+		them in a machine-readable manner would make them visible to Web agents, 
+		including browsers and crawlers, and tools could be created to make them visible in user interfaces.&nbsp; This could be useful for a number of applications 
+		and contexts.&nbsp; For example:</p>
+<ul>
+			<li>Crawler-based search engines could use such descriptions to index 
+			information and provide search results sets at the granularity of the 
+			aggregations rather or in addition to their individual parts.</li>
+			<li>Browsers could leverage them to provide users with navigation aids 
+			for the aggregated resources, in the same manner that
+			<a href="http://www.sitemaps.org/">machine-readable site maps</a> provide 
+			navigation clues for crawlers.</li>
+			<li>Other automated agents such as preservation systems could use these 
+			descriptions as guides to understand a &quot;whole document&quot; and determine 
+			the
+			best preservation strategy [<a href="#Compound_Object">Compound_Object</a>].</li>
+			<li>Systems that mine and analyze networked information for citation 
+			analysis/bibliometrics could achieve better accuracy with the knowledge 
+			of aggregation structure contained in these descriptions.&nbsp; </li>
+			<li>Institutional repository applications could use them as the basis of interoperability for exchange and service interaction with other institutional repositories.</li>
+			<li>These machine-readable descriptions could provide the foundation 
+			for advanced scholarly communication systems that allow the flexible 
+			reuse and refactoring of rich scholarly artifacts and their components 
+			[<a href="#Value_Chains">Value Chains</a>][<a href="#SCOPE">SCOPE</a>].&nbsp; </li>
+		</ul>
+	  <p>This specification describes the <em>ORE Model</em> that includes the notion of a <a href="#Resource_Map">Resource Map (ReM</a>), a Resource  that asserts an identity for an aggregation of Resources. It also asserts the constituents, structure,  metadata, and external relationships to other Web Resources of that aggregation by encapsulating a set of RDF [<a href="#RDF_Concepts">RDF Concepts</a>] 
+	  triples,  in the manner of a Named Graph [<a href="#Named_Graph">Named 
+	  Graph</a>]. This data model conforms to the concepts defined in the Architecture of 
+	  the World Wide Web [<a href="#Web_Architecture">Web Architecture</a>]. </p>
+	  <p>The ORE Model can be implemented in a variety of serialization formats.&nbsp; 
+		The details of these formats are described in companion ORE documents.&nbsp; 
+		The nature of a particular serialization format and its respective expressiveness 
+		may affect the details of the mapping from the model to the implementation.&nbsp; 
+		This mapping is described in detail in each serialization specification.		</p>
+		<h3>1.1 <a name="Notational_Conventions">Notational Conventions</a></h3>
+	  <p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, 
+		&quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are 
+		to be interpreted as described in RFC 2119 [<cite><a href="#RFC2119">IETF 
+		RFC 2119</a></cite>].</p>
+		<p>The use of fonts is as follows:</p>
+		<ul>
+			<li>Vocabulary terms, including classes and predicates, are written 
+			in <span class="code">this font</span>.&nbsp; Predicates have a non-capitalized 
+			first-letter but are subsequently  camel-cased to indicate word separation.&nbsp; 
+			Classes have a capitalized first letter and are then  camel-cased 
+			to indicate word separation.</li>
+		  <li>Definitions of entities used in the model appear in
+			<span class="definition">this font</span>.&nbsp; The names of these entities 
+			are subsequently capitalized. </li>
+		</ul>
+
+<h3>1.2 <a id="Namespaces" name="Namespaces">Namespaces</a></h3>
+		<p>This specification uses the following namespaces and prefixes to indicate 
+		those namespaces:</p>
+		<table class="namespace-table" summary="Namespaces table">
+			<tr>
+				<th>Prefix</th>
+				<th>Namespace URI</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td><code>dc</code></td>
+				<td><code>http://purl.org/dc/elements/1.1/</code></td>
+				<td>Dublin Core elements</td>
+			</tr>
+			<tr>
+				<td><code>dcterms</code></td>
+				<td><code>http://purl.org/dc/terms/</code></td>
+				<td>Dublin Core terms</td>
+			</tr>
+			<tr>
+				<td><code>ore</code></td>
+				<td><code>http://www.openarchives.org/ore/terms/</code></td>
+				<td>ORE vocabulary terms</td>
+			</tr>
+			<tr>
+				<td><code>owl</code></td>
+				<td><code>http://www.w3.org/2002/07/owl#</code></td>
+				<td>OWL vocabulary terms</td>
+			</tr>
+			<tr>
+				<td><code>rdf</code></td>
+				<td><code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code></td>
+				<td>RDF vocabulary terms</td>
+			</tr>
+		</table>
+
+
+<h2>2. <a name="Foundations">Foundations</a></h2>
+<p>The ORE Data Model builds on the following foundation technologies and architectures.</p>
+<ul>
+  <li>The architecture of the World Wide Web  [<a href="#Web_Architecture">Web 
+	Architecture</a>].</li>
+  <li>Semantic Web concepts including RDF  [<a href="#RDF_Concepts">RDF
+	Concepts</a>] and the RDF Vocabulary
+	Description Language [<a href="#RDFS">RDFS</a>].</li>
+  <li>Named Graphs [<a href="#Named_Graph">Named 
+	Graph</a>]</li>
+  </ul>
+<p>Readers unfamiliar with these technologies are encouraged to refer to their reference 
+documents. A brief introduction to the relevant aspects of these technologies is also 
+available in the <a href="primer#Foundations">ORE Primer</a>.</p>
+
+<h2>3. <a name="Entities" id="Entities">Data Model Entities</a></h2>
+	  <p>The ORE Abstract Data Model (ADM) includes the entities that are described in the remainder of this section.</p>
+		<h3>3.1 <a name="Aggregation" id="Aggregation"></a>Aggregation</h3>
+	  <p>An <span class="definition">Aggregation</span> is  a Resource with information content that is a set of Resources.</p>
+	  <p>Each Aggregation is identified by a single URI. This specification uses URI-A to denote URIs that identify Aggregations. </p>
+	  <p>Because URI-A identfies the Aggregation, it SHOULD be used as the target of links refering  to the set of Resources as a logical unit. Examples of such links are citation, review, annotation, and the like. </p>
+	  <p>It SHOULD be possible to unamibiguously infer from URI-A the URI of at least one of the <a href="#Resource_Map">Resource Map</a>(s) that describe the Aggregation. To enable this inference it is RECOMMENDED that a URI-A is a protocol-based URI, and that the mechanism for dereferencing the URI-A returns information from which a client can access URI-R. Details about this are described in <span class="TODO">ORE implementation documents</span>.</p>
+	  <p>Furthermore, because a URI-A identifies the Aggregation, it SHOULD NOT be a URI used for another purpose, such as a URI  of a specific manifestation of some content - for example, the PDF of some scholarly paper. It is important not to confuse the Aggregation with its possible
+	    representations provided using the HTTP protocol. A server may provide a
+	    human-readable &quot;splash page&quot; as a representation of an Aggregation when
+	    URI-A is dereferenced, but it remains the case that the resource<br />
+      identified by URI-A is the Aggregation.</p>
+	  <h3>3.2 <a name="Aggregated_Resource" id="Aggregated_Resource"></a>Aggregated Resource</h3>
+	  <p>An <span class="definition">Aggregated Resource</span> is a Resource that is a constituent of an Aggregation. Any Resource MAY be defined as an Aggregated Resource of one or more Aggregations, and such designation does not alter the nature of the Resource itself. The manner in which a Resource is defined as an Aggregated Resource in an Aggregation is described in a <a href="#ore:aggregates">later section</a>.</p>
+	  <p>Each Aggregated Resource is identified by a single URI. This specification uses URI-AR to denote URIs that identify Aggregated Resources. It is recommended that URI-AR is a protocol-based URI. </p>
+	  <h3>3.3 <a name="Resource_Map">Resource Map (ReM)</a></h3>
+	  <p>A <span class="definition">Resource Map </span>(<span class="definition">ReM</span>) 
+		is a Resource with information content that asserts that another Resource is an Aggregation and describes that Aggregation. The association between a Resource Map and an Aggregation is described in a <a href="#ReM-to-aggr">later section</a>. This description MUST include an enumeration of the Aggregated Resources. It MAY include addtional  prosperities about the Aggregation and Aggregated Resources, such as relationships among the Aggregated Resources, relationships from the Aggregated Resources to other Resources, and other properties.  </p>
+	  <p>Each Resource Map MUST be identified by a single protocol-based URI. This specification uses URI-R to denote URIs that identify Resource Maps. </p>
+	  <p>The relationship between Resource Maps and Aggregations is one-to-may. Each Resource Map MUST identify one Aggregation. Each Aggregation MUST be identified by one Resource Map, but MAY be identified by multiple Resource Maps.</p>
+	  <p>A Resource Map identified by URI-R MUST NOT assert an Aggregation where URI-A = URI-R.</p>
+	  <h3>3.4 <a name="Resource_Map_Document" id="Resource_Map_Document"></a>Resource Map Document</h3>
+	  <p>A dereference of a URI-R, which identifies a Resource Map, MUST return a  Representation that is a <span class="definition">Resource Map Document</span>. This Representation is a serialization from which the information content of the corresponding Resource Map can be extracted as a set of triples,  an<a href="#RDF_Graph"> RDF Graph</a>.&nbsp; The RDF Graph asserted by a Resource Map MUST conform to a <a href="#RDF_Graph">well-defined 
+		structure</a>. The syntax of a Resource Map Document is particular to a serialization format. Serialization formats are defined in companion ORE specifications.</p>
+	  <h3>3.5 <a name="Proxy" id="Proxy"></a>Proxy</h3>
+	  <p>A <span class="definition">Proxy</span> is a Resource  defined by one Resource Map that maps to a single Aggregated Resource defined by that same Resource Map. In this manner the URI of the Proxy can then be the subject or object of  triples that assert relationships specific to the Aggregated Resource in the context of the respective Aggregation. The use of Proxies is described in a <a href="#Proxies">later section</a>. </p>
+	  <p>Each Proxy MUST be identified by a single URI that MUST be unique to the Aggregation described by Resource Map in which the Proxy is defined. This specification uses URI-P to denote URIs that identify Proxies.</p>
+	  <h3>3.6 <a name="ProxyDocument" id="ProxyDocument"></a>Proxy Document</h3>
+	  <p>A dereference of a URI-P, which identifies a Proxy, MAY return a single Representation that is a <span class="definition">Proxy Document</span>. This is an implementation-specific serialization from which the triples that associate the Proxy with the respective Aggregated Resource and Aggregation may be derived. </p>
+	  <h2>4. <a name="RDF_Graph">Basic RDF Graph of a Resource Map </a></h2>
+	  <p>A Resource Map is a specialization of a Named Graph.&nbsp;
+		Like any Named Graph it is a Resource - a first-class object in the Web
+		Architecture - that expresses an RDF Graph via the triples it encodes.&nbsp;
+		In a general Named Graph, the structure and composition of&nbsp; the RDF Graph expressed by the triples&nbsp; are not defined, and there are no restrictions on the Resources identified by nodes in the graph.</p>
+	  <p>The RDF Graph expressed by a Resource Map must conform to a number of restrictions. The graph&nbsp; MUST be 
+		connected, with its structure defined as follows (and expanded upon in the 
+		numbered section accompanying each bullet):</p>
+<ul>
+			<li>It MUST express the relationship between the Resource Map and Aggregation 
+			(<a href="#ReM-to-aggr">4.1</a>).</li>
+			<li>It MUST express basic metadata about the Resource Map and MAY 
+			express 
+			additional metadata about the Resource Map (<a href="#Metadata_about_the_ReM">4.2</a>).</li>
+			<li>It MAY express relationships between the Aggregation and Similar Resources (<a href="#ore:similarTo">4.3</a>).</li>
+			<li>It MUST express the relationships between the Aggregation and one or more Aggregated Resources that are constituents
+			of the Aggregation. (The subgraph of the Resource Map resulting from these relationships is referred to as the Aggregation Graph) <a href="#Defining_the_aggregated_resources">(4.4</a>).&nbsp;</li>
+	  </ul>
+	  <p>The remainder of this section explains the components of this graph 
+		in a step-by-step progression. The constraints on the graph are summarized a <a href="#Constraints">table</a> later in this document.</p>
+	  <p>Later sections describe how to extend this RDF Graph to assert <a href="#AggrToAggr">relationships between Aggregations</a> and <a href="#Proxies">establish Aggregation-specfic URIs for Aggregated Resources</a>.</p>
+	  <h3>4.1 <a name="ReM-to-aggr">Relationship between a Resource Map and an Aggregation</a></h3>
+		<p>A Resource Map MUST include one triple with an <span class="code">ore:describes </span>predicate. The subject of this triple MUST be the URI-R of the Resource Map. The Object is the URI-A of the Aggregation described by the triples defined by the Resource Map.  The  URI-A that is the object of this triple MUST NOT be the same as URI-R. A Resource Map MUST NOT include more than one triple with the <span class="code">ore:describes </span>predicate. </p>
+	  <p>The <span class="code">ore:describes</span> relationship asserts that the Resource denoted by the subject is a resource of type <span class="code">ore:ResourceMap </span> and the Resource denoted by the  object is a resource of type <span class="code">ore:Aggregation</span>.&nbsp;
+		Therefore, the explicit inclusion in the Resource Map of triples asserting these types is
+		OPTIONAL. </p>
+	  <p>A Resource Map MAY assert one or more triples with the  <span class="code">ore:isDescribedBy</span> predicate, which is the inverse of <span class="code">ore:describes</span>. Note that because of the nature of <span class="code"><a href="http://www.w3.org/TR/owl-ref/#inverseOf-def">owl:inverseOf</a> </span>[<a href="#OWL">OWL</a>], the triple <span class="code">&lt;URI-R&gt; &lt;ore:describes&gt; &lt;URI-A&gt;</span>, which MUST be asserted in the Resource Map, implies <span class="code">&lt;URI-A&gt; &lt;ore:isDescribedBy&gt; &lt;URI-R&gt;.</span>Therefore, the explicit assertion in a Resource Map of this inverse triple is OPTIONAL, but its implied existance makes it possible for clients to access to a Resource Map corresponding to an Aggregation. <span class="TODO">Implementation documents</span> described protocol-specific mechanisms for deriving this inverse relation upon access to URI-A. </p>
+	  <p>A Resource Map MAY assert one or more triples with the <span class="code">ore:isDescribedBy</span> predicate where the URI-R defined as the object is different from the Resource Map asserting thte triple. This makes it possible for a Resource Map to provide clients with access points to other serializations, in other formats, of a Resource Map.</p>
+	  <p> The figure below illustrates the RDF Graph showing the relationship between a Resource Map and an Aggregation. The triples producing the graph are included below the graph. 
+		The table to the right of the triples shows the URIs used to identify the Resources and
+		relationships. Additional details on this figure are as follows:</p>
+	  <ul>
+	    <li>As shown in this figure, an individual Aggregation can be the object of numerous <span class="code">ore:describes</span> relationships, each asserted by a different Resource Map, with those Resource Maps possibly produced by different agents or authorities. In the model, no one of these has precedence above the others. The graying out of two of the triples with the <span class="code">ore:describes</span> predicate in the figure, and in the triples table, is done only to increase readability. The remainder of this section will show only one <span class="code">&lt;URI-R&gt; &lt;ore:describes&gt; &lt;URI-A&gt;</span> triple. </li>
+        <li>The syntax of the URIs in the triples table are illustrative only and do not denote any meaning from the syntax. A <span class="TODO">companion document</span> describes implementation details on suggested syntax for URIs used in ORE. </li>
+	    <li>An assertion in a Resource Map   does not imply any authority or implication that the  Resource Map is the definitive description of the Resource identified by URI-A. Other trust mechanisms or heuristics should be used by clients as they process these assertions. The <a href="discovery">Resource Map Discovery Document</a> specifies a number of mechanisms for validating these assertions against protocol or implementation specific information associated with access to the respective URI-A.</li>
+	  </ul>
+	  <p class="figure"><img src="datamodel-images/ReMToAggregation.jpg" alt="Resource Map to Aggregations figure" width="609" height="318" /></p>
+
+<h3>4.2 <a name="Metadata_about_the_ReM">Metadata about the Resource Map and Aggregation</a></h3>
+		<p>A Resource Map MUST express minimal metadata properties about the Resource 
+		Map.&nbsp; Those metadata properties are:</p>
+		<ul>
+			<li>Some identity of the authoring authority (human, organization, or 
+			agent) of the Resource Map, using the <span class="code">dc:creator
+			</span>term.&nbsp; This SHOULD be used by consuming clients as one means 
+			of establishing trustworthiness of the information in the Resource Map.&nbsp; 
+			The exact mechanisms for author identification and digital signing of 
+			that identification are out of scope of this specification.</li>
+			<li>The last modification date-timestamp of the Resource Map, using the
+			<span class="code">dcterms:modified </span>term.&nbsp; This date-timestamp 
+			MUST accurately reflect when the Resource Map was last changed so that 
+			consuming clients of the can determine appropriate actions.</li>
+		</ul>
+		<p>A Resource Map MAY include additional metadata properties about the Resource 
+		Map.&nbsp; Examples of additional metadata properties are:</p>
+		<ul>
+		  <li>Rights information related to the use of the Resource Map, using 
+			the <span class="code">dc:rights </span>term.&nbsp; </li>
+			<li>The initial creation datetimestamp of the Resource Map, using the
+			<span class="code">dcterms:created </span>term.&nbsp;</li>
+        </ul>
+	    <p>A Resource Map MAY assert metadata properities about the Aggregation. These metadata properties MAY be defined by a variety of vocabularies.</p>
+      <p>The figure below shows an RDF Graph 
+		expressed 
+		by a Resource Map that includes metadata properties about Resource Map and Aggregation.&nbsp; Note that aspects of the graph already described 
+		are grayed-out to emphasize the concepts introduced by the figure. This convention will be used for the remainder of this document along with other simplifications to make the figures easier to read.
+		Note also that in this example, the objects of all the metadata relationships 
+		are literals.&nbsp; Alternatively, the objects may be URIs denoting other Resources.</p>
+
+<p class="figure"><img src="datamodel-images/ReMMetadata.jpg" alt="Resource Map metadata figure" width="613" height="338" /></p>
+
+<h3>4.3 <a name="ore:similarTo" id="ore:similarTo">Relationships between the Aggregation and Similar Resources</a></h3>
+
+
+	  <p>A Resource Map MAY include one or more triples, with URI-A as the subject, which assert that the Aggregation is a Resource with content that is similar to another Resource. The predicate MAY be either <span class="code">ore:similarTo</span> or <span class="code">rdfs:seeAlso</span>, depending on the strength of the assertion of similarity. Formally, <span class="code">ore:similarTo</span> is defined as a subproperty of <span class="code">rdfs:seeAlso</span>.</p>
+	  <p>The <span class="code">ore:similarTo</span> relationship asserts that the Aggregation has similar intellectual content to the Resource identified by the object of the triple. This form of similarity resembles the notion of &quot;bibliographic similarity&quot;  among works, expressions, manifestations, and items in the Functional Requirements for Bibliographic Records [<a href="#FRBR">FRBR</a>]. An example of of the use of <span class="code">ore:similarTo</span> in the scholarly communication context is to define a relationship between an aggregation and a Resource with non-protocol-based URI like a Digital Object Identifier [<a href="#DOI">DOI</a>] or an INFO URI [<a href="#INFO">INFO</a>]. </p>
+	  <p>The weaker <span class="code">rdfs:seeAlso</span> relationship MAY also be included in the Resource Map. One example of the use of <span class="code">rdfs:seeAlso</span> in a Resource Map is to express a relationship between an Aggregation that is a journal article and a Resource that is a review of that article.</p>
+	  <p>The use of <span class="code">ore:similarTo</span> in the RDF Graph is shown in the figure below.</p>
+
+<p class="figure"><img src="datamodel-images/AggrSameAs.jpg" alt="Aggregation associated with other resource using ore:simialarTo" width="616" height="287" /></p>
+
+<h3>4.4 <a name="ore:aggregates" id="ore:aggregates">Aggregated Resources and Aggregation Graph</a></h3>
+	  <p>A Resource Map MUST include one or more triples with the <span class="code">ore:aggregates</span> predicate to assert that the Resource identified by the URI-A that is the subject has the constituent <a href="#Aggregated_Resource">Aggregated Resource</a> identified by the URI-AR that is the object.  A URI-AR MUST NOT be the same as the URI-A of the Aggregation or the URI-R that describes that Aggregation. </p>
+	  <p> The <span class="code">ore:aggregates</span> relationship
+		defines that the Resource denoted by the subject is a Resource of type 
+                <span class="code">ore:Aggregation</span>.&nbsp; Therefore, the explicit 
+                inclusion in the Resource Map of a triple asserting the type is OPTIONAL.</p>
+	  <p>The figure below shows the RDF Graph with the addition of triples with the <span class="code">ore:aggregates</span> predicate.&nbsp; This subgraph of the RDF Graph, rooted in the Aggregation with one or more <span class="code">ore:aggregates</span> relationships to Aggregated Resources,
+		is known as the <span class="definition">Aggregation Graph</span>.&nbsp;</p>
+
+<p class="figure"><img src="datamodel-images/ReMAggregates.jpg" alt="Aggregation with ore:aggregates figure" width="599" height="347" /></p>
+
+      <p>For a Resource Map <span class="code">http://example.org/ReM-1</span>, the Aggregation Graph is defined by the following SPARQL query [<a href="#SPARQL">SPARQL</a>]</p>
+
+<div class="exampleInner">
+<pre>PREFIX ore: &lt;http://www.openarchives.org/ore/terms/&gt;
+CONSTRUCT   { ?a ore:aggregates ?ar1 . }
+WHERE       { &lt;http://example.org/ReM-1&gt; ore:describes ?a .
+              ?a ore:aggregates ?ar1 . }</pre>
+</div>
+
+<h3>4.5 <a name="GlobalRels" id="GlobalRels"> Relationships to other Resources and Types</a></h3>
+<p>A Resource MAY include additional triples that assert properties about the Resource Map, Aggregation, Aggregated Resources, or other related Resources or Literals. The RDF graph produced by the addition of these triples  MUST be <em>connected</em>. Formally that means that all nodes in the graph MUST be reachable via a traversal that begins at the node denoting the Resource Map and follows the edges corresponding to the predicates expressed in the triples. </p>
+<p>Some appropriate uses for  additional relationships are:</p>
+<ul>
+  <li>They MAY define the semantic types of the nodes in the Aggregation Graph.&nbsp;
+    In this case, the subject  is a node in the Aggregation
+    Graph (the URI of  either the Aggregation or an Aggregated Resource), a predicate
+    that is <span class="code">rdf:type</span>, and an object that is the URI of a
+    Class defined by any vocabulary.</li>
+  <li>They MAY define the relationships of the Aggregation or an Aggregated Resource  to other Resources.&nbsp;
+    The predicate of these relationships MAY
+    be defined in any vocabulary.&nbsp; These relationships are useful for
+    metadata properties of the Aggregation Graph and/or the Aggregation, citation linkages,  mirrors, and the like.&nbsp; </li>
+</ul>
+<p>The global scope of these additional assertions corresponds to the usual manner in which RDF statements are interpreted. That is, the meaning of these additional triples are not constrained or altered by their &quot;assertion context&quot; in a Resource Map. Each assertion is essentially independent, and therefore a triple with Subject URI-AR is a statement about that Aggregated Resource without reference to its existence in the respective Aggregation. Assertions about Resources local to the Aggregation are described in a <a href="#InterAggr">later section</a>. </p>
+<p>The figure below shows the RDF Graph with the addition of  triples expressing
+  type semantics and other relationships to the Aggregation Graph.</p>
+<p class="figure"><img src="datamodel-images/ExtRels.jpg" alt="External relationships figure" width="598" height="490" /></p>
+<h3>5.<a name="AggrToAggr" id="AggrToAggr"></a>Extending a Resource Map to express Relationships between Aggregations</h3>
+<p>This specification has thus far described the mechanisms for describing  an individual Aggregation. This section describes mechanisms by which one Resource Map MAY assert relationships between Aggregated Resources and other Resource Maps or Aggregations. </p>
+<h3>5.1<a name="ore:isAggregatedBy" id="ore:isAggregatedBy">Asserting that an Aggregated Resource is a Constituent of another Aggregation</a></h3>
+<p>A Resource Map MAY  include one or more triples with the <span class="code">ore:isAggregatedBy</span> predicate to assert that an Aggregated Resources is a constituent of other Aggregations. </p>
+<p>A use case is a scholalry overlay journal (a virtual journal that includes papers by reference in contrast to creating local copiees of them). One paper might be included in multiple overlay journals. The editor of one journal would like to make clients aware of the presence of the paper in those other journals.</p>
+<p>The figure below shows three Aggregations, <span class="code">A-1</span>, <span class="code">A-2</span>, and <span class="code">A-3</span>, corresponding to the three journals. All include <span class="code">AR-3</span> as an Aggregated Resource. The Resource Map <span class="code">ReM-3</span>, which describeds <span class="code">A-3</span>, includes triples 
+  with the predicate <span class="code">ore:isAggregatedBy</span>, 
+  asserting that <span class="code">AR-3 </span>is an Aggregated Resource of <span class="code">A-1</span> and <span class="code">A-2</span>.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p class="figure"><img src="datamodel-images/extLinkAggregatedBy.jpg" alt="Use of isAggregatedBy figure" width="615" height="454" /></p>
+
+<h3>5.2 <a name="ore:isDescribedBy" id="ore:isDescribedBy">Nested Aggregations  </a></h3>
+<p>As stated earlier, a Resource Map can assert any Resource as an Aggregated Resource. And, because an Aggregation is a Resource, a Resource Map can assert that a Resource, which is described as an Aggregation by another Resource Map, is itself an Aggregated Resource.  The result is then <em>recursive nesting </em>of Aggregations. Note that this nesting MUST involve information from multiple Resource Maps, since one Resource Map MUST describe only one Aggregation.</p>
+<p>A Resource Map that asserts another Aggregation as an Aggregated Resource MAY assert an <span class="code">ore:isDescribedBy</span> relationship between this Aggregated Resource and the Resource Map describing the other Aggregation. This informs clients of the Resource Map of the nesting. </p>
+<p>Note that this use of the <span class="code">ore:isDescribedBy</span> predicate has the same semantics as described <a href="#ReM-to-aggr">earlier</a>. The predicate asserts that the subject of the triple, which is an Aggregation, is described by the object of the triple, which is a Resource Map. </p>
+<p>An example 
+  of a nested Aggregation is a <em>journal </em>consisting of multiple <em>issues</em>, each of which is 
+  an Aggregation of multiple <em>articles</em>, each of which may be an 
+  Aggregation in its own right.&nbsp; The figure below illustrates nested Aggregations, 
+  omitting some details of previous figures (e.g. metadata, typing).&nbsp; 
+  Aggregation <span class="code">A-1</span>, described by<span class="code"> ReM-1, </span>has constituents<span class="code"> AR-1</span>, <span class="code">AR-2</span> and <span class="code">AR-3</span>, which are   
+  are themselves Aggregations.&nbsp; Each of these &quot;aggregated Aggregations&quot; 
+  is described by a corresponding Resource Map (<span class="code">ReM-2</span>, <span class="code">ReM-3</span>, and <span class="code">ReM-4</span>) 
+  which describes the Aggregated Resources and other aspects of these 
+  Aggregations. The sub-graphs associated with these other Resource Maps are intentionally grayed out to emphasize the fact that the triples relevant to this example are exclusive to <span class="code">ReM-1</span>.</p>
+<p class="figure"><img src="datamodel-images/recursive.jpg" alt="Nested Aggregations figure" width="620" height="498" /></p>
+<h3>6.<a name="Proxies" id="Proxies"></a><span class="toc"> Aggregation-Specific Identities for Aggregated Resources</span></h3>
+<p>This specification has thus far used the URI-AR of an Aggregated Resource as the Subject or Object of triples. As described earlier, a URI-AR is not specific to the Aggregation - an individual URI-AR MAY be asserted within multiple Aggregations and MAY be used independent of any Aggregation. Thus, the use of URI-AR as the subject or object of triples does not imply any association with one Aggregation, or even with any Aggregation at all. This section describes the notion of a <span class="definition">Proxy</span>, which is a Resource that &quot;stands for&quot; an Aggregated Resouce in a manner that is specific to one Aggregation.  </p>
+<p>The URI-P of the Proxy MUST be unique to the Aggregation. This URI MAY then be used by the ReM as the subject and object of triples that express relationships specific to the Aggregation. A Resource Map MUST assert two triples to associate the Proxy with the Aggregation and Aggregated Resource. The first has the Proxy as the subject, the predicate <span class="code">ore:proxyFor</span>, and the associated Aggregated Resource as the Object. The second has the Proxy as the subject, the predicate <span class="code">ore:proxyIn</span>, and the associated Aggregation as the Object. A Resource Map MUST assert only one of each of these triples for each Proxy.</p>
+<p>The remainder of this section describes use cases for Proxies and how to express them in the Resource Map</p>
+<h3>6.1 <a name="InterAggr" id="InterAggr"></a>Using Proxies for Relationships among Aggregated Resources</h3>
+<p>In some cases the relationships among Aggregated Resources that are asserted within a Resource Map have meaning only within the context of the Aggregation itself. An example is the assertion of  Aggregation-specific sequencing between Aggregated Resources, expressing an ordered list where <span class="code">AR-1</span> follows <span class="code">AR-2</span> which follows <span class="code">AR-3</span>. Without any sequencing information, the order of Aggregated Resources can not be inferred - they  form an unordered set. It would not be legitimate for the Resource Map to express this sequencing by asserting a triple of the sort <span class="code">&lt;AR-1&gt; &lt;hasNext&gt; &lt;AR-2&gt;</span>, since this fact is only true in the context of the specific Aggregation, and is not a &quot;global&quot; fact. As noted <a href="#GlobalRels">earlier</a>,  in RDF the meaning of triples are not constrained or altered by their &quot;assertion context&quot; in a Resource Map. Each assertion is essentially independent, and therefore a triple with subject or object URI-AR is a statement about that Aggregated Resource without reference to its existence in the respective Aggregation.</p>
+<p>The following figure illustrates how to express this Aggregation-specific sequencing through the use of proxies and their assertion in a Resource Map. As illustrated, the hypothetical predicate <span class="code">xyz:hasNext</span> indicates a sequencing relationship between the two Aggregated Resources. The assertion of the Proxies <span class="code">P-1</span> and <span class="code">P-2</span>, which are associated with the respective Aggregated Resource via the <span class="code">ore:proxyFor</span> predicate and with the Aggregation via the <span class="code">ore:proxyIn</span> predicate, makes it possible to assert this relationship in the context of the Aggregation. </p>
+<p align="center"><img src="datamodel-images/Proxy.jpg" alt="Proxy node figure" width="597" height="461" /></p>
+<h3>6.2 <a name="ProxyTarget" id="ProxyTarget"></a>Using  Proxies as the Target of other Relationships</h3>
+<p>As described above, the assertion of a Proxy within a Resource Map establishes an Aggregation-specific URI-P for one of the Aggregated Resources. Triples asserted external to the Aggregation MAY establish links to this Proxy, with semantics that the asserted Relationship is specific to the Aggregated Resource in the context of the  Aggregation. </p>
+<p>The figure below illustrates an example of this use of a Proxy. In the example, the Aggregation <span class="code">A-1</span> may be an overlay journal, which composes virtual issues by asserting Aggregations consisting of selected papers distributed over the Web. <span class="code">AR-1</span> is one of these selected papers. Note however that the URI <span class="code">AR-1</span> is simply the identity of the paper, which may be located on the authors own web pages or in some institutional repository. Thus, the triple <span class="code">&lt;URI-2&gt;</span> &lt;<span class="code">xyz:cites&gt; &lt;AR-1&gt;</span> implies no semantics about the selection of the paper for inclusion in the overlay journal. On the other hand, the triple <span class="code">&lt;URI-1&gt; &lt;xyz:cites&gt; &lt;P-1&gt;</span>, where <span class="code">P-1</span> is asserted by the Resource Map to be the Proxy for <span class="code">AR-1</span>, does imply these semantics.</p>
+<p>The assertion of Proxies is OPTIONAL. This example demonstrates that it MAY make sense for an agency creating Resource Maps to assert these Proxies to provide appropriate link targets for outside clients.</p>
+<p align="center"><img src="datamodel-images/ContextLink.jpg" alt="Context link figure" width="555" height="210" /></p>
+<h3>6.3 <a name="Lineage" id="Lineage">Expressing the Lineage of an Aggregated Resource</a></h3>
+<p>As described <a href="#isAggregatedBy">earlier</a>, the <span class="code">ore:isAggregatedBy</span> predicate asserts that an Aggregated Resource in one Resource Map is also an Aggregated Resource in another Resource Map. Also, as stated one Aggregated Resource MAY be the subject of multiple <span class="code">ore:isAggregatedBy</span> triples. In applications such as scholarly communication there is a need for a stronger relationship indicating <em>lineage</em>, which indicates that an Aggregated Resource originated or was sourced from another Aggregation. Lineage or provenance is a basis of integrity  in scholarly communication.</p>
+<p>A Resource Map MAY assert triples with the predicate <span class="code">ore:lineage</span> to express this notion. The subject of ore:lineage MUST be a Proxy specific to the Aggregation and the object MUST be a Proxy specific to another Aggregation. One Proxy MUST NOT be the subject of more than one <span class="code">ore:lineage</span> relationships.</p>
+<p>The following figure illustrates the use of <span class="code">ore:lineage</span>. Aggregation <span class="code">A-1</span> is an eScience result aggregating, with other Resources not shown,  some data set, <span class="code">AR-1</span>. Aggregation <span class="code">A-2</span> includes the same data set. Both Resource Maps establish proxies for that Aggregated Resource, <span class="code">P-1</span> in <span class="code">A-1</span> and <span class="code">P-2</span> in <span class="code">A-2</span>, creating Aggregation-specific URIs for the data set. <span class="code">ReM-2</span> also asserts the triple <span class="code">&lt;P-2&gt;</span> <span class="code">&lt;ore-lineage&gt;</span> <span class="code">&lt;P-1&gt;</span> to express the origin or provenance of the data set in Aggregation <span class="code">A-1</span>.</p>
+<p align="center"><img src="datamodel-images/lineage.jpg" alt="Lineage figure" width="620" height="329" /></p>
+
+<h2>7.<a name="Constraints" id="Constraints"></a>Structural Constraints on Resource Map</h2>
+<p>The following table summarizes the constraints on the structure of an RDF Graph 
+that serves as a Resource Map by specifying the minimum and maximum expected 
+occurrences of Triples of varying forms.</p>
+
+<p>The convention used in the table is that</p>
+          <ul>
+          <li><code>ReM-1</code> is the URI of this Resource Map</li>
+          <li><code>ReM-i</code> is the URI of another Resource Map</li>
+          <li><code>A-1</code> is the URI of the Aggregation described by the Resource Map ReM-1</li>
+	  <li><code>AR-j</code> is the URI of a resource which is aggregated into that Aggregation A-1</li>
+	  <li><code>URI-S</code> is the URI of a Resource</li>
+	  <li><code>URI-P</code> is the URI of a type of Relationship</li>
+	  <li><code>URI-O</code> is the URI of a Resource</li>
+	  <li><code>A-k</code> is the URI of an Aggregation other than the Aggregation described by the Resource Map ReM-1</li>
+	  <li><code>P-j</code> is the URI of a Proxy for a resource AR-j aggregated into the Aggregation A-1</li>
+	  <li><code>P-m</code> is the URI of a Proxy for a resource AR-m aggregated into an Aggregation other than the Aggregation described by the Resource Map ReM-1</li>
+      	  </ul>
+          <table id="constraints-table"  summary="Resource Map constraints table">
+              <tr>
+                <th width="9%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="24%">Object</th>
+                <th width="11%"><div align="center">Occurs (Min, Max)</div></th>
+                <th width="36%">Note</th>
+              </tr>
+              <tr>
+                <td>ReM-1</td>
+                <td><code>ore:describes</code></td>
+                <td>A-1</td>
+                <td><div align="center">(1, 1)</div></td>
+                <td>Relationship between Resource Map and Aggregation (<a href="#ReM-to-aggr">4.1</a>)</td>
+              </tr>
+              <tr>
+                <td>A-1</td>
+                <td><code>ore:isDescribedBy</code></td>
+                <td>ReM-i</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationship between Resource Map and Aggregation (<a href="#ReM-to-aggr">4.1</a>)</td>
+              </tr>
+              <tr>
+                <td>ReM-1</td>
+                <td><code>rdf:type</code></td>
+                <td><code>ore:ResourceMap</code></td>
+                <td><div align="center">(0, 1)</div></td>
+                <td>Typing of Resource Map (<a href="#ReM-to-aggr">4.1</a>)</td>
+              </tr>
+
+              <tr>
+                <td>ReM-1</td>
+                <td><code>dc:creator</code></td>
+                <td>literal or URI-O</td>
+                <td><div align="center">(1, *)</div></td>
+                <td>Metadata about Resource Map (Required) (<a href="#Metadata_about_the_ReM">4.2</a>)</td>
+              </tr>
+              <tr>
+                <td>ReM-1</td>
+                <td><code>dcterms:modified</code></td>
+                <td>literal</td>
+                <td><div align="center">(1, 1)</div></td>
+                <td>Metadata about Resource Map (Required) (<a href="#Metadata_about_the_ReM">4.2</a>)</td>
+              </tr>
+              <tr>
+                <td>ReM-1</td>
+                <td>URI-P</td>
+                <td>literal or URI-O</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Metadata about Resource Map (Optional) (<a href="#Metadata_about_the_ReM">4.2</a>)</td>
+              </tr>
+              <tr>
+                <td>URI-S</td>
+                <td>URI-P</td>
+                <td>ReM-1</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Metadata about Resource Map (Optional) (<a href="#Metadata_about_the_ReM">4.2</a>)</td>
+              </tr>
+
+              <tr>
+                <td>A-1</td>
+                <td><code>ore:similarTo</code></td>
+                <td><code>URI-O</code></td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationships between the Aggregation and Similar Resources (<a href="#ore:similarTo">4.3</a>)</td>
+              </tr>
+              <tr>
+                <td>A-1</td>
+                <td><code>rdfs:seeAlso</code></td>
+                <td><code>URI-O</code></td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationships between the Aggregation and Similar Resources (<a href="#ore:similarTo">4.3</a>)</td>
+              </tr>
+
+              <tr>
+                <td>A-1</td>
+                <td><code>ore:aggregates</code></td>
+                <td>AR-j</td>
+                <td><div align="center">(1, *)</div></td>
+                <td>Relationship between Aggregation and aggregated Resource (<a href="#ore:aggregates">4.4</a>)</td>
+              </tr>
+              <tr>
+                <td>A-1</td>
+                <td><code>rdf:type</code></td>
+                <td><code>ore:Aggregation</code></td>
+                <td><div align="center">(0, 1)</div></td>
+                <td>Typing of Aggregation (<a href="#ore:aggregates">4.4</a>)</td>
+              </tr>
+
+
+              <tr>
+                <td>A-1</td>
+                <td>URI-P</td>
+                <td>literal or URI-O</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Other properties of the Aggregation (<a href="#Metadata_about_the_ReM">4.2</a>)/Relationships of Aggregation to Other Resources (<a href="#GlobalRels">4.5</a>)</td>
+              </tr>
+              <tr>
+                <td>URI-S</td>
+                <td>URI-P</td>
+                <td>A-1</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationships of Aggregation to Other Resources (<a href="#GlobalRels">4.5</a>)</td>
+              </tr>
+              <tr>
+                <td>AR-j</td>
+                <td>URI-P</td>
+                <td>literal or URI-O</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationships of aggregated Resource to Other Resources (<a href="#GlobalRels">4.5</a>)</td>
+	          </tr>
+              <tr>
+                <td>URI-S</td>
+                <td>URI-P</td>
+                <td>AR-j</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationships of aggregated Resource to Other Resources (<a href="#GlobalRels">4.5</a>)</td>
+	         </tr>
+             <tr>
+                <td>URI-S</td>
+                <td>URI-P</td>
+                <td>URI-O</td>
+                <td><div align="center">(0,*)</div></td>
+                <td><p>Additional metadata in the Resource Map (<a href="#GlobalRels">4.5</a>)</p>
+                  <ul>
+                    <li>URI-S must be directly or transitively connected to AR-j, A-1, or ReM-1 in the RDF Graph defined by the triples in the Resource Map.</li>
+                    <li> URI-P must not be <span class="code">ore:aggregates</span>, <span class="code">ore:describes</span></li>
+                  </ul>
+                </td>
+              </tr>
+
+
+              <tr>
+                <td>AR-j</td>
+                <td><code>ore:isAggregatedBy</code></td>
+                <td>A-k</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationship between aggregated Resource and Other Aggregation (<a href="#ore:isAggregatedBy">5.1</a>)</td>
+              </tr>
+              <tr>
+                <td>AR-j</td>
+                <td><code>ore:isDescribedBy</code></td>
+                <td>ReM-i</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationship between aggregated Resource and Other Resource Map (<a href="#ore:isDescribedBy">5.2</a>)</td>
+              </tr>
+
+              <tr>
+                <td>P-j</td>
+                <td><code>ore:proxyFor</code></td>
+                <td>AR-j</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationship between Proxy and aggregated Resource (<a href="#InterAggr">6.1</a>)</td>
+              </tr>
+              <tr>
+                <td>P-j</td>
+                <td><code>ore:proxyIn</code></td>
+                <td>A-1</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Relationship between Proxy and Aggregation (<a href="#InterAggr">6.1</a>)</td>
+              </tr>
+              <tr>
+                <td>URI-S</td>
+                <td>URI-P</td>
+                <td>P-j</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Proxy as target of Relationships (<a href="#ProxyTarget">6.2</a>)</td>
+	         </tr>
+              <tr>
+                <td>P-j</td>
+                <td>URI-P</td>
+                <td>literal or URI-O</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Proxy as target of Relationships (<a href="#ProxyTarget">6.2</a>)</td>
+	          </tr>
+
+              <tr>
+                <td>P-j</td>
+                <td><code>ore:lineage</code></td>
+                <td>P-m</td>
+                <td><div align="center">(0, *)</div></td>
+                <td>Lineage Relationship between Proxies (<a href="#Lineage">6.3</a>)</td>
+              </tr>
+
+            </table>
+
+
+<h2>8. <a name="References">References</a></h2>
+<dl>
+				<dt>[<a name="Compound_Object" id="Compound_Object">Compound Object</a>]</dt>
+				<dd>
+				<a href="http://www.ctwatch.org/quarterly/multimedia/11/ORE_prototype-demo/">
+				<cite>Compound Information Object Archive Prototype Demonstration</cite></a>, 
+				H. Van de Sompel, 2007.</dd>
+				<dt>[<a name="Dereferencing" id="Dereferencing">Dereferencing</a>]</dt>
+				<dd> <a href="http://www.w3.org/2001/tag/doc/httpRange-14/2007-05-31/HttpRange-14">
+                                <cite>Dereferencing HTTP URIs</cite></a>, 
+				R. Lewis, Draft Tag Finding 31 May 2007</dd>
+				<dt>[<a name="DC_Terms">DC Terms</a>]</dt>
+				<dd><a href="http://dublincore.org/documents/dcmi-terms/"><cite>DCMI 
+				Metadata Terms</cite></a>, DCMI Usage Board, 2006-12-18.</dd>
+				<dt>[<a name="DOI" id="DOI">DOI</a>]</dt>
+				<dd><a href="http://www.doi.org/">
+				<cite>The DOI System</cite></a>, The International DOI Foundation.</dd>
+				<dt>[<a name="FRBR" id="FRBR"></a>FRBR]</dt>
+				<dd><cite><a href="http://www.ifla.org/VII/s13/frbr/frbr.pdf">Functional Requirements for Bibliographic Records</a></cite>, International Federation of Library Associations and Institutions, 1998.</dd>
+				<dt>[<a name="INFO" id="INFO"></a>INFO]</dt>
+				<dd><cite><a href="http://www.ietf.org/rfc/rfc4452.txt">The &quot;info&quot; URI Scheme  for Information Assets with Identifiers in Public Namespaces</a></cite>,  H. Van de Sompel, et al., RFC 4552, IETF, 2006.</dd>
+				<dt>[<a name="Linked_Data_Tutorial" id="Linked_Data_Tutorial">Linked</a>]</dt>
+				<dd> <a href="http://sites.wiwiss.fu-berlin.de/suhl/bizer/pub/LinkedDataTutorial/">
+                                <cite>How to Publish Linked Data on the Web</cite></a>, C. Bizer, R. 
+				Cyganiak, T. Heath, version: 2007-07-27.</dd>
+				<dt>[<a name="OWL">OWL</a>]</dt>
+				<dd><a href="http://www.w3.org/TR/owl-guide/"><cite>OWL Web Ontology 
+				Language Guide</cite></a>, Michael Smith, Chris Welty, Deborah McGuiness, 
+				Editors, W3C Recommendation 10 February 2004, Latest Version
+				<a href="http://www.w3.org/TR/owl-guide/">http://www.w3.org/TR/owl-guide/</a>.</dd>
+				<dt><a id="RDF_Concepts" name="RDF_Concepts">[RDF Concepts]</a></dt>
+				<dd><cite>
+				<a href="http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/">Resource 
+				Description Framework (RDF): Concepts and Abstract Syntax</a></cite>,, 
+				Graham Klyne and Jeremy J. Carroll, Editors, W3C Recommendation, 
+				10 February 2004, http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/ 
+				. <a href="http://www.w3.org/TR/rdf-concepts/">Latest version</a> 
+				available at http://www.w3.org/TR/rdf-concepts/ . </dd>
+				<dt>[<a name="RDF_Semantics">RDF Semantics</a>]</dt>
+				<dd><cite><a href="http://www.w3.org/TR/rdf-mt/">RDF Semantics</a></cite>, 
+				Patrick Hayes and Brian McBride, Editors, W3C Recommendation 10 
+				February 2004, http://www.w3.org/TR/2004/REC-rdf-mt-20040210/</dd>
+				<dt><a id="RDFS" name="RDFS">[RDFS]</a> </dt>
+				<dd>
+				<a href="http://www.w3.org/TR/2004/REC-rdf-schema-20040210/">
+				<cite>RDF Vocabulary Description Language 1.0: RDF Schema</cite>				</a>, Dan Brickley and R.V. Guha, Editors. W3C Recommendation, 10 
+				February 2004,<br />
+				http://www.w3.org/TR/2004/REC-rdf-schema-20040210/ .<br />
+				<a href="http://www.w3.org/TR/rdf-schema/">Latest version</a> available 
+				at http://www.w3.org/TR/rdf-schema/. </dd>
+				<dt>[<a id="RFC2119" shape="rect" name="RFC2119">RFC2119</a>]</dt>
+				<dd>IETF <cite>
+				<a shape="rect" href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119: 
+				Key words for use in RFCs to Indicate Requirement Levels</a></cite>, 
+				S. Bradner, March 1997. Available at http://www.ietf.org/rfc/rfc2119.txt.</dd>
+				<dt>[<a id="RFC2616" shape="rect" name="RFC2616">RFC2616</a>]</dt>
+				<dd>IETF <cite>
+				<a shape="rect" href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616: 
+				Hypertext Transfer Protocol - HTTP/1.1</a></cite>, J. Gettys, J. 
+				Mogul, H. Frystyk, L. Masinter, P. Leach, T. Berners-Lee, June 1999. 
+				Available at http://www.ietf.org/rfc/rfc2616.txt. </dd>
+				<dt class="label">[<a name="Lynch_CTWatch">Lynch CTWatch</a>]</dt>
+				<dd>
+				<a href="http://www.ctwatch.org/quarterly/articles/2007/08/the-shape-of-the-scientific-article-in-the-developing-cyberinfrastructure">
+				<cite>The Shape of the Scientific Article in The Developing Cyberinfrastructure</cite></a>, 
+				C. Lynch, <a href="http://www.ctwatch.org/">CTWatch Quarterly</a>,
+				<a href="http://www.ctwatch.org/quarterly/">August 2007</a>.</dd>
+				<dt>[<a name="SCOPE" id="SCOPE"></a>SCOPE]</dt>
+				<dd>SCOPE - A Scientific Compound Object Publishing and Editing System. K. Cheung, J. Hunger, A. Lashtabeg, J. Drennan, <a href="http://www.dcc.ac.uk/events/dcc-2007/">Proceedings of the 3rd International Digital Curation Conference</a>, 2007.</dd>
+				<dt>[<a name="Named_Graph">Named Graph</a>]</dt>
+				<dd><a href="http://portal.acm.org/citation.cfm?id=1060835"><cite>
+				Named graphs, provenance and trust</cite></a>, J. Carroll, C. Bizer, 
+				P. Hayes, P. Stickler, <span>Proceedings of the 14th international 
+				conference on World Wide Web, 2005.</span></dd>
+				<dt>[<a name="SPARQL" id="SPARQL">SPARQL</a>]</dt>
+	                        <dd><a href="http://www.w3.org/TR/2007/PR-rdf-sparql-query-20071112/"><cite>
+                                SPARQL Query Language for RDF</cite></a>, E. Prud'hommeaux, A. Seaborne, Editors. 
+                                W3C Proposed Recommendation, 12 November 2007.<br />
+                                http://www.w3.org/TR/2007/PR-rdf-sparql-query-20071112/<br />
+                                <a href="http://www.w3.org/TR/rdf-sparql-query/">Latest Version</a>
+                                available at http://www.w3.org/TR/rdf-sparql-query/<br />
+                                </dd>
+				<dt>[<a name="URI">URI</a>]</dt>
+				<dd><a href="http://www.ietf.org/rfc/rfc3986.txt">U<cite>niform Resource 
+				Identifier (URI): Generic Syntax</cite></a>, T. Berners-Lee, R. Fielding, 
+				L. Masinter, IETF RFC3986, January 2005.</dd>
+				<dt>[<a name="Value_Chains">Value Chains</a>]</dt>
+				<dd>
+				<a href="http://www.dlib.org/dlib/october06/vandesompel/10vandesompel.html">
+				<cite>An Interoperable Fabric for Scholarly Value Chains</cite></a>, 
+				H. Van de Sompel, C. Lagoze, J. Bekaert, X. Liu, S. Payette, S. 
+				Warner, D-Lib Magazine, 12(10), October 2006.</dd>
+				<dt class="label"><a name="Web_Architecture" id="Web_Architecture"></a>[Web 
+				Architecture]</dt>
+				<dd><a href="http://www.w3.org/TR/webarch/"><cite>Architecture of 
+				the World Wide Web, Volume One</cite></a>, I. Jacobs and N. Walsh, 
+				Editors, World Wide Web Consortium, 15 January 2004.</dd>
+			</dl>
+</div>
+<div class="back">
+<!--START-INCLUDE=_acknowledgements.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+</div>
+<!--END-INCLUDE=_acknowledgements.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+       <tbody><tr>
+                <th>Date</th>
+                <th>Editor</th>
+                <th>Description</th>
+        </tr>
+	<tr>
+		<td>2008-03-28</td>
+		<td>lagoze</td>
+		<td>public alpha 0.3 release</td>
+        </tr>
+	<tr>
+		<td>2008-02-27</td>
+		<td>lagoze</td>
+		<td>public alpha 0.2 release</td>
+        </tr>
+	<tr>
+		<td>2007-12-10</td>
+		<td>lagoze</td>
+		<td>public alpha 0.1 release</td>
+        </tr>
+	<tr>
+		<td>2007-10-15</td>
+		<td>lagoze</td>
+		<td>alpha release to ORE-TC</td>
+	</tr></tbody>
+</table>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Clickable OAI BaseURLs!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001097.html">
+   <LINK REL="Next"  HREF="001099.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Clickable OAI BaseURLs!
+   </H1>
+    <B>Young,Jeff
+    </B> 
+    <A HREF="mailto:jyoung%40oclc.org"
+       TITLE="[OAI-implementers] Clickable OAI BaseURLs!">jyoung@oclc.org
+       </A><BR>
+    <I>Mon, 3 Nov 2003 14:33:08 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001097.html">[OAI-implementers] Clickable OAI BaseURLs!
+</A></li>
+        <LI> Next message: <A HREF="001099.html">[OAI-implementers] character vs entity references
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Sorry for the formatting. Let me try again:
+
+(Warning! Currently, this has only been tested with Internet Explorer 6.0
+with the security settings for &quot;Access data sources across domains&quot; set to
+&quot;enable&quot; or &quot;prompt&quot;.)
+
+Wouldn't it be nice if OAI baseURLs resolved to something more interesting
+than an XML &quot;badVerb&quot; error response (e.g.
+<A HREF="http://scholar.lib.vt.edu/theses/OAI2/">http://scholar.lib.vt.edu/theses/OAI2/</A>)? Well, now they can! Here is an OAI
+repository baseURL to demonstrate:
+<A HREF="http://alcme.oclc.org/xmlregistry/OAIHandler.">http://alcme.oclc.org/xmlregistry/OAIHandler.</A>
+
+The best part is that any OAI repository can be made to work this way by
+merely including an XSL stylesheet reference in their OAI responses. Users
+of OAICat (including any DSpace installation) can configure their repository
+by adding the following lines to their oaicat.properties file: 
+
+OAIHandler.styleSheet=<A HREF="http://alcme.oclc.org/xmlregistry/baseURL.xsl">http://alcme.oclc.org/xmlregistry/baseURL.xsl</A>
+OAIHandler.renderForOldBrowsers=false
+
+(Once the errol.oclc.org domain I mentioned in an earlier message has been
+established and I work out a few bugs, this stylesheet will be moved to
+<A HREF="http://errol.oclc.org/xmlregistry.oclc.org/cab/baseURL.xsl.">http://errol.oclc.org/xmlregistry.oclc.org/cab/baseURL.xsl.</A> Notice that this
+form of the URL is actually an Extended ERRoL (introduced at
+<A HREF="http://www.openarchives.org/pipermail/oai-implementers/2003-October/001087.h">http://www.openarchives.org/pipermail/oai-implementers/2003-October/001087.h</A>
+tml). This Extended ERRoL can be used to refer to the stylesheet from an
+instance document as though it was a static document, when in fact it is
+being transparently ripped out of an OAI GetRecord response.) 
+
+Other providers of OAI repository software can provide the same clickable
+baseURL user interface by merely including a reference to this stylesheet in
+their OAI responses. I also recommend that they have their code insert a
+&lt;description&gt;&lt;toolkit&gt; element, designed by Hussein Suleman, to their
+Identify responses so that their software branding information will appear
+in place of the OAICat brand in the demo display. Also include the standard
+repository oai_branding elements in the Identify response to have them
+appear in the display as well. (BTW, major work needs to be done to make the
+Identify response frame in particular more attractive. It's on my list.)
+
+Let me go back to Extended ERRoLs for a minute. Imagine I want to include a
+citation in a paper I'm writing that refers to a document I found in an OAI
+repository. Here is the ERRoL I could use:
+<A HREF="http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052">http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052</A>
+1555132 . If I want to refer to the document itself, I could add the POI
+extension:
+<A HREF="http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052">http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052</A>
+1555132?POI, which would resolve to the first usable dc:identifier in the
+oai_dc record. But again, keep in mind that the
+<A HREF="http://alcme.oclc.org/errol/ERRoLResolver">http://alcme.oclc.org/errol/ERRoLResolver</A> portion will become
+<A HREF="http://errol.oclc.org/">http://errol.oclc.org/</A> as soon as our systems people create and configure
+the new domain.)
+
+Looking a little closer at the user interface for this last example, you
+will notice the frame at the bottom left for this item in OSU's OSCAR
+catalog. It was able to do this because of the ISBN it scraped from the
+GetRecord response. If an ISBN isn't found, the list of available ERRoLs
+will be displayed in its place. If you get the OPAC screen, but want to see
+the list of ERRoLs, there is a button for it in the Identify frame. 
+
+Right now, the display is hardcoded to use the OSU catalog, but I will be
+working to make this configurable to other libraries soon. BTW, the list of
+libraries that will be supported is an OAI repository itself. This feature
+is a minor variation of an earlier project I worked on located here:
+&lt;<A HREF="http://alcme.oclc.org/bookmarks/">http://alcme.oclc.org/bookmarks/</A>&gt;. What's also cool about this is that it
+is based on the FRBR work done by OCLC's Chief Scientist Thom Hickey so that
+it will include other ISBNs for the same &quot;work&quot; when it does the search.
+Once this is configurable, you can contact me to have your favorite library
+added to the list. 
+
+Another feature is the ability for repositories to add service buttons in
+the Identify pane that operate within the interface by including
+&lt;description&gt;&lt;service&gt; entries in the Identify response. For example, notice
+the search button in the Identify frame of the display. 
+
+I mentioned a new feature of ERRoLs this morning so that you can use a
+repository level ERRoL (i.e. an ERRoL containing an explicit repository
+identifier without an item identifier) as a replacement for an OAI baseURL.
+This includes the ability to append OAI-PMH parameters. So, instead of
+baseURL <A HREF="http://alcme.oclc.org/xmlregistry/OAIHandler,">http://alcme.oclc.org/xmlregistry/OAIHandler,</A> I can use
+<A HREF="http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org">http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org</A> instead.
+(Keep reminding yourselves that this URL will be much shorter when the
+errol.oclc.org domain is established.) Not only are these repository level
+ERRoLs shorter than most official baseURLs, but they are also much more
+intuitive and convenient, especially when you want to bring up the clickable
+baseURL user interface introduced here. Also remember that the ERRoL
+alternative to the official baseURL feature will automatically work for any
+repository identifier registered at UIUC.
+
+Although the user interface is done with nothing more than an XSL
+stylesheet, I request that people contact me to have features added rather
+than copy it and make their own changes for awhile. This whole thing came to
+me in a flash, so I still have lots of ideas for improvements, not to
+mention cleaning up the messy bits from my rush to make this available. 
+
+I look forward to your comments and suggestions. 
+
+Enjoy!. 
+
+Jeff
+
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001097.html">[OAI-implementers] Clickable OAI BaseURLs!
+</A></li>
+	<LI> Next message: <A HREF="001099.html">[OAI-implementers] character vs entity references
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1098">[ date ]</a>
+              <a href="thread.html#1098">[ thread ]</a>
+              <a href="subject.html#1098">[ subject ]</a>
+              <a href="author.html#1098">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

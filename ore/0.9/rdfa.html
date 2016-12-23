@@ -1,0 +1,2025 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE User Guide - Resource Map Implementation in RDFa </title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.9/ore-spec.css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - Resource Map Implementation in RDFa </h2>
+  <h3 class="subTitle">2 June 2008</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of a beta release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.9/rdfa">http://www.openarchives.org/ore/0.9/rdfa</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/rdfa">http://www.openarchives.org/ore/rdfa</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.3/rdfsyntax">http://www.openarchives.org/ore/0.3/rdfsyntax</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE User Guide - Resource Map Implementation in RDFa -->
+<!--VAR-SUBTITLE=2 June 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.9/rdfa-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/rdfa-->
+<!--VAR-PREVIOUSURI=http://www.openarchives.org/ore/0.3/rdfsyntax-->
+
+<div class="abstract">
+<h2><a name="abstract" id="abstract"></a>Abstract</h2>
+
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+defines standards for the description and exchange of aggregations of
+Web resources. OAI-ORE introduces the notion of a Resource Map, a
+named RDF Graph [<a href="#RDF_Concepts">RDF Concepts</a>] which
+describes the Aggregation, the aggregated Resources of which it is
+composed, and the relationships between them (and/or the relationships
+between these and other resources).
+
+Since a Resource Map is an RDF Graph, it can be serialized using any
+RDF syntax. This document outlines the use of RDFa [<a
+href="#RDFa_Syntax">RDFa Syntax</a>] to serialize Resource Maps.
+This specification is one of several documents comprising the <a
+href="toc">OAI-ORE specification and user guide</a>.</p>
+
+<hr />
+</div>
+
+<h2><a name="contents" id="contents"></a>Table of Contents</h2>
+<p class="toc">1. <a href="#Introduction">Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#Notational_Conventions">Notational Conventions</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#Namespaces">Namespaces</a><br />
+2. <a href="#SummaryRDFa">Summary of Recommended RDFa Syntax</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#URIRDFa">URIs in RDFa</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.2 <a href="#URI_Choice">Choice of URIs in the Splash Page Scenario</a><br />
+3. <a href="#Example">Example of a Resource Map Serialized RDFa</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.1 <a href="#ReM_Agg">Relationship between Resource Map and Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.2 <a href="#RepresentingRDFa-2">Typing of Resource Map</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.3 <a href="#RepresentingRDFa-3">Metadata about Resource Map (Required)</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.4 <a href="#RepresentingRDFa-4">Metadata about Resource Map (Optional)</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.5 <a href="#RepresentingRDFa-5">Metadata about Creator of Resource Map (Optional)</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.6 <a href="#RepresentingRDFa-6">Relationship between Aggregation and aggregated Resource(s)</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.7 <a href="#RepresentingRDFa-7">Typing of Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.8 <a href="#RepresentingRDFa-8">Relationships between the Aggregation and Similar Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.9 <a href="#RepresentingRDFa-9">Relationships between Aggregation and Other Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.10 <a href="#RepresentingRDFa-10">Relationships between aggregated Resources and Other Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.11 <a href="#RepresentingRDFa-11">Aggregated Resource as constituent of another Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.12 <a href="#RepresentingRDFa-12">Nesting Aggregations</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.13 <a href="#RepresentingRDFa-13">Additional Relationships in the Resource Map</a><br />
+4. <a href="#References">References</a></p>
+
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+<p class="toc">A. <a href="#acknowledgments">Acknowledgements</a><br />
+B. <a href="#changelog">Change Log</a></p>
+
+<hr />
+<div class="body">
+
+<h2><a name="tocRange" id="tocRange"></a>1. <a name="Introduction">Introduction</a></h2>
+
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+defines standards for the description and exchange of aggregations of
+Web resources. OAI-ORE introduces the notion of a Resource Map, a
+named RDF Graph [<a href="#RDF_Concepts">RDF Concepts</a>, <a
+href="#Named_Graph">Named Graph</a>] which describes the Aggregation,
+the aggregated Resources of which it is composed, and the
+relationships between them (and/or the relationships between these and
+other resources. Since a Resource Map is an RDF Graph, it can be
+serialized using any RDF syntax. This document outlines the use RDFa
+[<a href="#RDFa_Syntax">RDFa Syntax</a>] to serialize Resource Maps.</p>
+
+<p>The RDFa in XHTML specification [<a href="#RDFa_Syntax">RDFa
+Syntax</a>] describes how to encode an RDF Graph within an HTML or
+XHTML document using a set of attributes. RDFa makes use of existing
+HTML/XHTML markup and content so that the same data which is typically
+rendered to a human reader is used as the basis of the content of the
+RDF Graph and the need to repeat content is minimised.</p>
+
+<h3>1.1 <a name="Notational_Conventions">Notational Conventions</a></h3>
+
+<p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;,
+&quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+&quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,
+&quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be
+interpreted as described in RFC 2119 [<cite><a href="#RFC2119">IETF
+RFC 2119</a></cite>].</p>
+
+<p>This specification uses the common term URI to mean both IRI [<a
+href="#RFC3987">RFC3987</a>] and URI [<a
+href="#RFC3986">RFC3986</a>].</p>
+
+
+<h3>1.2 <a id="Namespaces" name="Namespaces">Namespaces</a></h3>
+
+<p>This specification uses the following namespaces and prefixes to indicate
+those namespaces:</p>
+
+  <table class="namespace-table" summary="Namespaces table">
+   <tr>
+    <th>Prefix</th>
+    <th>Namespace URI</th>
+    <th>Description</th>
+   </tr>
+   <tr>
+    <td><code>dc</code></td>
+    <td><code>http://purl.org/dc/elements/1.1/</code></td>
+    <td>Dublin Core elements</td>
+   </tr>
+   <tr>
+    <td><code>dcterms</code></td>
+    <td><code>http://purl.org/dc/terms/</code></td>
+    <td>Dublin Core terms</td>
+   </tr>
+   <tr>
+    <td><code>foaf</code></td>
+    <td><code>http://xmlns.com/foaf/0.1/</code></td>
+    <td>FOAF vocabulary terms</td>
+  </tr>
+   <tr>
+    <td><code>marcrel</code></td>
+    <td><code>http://www.loc.gov/loc.terms/relators/</code></td>
+    <td>MARC Relator vocabulary terms</td>
+  </tr>
+   <tr>
+    <td><code>ore</code></td>
+    <td><code>http://www.openarchives.org/ore/terms/</code></td>
+    <td>ORE vocabulary terms</td>
+   </tr>
+   <tr>
+    <td><code>rdf</code></td>
+    <td><code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code></td>
+    <td>RDF vocabulary terms</td>
+   </tr>
+   <tr>
+    <td><code>rdfs</code></td>
+    <td><code>http://www.w3.org/2000/01/rdf-schema#</code></td>
+    <td>RDFS vocabulary terms</td>
+   </tr>
+  </table>
+
+
+<h2>2. <a id="SummaryRDFa" name="SummaryRDFa">Summary of Recommended RDFa Syntax</a></h2>
+
+<p>The concept of the Resource Map is defined by the ORE Abstract Data
+Model [<a href="#ORE_Model">ORE_Model</a>]: it is a named RDF Graph,
+as defined by RDF [<a href="#RDF_Concepts">RDF Concepts</a>], and
+the characteristics of an RDF Graph that acts as a Resource Map are
+described by the ORE Abstract Data Model.</p>
+
+<p>The RDFa syntax [<a href="#RDFa_Syntax">RDFa Syntax</a>] provides
+some flexibility in the way an RDF Graph is encoded. The aim of this
+section is not to provide a full description of the RDFa syntax, but
+rather to provide some recommendations on how the RDFa syntax can be
+used to encode an ORE Resource Map. It is not a requirement that this
+particular set of conventions is used. To encode an ORE Resource Map,
+a provider of ORE Resource Maps MAY use any of the syntactic
+conventions defined by RDFa. A consumer of ORE Resource Maps encoded
+in RDFa MUST support all of the syntactic conventions defined by
+RDFa.</p>
+
+<p>Where an XHTML document containing RDFa is used to serialize an ORE
+Resource Map, that XHTML+RDFa document MUST be a strictly conforming
+XHTML+RDFa document as described in section 4 of the RDFa in XHTML
+specification, i.e.</p>
+
+<ul>
+<li>it MUST conform to the constraints of the schemas expressed in Appendix B of the RDFa in XHTML specification;</li>
+<li>the local part of the name of the root element MUST be <code>html</code>;</li>
+<li>the start tag of the root element of the document must explicitly contain an XML Namespace declaration for the XHTML namespace;</li>
+<li>it SHOULD provide a DOCTYPE declaration in the document prior to the root element. If present, the public identifier included in the DOCTYPE declaration must reference the DTD found in Appendix B of the RDFa in XHTML specification;</li>
+<li>it SHOULD provide a <code>profile</code> attribute on the <code>head</code> element that includes the value <code>http://www.w3.org/1999/xhtml/vocab</code>;</li>
+<li>it SHOULD be labeled with the Internet Media Type <code>application/xhtml+xml</code></li>
+</ul>
+
+<p>Simplifying considerably, in RDFa:</p>
+
+<ul>
+<li>the subject of a triple is encoded as the value of an <code>about</code> attribute (or when the <code>rev</code> attribute is used, of the <code>href</code> or <code>resource</code> attributes)</li>
+<li>the predicate of a triple is encoded as the value of a <code>name</code>, <code>property</code>, <code>rel</code> or <code>rev</code> attribute</li>
+<li>the object of a triple is encoded as the value of a <code>content</code>, <code>href</code>, <code>src</code> or <code>resource</code> attribute, or as XML element content (or when the <code>rev</code> attribute is used, of the <code>about</code> attribute)</li>
+<li>the datatype of a typed literal object is encoded as the value of the <code>datatype</code> attribute</li>
+<li>the <code>typeof</code> attribute is used to indicate a triple with an <code>rdf:type</code> predicate</li>
+</ul>
+
+<p>The following example is an XHTML+RDFa document (adapted from 
+[<a href="#ref-rdfa-primer">RDFa Primer</a>]) constructed according
+to the rules above.</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-2-a.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:cc="http://creativecommons.org/ns#"
+      xml:lang="en"&gt;
+&lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+  &lt;title&gt;Alice&#x27;s Weblog&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;div&gt;
+    &lt;p&gt;All content on this site is licensed under a &lt;a rel="cc:license" href="http://creativecommons.org/licenses/by/3.0/"&gt;Creative Commons License&lt;/a&gt;.&lt;/p&gt;
+
+    &lt;div class="blog-entry" about="/posts/trouble_with_bob"&gt;
+      &lt;h2 property="dc:title"&gt;The trouble with Bob&lt;/h2&gt;
+
+      The trouble with Bob is that he takes much better photos than I do:
+
+      &lt;div about="http://example.com/bob/photos/sunset.jpg"&gt;
+        &lt;img src="http://example.com/bob/photos/sunset.jpg" /&gt;
+        &lt;span property="dc:title"&gt;Beautiful Sunset&lt;/span&gt;
+        by &lt;span rel="dcterms:creator"&gt;
+             &lt;span property="foaf:name"&gt;Bob&lt;/span&gt;
+           &lt;/span&gt;.
+      &lt;/div&gt;
+   &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-2-a.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-2-a.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-2-a.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-2-a.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+<p>The XHTML+RDFa document encodes the following RDF triples (assuming
+the URI of the document is <code>http://example.org/blog/</code>):</p>
+
+<table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+               </tr>
+              <tr>
+                <td><code>&lt;http://example.org/blog/&gt;</code></td>
+                <td><code>cc:license</code></td>
+                <td><code>&lt;http://creativecommons.org/licenses/by/3.0/&gt;</code></td>
+              </tr>
+              <tr>
+                <td><code>&lt;http://example.org/posts/trouble_with_bob&gt;</code></td>
+                <td><code>dc:title</code></td>
+                <td><code>"The trouble with Bob"</code></td>
+              </tr>
+              <tr>
+                <td><code>&lt;http://example.com/bob/photos/sunset.jpg&gt;</code></td>
+                <td><code>dc:title</code></td>
+                <td><code>"Beautiful Sunset"</code></td>
+              </tr>
+              <tr>
+                <td><code>&lt;http://example.com/bob/photos/sunset.jpg&gt;</code></td>
+                <td><code>dcterms:creator</code></td>
+                <td><code>&lt;_:bnode1&gt;</code></td>
+              </tr>
+              <tr>
+                <td><code>&lt;_:bnode1&gt;</code></td>
+                <td><code>foaf:name</code></td>
+                <td><code>"Bob"</code></td>
+              </tr>
+</table>
+
+<p>The subject URI of the first triple is the URI of the document; for
+the three subsequent triples, the subject is determined from the value
+of the <code>about</code> attribute. The predicates are determined
+from the values of the <code>rel</code> attribute (in the first and third cases)
+and the <code>property</code> attribute in the other.
+The objects are determined from the value of the
+<code>href</code> attribute (in the first case) and the content of the
+element with the property attribute in the subsequent cases.</p>
+
+<p>The last two triples illustrate the use of a "blank node" (or
+"bnode"). Blank nodes MAY occur in ORE Resource Maps when asserting
+the creator of the Resource Map or contributors to the Aggregation or
+Aggregated Resources. In the example shown, the creator of the
+photograph is "Bob", but Bob has no associated URI. Instead the
+special "<code>_</code>" (underscore) prefix (and an arbitrary local
+part with no global meaning, in this case <code>bnode1</code>) is used
+to identify the blank node in the fourth and fifth lines in the table
+of triples.</p>
+
+<p>Note that this is not intended to be a full description of the
+RDFa processing rules; for that information, see <i>RDFa in XHTML:
+Syntax and Processing</i> [<a href="#RDFa_Syntax">RDFa Syntax</a>].</p>
+
+
+<h3>2.1 <a id="URIRDFa" name="URIRDFa">URIs in RDFa</a></h3>
+
+<p>In RDFa, an RDF URI reference is always encoded as the value of an
+XML attribute.</p>
+
+<p>The attribute values may take the form of a URI in full or of a
+relative reference, to be resolved relative to a base URI, either a
+URI provided by the use of the XHTML <code>base</code> element, or the
+URI of the document itself.</p>
+
+<p>Some of the attributes used in RDFa also support the encoding of a
+URI in an abbreviated form as a CURIE or "compact URI". The use of a
+CURIE allows the author to replace the leading section of a URI with a
+substitution token which is mapped to a URI. The full URI represented
+by a CURIE is obtained by concatenating the second part of the CURIE
+onto the URI to which the substitution token is mapped. The mapping of
+substitution token to URI is expressed using an XML Namespace
+declaration. This mechanism is quite similar to that used in RDF/XML
+to map URIs to XML QNames, with the important difference that the
+lexical constraints on CURIEs are less stringent than those on QNames,
+so that any URI can be abbreviated as a CURIE, whereas, as noted
+above, there are some URIs which can not be mapped to QNames.</p>
+
+<p>The attributes used by RDFa vary in their support for these
+different ways of representing URIs:</p>
+
+<ul>
+<li><code>about</code> and <code>resource</code> support either a URI or a CURIE (expressed as a "safe CURIE" )</li>
+<li><code>href</code> and <code>src</code> support only a URI.</li>
+<li><code>property</code>, <code>datatype</code> and <code>typeof</code> support only lists of CURIEs as values.</li>
+<li><code>rel</code> and <code>rev</code> support lists of both XHTML link types and CURIEs.</li>
+</ul>
+
+<p>The following three examples (extracted from the <i>RDFa in XHTML
+Syntax and Processing</i> document [<a href="#RDFa_Syntax">RDFa
+Syntax</a>]), illustrate three different ways of encoding the URI
+<code>http://dbpedia.org/resource/Albert_Einstein</code> as the value
+of the <code>about</code> attribute, in the first case as a URI
+represented in full, and in the latter two cases as a CURIE</p>
+
+<div class="exampleInner">
+<pre>  &lt;div&gt;
+    &lt;div about="http://dbpedia.org/resource/Albert_Einstein"&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+</pre>
+</div>
+<p>&nbsp;</p>
+<div class="exampleInner">
+<pre>  &lt;div xmlns:db="http://dbpedia.org/"&gt;
+    &lt;div about="[db:resource/Albert_Einstein]"&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+</pre>
+</div>
+<p>&nbsp;</p>
+<div class="exampleInner">
+<pre>  &lt;div xmlns:dbr="http://dbpedia.org/resource/"&gt;
+    &lt;div about="[dbr:Albert_Einstein]"&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+</pre>
+</div>
+
+<p>For a full description of the mechanism for mapping CURIEs to URIs, see the section 
+"CURIE and URI Processing" in <cite>RDFa in XHTML: Syntax and Processing</cite> 
+[<a href="#RDFa_Syntax">RDFa Syntax</a>].</p>
+
+
+<h3>2.2 <a id="URI_Choice" name="URI_Choice">Choice of URIs in the Splash Page Scenario</a></h3>
+
+<p>One application for RDFa is to encode a Resource Map within a human readable
+XHTML page describing an Aggregation. In repositories of scholarly documents and
+other applications, such pages are often referred to as Splash Pages. It is 
+also possible the the Splash Page be included as one of the Aggregated Resources
+of the Aggregation.</p>
+
+<p>Within the ORE Model, the URI of the Resource Map
+(<code>URI-R</code>) MUST be distinct from the URI of the Aggregation
+(<code>URI-A</code>).  Similarly the URI of a Splash Page
+(<code>URI-S</code>) MUST be distinct from the URI of the Aggregation
+(<code>URI-A</code>).</p>
+
+<p>It is RECOMMENDED that the URI of a Splash Page be distinct from
+the URI of the Resource Map if the Splash Page is itself an Aggregated
+Resource. One solution is to extend the use of fragment identifiers
+from the <a href="http#Simple">simple implementation without server
+support</a> scenario described in [<a href="#ref-http">ORE
+HTTP</a>]. In the example set of URIs below, the fragment identifier
+<code>#rem</code> is used to distinguish the Resource Map from the
+Splash Page:</p>
+
+<div class="exampleInner">
+<pre>Splash Page:   S-1   = http://example.org/foo.html
+Aggregation:   A-1   = http://example.org/foo.html#aggregation
+Resource Map:  ReM-1 = http://example.org/foo.html#rem
+</pre></div>
+
+<p>For further discussion of URI choice with RDFa serialization, see
+<a href="http#WithMicroformats">implementation with RDFa or microformats</a>
+in [<a href="#ref-http">ORE HTTP</a>].</p>
+
+
+<h2>3. <a id="Example" name="Example">Example of a Resource Map Serialized RDFa</a></h2>
+
+<p>This section illustrates the use of RDFa by describing elements of
+the serialization of Resource Map shown as an RDF graph in the figure
+below.</p>
+
+<p class="figure"><img alt="Example RDF Graph" src="rdfa-images/figure1.jpg" width="738" height="600" /></p>
+
+<h3>3.1 <a id="ReM_Agg" name="ReM_Agg">Relationship between Resource Map and Aggregation</a></h3>
+
+<p>The relationship between Resource Map and Aggregation is expressed by a single (required) triple in which the subject is the URI of the Resource Map, the predicate is the URI <code>http://www.openarchives.org/ore/terms/describes</code> and the object is the URI of the Aggregation.</p>
+
+<p>In RDFa, this can be expressed using an XHTML element with an <code>about</code> attribute (the value of which provides the subject, the URI of the Resource Map), and nested within that element an <code>a</code> element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate (typically <code>ore:describes</code>) and an <code>href</code> attribute, the value of which provides the object, the URI of the Aggregation).</p>
+
+  <p>For the example described in section 3, the relevant triples are:</p>
+
+<table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/rem</code></td>
+                <td><code>ore:describes</code></td>
+                <td><code>http://my.example.org/aggregation</code></td>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/aggregation</code></td>
+                <td><code>ore:isDescribedBy</code></td>
+                <td><code>http://my.example.org/rem</code></td>
+              </tr>
+</table>
+
+<p>These triples could be expressed in XHTML+RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-1-a.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xml:lang="en"&gt;
+&lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+  &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;div about="http://my.example.org/rem"
+    class="ResourceMap"&gt;
+    &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+<strong>    &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+      href="http://my.example.org/aggregation"&gt;
+</strong>      http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-1-a.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-1-a.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-1-a.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-1-a.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+<p>The <code>about</code> and <code>href</code> attribute values could
+be relative references to be resolved relative to a base URI, e.g.</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-1-b.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+            "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+         xmlns:ore="http://www.openarchives.org/ore/terms/"
+         xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;base href="http://my.example.org/rem" /&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+    &lt;div class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+<strong>      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="aggregation"&gt;
+</strong>        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-1-b.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-1-b.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-1-b.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-1-b.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+<p>The base URI may be the URI of the document e.g. if the URI of the
+document is the URI of the Resource Map <code>http://my.example.org/rem</code> then the example might
+be represented as:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-1-c.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                  "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+         xmlns:ore="http://www.openarchives.org/ore/terms/"
+         xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+    &lt;div class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+<strong>      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="aggregation"&gt;
+</strong>        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-1-c.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-1-c.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-1-c.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-1-c.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+<p>For reasons of brevity, these variants are not repeated in the
+remaining examples below, which all use the form of the first example
+above, with absolute URIs provided.</p>
+
+
+<h3>3.2 <a name="RepresentingRDFa-2">Typing of Resource Map</a></h3>
+
+<p>The type of a Resource Map is expressed by a single (optional)
+triple in which the subject is the URI of the Resource Map, the
+predicate is the URI
+<code>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</code>, and the
+object is the URI
+<code>http://www.openarchives.org/ore/terms/ResourceMap</code>.</p>
+
+<p>In RDFa, this can be expressed using an XHTML element with an
+<code>about</code> attribute (the value of which provides the subject,
+the URI of the Resource Map), and also a <code>typeof</code> attribute
+with a CURIE value corresponding to the predicate (typically
+<code>ore:ResourceMap</code>).</p>
+
+<p>For the example described in section 3, the relevant triple is:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/rem</code></td>
+                <td><code>rdf:type</code></td>
+                <td><code>http://www.openarchives.org/ore/terms/ResourceMap</code></td>
+              </tr>
+	</table>
+
+<p>This triple could be expressed in XHTML+RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-2.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+<strong>    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+</strong>      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-2.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-2.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-2.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-2.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+  <h3>3.3 <a name="RepresentingRDFa-3">Metadata about Resource Map (Required)</a></h3>
+
+  <p>A Resource Map must provide some basic metadata about the Resource Map. This metadata takes the form of</p>
+
+  <ul>
+  <li>one or more triples in which the subject is is the URI of the Resource Map, the predicate is the URI <code>http://purl.org/dc/terms/creator</code> and the object is a URI or a blank node.</li>
+  <li>a single triple in which the subject is is the URI of the Resource Map, the predicate is the URI <code>http://purl.org/dc/terms/modified</code> and the object is either a plain or typed literal.</li>
+  </ul>
+
+  <p>In RDFa, this can be expressed using an XHTML element with an <code>about</code> attribute (the value of which provides the subject, the URI of the Resource Map), and nested within that element</p>
+
+  <ul>
+  <li>an <code>a</code> element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate (typically <code>dcterms:creator</code>) and an <code>href</code> attribute, the value of which provides the object, the URI of the Agent. If the Agent has no associated URI but instead just an name and/or email address then the blank node construction shown in <a href="#SummaryRDFa">section 2</a> with additional <code>foaf:name</code> and/or <code>foaf:mbox</code> properties shown in <a href="#RepresentingRDFa-5">section 3.5</a> must be used.</li>
+  <li>an element with a <code>property</code> attribute with a CURIE value corresponding to the predicate (typically <code>dcterms:modified</code>) and a <code>content</code> attribute, the value of which provides the object, the literal.</li>
+  </ul>
+
+
+  <p>For the example described in section 3, the relevant triples are:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/rem</code></td>
+                <td><code>dcterms:creator</code></td>
+                <td><code>http://my.example.org/agents/AgencyX</code></td>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/rem</code></td>
+                <td><code>dcterms:modified</code></td>
+                <td><code>"2008-02-12"^^<br />http://www.w3.org/2001/XMLSchema#date</code></td>
+              </tr>
+  </table>
+
+ <p>These triples could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-3.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+<strong>    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+</strong>      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Creator: 
+<strong>        &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+</strong>      &lt;p&gt;Modification date: 
+<strong>        &lt;span property="dcterms:modified"
+        datatype="xsd:date" content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+</strong>
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-3.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-3.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-3.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-3.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+
+  <h3>3.4 <a name="RepresentingRDFa-4">Metadata about Resource Map (Optional)</a></h3>
+
+  <p>A Resource Map can also provide additional metadata about the Resource Map. This metadata takes the form of triples in which</p>
+
+  <ul>
+  <li><p>the subject is the URI of the Resource Map,</p>
+  <ul>
+  <li>the predicate is any URI</li>
+  <li>the object is any URI or a plain literal or a typed literal</li>
+  </ul>
+  </li>
+
+  <li><p>the object is the URI of the Resource Map,</p>
+  <ul>
+  <li>the predicate is any URI</li>
+  <li>the subject is any URI</li>
+  </ul>
+  </li>
+  </ul>
+
+  <p>The first class of triple is expressed as in the previous sections, using an element with an <code>about</code> attribute
+  (the value of which provides the subject, the URI of the Resource Map), and nested within that element, for each triple:</p>
+
+  <ul>
+  <li>(for the URI object case) an element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate and an <code>href</code> attribute, the value of which provides the object</li>
+  <li>(for the literal object case) an element with a <code>property</code> attribute with a CURIE value corresponding to the predicate. The literal object is provided either by the value of a <code>content</code> attribute or by the XML element content</li>
+  </ul>
+
+  <p>The second class of triple is expressed similarly, using an element with an <code>about</code> attribute
+  (the value of which here provides the object, the URI of the Resource Map), and nested within that element, for each triple  an element with a <code>rev</code> attribute with a CURIE value corresponding to the predicate and an <code>href</code> attribute, the value of which provides the subject.</p>
+
+   <p>For the example described in section 3, the relevant triples are:</p>
+
+         <table class="example-table"  summary="Resource Map Example table">
+               <tr>
+                 <th width="40%">Subject</th>
+                 <th width="20%">Predicate</th>
+                 <th width="40%">Object</th>
+               </tr>
+               <tr>
+                 <td><code>http://my.example.org/rem</code></td>
+                 <td><code>dc:rights</code></td>
+                 <td><code>http://example.org/docs/doc123/</code></td>
+               </tr>
+               <tr>
+                 <td><code>http://my.example.org/rem</code></td>
+                 <td><code>dcterms:created</code></td>
+                 <td><code>"2008-02-07"^^<br />http://www.w3.org/2001/XMLSchema#date</code></td>
+               </tr>
+               <tr>
+                 <td><code>http://my.example.org/rem</code></td>
+                 <td><code>marcrel:OWN</code></td>
+                 <td><code>http://my.example.org/agents/AgencyY</code></td>
+               </tr>
+               <tr>
+                 <td><code>http://example.org/docs/doc456/</code></td>
+                 <td><code>dcterms:references</code></td>
+                 <td><code>http://my.example.org/rem</code></td>
+               </tr>
+   </table>
+
+<p>These triples could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-4.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+<strong>    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+</strong>      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+        content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+
+<strong>      &lt;p&gt;Rights Statement:  &lt;a rel="dc:rights"
+        href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN"
+        href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+        href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+</strong>
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-4.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-4.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-4.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-4.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+  <h3>3.5 <a name="RepresentingRDFa-5">Metadata about Creator of Resource Map (Optional)</a></h3>
+
+  <p>A Resource Map can also provide simple metadata about the creator of a Resource Map.
+  This metadata takes the form of:</p>
+
+  <ul>
+  <li>an optional triple in which the subject is the URI of the Agent, the predicate is the URI http://xmlns.com/foaf/0.1/name and the object is a plain literal</li>
+  <li>an optional triple in which the subject is the URI of the Agent, the predicate is the URI http://xmlns.com/foaf/0.1/mbox and the object is a URI identifying an email account</li>
+  </ul>
+
+  <p>For the example described in section 3, the relevant triples are:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/agents/AgencyX</code></td>
+                <td><code>foaf:name</code></td>
+                <td><code>"Agency X"</code></td>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/agents/AgencyX</code></td>
+                <td><code>foaf:mbox</code></td>
+                <td><code>mailto:agencyx@example.org</code></td>
+              </tr>
+
+  </table>
+
+
+<p>These triples could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-5.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xml:lang="en"&gt;
+&lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+<strong>      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+</strong>      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+        content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Rights Statement:  &lt;a rel="dc:rights"
+        href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN"
+        href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+        href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+    &lt;/div&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-5.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-5.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-5.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-5.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+
+<h3>3.6 <a name="RepresentingRDFa-6">Relationship between Aggregation and aggregated Resource(s)</a></h3>
+
+<p>The relationship between an Aggregation and its component
+aggregated Resources is expressed by one or more triples in which the
+subject is the URI of the Aggregation, the predicate is the URI
+<code>http://www.openarchives.org/ore/terms/aggregates</code> and the
+object is the URI of the aggregated Resource.</p>
+
+<p>In RDFa, this can be expressed using an XHTML element with an <code>about</code> attribute (the value of which provides the subject, the URI of the Aggregation), and nested within that element, for each aggregated Resource, an <code>a</code> element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate (typically <code>ore:aggregates</code>) and an <code>href</code> attribute, the value of which provides the object, the URI of the aggregated Resource).</p>
+
+   <p>For the example described in section 3, the relevant triples are:</p>
+
+         <table class="example-table"  summary="Resource Map Example table">
+               <tr>
+                 <th width="40%">Subject</th>
+                 <th width="20%">Predicate</th>
+                 <th width="40%">Object</th>
+               </tr>
+               <tr>
+                 <td><code>http://my.example.org/aggregation</code></td>
+                 <td><code>ore:aggregates</code></td>
+                 <td><code>http://my.example.org/doc.html</code></td>
+               </tr>
+               <tr>
+                 <td><code>http://my.example.org/aggregation</code></td>
+                 <td><code>ore:aggregates</code></td>
+                 <td><code>http://my.example.org/doc1.html</code></td>
+               </tr>
+               <tr>
+                 <td><code>http://my.example.org/aggregation</code></td>
+                 <td><code>ore:aggregates</code></td>
+                 <td><code>http://my.example.org/doc1.pdf</code></td>
+               </tr>
+   </table>
+
+<p>These triples could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-6.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+        content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Rights Statement:  &lt;a rel="dc:rights"
+        href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN" href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+        href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+<strong>      &lt;div about="http://my.example.org/aggregation"
+        class="Aggregation"&gt;
+</strong>        &lt;h2&gt;Aggregation http://my.example.org/aggregation&lt;/h2&gt;
+
+        &lt;p&gt;Components/members of Aggregation: &lt;/p&gt;
+        &lt;ul&gt;
+<strong>          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc.html"&gt;
+</strong>            http://my.example.org/doc.html&lt;/a&gt;.&lt;/li&gt;
+<strong>          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.html"&gt;
+</strong>            http://my.example.org/doc1.html&lt;/a&gt;.&lt;/li&gt;
+<strong>          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.pdf"&gt;
+</strong>            http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/li&gt;
+        &lt;/ul&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-6.xhtml-->
+</div>
+
+<p><a href="rdfa-examples/rdfa-3-6.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-6.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-6.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+
+  <h3>3.7 <a name="RepresentingRDFa-7">Typing of Aggregation</a></h3>
+
+    <p>The type of an Aggregation is expressed by a single (optional) triple in which the subject is the URI of the Aggregation, the predicate is the URI <code>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</code>, and the object is the URI <code>http://www.openarchives.org/ore/terms/Aggregation</code>.</p>
+
+  <p>In RDFa, this can be expressed using an XHTML element with an <code>about</code> attribute (the value of which provides the subject, the URI of the Aggregation), and also a <code>typeof</code> attribute with a CURIE value corresponding to the predicate (typically <code>ore:Aggregation</code>).</p>
+
+
+  <p>For the example described in section 3, the relevant triples are:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/aggregation</code></td>
+                <td><code>rdf:type</code></td>
+                <td><code>http://www.openarchives.org/ore/terms/Aggregation</code></td>
+              </tr>
+  </table>
+
+<p>These triples could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-7.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+        content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Rights Statement:
+        &lt;a rel="dc:rights" href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN" href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by:
+        &lt;a rev="dcterms:references" href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+<strong>      &lt;div about="http://my.example.org/aggregation"
+        typeof="ore:Aggregation" class="Aggregation"&gt;
+</strong>        &lt;h2&gt;Aggregation http://my.example.org/aggregation&lt;/h2&gt;
+
+        &lt;p&gt;Components/members of Aggregation: &lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc.html"&gt;
+            http://my.example.org/doc.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.html"&gt;
+            http://my.example.org/doc1.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.pdf"&gt;
+            http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/li&gt;
+      &lt;/ul&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-7.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-7.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-7.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-7.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+
+  <h3>3.8 <a name="RepresentingRDFa-8">Relationships between the Aggregation and Similar Resources</a></h3>
+
+  <p>A Resource Map can also provide information about the relationships between an Aggregation and similar resources.
+  This metadata takes the form of either zero or more triples in which the subject is the URI of the Aggregation, the predicate is the URI <code>http://www.w3.org/2000/01/rdf-schema#seeAlso</code> and the object is a URI which identifies some other resource. The Abstract Data Model also permits a Resource Map to provide information about resources which are similar in intellectual content to an Aggregation.
+  This metadata takes the form of zero or more triples in which the subject is the URI of the Aggregation, the predicate is the URI <code>http://www.openarchives.org/ore/similarTo</code> and the object is a URI of another resource.</p>
+
+  <p>In RDFa, this can be expressed using an XHTML element with an <code>about</code> attribute (the value of which provides the subject, the URI of the Aggregation), and nested within that element, for each similar resource, an <code>a</code> element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate (typically
+  <code>rdfs:seeAlso</code> or <code>ore:similarTo</code>)  and an <code>href</code> attribute, the value of which provides the object, the URI of the aggregated Resource).</p>
+
+
+  <p>For the example described in section 3, the relevant triples are:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/aggregation</code></td>
+                <td><code>rdfs:seeAlso</code></td>
+                <td><code>http://your.example.org/aggregation-1</code></td>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/aggregation</code></td>
+                <td><code>ore:similarTo</code></td>
+                <td><code>info:doi/10.1045/february-2006-smith</code></td>
+              </tr>
+  </table>
+
+<p>These triples could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-8.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+        content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Rights Statement:
+        &lt;a rel="dc:rights" href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN" href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by:
+        &lt;a rev="dcterms:references" href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+<strong>      &lt;div about="http://my.example.org/aggregation"
+        typeof="ore:Aggregation" class="Aggregation"&gt;
+</strong>        &lt;h2&gt;Aggregation http://my.example.org/aggregation&lt;/h2&gt;
+
+        &lt;p&gt;Components/members of Aggregation: &lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc.html"&gt;
+            http://my.example.org/doc.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.html"&gt;
+            http://my.example.org/doc1.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.pdf"&gt;
+            http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/li&gt;
+        &lt;/ul&gt;
+
+<strong>        &lt;p&gt;See also:  &lt;a rel="rdfs:seeAlso"
+          href="http://your.example.org/aggregation-1"&gt;
+</strong>          http://your.example.org/aggregation-1&lt;/a&gt;.&lt;/p&gt;
+<strong>        &lt;p&gt;Similar to:  &lt;a rel="ore:similarTo"
+          href="info:doi/10.1045/february-2006-smith"&gt;
+</strong>          info:doi/10.1045/february-2006-smith&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-8.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-8.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-8.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-8.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+
+  <h3>3.9 <a name="RepresentingRDFa-9">Relationships between Aggregation and Other Resources</a></h3>
+
+
+  <p>A Resource Map can also provide additional metadata about the Aggregation, describing relationships between the Aggregation and other resources, in a similar way to the case of the Resource Map itself. This metadata takes the form of triples in which</p>
+
+  <ul>
+  <li><p>the subject is the URI of the Aggregation,</p>
+  <ul>
+  <li>the predicate is any URI</li>
+  <li>the object is any URI or a plain literal or a typed literal</li>
+  </ul>
+  </li>
+
+  <li><p>the object is the URI of the Aggregation,</p>
+  <ul>
+  <li>the predicate is any URI</li>
+  <li>the subject is any URI</li>
+  </ul>
+  </li>
+  </ul>
+
+  <p>The first class of triple is expressed as in the previous sections, using an element with an <code>about</code> attribute
+  (the value of which provides the subject, the URI of the Aggregation), and nested within that element, for each triple:</p>
+
+  <ul>
+  <li>(for the URI object case) an element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate and an <code>href</code> attribute, the value of which provides the object</li>
+  <li>(for the literal object case) an element with a <code>property</code> attribute with a CURIE value corresponding to the predicate. The literal object is provided either by the value of a <code>content</code> attribute or by the XML element content</li>
+  </ul>
+
+  <p>The second class of triple is expressed similarly, using an element with an <code>about</code> attribute
+  (the value of which here provides the object, the URI of the Aggregation), and nested within that element, for each triple  an element with a <code>rev</code> attribute with a CURIE value corresponding to the predicate and an <code>href</code> attribute, the value of which provides the subject.</p>
+
+   <p>For the example described in section 3, the relevant triple is:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://example.org/docs/doc789/</code></td>
+                <td><code>dcterms:references</code></td>
+                <td><code>http://my.example.org/aggregation</code></td>
+              </tr>
+  </table>
+
+<p>This triple could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-9.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xml:lang="en"&gt;
+
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+        content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Rights Statement:
+        &lt;a rel="dc:rights" href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN" href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by:
+        &lt;a rev="dcterms:references" href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+<strong>      &lt;div about="http://my.example.org/aggregation"
+        typeof="ore:Aggregation" class="Aggregation"&gt;
+</strong>        &lt;h2&gt;Aggregation http://my.example.org/aggregation&lt;/h2&gt;
+
+        &lt;p&gt;Components/members of Aggregation: &lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc.html"&gt;
+            http://my.example.org/doc.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.html"&gt;
+            http://my.example.org/doc1.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.pdf"&gt;
+            http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/li&gt;
+        &lt;/ul&gt;
+
+        &lt;p&gt;See also:  &lt;a rel="rdfs:seeAlso"
+          href="http://your.example.org/aggregation-1"&gt;
+          http://your.example.org/aggregation-1&lt;/a&gt;.&lt;/p&gt;
+        &lt;p&gt;Similar to:  &lt;a rel="ore:similarTo"
+          href="info:doi/10.1045/february-2006-smith"&gt;
+          info:doi/10.1045/february-2006-smith&lt;/a&gt;.&lt;/p&gt;
+
+<strong>        &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+          href="http://example.org/docs/doc/789/"&gt;
+</strong>          http://example.org/docs/doc/789/&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-9.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-9.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-9.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-9.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+
+  <h3>3.10 <a name="RepresentingRDFa-10">Relationships between Aggregated Resources and Other Resources</a></h3>
+
+<p>A Resource Map can also provide additional metadata about the
+Aggregated Resources, describing relationships between an Aggregated
+Resource and another resource, in a similar way to the cases of the
+Resource Map (<a href="#RepresentingRDFa-4">section 3.4</a>) and the
+Aggregation (<a href="#RepresentingRDFa-9">section 3.9</a>). This may
+includes triples relationships between two Aggregated Resources within
+the Aggregation described by the current Resource Map. This metadata
+takes the form of triples in which </p>
+
+<ul>
+<li><p>the subject is the URI of an Aggregated Resource,</p>
+  <ul>
+    <li>the predicate is any URI</li>
+    <li>the object is any URI or a plain literal or a typed literal</li>
+  </ul>
+</li>
+<li><p>the object is the URI of an Aggregated Resource,</p>
+  <ul>
+    <li>the predicate is any URI</li>
+    <li>the subject is any URI</li>
+  </ul>
+</li>
+</ul>
+
+<p>The first class of triple is expressed as in the previous sections,
+using an element with an <code>about</code> attribute (the value of
+which provides the subject, the URI of the Aggregated Resource), and
+nested within that element, for each triple:</p>
+
+  <ul>
+  <li>(for the URI object case) an element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate and an <code>href</code> attribute, the value of which provides the object</li>
+  <li>(for the literal object case) an element with a <code>property</code> attribute with a CURIE value corresponding to the predicate. The literal object is provided either by the value of a <code>content</code> attribute or by the XML element content</li>
+  </ul>
+
+  <p>The second class of triple is expressed similarly, using an element with an <code>about</code> attribute
+  (the value of which here provides the object, the URI of the Aggregated Resource), and nested within that element, for each triple  an element with a <code>rev</code> attribute with a CURIE value corresponding to the predicate and an <code>href</code> attribute, the value of which provides the subject.</p>
+
+  <p>For the example described in section 3, the relevant triples - note that the first of the three describes a relationship between two Aggregated Resources within the current Aggregation - are:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+               </tr>
+              <tr>
+                <td><code>http://my.example.org/doc1.html</code></td>
+                <td><code>dcterms:hasFormat</code></td>
+                <td><code>http://my.example.org/doc1.pdf</code></td>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/doc1.pdf</code></td>
+                <td><code>rdf:type</code></td>
+                <td><code>http://purl.org/dc/dcmitype/Text</code></td>
+              </tr>
+              <tr>
+                <td><code>http://example.org/docs/docABC/</code></td>
+                <td><code>dcterms:references</code></td>
+                <td><code>http://my.example.org/doc.html</code></td>
+              </tr>
+	</table>
+
+<p>These triples could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-10.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                  "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xml:lang="en"&gt;
+
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+        content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Rights Statement:
+        &lt;a rel="dc:rights" href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN" href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by:
+        &lt;a rev="dcterms:references" href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/aggregation"
+        typeof="ore:Aggregation" class="Aggregation"&gt;
+        &lt;h2&gt;Aggregation http://my.example.org/aggregation&lt;/h2&gt;
+
+        &lt;p&gt;Components/members of Aggregation: &lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc.html"&gt;
+            http://my.example.org/doc.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.html"&gt;
+            http://my.example.org/doc1.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.pdf"&gt;
+            http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/li&gt;
+        &lt;/ul&gt;
+
+        &lt;p&gt;See also:  &lt;a rel="rdfs:seeAlso"
+          href="http://your.example.org/aggregation-1"&gt;
+          http://your.example.org/aggregation-1&lt;/a&gt;.&lt;/p&gt;
+        &lt;p&gt;Similar to:  &lt;a rel="ore:similarTo"
+          href="info:doi/10.1045/february-2006-smith"&gt;
+          info:doi/10.1045/february-2006-smith&lt;/a&gt;.&lt;/p&gt;
+
+        &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+       href="http://example.org/docs/doc/789/"&gt;http://example.org/docs/doc/789/&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+<strong>      &lt;div about="http://my.example.org/doc1.html"
+        class="AggregatedResource"&gt;
+</strong>      &lt;h3&gt;Aggregated Resource http://my.example.org/doc1.html&lt;/h3&gt;
+
+<strong>        &lt;p&gt;Available in different format: &lt;a rel="dcterms:hasFormat"
+          href="http://my.example.org/doc1.pdf"&gt;
+</strong>          http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/p&gt;
+<strong>        &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+          href="http://example.org/docs/docABC/"&gt;
+</strong>          http://example.org/docs/docABC/&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+<strong>      &lt;div about="http://my.example.org/doc1.pdf"
+        class="AggregatedResource"&gt;
+</strong>      &lt;h3&gt;Aggregated Resource http://my.example.org/doc1.pdf&lt;/h3&gt;
+
+        &lt;p&gt;Type: &lt;a rel="rdf:type"
+          href="http://purl.org/dc/dcmitype/Text"&gt;Text&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-10.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-10.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-10.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-10.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+  <h3>3.11 <a name="RepresentingRDFa-11">Aggregated Resource as constituent of another Aggregation</a></h3>
+
+  <p>A Resource Map can describe relationships between an Aggregated Resource and another Aggregation, in the form of triples in which the subject is the URI of an Aggregated Resource, the predicate is the URI <code>http://www.openarchives.org/ore/terms/isAggregatedBy</code> and the object is the URI of another Aggregation, i.e. an Aggregation other than the one described by the current Resource Map.</p>
+
+  <p>In RDFa, this can be expressed using an XHTML element with an <code>about</code> attribute (the value of which provides the subject, the URI of the Aggregated Resource), and nested within that element an <code>a</code> element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate (typically  <code>ore:isAggregatedBy</code> and an <code>href</code> attribute, the value of which provides the object, the URI of the other Aggregation).</p>
+
+  <p>For the example described in section 3, the relevant triple is:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/doc1.pdf</code></td>
+                <td><code>ore:isAggregatedBy</code></td>
+                <td><code>http://your.example.org/aggregation-2</code></td>
+              </tr>
+  </table>
+
+<p>This triple could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-11.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+      content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Rights Statement:
+        &lt;a rel="dc:rights" href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN" href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by:
+        &lt;a rev="dcterms:references" href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/aggregation"
+        typeof="ore:Aggregation" class="Aggregation"&gt;
+        &lt;h2&gt;Aggregation http://my.example.org/aggregation&lt;/h2&gt;
+
+        &lt;p&gt;Components/members of Aggregation: &lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc.html"&gt;
+            http://my.example.org/doc.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.html"&gt;
+            http://my.example.org/doc1.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.pdf"&gt;
+            http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/li&gt;
+        &lt;/ul&gt;
+
+        &lt;p&gt;See also:  &lt;a rel="rdfs:seeAlso"
+          href="http://your.example.org/aggregation-1"&gt;http://your.example.org/aggregation-1&lt;/a&gt;.&lt;/p&gt;
+        &lt;p&gt;Similar to:  &lt;a rel="ore:similarTo"
+          href="info:doi/10.1045/february-2006-smith"&gt;info:doi/10.1045/february-2006-smith&lt;/a&gt;.&lt;/p&gt;
+
+        &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+          href="http://example.org/docs/doc/789/"&gt;http://example.org/docs/doc/789/&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;/div&gt;
+
+      &lt;div about="http://my.example.org/doc1.html"
+        class="AggregatedResource"&gt;
+        &lt;h3&gt;Aggregated Resource http://my.example.org/doc1.html&lt;/h3&gt;
+
+        &lt;p&gt;Available in different format: &lt;a rel="dcterms:hasFormat"
+          href="http://my.example.org/doc1.pdf"&gt;http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/p&gt;
+        &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+          href="http://example.org/docs/docABC/"&gt;http://example.org/docs/docABC/&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+<strong>      &lt;div about="http://my.example.org/doc1.pdf"
+        class="AggregatedResource"&gt;
+</strong>        &lt;h3&gt;Aggregated Resource http://my.example.org/doc1.pdf&lt;/h3&gt;
+
+        &lt;p&gt;Type: &lt;a rel="rdf:type" href="http://purl.org/dc/dcmitype/Text"&gt;Text&lt;/a&gt;.&lt;/p&gt;
+<strong>        &lt;p&gt;Aggregated By: &lt;a rel="ore:isAggregatedy"
+          href="http://your.example.org/aggregation-2"
+          &gt;http://your.example.org/aggregation-2&lt;/a&gt;.&lt;/p&gt;
+</strong>      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-11.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-11.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-11.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-11.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+  <h3>3.12 <a name="RepresentingRDFa-12">Nesting Aggregations</a></h3>
+
+  <p>A Resource Map may express the information that an Aggregated Resource is itself an Aggregation described by another Resource Map, in the form of triples in which the subject is the URI of an Aggregated Resource, the predicate is the URI <code>http://www.openarchives.org/ore/terms/isDescribedBy</code> and the object is the URI of another Resource Map.</p>
+
+  <p>In RDFa, this can be expressed using an XHTML element with an <code>about</code> attribute (the value of which provides the subject, the URI of the Aggregated Resource), and nested within that element an <code>a</code> element with a <code>rel</code> attribute with a CURIE value corresponding to the predicate (typically  <code>ore:isDescribedBy</code> and an <code>href</code> attribute, the value of which provides the object, the URI of the other Resource Map).</p>
+
+  <p>For the example described in section 3, the relevant triple is:</p>
+
+        <table class="example-table"  summary="Resource Map Example table">
+              <tr>
+                <th width="40%">Subject</th>
+                <th width="20%">Predicate</th>
+                <th width="40%">Object</th>
+              </tr>
+              <tr>
+                <td><code>http://my.example.org/doc1.html</code></td>
+                <td><code>ore:isDescribedBy</code></td>
+                <td><code>http://your.example.org/rem-3</code></td>
+              </tr>
+  </table>
+
+<p>This triple could be expressed in RDFa as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-12.xhtml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+                      "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd"&gt;
+&lt;html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:ore="http://www.openarchives.org/ore/terms/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+      xmlns:marcrel="http://www.loc.gov/loc.terms/relators/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+      xml:lang="en"&gt;
+  &lt;head profile="http://www.w3.org/1999/xhtml/vocab"&gt;
+    &lt;title&gt;Resource Map http://my.example.org/rem&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+
+    &lt;div about="http://my.example.org/rem"
+      typeof="ore:ResourceMap" class="ResourceMap"&gt;
+      &lt;h1&gt;Resource Map http://my.example.org/rem&lt;/h1&gt;
+
+      &lt;p&gt;Described Aggregation: &lt;a rel="ore:describes"
+        href="http://my.example.org/aggregation"&gt;
+        http://my.example.org/aggregation&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Creator: &lt;a rel="dcterms:creator"
+        href="http://my.example.org/agents/AgencyX"&gt;Agency X&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/agents/AgencyX" class="Agent"&gt;
+        &lt;p&gt;Name &lt;span property="foaf:name"&gt;Agency X&lt;/span&gt;.&lt;/p&gt;
+        &lt;p&gt;Email: &lt;a rel="foaf:mbox"
+          href="mailto:agencyx@example.org"&gt;mailto:agencyx@example.org&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;p&gt;Modification date: &lt;span property="dcterms:modified" datatype="xsd:date"
+      content="2008-02-12"&gt;12 February 2008&lt;/span&gt;.&lt;/p&gt;
+
+      &lt;p&gt;Rights Statement:
+        &lt;a rel="dc:rights" href="http://example.org/docs/doc123/"&gt;Rights Statement 123&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Creation date: &lt;span property="dcterms:created" datatype="xsd:date"
+        content="2008-02-07"&gt;07 February 2008&lt;/span&gt;.&lt;/p&gt;
+      &lt;p&gt;Owner: &lt;a rel="marcrel:OWN" href="http://my.example.org/agents/AgencyY"&gt;Agency Y&lt;/a&gt;.&lt;/p&gt;
+      &lt;p&gt;Referenced by:
+        &lt;a rev="dcterms:references" href="http://example.org/docs/doc456/"&gt;Document 456&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;div about="http://my.example.org/aggregation"
+        typeof="ore:Aggregation" class="Aggregation"&gt;
+        &lt;h2&gt;Aggregation http://my.example.org/aggregation&lt;/h2&gt;
+
+        &lt;p&gt;Components/members of Aggregation: &lt;/p&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc.html"&gt;
+            http://my.example.org/doc.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.html"&gt;
+            http://my.example.org/doc1.html&lt;/a&gt;.&lt;/li&gt;
+          &lt;li&gt;&lt;a rel="ore:aggregates"
+            href="http://my.example.org/doc1.pdf"&gt;
+            http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/li&gt;
+        &lt;/ul&gt;
+
+        &lt;p&gt;See also:  &lt;a rel="rdfs:seeAlso"
+          href="http://your.example.org/aggregation-1"&gt;http://your.example.org/aggregation-1&lt;/a&gt;.&lt;/p&gt;
+        &lt;p&gt;Similar to:  &lt;a rel="ore:similarTo"
+          href="info:doi/10.1045/february-2006-smith"&gt;info:doi/10.1045/february-2006-smith&lt;/a&gt;.&lt;/p&gt;
+
+        &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+          href="http://example.org/docs/doc/789/"&gt;http://example.org/docs/doc/789/&lt;/a&gt;.&lt;/p&gt;
+
+      &lt;/div&gt;
+
+<strong>      &lt;div about="http://my.example.org/doc1.html"
+        class="AggregatedResource"&gt;
+</strong>        &lt;h3&gt;Aggregated Resource http://my.example.org/doc1.html&lt;/h3&gt;
+
+        &lt;p&gt;Available in different format: &lt;a rel="dcterms:hasFormat"
+          href="http://my.example.org/doc1.pdf"&gt;http://my.example.org/doc1.pdf&lt;/a&gt;.&lt;/p&gt;
+        &lt;p&gt;Referenced by: &lt;a rev="dcterms:references"
+          href="http://example.org/docs/docABC/"&gt;http://example.org/docs/docABC/&lt;/a&gt;.&lt;/p&gt;
+<strong>        &lt;p&gt;Described By: &lt;a rel="ore:isDescribedy"
+          href="http://your.example.org/rem-3"
+          &gt;http://your.example.org/rem-3&lt;/a&gt;.&lt;/p&gt;
+</strong>       &lt;/div&gt;
+
+      &lt;div about="http://my.example.org/doc1.pdf"
+        class="AggregatedResource"&gt;
+        &lt;h3&gt;Aggregated Resource http://my.example.org/doc1.pdf&lt;/h3&gt;
+
+        &lt;p&gt;Type: &lt;a rel="rdf:type" href="http://purl.org/dc/dcmitype/Text"&gt;Text&lt;/a&gt;.&lt;/p&gt;
+        &lt;p&gt;Aggregated By: &lt;a rel="ore:isAggregatedy"
+          href="http://your.example.org/aggregation-2"
+          &gt;http://your.example.org/aggregation-2&lt;/a&gt;.&lt;/p&gt;
+      &lt;/div&gt;
+
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfa-examples/rdfa-3-12.xhtml-->
+</div>
+<p><a href="rdfa-examples/rdfa-3-12.xhtml">XHTML+RDFa</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-12.xhtml">RDF/XML via RDFa Distiller</a>,
+<a href="http://www.w3.org/2007/08/pyRdfa/extract?uri=http://www.openarchives.org/ore/0.9/rdfa-examples/rdfa-3-12.xhtml&amp;format=nt">NTriples via RDFa Distiller</a></p>
+
+<h3>3.13 <a name="RepresentingRDFa-13">Additional Relationships in the Resource Map</a></h3>
+
+<p>A Resource Map may express information about relationships between other resources related to the "primary" resources described (Resource Map, Aggregation, Aggregated Resource, Proxy), in the form of triples in which the subject is any URI, the predicate is any URI and the object is any URI or a plain literal or a typed literal</p>
+
+<p>These triples are expressed using the same conventions as in the previous sections. For each distinct subject, use an element with an <code>about</code> attribute, the value of which provides the subject, containing an element for each triple with that subject. For the URI case, a <code>rel</code> attribute value provides the predicate, and an <code>href</code> attribute value provides the object. For the literal case, a <code>property</code> attribute value provides the predicate and either a <code>content</code> attribute value or the content of the element provides the object (with a <code>datatype</code> attribute or <code>xml:lang</code> attribute as required).</p>
+
+
+<h2>4. <a name="References">References</a></h2>
+<dl>
+
+<dt>[<a id="Named_Graph" name="Named_Graph">Named Graph</a>]</dt>
+<dd><a href="http://portal.acm.org/citation.cfm?id=1060835"><cite>
+Named graphs, provenance and trust</cite></a>, J. Carroll, C. Bizer,
+P. Hayes, P. Stickler, Proceedings of the 14th international
+conference on World Wide Web, 2004.</dd>
+
+<dt>[<a id="ref-http" name="ref-http">ORE HTTP</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.9/http">ORE User
+Guide - HTTP Implementation and Multiple Serializations</a></cite>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-06-02.
+Available at http://www.openarchives.org/ore/0.9/http .</dd>
+
+<dt>[<a name="ORE_Model" id="ORE_Model">ORE Model</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.9/datamodel">ORE Specification - Abstract Data Model</a></cite>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-06-02.
+Available at http://www.openarchives.org/ore/0.9/datamodel .</dd>
+
+<dt>[<a id="RDF_Concepts" name="RDF_Concepts">RDF Concepts</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/">Resource
+Description Framework (RDF): Concepts and Abstract Syntax</a></cite>,
+Graham Klyne and Jeremy J. Carroll, Editors, W3C Recommendation,
+10 February 2004, http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/
+. <a href="http://www.w3.org/TR/rdf-concepts/">Latest version</a>
+available at http://www.w3.org/TR/rdf-concepts/ . </dd>
+
+<dt>[<a id="ref-rdfa-primer" name="ref-rdfa-primer">RDFa Primer</a>]</dt>
+<dd><a href="http://www.w3.org/TR/2008/WD-xhtml-rdfa-primer-20080317/"><cite>RDFa
+Primer: Embedding Structured Data in Web Pages</cite></a>,
+Ben Adida, Mark Birbeck, Editors, 
+W3C Working Draft 17 March 2008,
+Available at http://www.w3.org/TR/2008/WD-xhtml-rdfa-primer-20080317/ .<br />
+<a href="http://www.w3.org/TR/xhtml-rdfa-primer">Latest version</a> 
+available at http://www.w3.org/TR/xhtml-rdfa-primer .</dd>
+
+<dt>[<a id="RDFa_Syntax" name="RDFa_Syntax">RDFa Syntax</a>]</dt>
+<dd><a href="http://www.w3.org/TR/2007/WD-rdfa-syntax-20071018/"><cite>RDFa 
+in XHTML: Syntax and Processing. A collection of attributes
+and processing rules for extending XHTML to support RDF</cite></a>, 
+Ben Adida, Mark Birbeck, Shane McCarron and Steven Pemberton, Editors,
+W3C Editor's Draft, 01 May 2008.<br />
+Available at http://www.w3.org/MarkUp/2008/ED-rdfa-syntax-20080501 .<br />
+<a href="http://www.w3.org/TR/rdfa-syntax/">Latest version</a> available
+at http://www.w3.org/TR/rdfa-syntax/. </dd>
+
+<dt>[<a id="RDFS" name="RDFS">RDFS</a>]</dt>
+<dd><a href="http://www.w3.org/TR/2004/REC-rdf-schema-20040210/"><cite>RDF
+Vocabulary Description Language 1.0: RDF Schema</cite>
+</a>, Dan Brickley and R.V. Guha, Editors. W3C Recommendation, 10
+February 2004,<br />
+Available at http://www.w3.org/TR/2004/REC-rdf-schema-20040210/ .<br />
+<a href="http://www.w3.org/TR/rdf-schema/">Latest version</a> available
+at http://www.w3.org/TR/rdf-schema/. </dd>
+
+<dt>[<a id="RDFXML" name="RDFXML">RDFXML</a>]</dt>
+<dd><a href="http://www.w3.org/TR/2004/REC-rdf-syntax-grammar-20040210/"><cite>RDF
+Vocabulary Description Language 1.0: RDF Schema</cite>
+</a>, Dan Brickley and R.V. Guha, Editors. W3C Recommendation, 10
+February 2004,<br />
+Available at http://www.w3.org/TR/2004/REC-rdf-syntax-grammar-20040210/ .<br />
+<a href="http://www.w3.org/TR/rdf-syntax-grammar/">Latest version</a> available
+at http://www.w3.org/TR/rdf-syntax-grammar/.</dd>
+
+<dt>[<a id="RFC2119" shape="rect" name="RFC2119">RFC2119</a>]</dt>
+<dd>IETF <cite>
+<a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119:
+Key words for use in RFCs to Indicate Requirement Levels</a></cite>,
+S. Bradner, March 1997. Available at http://www.ietf.org/rfc/rfc2119.txt.</dd>
+
+<dt>[<a id="RFC3986" name="RFC3986">RFC3986</a>]</dt>
+<dd><a href="http://www.ietf.org/rfc/rfc3986.txt"><cite>Uniform Resource
+Identifier (URI): Generic Syntax</cite></a>, T. Berners-Lee, R. Fielding,
+L. Masinter, IETF RFC3986, January 2004.
+Available at http://www.ietf.org/rfc/rfc3986.txt .</dd>
+
+<dt>[<a id="RFC3987" name="RFC3987">RFC3987</a>]</dt>
+<dd><a href="http://www.ietf.org/rfc/rfc3986.txt"><cite>Internationalized Resource Identifiers (IRIs)</cite></a>, 
+M. Duerst &amp; M. Suignard, IETF RFC3987, January 2005.
+Available at http://www.ietf.org/rfc/rfc3986.txt .</dd>
+
+
+<dt>[<a id="Web_Architecture" name="Web_Architecture">Web Architecture</a>]</dt>
+<dd><a href="http://www.w3.org/TR/webarch/"><cite>Architecture of
+the World Wide Web, Volume One</cite></a>, I. Jacobs and N. Walsh,
+Editors, World Wide Web Consortium, 15 January 2004.
+Available at http://www.w3.org/TR/webarch/ .</dd>
+
+</dl>
+
+</div>
+ <div class="back">
+<!--START-INCLUDE=_acknowledgements.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+</div>
+<!--END-INCLUDE=_acknowledgements.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+       <tbody><tr>
+            <th>Date</th>
+            <th>Editor</th>
+            <th>Description</th>
+        </tr>
+	<tr>
+	    <td>2008-06-02</td>
+	    <td>johnston/simeon</td>
+	    <td>public beta 0.9 release</td>
+	</tr>
+	<tr>
+	    <td>2008-02-29</td>
+	    <td>johnston</td>
+	    <td>public alpha 0.2 release (then part of rdfsyntax document)</td>
+	</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+
+<!--  LocalWords:  Namespaces RDFa URIs minimised RFC IETF URI IRI namespaces
+ -->
+<!--  LocalWords:  Adida Birbeck
+ -->
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

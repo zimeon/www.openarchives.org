@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] harvester guidelines
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20harvester%20guidelines&In-Reply-To=4DDE2ED3.6080809%40ubib.eur.nl">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002054.html">
+   <LINK REL="Next"  HREF="002057.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] harvester guidelines</H1>
+    <B>Hussein Suleman</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20harvester%20guidelines&In-Reply-To=4DDE2ED3.6080809%40ubib.eur.nl"
+       TITLE="[OAI-implementers] harvester guidelines">hussein at cs.uct.ac.za
+       </A><BR>
+    <I>Fri May 27 14:04:56 EDT 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002054.html">[OAI-implementers] (no subject)
+</A></li>
+        <LI>Next message: <A HREF="002057.html">[OAI-implementers] harvester guidelines
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2058">[ date ]</a>
+              <a href="thread.html#2058">[ thread ]</a>
+              <a href="subject.html#2058">[ subject ]</a>
+              <a href="author.html#2058">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi Jasper
+
+regarding the sets issue,
+
+this was acknowledged as a gap a long time ago. addressing the gap 
+creates significant additional complexity in the protocol so this was 
+not done in the interest of simplicity. the OAI-PMH was developed to be 
+a simple protocol and often that need for simplicity has overridden the 
+goal of completeness.
+
+regarding the harvesting dates,
+
+your idea seems reasonable for the specific case you mention (sequential 
+out-of-sync dates). this does of course give control of the harvesting 
+process to the data providers - a service provider that keeps track of 
+dates itself is more likely to act predictably. the general problem you 
+are referring to is where data providers add records that are 
+essentially in the past. there are numerous ways to do this and there is 
+simply no general solution - either a service provider trusts a data 
+provider not to do this or periodically reharvests from scratch.
+
+ttfn,
+----hussein
+
+=====================================================================
+hussein suleman ~ <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">hussein at cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+=====================================================================
+
+On 26/05/2011 12:43, Jasper Op de Coul wrote:
+&gt;<i> Hi list,
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> I've been doing some work with OAIPMH harvesters lately, and would like
+</I>&gt;<i> to share some of my experiences on the subject.
+</I>&gt;<i>
+</I>&gt;<i> When harvesting specific sets with the `set` param, there is an issue
+</I>&gt;<i> that a harvester is not notified when a record is removed from that set.
+</I>&gt;<i>
+</I>&gt;<i> I think most implementers are aware of this, and it is the biggest hole
+</I>&gt;<i> in the specification.
+</I>&gt;<i>
+</I>&gt;<i> For example: A specific set is harvested, but at a later time one of the
+</I>&gt;<i> records is no longer part of that set. The record then disappears from
+</I>&gt;<i> the feed, but the harvester is never notified because there is no delete
+</I>&gt;<i> event.
+</I>&gt;<i>
+</I>&gt;<i> There are several ways to deal with this:
+</I>&gt;<i>
+</I>&gt;<i> 1. Do incremental harvests with the ?set param, then do a full harvest
+</I>&gt;<i> periodically or when someone calls or mails that records are missing.
+</I>&gt;<i> This is a common approach but it is no solution to the problem. I think
+</I>&gt;<i> we can and should do better then that.
+</I>&gt;<i>
+</I>&gt;<i> 2. Always do a full harvest with the ?set param. This will put a lot of
+</I>&gt;<i> load on the servers, take lots of time, and is not a very social thing
+</I>&gt;<i> to do. So, not a good option.
+</I>&gt;<i>
+</I>&gt;<i> 3. Use incremental harvests, but never use the ?set param. The client
+</I>&gt;<i> will receive all records and can inspect the SetSpec header manually to
+</I>&gt;<i> see if this record is part of the wanted set. Records that are not part
+</I>&gt;<i> of the wanted set but are in the client database can be removed.
+</I>&gt;<i>
+</I>&gt;<i> The last option means a lot more housekeeping for the client, but it is
+</I>&gt;<i> the only way for a client to be sure that the data is correct.
+</I>&gt;<i>
+</I>&gt;<i> Although sets are a very useful feature, the set parameter is basically
+</I>&gt;<i> broken. This should be noted somewhere in the documentation, probably in
+</I>&gt;<i> the harvester guidelines.
+</I>&gt;<i> Personally I would be in favour of deprecating the set parameter so we
+</I>&gt;<i> can put a big fat warning explaining this problem.
+</I>&gt;<i>
+</I>&gt;<i> Another issue that came up recently has to do with incremental
+</I>&gt;<i> harvesting. The harvester guidelines mention that for the value of the
+</I>&gt;<i> from parameter, the `responseDate` should be used, and that it is
+</I>&gt;<i> advisable to overlap by a small additional amount.
+</I>&gt;<i> I think it would be better if a harvester does not use the responseDate,
+</I>&gt;<i> but instead uses the latest datestamp of all harvested records.
+</I>&gt;<i>
+</I>&gt;<i> Consider the following situation:
+</I>&gt;<i>
+</I>&gt;<i> Someone modifies a document in a database at 4 o'clock.
+</I>&gt;<i> An external OAI service gets updated once an hour, so it will have the
+</I>&gt;<i> changes at 5 o'clock. The OAI software will use the modification dates
+</I>&gt;<i> from the database, so at 5 o'clock the modified record is added with a
+</I>&gt;<i> datestamp of 4 o'clock.
+</I>&gt;<i> If a harvester comes by at 4:30, that modifed document is not in the OAI
+</I>&gt;<i> feed yet. An hour later at 5:30, the harvester harvests again with a
+</I>&gt;<i> `from` parameter value of 4:30. The harvester will never get the
+</I>&gt;<i> modified document because it was modified earlier then 4:30.
+</I>&gt;<i>
+</I>&gt;<i> Off course this whole situation is far from ideal, but it could be that
+</I>&gt;<i> there is a gap between the modification date of a resource, and when it
+</I>&gt;<i> gets added to the oai server. This gap can be anything from a few
+</I>&gt;<i> seconds to a few weeks.
+</I>&gt;<i>
+</I>&gt;<i> If a harvester always uses the latest datestamp of any of the harvested
+</I>&gt;<i> records, you are sure that no records are missed, and you never harvest
+</I>&gt;<i> too much.
+</I>&gt;<i>
+</I>&gt;<i> I hope this helps implementers build better harvesters. If there is
+</I>&gt;<i> concensus about adding this to the harvester guidelines, I would be
+</I>&gt;<i> willing to write some text for it.
+</I>&gt;<i>
+</I>&gt;<i> Kind regards,
+</I>&gt;<i> Jasper
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002054.html">[OAI-implementers] (no subject)
+</A></li>
+	<LI>Next message: <A HREF="002057.html">[OAI-implementers] harvester guidelines
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2058">[ date ]</a>
+              <a href="thread.html#2058">[ thread ]</a>
+              <a href="subject.html#2058">[ subject ]</a>
+              <a href="author.html#2058">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

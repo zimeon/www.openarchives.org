@@ -1,0 +1,396 @@
+From benanderson.us at gmail.com  Tue Feb  1 09:09:34 2011
+From: benanderson.us at gmail.com (Benjamin Anderson)
+Date: Tue Feb  1 09:10:11 2011
+Subject: [OAI-implementers] ListRecords request w/out an until..
+Message-ID: <AANLkTimGn9-kzrS7tO9Jc-MbFDLNZRKDE_czUoiuKjti@mail.gmail.com>
+
+Hi,
+
+I'm wondering what others are doing when a ListRecords request w/out an
+until comes in.  Consider this scenario:
+
+t0 - harvest request (with no until) is initiated
+t1 - record 101 is added to the repo
+t2 - harvest is finished (it took multiple requests to complete)
+
+Should record 101 be included in the harvest data?  If not, will the client
+better issue their next harvest with a from=t0 (a from=t2 would be invalid
+because they'd miss out on record 101).
+
+We have implemented both oai-pmh harvesters and providers, so I have to
+consider both ends of this.  Here's what I'm thinking...
+
+As a Provider
+I will simply lock the repo so that the above scenario can't happen.  If
+someone is already harvesting (there exist unexpired resumptionTokens) then
+I will not update the repository.
+
+As a Harvester
+I will always use the until parameter with the value of the time the harvest
+was initially started.
+
+I think this keeps me clear of any problems.  Anyone else have thoughts or
+care to share your solutions?
+
+Thanks,
+Ben Anderson
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20110201/adf09f63/attachment.htm
+From simeon.warner at cornell.edu  Tue Feb  1 10:05:24 2011
+From: simeon.warner at cornell.edu (Simeon Warner)
+Date: Tue Feb  1 10:05:27 2011
+Subject: [OAI-implementers] ListRecords request w/out an until..
+In-Reply-To: <AANLkTimGn9-kzrS7tO9Jc-MbFDLNZRKDE_czUoiuKjti@mail.gmail.com>
+References: <AANLkTimGn9-kzrS7tO9Jc-MbFDLNZRKDE_czUoiuKjti@mail.gmail.com>
+Message-ID: <4D482134.2020100@cornell.edu>
+
+Hi Ben,
+
+This is covered in the in section 3.5.1 of the specification:
+
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Idempotency
+
+I think your solution for the harvester is the correct one. Provided the 
+harvester starts again with from=t0 all changes between t0 and t2 will be 
+harvested, irrespective of whether or not they were included in the original 
+response (modulo understood problems with items that move between sets for set 
+selective requests).
+
+Cheers,
+Simeon
+
+On 02/01/2011 09:09 AM, Benjamin Anderson wrote:
+> Hi,
+>
+> I'm wondering what others are doing when a ListRecords request w/out an
+> until comes in.? Consider this scenario:
+>
+> t0 - harvest request (with no until) is initiated
+> t1 - record 101 is added to the repo
+> t2 - harvest is finished (it took multiple requests to complete)
+>
+> Should record 101 be included in the harvest data?? If not, will the
+> client better issue their next harvest with a from=t0 (a from=t2 would
+> be invalid because they'd miss out on record 101).
+>
+> We have implemented both oai-pmh harvesters and providers, so I have to
+> consider both ends of this.? Here's what I'm thinking...
+>
+> As a Provider
+> I will simply lock the repo so that the above scenario can't happen.? If
+> someone is already harvesting (there exist unexpired resumptionTokens)
+> then I will not update the repository.
+>
+> As a Harvester
+> I will always use the until parameter with the value of the time the
+> harvest was initially started.
+>
+> I think this keeps me clear of any problems.? Anyone else have thoughts
+> or care to share your solutions?
+>
+> Thanks,
+> Ben Anderson
+>
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+
+From benanderson.us at gmail.com  Tue Feb  1 10:26:37 2011
+From: benanderson.us at gmail.com (Benjamin Anderson)
+Date: Tue Feb  1 10:27:09 2011
+Subject: [OAI-implementers] ListRecords request w/out an until..
+In-Reply-To: <4D482134.2020100@cornell.edu>
+References: <AANLkTimGn9-kzrS7tO9Jc-MbFDLNZRKDE_czUoiuKjti@mail.gmail.com>
+	<4D482134.2020100@cornell.edu>
+Message-ID: <AANLkTi=aXVTvwdEE4BDCO4J+TCF97a-r9ox8HJA-J0B1@mail.gmail.com>
+
+Thanks Simeon.  I'm looking over the section you linked to...
+
+Repositories that implement resumptionTokens *must* do so in a manner that
+> allows harvesters to resume a sequence of requests for incomplete lists by
+> re-issuing a list request with the most recent resumptionToken
+>
+
+I'm having a hard time understanding this sentence. What is meant by
+"incomplete list"?  What is meant by "re-issuing a list request"?
+
+I was just thinking that my harvester assumption wouldn't work for the given
+scenario:
+
+Let's assume a provider that allows for updates during harvests and that
+this provider only keeps the most recent updated date (not all update
+dates).  If a record was updated before t0 and again after t0 (but before it
+was included in the harvest initiated at t0), then the harvester will not
+get the record even though it should have.  That's probably a rare case, but
+nevertheless bound to happen.  Are there guidelines for the best way to use
+an until as a harvester?
+
+Thanks again,
+Ben
+
+
+On Tue, Feb 1, 2011 at 10:05 AM, Simeon Warner <simeon.warner@cornell.edu>wrote:
+
+> Hi Ben,
+>
+> This is covered in the in section 3.5.1 of the specification:
+>
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Idempotency
+>
+> I think your solution for the harvester is the correct one. Provided the
+> harvester starts again with from=t0 all changes between t0 and t2 will be
+> harvested, irrespective of whether or not they were included in the original
+> response (modulo understood problems with items that move between sets for
+> set selective requests).
+>
+> Cheers,
+> Simeon
+>
+>
+> On 02/01/2011 09:09 AM, Benjamin Anderson wrote:
+>
+>> Hi,
+>>
+>> I'm wondering what others are doing when a ListRecords request w/out an
+>> until comes in.? Consider this scenario:
+>>
+>> t0 - harvest request (with no until) is initiated
+>> t1 - record 101 is added to the repo
+>> t2 - harvest is finished (it took multiple requests to complete)
+>>
+>> Should record 101 be included in the harvest data?? If not, will the
+>> client better issue their next harvest with a from=t0 (a from=t2 would
+>> be invalid because they'd miss out on record 101).
+>>
+>> We have implemented both oai-pmh harvesters and providers, so I have to
+>> consider both ends of this.? Here's what I'm thinking...
+>>
+>> As a Provider
+>> I will simply lock the repo so that the above scenario can't happen.? If
+>> someone is already harvesting (there exist unexpired resumptionTokens)
+>> then I will not update the repository.
+>>
+>> As a Harvester
+>> I will always use the until parameter with the value of the time the
+>> harvest was initially started.
+>>
+>> I think this keeps me clear of any problems.? Anyone else have thoughts
+>> or care to share your solutions?
+>>
+>> Thanks,
+>> Ben Anderson
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20110201/53b71e15/attachment.htm
+From benanderson.us at gmail.com  Tue Feb  1 10:36:55 2011
+From: benanderson.us at gmail.com (Benjamin Anderson)
+Date: Tue Feb  1 10:37:30 2011
+Subject: [OAI-implementers] ListRecords request w/out an until..
+In-Reply-To: <AANLkTi=aXVTvwdEE4BDCO4J+TCF97a-r9ox8HJA-J0B1@mail.gmail.com>
+References: <AANLkTimGn9-kzrS7tO9Jc-MbFDLNZRKDE_czUoiuKjti@mail.gmail.com>
+	<4D482134.2020100@cornell.edu>
+	<AANLkTi=aXVTvwdEE4BDCO4J+TCF97a-r9ox8HJA-J0B1@mail.gmail.com>
+Message-ID: <AANLkTi=y_U0UQSnuFrD5Y0XBTtOVNipinJpo8EBm3ssM@mail.gmail.com>
+
+ugh, sorry - I pushed send too quickly.  The 2 bullet points after the
+sentence I quoted clear it up (at least in regards to what the spec
+defines).  Seems a little ambiguous, though, doesn't it?  It seems that to
+harvest in the most correct way you almost have to know how the provider is
+implemented, which kind of defeats the purpose of a spec.  I'm still curious
+as to whether there's a de facto standard that most providers are using?
+
+
+On Tue, Feb 1, 2011 at 10:26 AM, Benjamin Anderson <benanderson.us@gmail.com
+> wrote:
+
+> Thanks Simeon.  I'm looking over the section you linked to...
+>
+> Repositories that implement resumptionTokens *must* do so in a manner that
+>> allows harvesters to resume a sequence of requests for incomplete lists by
+>> re-issuing a list request with the most recent resumptionToken
+>>
+>
+> I'm having a hard time understanding this sentence. What is meant by
+> "incomplete list"?  What is meant by "re-issuing a list request"?
+>
+> I was just thinking that my harvester assumption wouldn't work for the
+> given scenario:
+>
+> Let's assume a provider that allows for updates during harvests and that
+> this provider only keeps the most recent updated date (not all update
+> dates).  If a record was updated before t0 and again after t0 (but before it
+> was included in the harvest initiated at t0), then the harvester will not
+> get the record even though it should have.  That's probably a rare case, but
+> nevertheless bound to happen.  Are there guidelines for the best way to use
+> an until as a harvester?
+>
+> Thanks again,
+> Ben
+>
+>
+> On Tue, Feb 1, 2011 at 10:05 AM, Simeon Warner <simeon.warner@cornell.edu>wrote:
+>
+>> Hi Ben,
+>>
+>> This is covered in the in section 3.5.1 of the specification:
+>>
+>> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Idempotency
+>>
+>> I think your solution for the harvester is the correct one. Provided the
+>> harvester starts again with from=t0 all changes between t0 and t2 will be
+>> harvested, irrespective of whether or not they were included in the original
+>> response (modulo understood problems with items that move between sets for
+>> set selective requests).
+>>
+>> Cheers,
+>> Simeon
+>>
+>>
+>> On 02/01/2011 09:09 AM, Benjamin Anderson wrote:
+>>
+>>> Hi,
+>>>
+>>> I'm wondering what others are doing when a ListRecords request w/out an
+>>> until comes in.? Consider this scenario:
+>>>
+>>> t0 - harvest request (with no until) is initiated
+>>> t1 - record 101 is added to the repo
+>>> t2 - harvest is finished (it took multiple requests to complete)
+>>>
+>>> Should record 101 be included in the harvest data?? If not, will the
+>>> client better issue their next harvest with a from=t0 (a from=t2 would
+>>> be invalid because they'd miss out on record 101).
+>>>
+>>> We have implemented both oai-pmh harvesters and providers, so I have to
+>>> consider both ends of this.? Here's what I'm thinking...
+>>>
+>>> As a Provider
+>>> I will simply lock the repo so that the above scenario can't happen.? If
+>>> someone is already harvesting (there exist unexpired resumptionTokens)
+>>> then I will not update the repository.
+>>>
+>>> As a Harvester
+>>> I will always use the until parameter with the value of the time the
+>>> harvest was initially started.
+>>>
+>>> I think this keeps me clear of any problems.? Anyone else have thoughts
+>>> or care to share your solutions?
+>>>
+>>> Thanks,
+>>> Ben Anderson
+>>>
+>>>
+>>>
+>>>
+>>> _______________________________________________
+>>> OAI-implementers mailing list
+>>> List information, archives, preferences and to unsubscribe:
+>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>>
+>>>
+>>
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20110201/8d3c4617/attachment-0001.htm
+From sandra.mcintyre at utah.edu  Tue Feb  1 11:58:06 2011
+From: sandra.mcintyre at utah.edu (Sandra McIntyre)
+Date: Tue Feb  1 11:56:22 2011
+Subject: [OAI-implementers] ListRecords request w/out an until..
+In-Reply-To: <4D482134.2020100@cornell.edu>
+References: <AANLkTimGn9-kzrS7tO9Jc-MbFDLNZRKDE_czUoiuKjti@mail.gmail.com>
+	<4D482134.2020100@cornell.edu>
+Message-ID: <E31EE7AD-A048-43B1-A15C-15D27F02BAE8@utah.edu>
+
+Your question is interesting. I assume this is why our harvester always includes the "until" parameter as well as the "from" date in its ListRecords requests. On the next re-harvest it uses the former "until" date as the new "from" date, and we are assured of getting all records. I thought this was standard, and that accommodating requests that include only a "from" date was not an issue.
+
+Sandra
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Sandra McIntyre  |  Program Director
+Mountain West Digital Library  |  Utah Academic Library Consortium
+http://mwdl.org  |  +1-801-585-0969  |  sandra.mcintyre@utah.edu
+
+
+On Feb 1, 2011, at 8:07 AM, "Simeon Warner" <simeon.warner@cornell.edu> wrote:
+
+> Hi Ben,
+> 
+> This is covered in the in section 3.5.1 of the specification:
+> 
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Idempotency
+> 
+> I think your solution for the harvester is the correct one. Provided the 
+> harvester starts again with from=t0 all changes between t0 and t2 will be 
+> harvested, irrespective of whether or not they were included in the original 
+> response (modulo understood problems with items that move between sets for set 
+> selective requests).
+> 
+> Cheers,
+> Simeon
+> 
+> On 02/01/2011 09:09 AM, Benjamin Anderson wrote:
+>> Hi,
+>> 
+>> I'm wondering what others are doing when a ListRecords request w/out an
+>> until comes in.? Consider this scenario:
+>> 
+>> t0 - harvest request (with no until) is initiated
+>> t1 - record 101 is added to the repo
+>> t2 - harvest is finished (it took multiple requests to complete)
+>> 
+>> Should record 101 be included in the harvest data?? If not, will the
+>> client better issue their next harvest with a from=t0 (a from=t2 would
+>> be invalid because they'd miss out on record 101).
+>> 
+>> We have implemented both oai-pmh harvesters and providers, so I have to
+>> consider both ends of this.? Here's what I'm thinking...
+>> 
+>> As a Provider
+>> I will simply lock the repo so that the above scenario can't happen.? If
+>> someone is already harvesting (there exist unexpired resumptionTokens)
+>> then I will not update the repository.
+>> 
+>> As a Harvester
+>> I will always use the until parameter with the value of the time the
+>> harvest was initially started.
+>> 
+>> I think this keeps me clear of any problems.? Anyone else have thoughts
+>> or care to share your solutions?
+>> 
+>> Thanks,
+>> Ben Anderson
+>> 
+>> 
+>> 
+>> 
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 

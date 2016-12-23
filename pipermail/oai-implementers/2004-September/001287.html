@@ -1,0 +1,426 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: Proposed corrections/fixes to OAI-PMH
+ protocol document and schema
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Re%3A%20Proposed%20corrections/fixes%20to%20OAI-PMH%0A%20protocol%20document%20and%20schema&In-Reply-To=Pine.LNX.4.58.0406151507160.30168%40dhcp103-124.cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001286.html">
+   <LINK REL="Next"  HREF="001288.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: Proposed corrections/fixes to OAI-PMH
+ protocol document and schema</H1>
+    <B>Simeon Warner</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Re%3A%20Proposed%20corrections/fixes%20to%20OAI-PMH%0A%20protocol%20document%20and%20schema&In-Reply-To=Pine.LNX.4.58.0406151507160.30168%40dhcp103-124.cs.cornell.edu"
+       TITLE="[OAI-implementers] Re: Proposed corrections/fixes to OAI-PMH
+ protocol document and schema">simeon at cs.cornell.edu
+       </A><BR>
+    <I>Wed Sep 15 16:58:16 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001286.html">[OAI-implementers] Creating a Data Provider
+</A></li>
+        <LI>Next message: <A HREF="001288.html">[OAI-implementers] Part II: Proposed corrections/fixes to OAI-PMH
+ protocol document and schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1287">[ date ]</a>
+              <a href="thread.html#1287">[ thread ]</a>
+              <a href="subject.html#1287">[ subject ]</a>
+              <a href="author.html#1287">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Back in June I detailed several proposed corrections and fixes to the
+OAI-PMH protocol document and schema (copied below, alternatively see:
+<A HREF="http://openarchives.org/pipermail/oai-implementers/2004-June/001216.html">http://openarchives.org/pipermail/oai-implementers/2004-June/001216.html</A>).
+Hussein Suleman sent comments about issues 1 and 2 which I'll reply to in
+a separate email. I have implemented the other changes:
+
+3) Added bullet to protocol document, sec2.6, saying sets may be empty.
+
+4) Corrected typo in protocol document sec2.6 to say ListIdentifiers,
+   ListRecords and GetRecord instead of just GetRecord.
+
+5) Corrected typo the second example in protocol document sec5.
+
+6) Changed schema to tighten checks on dateTime values so that they
+   must use Z notation (in addition to be a valid XML Schema dataTime).
+
+7) Added section &quot;2.5.1 Deleted records&quot;, folded in some text from 2.7.1
+   following Hussein's suggestion.
+
+8) Already implemented for static repository (2004-03-29)
+
+For reference, the old version of the protocol document is at:
+<A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.2004-06-10.htm">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.2004-06-10.htm</A>
+(also includes lots of HTML fixes), and the old version of schema is at:
+<A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH.2004-03-29.xsd">http://www.openarchives.org/OAI/2.0/OAI-PMH.2004-03-29.xsd</A>
+
+None of these changes should affect conforming implementations.
+
+Cheers,
+Simeon
+
+
+On Tue, 15 Jun 2004, Simeon Warner wrote:
+&gt;<i> I've been collecting problems/corrections to the OAI-PMH protocol document
+</I>&gt;<i> and schema for some time. I detail proposed corrections and fixes below.
+</I>&gt;<i> Please reply either directly to me or to the list with comments or
+</I>&gt;<i> additional issues/corrections/errors.
+</I>&gt;<i>
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Simeon
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> PROPOSED FIXES TO OAI PROTOCOL DOCUMENT AND SCHEMA
+</I>&gt;<i> --------------------------------------------------
+</I>&gt;<i>
+</I>&gt;<i> 1) Correct protocol document and schema definition of setSpec to be
+</I>&gt;<i> consistent, and also to permit the use of URL encoding.
+</I>&gt;<i>
+</I>&gt;<i> 1.1) Motivation
+</I>&gt;<i>
+</I>&gt;<i> First, the protocol document and the schema simply do not agree. The use
+</I>&gt;<i> of the wording &quot;any characters that are safe in a query component of a
+</I>&gt;<i> URI&quot; is unclear and cannot be construed to agree with the schema. Second,
+</I>&gt;<i> many repositories are using URL-like encoding to create setSpecs so it
+</I>&gt;<i> seems better to permit the recognized URL encoding. The practical change
+</I>&gt;<i> to meet both of these criteria is very small: the schema regular
+</I>&gt;<i> expression should be changed to remove $ and +, and to add ~ and %xx (URL
+</I>&gt;<i> encoding). This will bring the protocol document in line with the terms
+</I>&gt;<i> &quot;escaped&quot; and &quot;unreserved&quot; as used in the URI RFC.
+</I>&gt;<i>
+</I>&gt;<i> 1.2) Impact
+</I>&gt;<i>
+</I>&gt;<i> The only conforming repository that we know of using setSpecs affected by
+</I>&gt;<i> this change is Jeff Young's OpenURL repository
+</I>&gt;<i> (<A HREF="http://alcme.oclc.org/openurl/servlet/OAIHandler">http://alcme.oclc.org/openurl/servlet/OAIHandler</A>) where he uses '+' as
+</I>&gt;<i> an encoding for space. Jeff agrees that a change would be sensible and
+</I>&gt;<i> that he could be replace '+' with '%20'. Repositories using URL-like
+</I>&gt;<i> encodings will not be affected although they may choose to change to use
+</I>&gt;<i> real URL encoding. All OAI software maintainers should, however, review
+</I>&gt;<i> the change and update their parsing code accordingly.
+</I>&gt;<i>
+</I>&gt;<i> 1.3) Changes
+</I>&gt;<i>
+</I>&gt;<i> 1.3.1) Change wording in protocol document
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set</A>
+</I>&gt;<i> from:
+</I>&gt;<i>
+</I>&gt;<i> a setSpec -- a colon [:] separated list indicating the path from the root
+</I>&gt;<i> of the set hierarchy to the respective node.  Each element in the list is
+</I>&gt;<i> a string consisting of any characters that are safe in a query component
+</I>&gt;<i> of a URI , which must not contain any colons [ :].  Since a setSpec forms
+</I>&gt;<i> a unique identifier for the set within the repository, it must be unique
+</I>&gt;<i> for each set.  Flat set organizations have only sets with setSpec that do
+</I>&gt;<i> not contain any colons [ :].
+</I>&gt;<i>
+</I>&gt;<i> to:
+</I>&gt;<i>
+</I>&gt;<i> a setSpec -- a colon [:] separated list indicating the path from the root
+</I>&gt;<i> of the set hierarchy to the respective node. Each element in the list is a
+</I>&gt;<i> string consisting of any valid URI &quot;unreserved&quot; and &quot;escaped&quot; characters.
+</I>&gt;<i> A setTag must not contain URI &quot;reserved&quot; characters, for example the colon
+</I>&gt;<i> [:] which is used to delimit setTags. Since a setSpec forms a unique
+</I>&gt;<i> identifier for the set within the repository, it must be unique for each
+</I>&gt;<i> set. Flat set organizations have only sets with setSpec that do not
+</I>&gt;<i> contain any colons [:].
+</I>&gt;<i>
+</I>&gt;<i> The corresponding parts of the specification of allowed characters in URIs
+</I>&gt;<i> are:
+</I>&gt;<i>
+</I>&gt;<i> unreserved    = alphanum | mark
+</I>&gt;<i> mark          = &quot;-&quot; | &quot;_&quot; | &quot;.&quot; | &quot;!&quot; | &quot;~&quot; | &quot;*&quot; | &quot;'&quot; |
+</I>&gt;<i>                 &quot;(&quot; | &quot;)&quot;
+</I>&gt;<i> escaped       = &quot;%&quot; hex hex
+</I>&gt;<i> hex           = digit | &quot;A&quot; | &quot;B&quot; | &quot;C&quot; | &quot;D&quot; | &quot;E&quot; | &quot;F&quot; |
+</I>&gt;<i>                 &quot;a&quot; | &quot;b&quot; | &quot;c&quot; | &quot;d&quot; | &quot;e&quot; | &quot;f&quot;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 1.3.2) Change definition of setSpecType in the schema to match the definition
+</I>&gt;<i> from:
+</I>&gt;<i>
+</I>&gt;<i>  &lt;simpleType name=&quot;setSpecType&quot;&gt;
+</I>&gt;<i>     &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i>       &lt;pattern value=
+</I>&gt;<i>        &quot;([A-Za-z0-9_!'$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'$\(\)\+\-\.\*]+)*&quot;/&gt;
+</I>&gt;<i>     &lt;/restriction&gt;
+</I>&gt;<i>   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i> to:
+</I>&gt;<i>
+</I>&gt;<i>   &lt;simpleType name=&quot;setSpecType&quot;&gt;
+</I>&gt;<i>     &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i>       &lt;pattern value=&quot;([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+(:([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+)*&quot;/&gt;
+</I>&gt;<i>     &lt;/restriction&gt;
+</I>&gt;<i>   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 2) Correct protocol document and schema definition for metadataPrefix to
+</I>&gt;<i> be consistent, and also to match the revised setSpec definition.
+</I>&gt;<i>
+</I>&gt;<i> 2.1) Motivation
+</I>&gt;<i>
+</I>&gt;<i> The protocol document uses the same imprecise wording for metadataPrefix
+</I>&gt;<i> as it does for setSpec (&quot;any characters that are safe in a query
+</I>&gt;<i> component of a URI&quot;) and the schema does not even follow a reasonable
+</I>&gt;<i> interpretation of this wording. It seems sensible to use the same
+</I>&gt;<i> character restrictions in a consistent fashion. This will bring the
+</I>&gt;<i> protocol document in line with the terms &quot;escaped&quot; and &quot;unreserved&quot; as
+</I>&gt;<i> used in the URI RFC.
+</I>&gt;<i>
+</I>&gt;<i> 2.2) Impact
+</I>&gt;<i>
+</I>&gt;<i> This change is not expected to impact any known repository.  All OAI
+</I>&gt;<i> software maintainers should, however, review the change and update their
+</I>&gt;<i> parsing code accordingly.
+</I>&gt;<i>
+</I>&gt;<i> 2.3) Changes
+</I>&gt;<i>
+</I>&gt;<i> 2.2.1) Change wording in protocol document
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#metadataPrefix">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#metadataPrefix</A>
+</I>&gt;<i> from:
+</I>&gt;<i>
+</I>&gt;<i> The metadataPrefix - a string to specify the metadata format in OAI-PMH
+</I>&gt;<i> requests issued to the repository. metadataPrefix consists of any
+</I>&gt;<i> characters that are safe in a query component of a URI. metadataPrefix
+</I>&gt;<i> arguments are used in ListRecords, ListIdentifiers, and GetRecord
+</I>&gt;<i> requests to retrieve records, or the headers of records that include
+</I>&gt;<i> metadata in the format specified by the metadataPrefix;
+</I>&gt;<i>
+</I>&gt;<i> to:
+</I>&gt;<i>
+</I>&gt;<i> The metadataPrefix - a string to specify the metadata format in OAI-PMH
+</I>&gt;<i> requests issued to the repository. metadataPrefix consists of any valid
+</I>&gt;<i> URI &quot;unreserved&quot; and &quot;escaped&quot;  characters. A metadataPrefix must not
+</I>&gt;<i> contain URI &quot;reserved&quot; characters. metadataPrefix arguments are used in
+</I>&gt;<i> ListRecords, ListIdentifiers, and GetRecord requests to retrieve records,
+</I>&gt;<i> or the headers of records that include metadata in the format specified
+</I>&gt;<i> by the metadataPrefix;
+</I>&gt;<i>
+</I>&gt;<i> 2.3.2) Change definition of metadataPrefixType in schema to match the
+</I>&gt;<i> definition from:
+</I>&gt;<i>
+</I>&gt;<i>   &lt;simpleType name=&quot;metadataPrefixType&quot;&gt;
+</I>&gt;<i>     &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i>       &lt;pattern value=&quot;[A-Za-z0-9_!'$\(\)\+\-\.\*]+&quot;/&gt;
+</I>&gt;<i>     &lt;/restriction&gt;
+</I>&gt;<i>   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i> to:
+</I>&gt;<i>
+</I>&gt;<i>   &lt;simpleType name=&quot;metadataPrefixType&quot;&gt;
+</I>&gt;<i>     &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i>       &lt;pattern value=&quot;([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+&quot;/&gt;
+</I>&gt;<i>     &lt;/restriction&gt;
+</I>&gt;<i>   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 3) Change protocol document to explicitly state the sets may be empty
+</I>&gt;<i>
+</I>&gt;<i> 3.1) Motivation
+</I>&gt;<i>
+</I>&gt;<i> This issue has been raised a number of times in discussion and is not
+</I>&gt;<i> made explicit in the protocol document.
+</I>&gt;<i>
+</I>&gt;<i> 3.2) Impact
+</I>&gt;<i>
+</I>&gt;<i> None (except clarity)
+</I>&gt;<i>
+</I>&gt;<i> 3.3) Change: add additional bullet to the final set of bullets in protocol
+</I>&gt;<i> document sec2.6
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set</A>
+</I>&gt;<i>
+</I>&gt;<i> Introduction of bullets should say &quot;Five issues should be noted here&quot;
+</I>&gt;<i> instead of &quot;Four issues should be noted here&quot;.
+</I>&gt;<i>
+</I>&gt;<i> Additional bullet: The set hierarchy of a repository may include sets
+</I>&gt;<i> that are empty.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 4) Correct typo on sec2.6
+</I>&gt;<i> (<A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set</A>)
+</I>&gt;<i>
+</I>&gt;<i> Section 2.6 says:
+</I>&gt;<i>
+</I>&gt;<i> If a repository supports sets then it must include set membership
+</I>&gt;<i> information in the GetRecord request. The list of setSpec should include
+</I>&gt;<i> only the minimum number of setSpec required to specify the set
+</I>&gt;<i> membership. Using the previous example of a set hierarchy, the header for
+</I>&gt;<i> an item organized in set institution:florida should not include setSpec
+</I>&gt;<i> institution since that is implied by the setSpec institution:florida .
+</I>&gt;<i>
+</I>&gt;<i> when it should say 'in response to ListIdentifiers, ListRecords and
+</I>&gt;<i> GetRecord requests' instead of 'in the GetRecord request'. The corrected
+</I>&gt;<i> paragraph reads:
+</I>&gt;<i>
+</I>&gt;<i> If a repository supports sets then it must include set membership
+</I>&gt;<i> information in the headers returned in response to ListIdentifiers,
+</I>&gt;<i> ListRecords and GetRecord requests. The list of setSpec elements should
+</I>&gt;<i> include only the minimum number of setSpec elements required to specify
+</I>&gt;<i> the set membership. Using the previous example of a set hierarchy, the
+</I>&gt;<i> header for an item organized in set institution:florida should not
+</I>&gt;<i> include setSpec institution since that is implied by the setSpec
+</I>&gt;<i> institution:florida.
+</I>&gt;<i>
+</I>&gt;<i> [problem pointed out by Mike Taylor &lt;<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">mike at indexdata.com</A>&gt;]
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 5) Correct typo the second example in protocol document sec5
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#dublincore">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#dublincore</A>
+</I>&gt;<i>
+</I>&gt;<i> The namespace is incorrectly given in the declaration. It is 'oai' and
+</I>&gt;<i> not 'oai_dc' and the example is not schema valid. The following
+</I>&gt;<i> correction is required:
+</I>&gt;<i>
+</I>&gt;<i> 3c3
+</I>&gt;<i> &lt;     xmlns:oai=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/oai_dc/&quot;">http://www.openarchives.org/OAI/2.0/oai_dc/&quot;</A>
+</I>&gt;<i> ---
+</I>&gt;<i> &gt;     xmlns:oai_dc=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/oai_dc/&quot;">http://www.openarchives.org/OAI/2.0/oai_dc/&quot;</A>
+</I>&gt;<i>
+</I>&gt;<i> [problem pointed out by Terry Harrison &lt;<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">1maniac at cox.net</A>&gt;]
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 6) Schema should more tightly validate UTCdatetime
+</I>&gt;<i>
+</I>&gt;<i> 6.1) Motivation
+</I>&gt;<i>
+</I>&gt;<i> While the specification is quite clear about what datetime formats must
+</I>&gt;<i> be used, the fact that the schema does not enforce the restriction to Z
+</I>&gt;<i> notation means that there are errors not found during schema validation.
+</I>&gt;<i> The additional check is easy to add to the schema and would likely
+</I>&gt;<i> improve interoperability.
+</I>&gt;<i>
+</I>&gt;<i> 6.2) Impact
+</I>&gt;<i>
+</I>&gt;<i> No conforming repository should be affected. The responses from some
+</I>&gt;<i> non-conforming implementations will no longer schema validate. It is
+</I>&gt;<i> hoped that this will encourage maintainers to correct them.
+</I>&gt;<i>
+</I>&gt;<i> 6.3) Change schema definition from:
+</I>&gt;<i>
+</I>&gt;<i>   &lt;simpleType name=&quot;UTCdatetimeType&quot;&gt;
+</I>&gt;<i>     &lt;union memberTypes=&quot;date dateTime&quot;/&gt;
+</I>&gt;<i>   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i> to:
+</I>&gt;<i>
+</I>&gt;<i>   &lt;simpleType name=&quot;UTCdatetimeType&quot;&gt;
+</I>&gt;<i>     &lt;union memberTypes=&quot;date oai:UTCdateTimeZType&quot;/&gt;
+</I>&gt;<i>   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i>   &lt;simpleType name=&quot;UTCdateTimeZType&quot;&gt;
+</I>&gt;<i>     &lt;restriction base=&quot;dateTime&quot;&gt;
+</I>&gt;<i>       &lt;pattern value=&quot;.*Z&quot;/&gt;
+</I>&gt;<i>     &lt;/restriction&gt;
+</I>&gt;<i>   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 7) Add section on deleted records to the protocol document
+</I>&gt;<i>
+</I>&gt;<i> 7.1) Motivation
+</I>&gt;<i>
+</I>&gt;<i> Deleted records are an issue that causes confusion. This is not helped by
+</I>&gt;<i> information about them being distributed over the protocol document.
+</I>&gt;<i>
+</I>&gt;<i> 7.2) Impact
+</I>&gt;<i>
+</I>&gt;<i> none (except greater comprehension!)
+</I>&gt;<i>
+</I>&gt;<i> 7.3) Change protocol document to include:
+</I>&gt;<i>
+</I>&gt;<i> 2.5.1 Deleted records
+</I>&gt;<i>
+</I>&gt;<i> If a record is no longer available then it is said to be 'deleted'.
+</I>&gt;<i> Repositories may or may not keep track of deletions. If a repository does
+</I>&gt;<i> not keep track of deletions then such records will simply vanish from
+</I>&gt;<i> responses and there will be no way for a harvester to discover deletions
+</I>&gt;<i> through continued incremental harvesting. If a repository does keep track
+</I>&gt;<i> of deletions then the datestamp of the deleted record _must_ be the date
+</I>&gt;<i> and time that it was deleted. Responses to a GetRecord request for a
+</I>&gt;<i> deleted record _must_ then include a header with the attribute
+</I>&gt;<i> status=&quot;deleted&quot; and no metadata or about parts. Similarly, responses to
+</I>&gt;<i> selective harvesting requests with set membership and date range criteria
+</I>&gt;<i> that include deleted records _must_ include the headers of these records.
+</I>&gt;<i> Incremental harvesting will thus discover deletions from repositories
+</I>&gt;<i> that keep track of them. Repositories must indicate their level of
+</I>&gt;<i> support for deletions in the deletedRecord element of the Identify
+</I>&gt;<i> response.
+</I>&gt;<i>
+</I>&gt;<i> Note that deleted status is a property of individual records. Like a
+</I>&gt;<i> normal record, a deleted record is identified by a unique identifier, a
+</I>&gt;<i> metadataPrefix and a datestamp. Other records, with different
+</I>&gt;<i> metadataPrefix but the same unique identifier, may remain available for
+</I>&gt;<i> the an item.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> 8) Change schema to defined a type for protocolVersion instead of using
+</I>&gt;<i> an anonymous definition (ALREADY DONE, 2004-03-29)
+</I>&gt;<i>
+</I>&gt;<i> 8.1) Motivation
+</I>&gt;<i>
+</I>&gt;<i> To allow reuse as part of the Static Repository schema
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH-static-repository.xsd">http://www.openarchives.org/OAI/2.0/OAI-PMH-static-repository.xsd</A>
+</I>&gt;<i>
+</I>&gt;<i> 8.2) Impact
+</I>&gt;<i>
+</I>&gt;<i> None except as noted in motivation. Schema semantics unchanged; all
+</I>&gt;<i> validating instances will still validate.
+</I>&gt;<i>
+</I>&gt;<i> 8.3) Change to OAI-PMH.xsd
+</I>&gt;<i>
+</I>&gt;<i> 98,104c100
+</I>&gt;<i> &lt;       &lt;element name=&quot;protocolVersion&quot;&gt;
+</I>&gt;<i> &lt;         &lt;simpleType&gt;
+</I>&gt;<i> &lt;           &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i> &lt;             &lt;enumeration value=&quot;2.0&quot;/&gt;
+</I>&gt;<i> &lt;           &lt;/restriction&gt;
+</I>&gt;<i> &lt;         &lt;/simpleType&gt;
+</I>&gt;<i> &lt;       &lt;/element&gt;
+</I>&gt;<i> ---
+</I>&gt;<i> &gt;       &lt;element name=&quot;protocolVersion&quot; type=&quot;oai:protocolVersionType&quot;/&gt;
+</I>&gt;<i> 192a189
+</I>&gt;<i> &gt;
+</I>&gt;<i> 253a251,256
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;simpleType name=&quot;protocolVersionType&quot;&gt;
+</I>&gt;<i> &gt;     &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i> &gt;       &lt;enumeration value=&quot;2.0&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;/restriction&gt;
+</I>&gt;<i> &gt;   &lt;/simpleType&gt;
+</I>&gt;<i>
+</I>&gt;<i> (old version available as
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH.2002-06-13.xsd">http://www.openarchives.org/OAI/2.0/OAI-PMH.2002-06-13.xsd</A>)
+</I>&gt;<i>
+</I>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001286.html">[OAI-implementers] Creating a Data Provider
+</A></li>
+	<LI>Next message: <A HREF="001288.html">[OAI-implementers] Part II: Proposed corrections/fixes to OAI-PMH
+ protocol document and schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1287">[ date ]</a>
+              <a href="thread.html#1287">[ thread ]</a>
+              <a href="subject.html#1287">[ subject ]</a>
+              <a href="author.html#1287">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Qualified Dublin Core 
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=E5431CF93E29F9478878F623E5B9CE9809DF7516%40oa3-server.oa.oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001264.html">
+   <LINK REL="Next"  HREF="001267.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Qualified Dublin Core </H1>
+    <B>Timothy W. Cole</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=E5431CF93E29F9478878F623E5B9CE9809DF7516%40oa3-server.oa.oclc.org"
+       TITLE="[OAI-implementers] Qualified Dublin Core ">t-cole3 at uiuc.edu
+       </A><BR>
+    <I>Thu Aug 12 13:28:26 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001264.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+        <LI>Next message: <A HREF="001267.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1266">[ date ]</a>
+              <a href="thread.html#1266">[ thread ]</a>
+              <a href="subject.html#1266">[ subject ]</a>
+              <a href="author.html#1266">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE> 
+Jeff-
+
+This is partly a matter of striking balance between data provider and
+service provider workload.
+
+As another service provider, I would agree that just because an element in a
+harvested metadata record is labeled &lt;spatial&gt; in some application-specific
+XSD, it doesn't mean that I can assume that the element means the same thing
+as &lt;dcterms:spatial&gt;. (See also my own reply to Stephen Crawley.)
+
+However, I disagree that I should treat the contents of an element in a
+metadata record that is explicitly labeled &lt;dcterms:spatial&gt; (where dcterms:
+is unambiguously the prefix for the appropriate DCMI namespace) as any less
+meaningful because it's embedded within a record containing elements from
+multiple namespaces, including some with which I may not be familiar. While
+arguably the problem can get more complex when dealing with schemas defining
+elements with highly complex content models, with dc, dcterms, dcmitypes, I
+don't think a lot of ambiguity creeps in just because elements of additional
+namespaces are included. The contents of an element labeled
+&lt;dcterms:spatial&gt; should still be making the same kind of assertion about
+the spatial coverage of the object being described regardless of the
+inclusion of sibling elements in other namespaces.
+
+There could of course be some adverse indicators. For instance, I would
+prefer that the XSD against which the harvested record validates makes
+mention (directly or through indirection) of the dcterms namespace and XSD
+(rather than for example allows inclusion by invoking #any or some similar
+mechanism). To me that suggests that the data provider really means to be
+including dcterms semantics. 
+
+I suppose I might also be wary of &lt;dcterms:spatial&gt; appearing at other than
+the first-level of the metadata record XML hierarchy. That could imply the
+assertion is not about the primary object being described (which is where
+RDF would be helpful, too bad RDF is so antithetical to certain features of
+XML Schema Language like xsi:type).
+
+And we can probably argue about whether you risk major problems when you
+ignore encoding schemes your application doesn't know about. 
+
+But otherwise, I don't think it's a major leap of faith to take elements
+represented as being in namespaces known to me at face value. Certainly I'd
+rather harvest the qualified DC based OLAC, NSDL, and CDP formatted records
+than settle for their dumbed down simple DC records. I'm confident in those
+instances that &lt;dcterms:spatial&gt; means &lt;dcterms:spatial&gt; in spite of the
+fact that their records also may include some additional non-DC semantics.
+
+And also I don't think it unreasonably demanding for my application to
+inspect XSDs returned in response to ListMetadataFormats verb, even to point
+of inspecting one or two levels of imported XSDs to discover namespaces
+being invoked of possible interest to me. Of course that gets back to the
+balancing act of who should do what between data providers and service
+providers. Perhaps in this instance I'm being too liberal in trying to
+minimize effort of data providers.
+
+Tim Cole
+University of Illinois at UC 
+
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A> 
+</I>&gt;<i> [mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>] On Behalf 
+</I>&gt;<i> Of Young,Jeff
+</I>&gt;<i> Sent: Thursday, August 12, 2004 8:48 AM
+</I>&gt;<i> To: Stephen Crawley; 
+</I>&gt;<i> <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at oaisrv.nsdl.cornell.edu</A>; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">crawley at piglet.dstc.edu.au</A>
+</I>&gt;<i> Subject: RE: [OAI-implementers] Qualified Dublin Core 
+</I>&gt;<i> 
+</I>&gt;<i> Speaking only for myself as a service provider, I doubt that 
+</I>&gt;<i> I will be interested in a generic container of &quot;things&quot;. I 
+</I>&gt;<i> simply don't have the time or patience to figure out what's 
+</I>&gt;<i> what in a blob of data. Including a &quot;schema&quot; attribute and 
+</I>&gt;<i> &quot;element&quot; element might help, but the investigation still 
+</I>&gt;<i> sounds difficult. In addition, my sense is that taking the 
+</I>&gt;<i> easy route and blindly pulling DC and DCQ elements from the 
+</I>&gt;<i> blob (or elements from any other namespace) will produce a 
+</I>&gt;<i> meaningless jumble 9 times out of 10. I could be wrong, though.
+</I>&gt;<i> 
+</I>&gt;<i> Jeff
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001264.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+	<LI>Next message: <A HREF="001267.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1266">[ date ]</a>
+              <a href="thread.html#1266">[ thread ]</a>
+              <a href="subject.html#1266">[ subject ]</a>
+              <a href="author.html#1266">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

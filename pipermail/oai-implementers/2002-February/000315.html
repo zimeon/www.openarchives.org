@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] OAI-PMH &amp; SOAP
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tim%40tim.brody.btinternet.co.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000314.html">
+   <LINK REL="Next"  HREF="000310.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] OAI-PMH &amp; SOAP
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tim%40tim.brody.btinternet.co.uk"
+       TITLE="[OAI-implementers] OAI-PMH &amp; SOAP">tim@tim.brody.btinternet.co.uk
+       </A><BR>
+    <I>Mon, 4 Feb 2002 11:26:50 -0000</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000314.html">[OAI-implementers] OAI-PMH &amp; SOAP
+</A></li>
+        <LI> Next message: <A HREF="000310.html">[OAI-implementers] OAI-PMH &amp; SOAP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#315">[ date ]</a>
+              <a href="thread.html#315">[ thread ]</a>
+              <a href="subject.html#315">[ subject ]</a>
+              <a href="author.html#315">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi,
+
+(I agree with you that the current resumptionToken method is inelegant - it
+is the most complex part to implement on the repository-side)
+
+You're suggestion still doesn't protect the client, as the server could send
+back as many records as it likes (if the server can send less than the max
+records, what's to say a badly behaved server won't send back many more than
+it?).
+
+In the end it comes down to either ensuring the server is well-behaved (in
+the current OAI sense, manually checking for resumptionTokens), or putting
+some protection into the XML parsing/sax layer.
+
+I would be interested to know how resumptionTokens can be avoided, as RT is
+both flow-control (which can be replaced by start-maxrows requests), but
+also state information (i.e. which records are to be returned). If different
+sections of the same query are requested, without state being maintained,
+surely there is a risk that some records may be missed in the overlap?
+(or are you presuming that all records are added, and returned,
+sequentially?)
+
+All the best,
+Tim Brody
+
+----- Original Message -----
+From: &quot;Walter Underwood&quot; &lt;<A HREF="mailto:wunder@inktomi.com">wunder@inktomi.com</A>&gt;
+To: &lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+Sent: Monday, February 04, 2002 4:21 AM
+Subject: Re: [OAI-implementers] OAI-PMH &amp; SOAP
+
+
+&gt;<i> --On Sunday, February 3, 2002 7:20 PM -0500 Hussein Suleman
+</I>&lt;<A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A>&gt; wrote:
+&gt;<i> &gt;
+</I>&gt;<i> &gt; [....] the client, on the other hand, can choose to terminate a
+</I>connection
+&gt;<i> &gt; if the server sends too much data (the client is therefore safe). in
+</I>fact
+&gt;<i> &gt; the client should always be safe by virtue of the fact that the protocol
+</I>&gt;<i> &gt; is almost stateless and strictly client-initiated.
+</I>&gt;<i>
+</I>&gt;<i> First, &quot;almost stateless&quot; is the same as &quot;stateful&quot;.
+</I>&gt;<i>
+</I>&gt;<i> Second, the guts of the XML parser or reader is a terrible place
+</I>&gt;<i> to implement a limit on the number of records a protocol response
+</I>&gt;<i> should return. And aborting the session is a poor way to limit the
+</I>&gt;<i> number of records. It turns a limit into an unrecoverable error.
+</I>&gt;<i>
+</I>&gt;<i> Layered protocol design is over twenty years old. This is pretty
+</I>&gt;<i> serious layer-crossing.
+</I>&gt;<i>
+</I>&gt;<i> I did think of this solution when I first brought this up, but
+</I>&gt;<i> that is not a way to get interoperability. It is a defense against
+</I>&gt;<i> malicious servers, which is important, but a different problem.
+</I>&gt;<i>
+</I>&gt;<i> Other protocols send a request with the start number and the
+</I>&gt;<i> number to return, and the reply has up to that number of records.
+</I>&gt;<i> Clear and stateless, with no worries about what to do when the
+</I>&gt;<i> resumption token times out because the browser comes back after
+</I>&gt;<i> an hour or a day. Or never comes back at all because they crashed
+</I>&gt;<i> or got bored. The resumption token implies that state will be
+</I>&gt;<i> kept when it is not needed, and it requires a periodic cleanup
+</I>&gt;<i> to get rid of abandoned state. Extra complexity which is really
+</I>&gt;<i> unnecessary.
+</I>&gt;<i>
+</I>&gt;<i> wunder
+</I>&gt;<i> --
+</I>&gt;<i> Walter R. Underwood
+</I>&gt;<i> Senior Staff Engineer
+</I>&gt;<i> Inktomi Enterprise Search
+</I>&gt;<i> <A HREF="http://search.inktomi.com/">http://search.inktomi.com/</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000314.html">[OAI-implementers] OAI-PMH &amp; SOAP
+</A></li>
+	<LI> Next message: <A HREF="000310.html">[OAI-implementers] OAI-PMH &amp; SOAP
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#315">[ date ]</a>
+              <a href="thread.html#315">[ thread ]</a>
+              <a href="subject.html#315">[ subject ]</a>
+              <a href="author.html#315">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

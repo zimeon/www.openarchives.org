@@ -1,0 +1,161 @@
+From abejaran at stud.fh-offenburg.de  Fri Oct  1 04:28:01 2010
+From: abejaran at stud.fh-offenburg.de (Alexander Bejarano)
+Date: Fri Oct  1 04:28:48 2010
+Subject: [OAI-implementers] After Registration
+Message-ID: <4CA5B7B1020000E50001AE47@tula.rz.fh-offenburg.de>
+
+Hi everybody,
+
+I am working on the Humboldt Digital Library ( http://www.avhumboldt.net/humboldt/publications/ ). We just registered yesterday and we are already listed as Data Providers ( http://www.openarchives.org/Register/BrowseSites ). I would like to know how can I verify that the metadata is being harvested from our server. OAI URL that we registered is the following:  http://www.avhumboldt.net/oai/oai.php 
+
+Thanks...
+
+Alexander Bejarano
+CME Master Programme
+
+From Samuele.Kaplun at cern.ch  Thu Oct 14 09:06:44 2010
+From: Samuele.Kaplun at cern.ch (Samuele Kaplun)
+Date: Thu Oct 14 09:07:30 2010
+Subject: [OAI-implementers] Records getting out of sets and
+	repository/harvester implementation
+Message-ID: <1287061604.800.20.camel@pcuds35>
+
+Dear all,
+
+I am Samuele Kaplun, a CERN developer, and I am currently working in
+revising and improving the OAI-PMH repository implementation of the
+Invenio (<http://invenio-software.org/>).
+
+I came across this implementation doubt:
+
+in Invenio the repository manager is free to define any set he likes on
+top of the whole repository. This means two sets can in principle have a
+non empty intersection.
+
+Now suppose an item belongs to both setA and setB at some point in time.
+But then because of a change in the definition of setA (or because of an
+update of the record metadata) the record does no longer belong to setA,
+but continues to belong to setB.
+
+How can this information be given to harvester?
+
+Naively, if an harvester ask for an incremental update of setA, after
+the item was removed from it, the harvester would simply experience the
+vanishing of the record (like if the record was deleted and the
+repository was supporting only the policy deletedRecord=no).
+
+However this information (i.e. the fact that the record does not belong
+anymore to setA) might be an important one (e.g. in the case the record
+was there by mistake in the first place and contains restricted
+information), and also, the fact that the harvester is not deleting it
+on his side will make it keep an obsolete copy that would eventually
+rotten and simply contribute to the dissemination of mis-information.
+
+One possible solution to this issue might be that the repository keep
+track of previous set membership of the record and simply return the
+record as deleted (like with deletedRecord=transient/persistent for real
+deleted record). But this might open a new issue. What if the harvester
+both harvest setA and setB at the same time? The record will be then
+declared as deleted in setA, but will still be available in setB. What
+should an harvester do in this case (given it is requesting the same
+record, since also the oai_id will be the identical)? In particular if
+the harvester is first harvesting setA and then setB it will end up with
+having a copy of the record, but if it will first harvest setB and then
+setA it will delete his own copy of the record.
+
+Another possibility is that the record is instead returned as such both
+when harvested via setB but also via setA, but the <setSpec> in both
+harvesting session, for the given record, should only mention setB (as
+the record now belongs only to setB and no longer to setA).
+
+A smart harvester would then do the right thing, i.e. delete the record
+if it knows it is not harvesting setB or ignoring the record (as it will
+receive it anyway when it will harvest setB later)
+
+What do you think? Would this be the right behaviour for the repository
+in this situation? Would most of the existing harvesters behave
+correctly WRT this situation if the repository return a record with a
+different setSpec than the request?
+
+Cheers!
+	Samuele
+
+-- 
+Samuele Kaplun
+Invenio Developer ** <http://invenio-software.org/>
+
+
+From diogo.menareis at ist.utl.pt  Fri Oct 15 16:13:23 2010
+From: diogo.menareis at ist.utl.pt (Diogo Mena Reis)
+Date: Fri Oct 15 16:13:36 2010
+Subject: [OAI-implementers] Records getting out of sets
+	and	repository/harvester implementation
+In-Reply-To: <1287061604.800.20.camel@pcuds35>
+References: <1287061604.800.20.camel@pcuds35>
+Message-ID: <4CB8B5E3.1080704@ist.utl.pt>
+
+Dear Samuele,
+
+Wow, that is a real borderline scenario.
+
+It seems you problem is a semantic one, but my understanding is that it's not contemplated in the protocol. Maybe implicitly. From the spec http://www.openarchives.org/OAI/openarchivesprotocol.html#deletion you only have the deleted bit, not the set associated.
+
+On 14/Oct 2:06 PM, Samuele Kaplun wrote:
+> Now suppose an item belongs to both setA and setB at some point in time.
+> But then because of a change in the definition of setA (or because of an
+> update of the record metadata) the record does no longer belong to setA,
+> but continues to belong to setB.
+>
+> How can this information be given to harvester?
+
+So, if you want to make sure that in the case where a harvester:
+1. Harvests set B where record exists
+2. Harvests set A where record was deleted
+
+The record should be deleted in the set A in the harvester if it kept the same identifier for both (which it doesn't have to, so you can't tell). I think your best option in this case is to keep replying with the record in set B as updated for some time (weeks or months) even if it stays the same, to ensure that the following harvest retrieves the record again. If you only reply the record as belonging to set B, the harvester will never know it was removed from A.
+
+> Another possibility is that the record is instead returned as such both
+> when harvested via setB but also via setA, but the<setSpec>  in both
+> harvesting session, for the given record, should only mention setB (as
+> the record now belongs only to setB and no longer to setA).
+
+That is a little subtle I think. I doubt anyone implements that. Getting a record that does not say it was deleted and checking if the set asked is not included is a little far fetched. I would first guess there was a bug in the server's implementation =) And I think I didn't get any reference to that in the spec.
+
+> A smart harvester would then do the right thing, i.e. delete the record
+> if it knows it is not harvesting setB or ignoring the record (as it will
+> receive it anyway when it will harvest setB later)
+
+Like I said I think it's not in the spec, so a smart harvester would send you an email telling you that you're giving records from the wrong set.
+
+Actually I think there is an important gap in the OAI-PMH spec for "dirty" sets. Imagine that you: 1. must change all record identifiers (either by mistake or change in id policy) or 2. must change one field in all the records. There should be a way to tell: this set is dirty, harvest from scratch. What you must do (according to the spec) if you support persistent deleted records is 1. list ALL the records as deleted and list all the records with new ids and 2. List all the records as updated from the change date onward. If you have 10 million records in that set, that is a big change log you must keep. Forever.
+
+Best,
+
+Diogo
+
+From rbussche at fotostoria.de  Thu Oct 21 18:06:17 2010
+From: rbussche at fotostoria.de (=?iso-8859-1?Q?Ruth_von_dem_Bussche-H=FCnnefeld?=)
+Date: Thu Oct 21 18:06:54 2010
+Subject: [OAI-implementers] oai schema for book review?
+Message-ID: <71657E1F-26D7-4F4B-B923-05EA9FE59695@fotostoria.de>
+
+Hello,
+
+we are looking for a scheme to represent book reviews, it should represent the bibliographic information of the reviewed book as well as the review itself in a single record.
+The main problem is, that we have the author or the review as well as the author of the reviewed book, so "creator" won't be sufficient.
+
+Are there any standard solutions for this?
+
+best regards
+Ruth
+
+
+--
+Dr. Ruth von dem Bussche
+Talstra?e 116
+D - 40217 Duesseldorf
+fon +49 (0)211 176007983
+fax +49 (0)211 312126
+www.fotostoria.de
+
+

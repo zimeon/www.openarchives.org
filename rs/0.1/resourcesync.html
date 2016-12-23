@@ -1,0 +1,2300 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ResourceSync Framework Specification</title>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="css/resourcesync.css" type="text/css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/rs/">CURRENT ResourceSync SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logo and ReSync title">
+    <tr>
+      <td><img alt="NISO logo" src="img/niso_logo.png"/></td>
+      <td><img alt="OAI logo" src="img/OA100.gif" width="100" height="70"/></td>
+      <td class="OREtext">Open Archives Initiative<br/>ResourceSync Framework Specification</td>
+      <td><img alt="ReSync logo" src="img/resync_logo.jpg"/></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ResourceSync Framework Specification - Alpha Draft</h2>
+  <h3 class="subTitle">13 August 2012</h3>
+</div><!--div-titleBlock-->
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/0.1/resourcesync">http://www.openarchives.org/rs/0.1/resourcesync</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/resourcesync">http://www.openarchives.org/rs/resourcesync</a></dd>
+  <dt>Previous version:</dt>
+  <dd>none</dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (in alphabetical order):</dt>
+  <dd>Bernhard Haslhofer, Cornell University Information Science</dd>
+  <dd>Martin Klein, Los Alamos National Laboratory</dd>
+  <dd>Carl Lagoze, University of Michigan</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, Los Alamos National Laboratory</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dd>Simeon Warner, Cornell University</dd>
+</dl>
+
+
+<div class="abstract">
+<h2><a name="abstract"></a>Abstract</h2>
+<p class="todo">Need abstract.</p>
+</div>
+    
+<div class="abstract">
+<h2><a name="status"></a>Status of this Document</h2>
+<p>This is an alpha draft distributed for public comment.</p>
+</div>
+
+<div class="toc">
+<h2><a name="contents"></a>Table of Contents</h2>
+<p class="toc">
+
+1. <a href="#Introduction">Introduction</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#MotivExamples">Motivating Examples</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#NotConv">Notational Conventions</a><br/>
+
+2. <a href="#ReSyncBasics">ResourceSync Basics</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#Walkthrough">Walkthrough</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2.2 <a href="#Overview">Overview</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2.1 <a href="#DestPers">Destination Perspective</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2.2 <a href="#SourcePers">Source Perspective</a><br/>
+
+3. <a href="#DescCon">Describing Content</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;3.1 <a href="#Sitemap">Sitemap</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.1 <a href="#loc">loc</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.2 <a href="#lastmod">lastmod and expires</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.3 <a href="#fixity">rs:fixity</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.4 <a href="#size">rs:size</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.5 <a href="#mimetype">rs:mimetype</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.6 <a href="#contentencoding">rs:contentencoding</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.1.7 <a href="#meta">xhtml:meta and xhtml:link</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;3.2 <a href="#sitemapindex">Large Sitemaps</a><br/>
+
+4. <a href="#TransCon">Transferring Content</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;4.1 <a href="#HTTPConTrans">HTTP Content Transfer</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;4.2 <a href="#Dump">Dump</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.2.1 <a href="#Manifest">Manifest</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;4.3 <a href="#AltConTrans">Alternate Content Transfer</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.3.1 <a href="#AltConLoc">Alternate Content Location</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.3.2 <a href="#PartCon">Partial Content</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4.3.3 <a href="#AltInt">Alternate Interpretation</a><br/>
+
+5. <a href="#ComChangeEv">Communicating Change Events</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;5.1 <a href="#Changesets">Change Sets</a><br/>
+<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1.1 <a href="#changetype">rs:changetype</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1.2 <a href="#changeid">rs:changeid</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1.1 <a href="#publisher">dc:publisher</a><br/>-->
+&nbsp;&nbsp;&nbsp;&nbsp;5.2 <a href="#PushingChangesets">Pushing Change Sets</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.2.1 <a href="#xmpp">XMPP</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.2.2 <a href="#callback">HTTP Callback</a><br/>
+
+6. <a href="#ProvAccVer">Providing Access to Versions</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;6.1 <a href="#HistChangeSets">Historical Change Sets</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;6.2 <a href="#HistCon">Historical Content</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.2.1 <a href="#LinkVers">Link to Version</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6.2.2 <a href="#LinkMemento">Link to Memento TimeGate</a><br/>
+
+7. <a href="#AdvCap">Advertising Capabilities</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;7.1 <a href="#robots">robots.txt</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;7.2 <a href="#DiscoLinks">Discovery Links</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.2.1 <a href="#xhtmllinkEle">xhtml:link Element</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.2.2 <a href="#HTTPLinkHrds">HTTP Link Headers</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.2.3 <a href="#HTMLLinkHrds">HTML Link Headers</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;7.3 <a href="#hostmetaDesc">host-meta Description</a><br/>
+
+8. <a href="#References">References</a><br/>
+</p>
+
+<h3><a name="appendices"></a>Appendices</h3>
+
+
+<p class="toc">
+A. <a href="#ElemOv">XML Element Overview</a><br />
+B. <a href="#AltDumpForm">Alternate Dump Formats: WARC</a><br />
+C. <a href="#acknowledgments">Acknowledgements</a><br />
+D. <a href="#changelog">Change Log</a></p>
+</div>
+
+
+
+<div class="body">
+<h2>1. <a name="Introduction">Introduction</a></h2>
+<p>
+The Web is highly dynamic, with resources continuously being created,
+updated, and deleted.
+As a result, the use of resources from a remote server involves the
+challenge of remaining in step with its changing content.
+In many cases, there is no need to perfectly reflect a server's
+evolving content and therefore
+well established resource discovery techniques, such as recurrent Web
+harvesting,
+suffice as an updating mechanism. However, there are significant use
+cases that require low latency and high accuracy
+in reflecting a remote server's changing content. These requirements have
+typically been addressed by ad-hoc technical approaches implemented within
+a small group of collaborating servers. There have been no widely adopted, 
+Web-based approaches.
+</p>
+<p>
+This <strong>ResourceSync</strong> specification introduces a range of
+easy to implement
+capabilities that a server may support in order to enable remote
+servers to remain more tightly
+in sync with its evolving resources. It also describes how a server
+can advertise the capabilities it supports.
+Remote servers can inspect this information to determine how to best
+remain aligned with evolving content.
+</p>
+<p>
+Each capability provides a different synchronization functionality, such as 
+a list of a server's resources or its recently changed 
+resources, including what the nature of the change was: create, update,
+or delete.
+Most capabilities are based on extensions for Sitemaps and new ways
+to use them.
+Capabilities can be combined to achieve varying levels of
+functionality and hence
+meet different local or community requirements.
+This modularity provides flexibility and makes ResourceSync suitable
+for a broad range of use cases.
+</p>
+This document is structured as follows:
+<ul>
+  <li>The remainder of this section provides example use cases and 
+introduces some notational conventions.</li>
+  <li>Section <a href="#ReSyncBasics">2. ResourceSync Basics</a> provides a brief overview
+of the various ResourceSync capabilities. A reading of this section is
+  advised before continuing on to further technical details.</li>
+  <li>Sections <a href="#DescCon"> 3. Describing Content</a>, <a href="#TransCon">4. Transferring Content</a>,
+  <a href="#ComChangeEv">5. Communicating Change Sets</a> and <a href="#ProvAccVer">6. Providing Access to Versions</a> each provide
+details
+  about respective capabilities that a server may implement in order
+to enable remote servers to remain aligned with its evolving
+content.</li>
+  <li>Section <a href="#AdvCap">7. Advertising Capabilities</a> describes how a server can
+advertise the ResourceSync capabilities it supports.</li>
+</ul>
+
+
+<h3>1.1. <a name="MotivExamples"></a>Motivating Examples</h3>
+
+<p>Many projects and services have synchronization needs and have
+implemented <i>ad hoc</i> solutions. 
+ResourceSync provides a standard synchronization method that will
+reduce implementation effort and facilitate easier reuse. 
+This section describes four motivating examples with differing needs 
+and complexities.
+</p>
+
+<p>Consider first the case of a website for a small museum collection. 
+The website may contain just a few dozen static web pages. With standard 
+tools the maintainer can create a Sitemap to enhance harvesting by 
+commodity search engines. In doing so the information is also available 
+to services using ResourceSync.</p>
+
+<p>When building services over Linked Data it is often desirable to 
+maintain a local copy of key data for improved access and availability. 
+Harvesting can be enabled by publishing a ResourceSync Sitemap for the 
+collection. In many cases Linked Data records are small and so harvesting
+via individual HTTP GET requests is slow because of the large number of 
+round-trips for a small amount of content. Publishing a dump in which
+content is aggregated in a ZIP file in a standard way makes this more 
+efficient for the client and less burdensome for the server. Continued 
+synchronization is enabled by either updating the Sitemap or, more 
+efficiently, by publishing change sets listing only the changed resources 
+and/or content dumps.</p>
+
+<p>The <a href="http://arxiv.org"><em>arXiv.org</em></a> archive of
+scientific articles has used a custom mirroring solution
+to propagate resource changes to a set of mirror sites and interacting
+services on a daily basis.
+There are about 2.4 million resource files with about 1600 changes
+(creates, updates) per day.
+The mirroring system currently in place uses HTTP with custom
+change descriptions, and occasional <em>rsync</em> to verify the
+copies and to cope with any errors in the incremental updates.
+It would be desirable to have a solution that allows any interested
+third-party service to synchronize with arXiv using standard software.
+Both accuracy and low implementation barrier are important.
+Within ResourceSync, <em>arXiv.org</em> could publish 
+each metadata and full-text record as a separate web resource with
+its own URI.
+In this one-to-many scenario multiple clients (such as the mirror
+<em>lanl.arXiv.org</em> or any third party) could stay accurately in
+synchronization with either all or a portion of <em>arXiv.org</em>.
+This would extend the article metadata sharing (currently provided via
+<a href="#ref-oaipmh">OAI-PMH</a>) to full-text in a web friendly fashion.</p>
+
+<p>
+It is important to have access to the most recent versions of data
+resources in order to maintain efficient and accurate computation.
+DBPedia is a frequently used set of Linked Data, and is updated 
+up to twice a second.  While it may not be important to maintain
+second-granularity synchronization, there are millions of resources
+changing at a very high rate and existing solutions are unable to
+provide acceptable latency.  The ResourceSync framework enables a
+push-based framework for alerting interested clients about changes using
+a publish and subscribe methodology.  This builds upon ResourceSync's pull-based
+approaches, simply changing the network transport layer to a more
+appropriate technique for high throughput.  The resources may be
+synchronized by a simple HTTP GET call, or by transferring the changes
+only using more advanced techniques.
+</p>
+
+<h3>1.2. <a name="NotConv">Notational Conventions</a></h3>
+
+<p>This specification uses the terms "resource", "request",
+"response", "entity", "entity-body", "entity-header",
+"content negotiation", "client", "user agent", and "server" as
+described in [<a href="#ref-rfc2616">RFC 2616</a>].</p>
+
+<p>Throughout this document, the following namespace prefix bindings
+are used:</p>
+
+<a name="tab_1_1"></a>
+<table class="namespace-table" summary="namespaces used in this document">
+ <tr class="top">
+  <th>Prefix</th><th>Namespace URI</th><th class="desc">Description</th>
+ </tr>
+ <tr class="odd">
+  <td>(none)</td><td><code>http://www.sitemaps.org/schemas/sitemap/0.9</code></td>
+  <td>Sitemap XML elements defined in the <a href="#ref-sitemaps">Sitemap protocol</a></td>
+ </tr>
+ <tr class="even">
+  <td><code>xhtml</code></td><td><code>http://www.w3.org/1999/xhtml</code></td>
+  <td>Elements introduced in the XHTML namespace</td>
+ </tr>
+ <tr class="odd">
+  <td><code>xmpp</code></td><td><code>http://jabber.org/protocol/pubsub</code></td>
+  <td>Elements of the <a href="#xmpp-0060">PubSub extension</a> to the <a href="#ref-rfc6120">XMPP protocol</a></td>
+ </tr>
+ <tr class="even">
+  <td><code>rs</code></td><td><code>http://www.openarchives.org/rs/terms/</code></td>
+  <td>Elements introduced and defined in this specification</td>
+ </tr>
+<!--
+ <tr class="odd">
+  <td><code>dc</code></td><td><code>http://purl.org/dc/terms/</code></td>
+  <td>elements of the Dublin Core Metadata Initiative {ref}</td>
+ </tr>
+-->
+</table>
+<p class="caption">Table 1.1: Namespace prefix bindings used in this document</p>
+
+
+<h2>2. <a name="ReSyncBasics">ResourceSync Basics</a></h2>
+<p>
+This section provides an overview of the various ResourceSync
+capabilities that a server may support in order to enable remote servers
+to become and remain synchronized with its evolving resources.
+The following terms are introduced:
+</p>
+
+<ul>
+  <li>A <strong>Source</strong> is a server that hosts resources that
+may change over time.</li>
+  <li>A <strong>Destination</strong> is a server or agent that is to 
+remain in step with changes at the Source.</li>
+</ul>
+
+<h3>2.1. <a name="Walkthrough">Walkthrough</a></h3>
+
+<p>Let's assume a Source, http://example.com/, that wants to make it
+easy for Destinations to follow its changing content.
+A very basic first step towards that goal is for this Source to
+publish a Sitemap like many servers already do.
+A Sitemap lists the URIs of resources that a Source wants Destinations
+to know about, as shown in <a href="#ex_2_1_1">Example 2.1</a>.
+</p>
+
+<!--EXAMPLE:ex_2_1_1.xml-->
+<a name="ex_2_1_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;&gt;
+   &lt;url&gt;
+     &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+     &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.1: A basic Sitemap</p>
+<!--/EXAMPLE:ex_2_1_1.xml-->
+
+<p>
+A Destination can find out about the existence of a Sitemap
+in the Source's robots.txt file, published at the conventional location:
+http://example.com/robots.txt. <a href="#ex_2_1_2">Example 2.2</a>
+shows a robots.txt file that
+indicates the Source's Sitemap is available at
+http://example.com/sitemap.xml. The Destination can use the
+information in the Sitemap to start collecting
+the Source's content by issuing HTTP GET requests against the listed URIs.
+</p>
+
+<!--EXAMPLE:ex_2_1_2.xml-->
+<a name="ex_2_1_2"></a>
+<div class="exampleInner">
+<pre>
+User-agent: *
+Sitemap: http://example.com/sitemap.xml
+</pre>
+</div>
+<p class="caption">Example 2.2: A robots.txt file pointing to a Sitemap</p>
+<!--/EXAMPLE:ex_2_1_2.xml-->
+
+<p>
+The Source can provide additional information in the Sitemap to help
+the Destination with optimizing the process of
+collecting content. For example, if a Destination has previously acted
+upon a Source's Sitemap,
+it would be good to allow it to determine whether the Sitemap itself
+has changed since its last visit or whether specific resources
+have changed since then. Also, the Destination may not be interested
+in all of the Source's content but only content with a certain topic.
+
+A Source can express such information in a Sitemap using existing
+Sitemap elements or extension elements introduced by ResourceSync.
+<a href="#ex_2_1_3">Example 2.3</a> shows a Sitemap in which its time
+of publication was added as well as the last
+modification date and categories for the listed resources. A Destination can
+use such information to minimize the number
+of HTTP requests it needs to issue in order to remain up-to-date with the
+content it requires.
+</p>
+
+<!--EXAMPLE:ex_2_1_3.xml-->
+<a name="ex_2_1_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+     &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+     &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+     &lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Frogs&quot; title=&quot;Frogs&quot;/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+     &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+     &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+     &lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Fish&quot; title=&quot;Fish&quot;/&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.3: A Sitemap with additional information</p>
+<!--/EXAMPLE:ex_2_1_3.xml-->
+
+<p>In order to describe its changing content in a more timely manner,
+a Source can increase the frequency at which
+it publishes an up-to-date Sitemap. But changes may be so frequent or
+the size of the content collection so vast that updating a complete
+Sitemap may be impractical. In such cases, a Source can implement
+an additional capability that focuses on communicating information
+about changes only.
+To this end, ResourceSync introduces Change Sets. A Change Set is a
+special-purpose Sitemap that lists only recently changed resources
+as well as the nature of their change: create, update, delete. It is
+up to a Source to decide what the temporal interval is that is covered
+by a
+Change Set, for example, listing all changes that occurred during the
+previous hour, the current day, or since the most recent publication
+of a Sitemap.
+<a href="#ex_2_1_4">Example 2.4</a> shows a Change Set that lists
+two change events, one update and one deletion. It also
+contains some of the additional information that was described above.
+</p>
+
+<!--EXAMPLE:ex_2_1_4.xml-->
+<a name="ex_2_1_4"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset rs:type=&quot;changeset&quot; 
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      &lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Frogs&quot; title=&quot;Frogs&quot;/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;
+      &lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Fish&quot; title=&quot;Fish&quot;/&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.4: A Change Set</p>
+<!--/EXAMPLE:ex_2_1_4.xml-->
+
+<p>
+One way by which a Destination can find out whether a Source supports
+the Change Set capability is by inspecting its Sitemap. The
+Sitemap in <a href="#ex_2_1_5">Example 2.5</a> shows a link to the Source's current Change
+Set that is available at
+http://example.com/changesets/most_recent.xml.
+A Destination can recurrently issue an HTTP GET request against this
+URI to obtain information about recent changes that occurred at the
+Source,
+compare those with changes it already acted upon, and process the
+remaining ones. In order to allow a Destination to remain even more
+tightly synchronized with a Source, ResourceSync also introduces
+a capability that consists of a Source recurrently pushing Change Sets
+that describe new change events to a Destination via publish/subscribe
+technology.
+</p>
+
+<!--EXAMPLE:ex_2_1_5.xml-->
+<a name="ex_2_1_5"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;xhtml:link href="http://example.com/changesets/most_recent.xml" 
+               rel=&quot;current http://www.openarchives.org/rs/changeset&quot;/&gt;
+   &lt;url&gt;
+     &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+   &lt;/url&gt;
+      &lt;url&gt;
+     &lt;loc&gt;http://example.com/res22&lt;/loc&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.5: A basic Sitemap with a pointer to a Change Set</p>
+<!--/EXAMPLE:ex_2_1_5.xml-->
+
+<p>
+It may occur that a Destination is not always able to process the 
+current Change Set before the Source replaces it with a new one, 
+for example, because it goes off-line.
+When becoming operational again, the Destination may want to catch up
+with changes that occurred and would likely do so by
+obtaining the Source's current Change Set. However, while this Change
+Set will contain information about the recent changes
+that occurred at the Source, it may not cover all changes for the
+entire period during which the Destination was unavailable.
+</p>
+
+<p>
+To address this problem, a Source may implement a memory capability
+that allows a Destination to obtain an historical overview
+of changes going back to before those listed in the recent Change Set.
+This overview is made available as one or more interlinked
+historical Change Sets, each covering changes that occurred in a given
+time interval. <a href="#ex_2_1_6">Example 2.6</a> shows the
+Source's current Change Set but this time with the inclusion of a link
+to a historical Change Set,
+which is available at http://example.com/changesets/20120807.xml. This
+historical Change Set may link to a prior
+Change Set using the same mechanism. The example also shows that the
+Change Set includes a link to itself expressing
+it is the current one.
+With this memory capability in place, a Destination can collect one or
+more historical Change Sets, moving backwards in time,
+following the links that have both the &quot;prev&quot; and
+&quot;http://www.openarchives.org/rs/changeset&quot; relation types.
+Once a historical Change Set is obtained that includes a change that
+the Destination already acted upon, it can stop collecting even older
+changes and start acting upon the unprocessed ones.
+</p>
+
+<!--EXAMPLE:ex_2_1_6.xml-->
+<a name="ex_2_1_6"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset rs:type=&quot;changeset&quot; 
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;xhtml:link href="http://example.com/changesets/20120807.xml" 
+               rel="prev http://www.openarchives.org/rs/changeset&quot;/&gt;
+   &lt;xhtml:link href="http://example.com/changesets/most_recent.xml" 
+               rel="current http://www.openarchives.org/rs/changeset&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      &lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Frogs&quot; title=&quot;Frogs&quot;/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;
+      &lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Fish&quot; title=&quot;Fish&quot;/&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.6: A Change Set with a link to a historical Change Set</p>
+<!--/EXAMPLE:ex_2_1_6.xml-->
+
+<h3>2.2. <a name="Overview">Overview</a></h3>
+
+<p>The previous section provides a concrete walkthrough of some
+capabilities that a Source can implement
+and it describes how a Destination can leverage those capabilities to
+remain aligned with the Source's changing content.
+This section provides a high-level overview of the various
+ResourceSync capabilities and it shows how these fit in a
+Destination's processes
+aimed at remaining in step with changes. This overview is summarized
+in <a href="#tab_2_1">Table 2.1</a> that lists Destination processes as columns and
+Source capabilities as rows, with cells indicating the usability of a
+capability for a given process.
+The next sections provide technical details about each ResourceSync
+capabilities.</p>
+
+<!--TABLE:tab_2_1.xml-->
+<a name="tab_2_1"></a>
+<table class="capability-table" summary="Source Capabilities versus
+Destination Processes">
+ <tr class="top">
+  <th>Source Capabilities</th><th colspan="3">Destination Processes</th>
+ </tr>
+ <tr class="top">
+  <th>&nbsp;</th><th>Baseline Synchronization</th><th>Incremental
+Synchronization</th><th>Audit</th>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#DescCon">Describing Content</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Sitemap">Sitemaps</a></td><td class="sync">X</td><td class="sync">&nbsp;</td><td class="audit">X</td>
+ </tr>
+  <tr class="odd">
+  <td class="scap"><a href="#TransCon">Transferring Content</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#HTTPConTrans">HTTP GET</a></td><td class="sync">X</td><td class="sync">X</td><td class="audit">&nbsp;</td>
+ </tr>
+  <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Dump">Dump</a></td><td class="sync">X</td><td class="sync">&nbsp;</td><td class="audit">&nbsp;</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#AltConTrans">Alternate Content Transfer</a></td><td class="sync">X</td><td class="sync">X</td><td class="audit">&nbsp;</td>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#ComChangeEv">Communicating Change Events</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Changesets">Change Sets</a></td><td class="sync">&nbsp;</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#PushingChangesets">Pushing Change Sets</a></td><td class="sync">&nbsp;</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#ProvAccVer">Providing Access to Versions</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#HistChangeSets">Historical Change Sets</a></td><td class="sync">&nbsp;</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#HistCon">Historical Content</a></td><td class="sync">&nbsp;</td><td class="sync">X</td><td class="audit">&nbsp;</td>
+ </tr>
+</table>
+<p class="caption">Table 2.1: Source capabilities versus Destination processes</p>
+<!--/TABLE:tab_2_3_1.xml-->
+
+
+<h4>2.2.1. <a name="DestPers">Destination Perspective</a></h4>
+
+<p>From the perspective of a <b>Destination</b>, three key processes
+are enabled by the ResourceSync capabilities:</p>
+
+<p>
+<b>Baseline Synchronization</b> - In order to become synchronized with
+a Source,
+the Destination must make an initial copy of the content of a Source.
+This requires a list of resources hosted by a Source (Sitemap) and
+obtaining those resources (Dump, HTTP GET, Alternate Content
+Transfer).
+</p>
+<p>
+<b>Incremental Synchronization</b> - A Destination may remain in
+sync with a Source by repeatedly performing a Baseline Synchronization but this
+will be inefficient in many situations. To increase efficiency, a
+Source may communicate information about change events
+that involve its resources (Change Sets, Pushing Change Sets). This
+allows a Destination to only obtain new and updated resources
+(HTTP GET, Alternate Content Transfer). In order to cope with
+outages, or changes at the Source that occur
+more frequently than the Destination attempts to synchronize, the
+Source may keep a historical record of change events and/or
+versions of resources as they change over time (historical Change
+Sets, historical Content).
+</p>
+<p>
+<b>Audit</b> - In order to verify whether it is in sync
+with the Source, a Destination must be able to check that the content
+it obtained
+matches the current resources hosted by the Source. This requires a
+list of resources hosted by the Source (Sitemap, Change Set,
+historical Change Set),
+and metadata that characterizes the resources' most recent state, such
+as last modification time, size, and fixity.
+</p>
+
+<h4>2.2.2. <a name="SourcePers">Source Perspective</a></h4>
+
+<p>From the perspective of a <b>Source</b>, the ResourceSync
+capabilities that can be supported to enable Destinations to remain in
+sync with changing content
+can be grouped into four categories:
+</p>
+
+<p><b>Describing Content</b> - In order to describe its content, a
+Source can recurrently make an up-to-date <b>Sitemap</b> available.
+A basic Sitemap provides the URIs of resources that the Source wants
+Destinations to know about. But additional information
+can be added to the Sitemap to optimize the Destination's process of
+obtaining a Source's resources. Such information includes
+the Sitemap's publication time and the last modification time and categories
+for resources.
+</p>
+
+<p><b>Transferring Content</b> - The default mechanism to obtain a
+resource is to issue an <b>HTTP GET</b> against its URI. But the 
+Source may support two additional content transfer capabilities:</p>
+
+<ul>
+<li><b>Dump</b> - The Source may recurrently make an up-to-date Dump
+of its content available.
+A Dump packages representations of resources hosted by a Source.
+It also contains a <b>Manifest</b> that provides metadata about the
+resources provided in the Dump such as their URI, but also last
+modification time, fixity, size, media type information and categories can be included.
+The Manifest is a special-purpose Sitemap with ResourceSync extensions.</li>
+<li><b>Alternate Content Transfer</b> - The Source may support means
+to obtain a resource other than by issuing an HTTP GET on its URI.
+For example, a Source may prefer that for synchronization purposes
+resources be obtained from a mirror server and hence from a different
+URI.
+This capability can also be used to obtain only the changes that a
+resource underwent, instead of the entire changed resource.
+This may be desirable when the resource size is considerable and its
+change frequency high. This capability is provided via a Sitemap
+extension
+that communities can tailor to their needs. As a result, it is
+possible that certain Destinations may not understand
+the specifics of an Alternate Content Transfer approach, in which
+case dereferencing the resource's URI remains the fallback approach.</li>
+</ul>
+
+<p><b>Communicating Change Events</b> - In order to achieve low
+synchronization latency, a Source may communicate information about
+change events
+that involve its resources:</p>
+
+<ul>
+<li><b>Change Sets</b> - The Source may make a Change Set available
+that provides
+information about its resources that recently changed.
+It is up to a Source to decide what the temporal interval is that is
+covered by a
+Change Set, for example, listing all changes that occurred during the
+previous hour, the current day, or since the most recent publication
+of a Sitemap.
+A Change Set is itself a special-purpose Sitemap with ResourceSync
+extensions that allow conveying, among others,
+the nature of the change (create, update, delete).
+</li>
+<li><b>Pushing Change Sets</b> - The Source may push Change Sets
+towards a Destination instead of having a Destination download them.
+This allows a Destination to remain informed in near real-time about a
+Source's changing content.
+Two publish/subscribe technologies to push Change Sets are addressed:
+XMPP PubSub and HTTP Callback.</li>
+</ul>
+
+<p><b>Providing Access to Versions</b> - In order to allow a
+Destination to catch up with missed changes that occurred at the
+Source,
+the Source may keep a historical record of change events and/or
+versions of resources as they change over time:</p>
+
+<ul>
+<li><b>Historical Change Sets</b> - The Source may implement a
+capability that allows a Destination to obtain an historical overview
+of changes going back to before those listed in the recent Change Set.
+How far back in time this overview goes is up to the
+Source to decide. The overview is made available as one or more interlinked
+historical Change Sets, each expressed as a special-purpose Sitemap
+and each covering all changes that occurred in a given time interval.
+</li>
+<li><b>Historical Content</b> - The Source may implement a capability
+that allows a Destination to obtain prior versions of resources. This
+meets a need
+where Destinations need to obtain all versions of a resource, not just
+the current one. Two approaches are addressed:
+access to prior resource versions using the Memento protocol 
+[<a href="#Memento-Draft">Memento Internet Draft</a>]
+and using interlinked resource versions.</li>
+</ul>
+
+<!--
+
+</p>
+<p class="caption"><a name="ReSyncBasics_fig1"></a>Figure 1:
+ResourceSync Framework, Baseline Synchronization capabilities.</p>
+<p class="figure"><img src="img/framework_intro_BLSYNC.png"
+alt="ResourceSync Framework Baseline Synchronization"/></p>
+<p>
+Change Communication capabilities (<a href="#ReSyncBasics_fig2"
+>Figure 2</a>) support Incremental Synchronization
+by allowing a Destination to efficiently remain up-to-date
+with changes at the Source. They consist of:
+
+
+<p class="caption"><a name="ReSyncBasics_fig2"></a>Figure 2:
+ResourceSync Framework, Change Communication capabilities.</p>
+<p class="figure"><img src="img/framework_intro_INCSYNC.png"
+alt="ResourceSync Framework Incremental Synchronization"/></p>
+<p>
+Memory capabilities (<a href="#ReSyncBasics_fig3"
+>Figure 3</a>) allow a Destination that has
+temporarily been off-line, or attempts to synchronize infrequently,
+to catch up with changes to Resources hosted by the Source:
+<ul>
+<li>The provision of a historical overview of changes that Resources
+hosted by a Source underwent
+through the publication of one or more Change Sets (Section 3.6).
+</li>
+<li>The provision of access to versions of a Resource hosted by a
+Source prior to the current one.</li>
+</ul>
+</p>
+<p class="caption"><a name="ReSyncBasics_fig3"></a>Figure 3:
+ResourceSync Framework, Memory capabilities.</p>
+<p class="figure"><img src="img/framework_intro_MEM.png"
+alt="ResourceSync Framework Memory"/></p>
+
+-->
+
+
+<h2>3. <a name="DescCon">Describing Content</a></h2>
+
+<p>A Source may publish a description of its content in order to allow Destinations to keep track of the content state. This information enables a Destination to make a copy of all or part of the content, or to update a local copy to remain synchronized with changes at a Source. The <a href="#ref-sitemaps">Sitemap format</a> was created to improve the efficiency and reliability of web harvesting and is the basis of content description within ResourceSync. Optional extensions provide facilities for improved synchronization and verification.</p>
+
+<h3>3.1. <a name="Sitemap">Sitemap</a></h3>
+
+<p>ResourceSync leverages the wide-spread adoption and tool-support of the <a href="#ref-sitemaps">Sitemaps XML format</a>. 
+Destinations can discover a Sitemap via a Source's <code>robots.txt</code> file as, for example, shown in
+<a href="#ex_3_1">Example 3.1</a>.
+</p>
+
+<a name="ex_3_1"></a>
+<div class="exampleInnerDisco">
+<pre>
+   <span class="rsdisco">
+   User-agent: *
+   Sitemap: http://example.com/sitemap.xml
+</span>
+</pre>
+</div>
+<p class="caption">Example 3.1: Minimal robots.txt file</p>
+
+<p>
+A minimal Sitemap is simply a list of all of the resources provided by a Source.
+The structure of a Sitemap is shown in <a href="#ex_3_2">Example 3.2</a>. It must have the <code>urlset</code> root element and information about each resource is contained within a <code>url</code> element. This example shows a single resource <code>http://example.com/res1</code>. 
+It is recommended that a last modification time for the entire Sitemap be included using an <code>xhtml:meta</code> 
+element with date and time conforming to the <a href="#w3c-datetime">W3C Datetime</a> syntax.</p>
+
+<!--EXAMPLE:ex_3_2.xml-->
+<a name="ex_3_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   <span class="rs">&lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;</span>
+   &lt;url&gt;
+     &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 3.2: Minimal Sitemap structure and <code>xhtml:meta</code></p>
+<!--/EXAMPLE:ex_3_2.xml-->
+
+<p>Information about each resource described by a Sitemap is conveyed within a <code>url</code> element. At minimum the location of the resource must be specified using the <code>loc</code> element. All other information is optional. Other elements from the Sitemaps format, or from other schemas, are permitted. Consuming applications should ignore unrecognized content or elements. Elements that are useful for ResourceSync are summarized in 
+<a href="#sitemap_md_tab1">Table 3.1</a>, 
+<a href="#sitemap_md_tab2">Table 3.2</a>, and
+<a href="#sitemap_md_tab3">Table 3.3</a> 
+and described in the sections that follow.</p>
+
+<a name="sitemap_md_tab1"></a>
+<table class="elements-table">
+ <tr class="top">
+  <th>Element</th><th>Use</th><th class="desc">Description</th>
+ </tr>
+ <tr class="odd">
+  <td><a href="#loc"><code>&lt;loc&gt;</code></a></td><td class="cent" >required</td><td class="desc">URL of the resource as defined in the <a href="#ref-sitemaps">Sitemaps protocol.</a></td>
+ </tr>
+ <tr class="even">
+  <td><a href="#lastmod"><code>&lt;lastmod rs:type=&quot;created&quot;&gt;</code></a></td><td class="cent" >optional</td><td class="desc">Date of last modification of the resource as defined in the Sitemaps protocol and expressed as a <a href="#w3c-datetime">W3C Datetime</a>.
+    If attribute &quot;created&quot; is given, the type of modification equals a creation of the resource. </td>
+ </tr>
+ <tr class="odd">
+  <td><a href="#lastmod"><code>&lt;lastmod rs:type=&quot;updated&quot;&gt;</code></a></td><td class="cent" >optional</td><td class="desc">Date of last modification of the resource as defined in the Sitemaps protocol and expressed as a <a href="#w3c-datetime">W3C Datetime</a>.
+   If attribute &quot;updated&quot; is given, the type of modification equals an update of the resource. </td>
+ </tr>
+ <tr class="even">
+  <td><a href="#lastmod"><code>&lt;expires&gt;</code></a></td><td class="cent" >optional</td><td class="desc">Date of deletion of the resource. This date must be in the past. Expressed as a <a href="#w3c-datetime">W3C Datetime</a>.</td>
+ </tr>
+</table>
+<p class="caption">Table 3.1: Child elements of the <code>url</code> element to identify the resource and express change types.</p>
+
+<a name="sitemap_md_tab2"></a>
+<table class="elements-table">
+ <tr class="odd">
+  <td><a href="#fixity"><code>&lt;rs:fixity&gt;</code></a></td><td class="cent" >optional, repeatable</td><td class="desc">Digest of the entity-body of a resource representation, computed using one of several algorithms. For most applications the MD5 digest defined in <a href="#ref-rfc2616">RFC 2616, Sec. 14.15</a> is recommended.</td>
+ </tr>
+ <tr class="even">
+  <td><a href="#size"><code>&lt;rs:size&gt;</code></a></td><td class="cent" >optional</td><td class="desc">Size of the entity-body of a resource representation. The value must be equal to the value of the Content-Length entity-header in the HTTP response and must be computed as defined in <a href="#ref-rfc2616">RFC 2616, Sec. 4.4</a></td>
+ </tr>
+ <tr class="odd">
+  <td><a href="#mimetype"><code>&lt;rs:mimetype&gt;</code></a></td><td class="cent" >optional</td><td class="desc">MIME-Type of the entity-body of a resource representation. The value must be equal to the value of the Content-Type entity-header in the HTTP response as defined in <a href="#ref-rfc2616">RFC 2616, Sec. 14.17</a></td>
+ </tr>
+ <tr class="even">
+  <td><a href="#contentencoding"><code>&lt;rs:contentencoding&gt;</code></a></td><td class="cent" >optional</td><td class="desc">Content encoding of the entity-body of a resource representation. The value must be equal to the value of the Content-Encoding entity-header in the HTTP response as defined in <a href="#ref-rfc2616">RFC 2616, Sec. 14.11</a></td>
+ </tr>
+</table>
+<p class="caption">Table 3.2: Child elements of the <code>url</code> element to express representation specific information.</p>
+
+<a name="sitemap_md_tab3"></a>
+<table class="elements-table">
+ <tr class="odd">
+  <td><a href="#meta"><code>&lt;xhtml:meta&gt;<br>&lt;xhtml:link&gt;</code></a></td><td class="cent" >optional, repeatable</td><td class="desc">Keyword or term assigned to a resource, which may originate from existing controlled vocabularies. This element may be repeated to indicate multiple categories.</td>
+ </tr>
+</table>
+<p class="caption">Table 3.3: Child element of the <code>url</code> element expressing keywords usable for filtering.</p>
+
+<h4>3.1.1. <a name="loc">loc</a></h4>
+
+<p>The <code>loc</code> element is used to convey the location of each resource described. Within each <code>url</code> element there should be exactly one <code>loc</code> element as defined in the <a href="#ref-sitemaps">Sitemaps XML format</a>. It should contain a dereferencable URI from which a client may download content. <a href="#ex_3_3">Example 3.3</a> below shows a minimal Sitemap describing the locations of two resources.</p>
+
+<!--EXAMPLE:ex_3_3.xml-->
+<a name="ex_3_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      <span class="rs">&lt;loc&gt;http://example.com/res1&lt;/loc&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      <span class="rs">&lt;loc&gt;http://example.com/res2&lt;/loc&gt;</span>
+   &lt;/url&gt;
+   &lt;!-- one url element for each resource ... --&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 3.3: Simple Sitemap describing two resource locations</p>
+<!--/EXAMPLE:ex_3_3.xml-->
+
+<p>With the location information alone, a Destination can retrieve content from the listed resources. By doing this repeatedly the Destination can check whether the content has changed. Such use may be sufficient for some small-scale use cases but would be an inefficient way to synchronize large collections, or collections that change frequently.</p>
+
+<h4>3.1.2. <a name="lastmod">lastmod and expires</a></h4>
+
+<p>The <code>lastmod</code> and <code>expires</code> elements may be used to convey the last modification or deletion time of the resource. This information allows a client to determine whether or not there is new content to download. It is recommended that the last modification or deletion time be included with each <code>url</code> element.</p>
+
+<p>The content of <code>lastmod</code> is defined by the <a href="#ref-sitemaps">Sitemaps XML format</a> and must conform to the <a href="#w3c-datetime">W3C Datetime</a> syntax. The use of a complete date and time expressed in UTC with the form <code>YYYY-MM-DDThh:mm:ss[.s]Z</code> is recommended. Note that UTC indication or time zone offset specification is mandatory if time information is included.</p>
+
+<p>The last modification information can be enhanced with an indication about the resource change type. For an updated or created resource the <code>lastmod</code> element can be given the attribute <code>rs:type</code> with the value &quot;updated&quot; or &quot;created&quot; accordingly. For a deleted resource the <code>expires</code> element, that is already commonly used in Sitemaps, should be used instead. The value of the <code>expires</code> element must conform to the <a href="#w3c-datetime">W3C Datetime</a> syntax.</p>
+
+<!--EXAMPLE:ex_3_4.xml-->
+<a name="ex_3_4"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      <span class="rs">&lt;lastmod rs:type=&quot;created&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      <span class="rs">&lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 3.4: Use of <code>lastmod</code> and <code>expires</code> elements.</p>
+<!--/EXAMPLE:ex_3_4.xml-->
+
+<p>
+Addition of the last modification information allows a client to check for updates without accessing each resource individually. A Destination may compare the last modification time with that of a local copy and thus determine whether there has been a change and perhaps new content should be downloaded.
+In case of <code>expires</code>, the local copy of the corresponding content should be removed.
+</p>
+
+
+<h4>3.1.3. <a name="fixity">rs:fixity</a></h4>
+
+<p>The <code>rs:fixity</code> element may be used to convey fixity information in the form of a digest of the entity-body obtained when the resource's URL is dereferenced. 
+This information is only useful in the case that there is a consistent representation returned. If that is not the case, for example because of varying or content-negotiated 
+content then this <code>rs:fixity</code> element should not be used.</p>
+
+<p>The <code>rs:fixity</code> element has a mandatory <code>type</code> attribute that specifies the type and format of the digest as shown in <a href="#fixity_tab">Table 3.4</a>. The <code>md5</code> digest requires little effort to compute, is small to transfer, and is likely adequate for most change detection scenarios. It is thus recommended that the <code>md5</code> digest be used as the default. However, <code>md5</code> digests are not strong and therefore should not be used to guarantee authenticity. For this purpose, digests such as <code>sha-256</code> would be appropriate. Multiple <code>rs:fixity</code> elements may be used to convey multiple digests using different algorithms.</p>
+
+<a name="fixity_tab"></a>
+<table class="elements-table">
+ <tr class="top">
+  <th><code>type</code></th><th class="desc">Description</th>
+ </tr>
+ <tr class="odd">
+  <td>md5</td><td class="desc">MD5 digest of the entity-body encoded in base64 as defined for the Content-MD5 header in [<a href="#rfc-2616">RFC 2616, Sec. 14.15</a>] and [<a href="#rfc-1864">RFC 1864</a>], e.g. <code>Q2hlY2sgSW50ZWdyaXR5IQ==</code>.</td>
+ </tr>
+ <tr class="even">
+  <td>sha-1</td><td class="desc">SHA-1 digest of the entity-body encoded in base64 according to [<a href="#rfc-4648">RFC 4648</a>].</td>
+ </tr>
+ <tr class="odd">
+  <td>sha-256</td><td class="desc">SHA-256 digest of the entity-body encoded in base64 according to [<a href="#rfc-4648">RFC 4648</a>].</td>
+ </tr>
+</table>
+<p class="caption">Table 3.4: Defined values for fixity <code>type</code>.</p>
+
+<p><a href="#ex_3_5">Example 3.5</a> shows use of the <code>rs:fixity</code> element to convey MD5 entity-body digests.</p>
+
+<!--EXAMPLE:ex_3_5.xml-->
+<a name="ex_3_5"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;rs:fixity type=&quot;md5&quot;&gt;Q2hlY2sgSW50ZWdyaXR5IQ==&lt;/rs:fixity&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;rs:fixity type=&quot;md5&quot;&gt;A7kjY2sgSW50ZWdyaX6sgt==&lt;/rs:fixity&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 3.5: Use of the <code>rs:fixity</code> element</p>
+<!--/EXAMPLE:ex_3_5.xml-->
+
+<p>Fixity information may be used as a supplement or alternative to last modification time, as a means to allow clients to detect whether content has changed as compared to a local copy.
+Fixity information provides a much better means to detect corruption of a downloaded copy than other descriptive information, and thus supports checking of a downloaded copy without having to download it again.</p>
+
+<h4>3.1.4. <a name="size">rs:size</a></h4>
+
+<p>The <code>rs:size</code> element may be used to convey the size of the the entity-body obtained when the resource's URL is dereferenced. This information is only useful in the case that there is a consistent representation returned. If that is not the case, for example because of varying or content-negotiated content, then the <code>rs:size</code> element should not be used.</p>
+
+<p>The value of the <code>rs:size</code> element should be equal to the value of the Content-Length entity-header in the HTTP response (if present) and must be computed as defined in <a href="#ref-rfc2616">RFC 2616, Sec. 4.4</a>. <a href="#ex_3_6">Example 3.6</a> shows use of the <code>rs:size</code> element.</p>
+
+<!--EXAMPLE:ex_3_6.xml-->
+<a name="ex_3_6"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;Q2hlY2sgSW50ZWdyaXR5IQ==&lt;/rs:fixity&gt;
+      <span class="rs">&lt;rs:size&gt;15672&lt;/rs:size&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;A7kjY2sgSW50ZWdyaX6sgt=&lt;/rs:fixity&gt;
+      <span class="rs">&lt;rs:size&gt;93660664&lt;/rs:size&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 3.6: Use of <code>rs:size</code>.</p>
+<!--/EXAMPLE:ex_3_6.xml-->
+
+
+<h4>3.1.5. <a name="mimetype">rs:mimetype</a></h4>
+<p>
+The <code>rs:mimetype</code> element may be used to convey the MIME-Type of the entity-body obtained when the 
+resource's URL is dereferenced.
+This information is only useful in the case that there is a consistent representation returned. If that is not the case, for example because of 
+varying or content-negotiated content, then the <code>rs:mimetype</code> element should not be used.</p>
+
+<p>
+The value of the <code>rs:mimetype</code> element should be equal to the value of the Content-Type entity-header in the HTTP response (if present) and the value should be
+defined in the <a href="http://www.iana.org/assignments/media-types/index.html">IESG MIME-Type registry</a>.
+The use is optional and not repeatable.
+</p>
+<!--EXAMPLE:ex_3_7.xml-->
+<a name="ex_3_7"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;Q2hlY2sgSW50ZWdyaXR5IQ==&lt;/rs:fixity&gt;
+      &lt;rs:size&gt;15672&lt;/rs:size&gt;
+      <span class="rs">&lt;rs:mimetype&gt;text/html; charset=utf-8&lt;/rs:mimetype&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;A7kjY2sgSW50ZWdyaX6sgt=&lt;/rs:fixity&gt;
+      &lt;rs:size&gt;93660664&lt;/rs:size&gt;
+      <span class="rs">&lt;rs:mimetype&gt;application/pdf&lt;/rs:mimetype&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 3.7: Use of <code>rs:mimetype</code>.</p>
+<!--/EXAMPLE:ex_3_7.xml-->
+
+<h4>3.1.6. <a name="contentencoding">rs:contentencoding</a></h4>
+
+<p>
+The <code>rs:contentencoding</code> element may be used to convey the type of encoding used on the entity-body obtained when the resource's URL is dereferenced.
+This information is only useful in the case that there is a consistent representation returned. If that is not the case, for example because of 
+varying or content-negotiated content, then the <code>rs:contentencoding</code> element should not be used.
+</p>
+
+<p>
+The value of the <code>rs:contentencoding</code> element should be equal to the value of the Content-Encoding entity-header in the HTTP response (if present). The use is optional and not repeatable.
+</p>
+
+<!--EXAMPLE:ex_3_8.xml-->
+<a name="ex_3_8"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;Q2hlY2sgSW50ZWdyaXR5IQ==&lt;/rs:fixity&gt;
+      &lt;rs:size&gt;15672&lt;/rs:size&gt;
+      <span class="rs">&lt;rs:contentencoding&gt;gzip&lt;/rs:contentencoding&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;A7kjY2sgSW50ZWdyaX6sgt=&lt;/rs:fixity&gt;
+      &lt;rs:size&gt;93660664&lt;/rs:size&gt;
+      <span class="rs">&lt;rs:contentencoding&gt;compress&lt;/rs:contentencoding&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 3.8: Use of <code>rs:contentencoding</code>.</p>
+<!--/EXAMPLE:ex_3_8.xml-->
+
+
+<h4>3.1.7. <a name="meta">xhtml:meta and xhtml:link</a></h4>
+
+<p>The <code>xhtml:meta</code> and the <code>xhtml:link</code> element may be used to convey information useful to filter or select resources 
+of interest. Typical uses would be to indicate grouping or classification of resources where some groups or classifications might be selected 
+by a Destination. 
+
+If the information to be conveyed includes a URI, the <code>xhtml:link</code> element should be used, the <code>xhtml:meta</code> element
+otherwise. <a href="#ex_3_9">Example 3.9</a> shows how both elements can be used.
+</p>
+<p>
+No restrictions are placed on the grouping scheme or the form of the category strings. 
+However, the use of URIs from web ontologies or other controlled vocabularies will likely make this information more useful and 
+is thus recommended.</p>
+
+<p>Both elements are optional and may be repeated to indicate multiple categories or tags that apply to a resource.</p>
+
+<!--EXAMPLE:ex_3_9.xml-->
+<a name="ex_3_9"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Frogs&quot; title=&quot;Frogs&quot;/&gt;</span>
+      <span class="rs">&lt;xhtml:meta name=&quot;DC.subject&quot; content=&quot;Crocodiles&quot;/&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Fish&quot; title=&quot;Fish&quot;/&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 3.9: Use of the <code>xhtml:link</code> and <code>xhtml:meta</code> elements to enable filtering of content descriptions</p>
+<!--/EXAMPLE:ex_3_9.xml-->
+
+<h3>3.2. <a name="sitemapindex"></a>Large Sitemaps</h3>
+
+<p>The <a href="#ref-sitemaps">Sitemaps XML format</a> specifies that a single Sitemap must not include more than 50,000 <code>url</code> elements and must not be larger than 10MB in uncompressed format. A Sitemap Index may be used to list up to 50,000 individual Sitemap files and thus extend the format to up to 2.5 billion resources.</p>
+
+<p>ResourceSync does not change the Sitemap Index format, examples are included here for convenience. A Sitemap Index has a format very similar to a Sitemap. The root element is <code>sitemapindex</code> and each Sitemap is described in a <code>sitemap</code> element. For each Sitemap the location is specified with the <code>loc</code> element (cf. <a href="#loc">3.1.1 loc</a>) and, optionally, the last modification time for the Sitemap may be specified with the <code>lastmod</code> element (cf. <a href="#lastmod">3.1.2 lastmod</a>). 
+
+It is recommended that a last modification time for the entire Sitemap Index be included using an 
+<code>xhtml:meta</code> element with date and time conforming to the 
+<a href="#w3c-datetime">W3C Datetime</a> syntax.
+The following example shows a Sitemap index listing two individual Sitemaps.</p>
+
+
+<!--EXAMPLE:ex_3_10.xml-->
+<a name="ex_3_10"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+<span class="rs">&lt;sitemapindex</span> xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/sitemap1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T10:00:00Z&lt;/lastmod&gt;
+   &lt;/sitemap&gt;
+   &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/sitemap2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T15:00:00Z&lt;/lastmod&gt;
+   &lt;/sitemap&gt;
+<span class="rs">&lt;/sitemapindex&gt;</span>
+</pre>
+</div>
+<p class="caption">Example 3.10: Sitemap Index with two Sitemaps.</p>
+<!--/EXAMPLE:ex_3_10.xml-->
+
+<p>A Source may provide in the Sitemap index an indication of the <code>xhtml:meta</code> and <code>xhtml:link</code> values associated with resources in each individual Sitemap. It does this by aggregating the set of element values in each Sitemap and including them with <code>xhtml:meta</code> or <code>xhtml:link</code>elements inside the corresponding <code>sitemap</code> element of the Sitemap Index. This allows Destinations to filter and retrieve only those Sitemaps that match their selection criteria. It is not intended that this mechanism overrides the specification of <code>xhtml:meta</code> or <code>xhtml:link</code> values for each resource and so each included Sitemap must still list the corresponding elements for each resource. <a href="#ex_3_11">Example 3.11</a> shows a Sitemap Index with aggregated categories.</p>
+
+<!--EXAMPLE:ex_3_11.xml-->
+<a name="ex_3_11"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/sitemap1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T10:00:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Frogs&quot; title=&quot;Frogs&quot;/&gt;</span>
+      <span class="rs">xhtml:meta name=&quot;DC.subject&quot; content=&quot;Crocodiles&quot;/&gt;</span>
+      <span class="rs">&lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Frogs&quot; title=&quot;Frogs&quot;/&gt;</span>
+   &lt;/sitemap&gt;
+   &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/sitemap2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T15:00:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Animals&quot; title=&quot;Animals&quot;/&gt;</span>
+   &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 3.11: Use of aggregated <code>xhtml:link</code> and <code>xhtml:meta</code> values with a Sitemap Index</p>
+<!--/EXAMPLE:ex_3_11.xml-->
+
+
+<h2>4. <a name="TransCon">Transferring Content</a></h2>
+<p>
+When a Destination detects that it is out-of-sync with a Source the next step towards synchronization is
+the transfer of newly created and updated content. No content transfer is needed for deletions.
+ResourceSync supports several methods to accomplish this process.
+</p>
+
+<h3>4.1. <a name="HTTPConTrans">HTTP Content Transfer</a></h3>
+
+<p>
+The default method for a Destination to obtain changed content from a Source is to issue an 
+HTTP GET request against the changed resource. A resource's URI can be taken from the <code>loc</code> element
+that can be found in the retrieved Sitemap. 
+These requests initiate the transfer of single resource representations which means, especially for Baseline 
+Synchronization, a method for batch content transfer is desirable.
+</p>
+
+<h3>4.2. <a name="Dump">Dump</a></h3>
+
+<p>
+To reduce the number of HTTP GET requests necessary to transfer content, a Source can publish a Dumps 
+which package its content.
+The Source's capability to publish Dumps needs to be advertised to Destinations. In case the Source 
+publishes Sitemaps, the way to make a Dump discoverable is to include an <code>xhtml:link</code> element in the 
+Sitemap. An example for a Dump discovery link is shown in <a href="#ex_4_1">Example 4.1</a>. 
+</p>
+
+<a name="ex_4_1"></a>
+<div class="exampleInnerDisco">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   <span class="rsdisco">&lt;xhtml:link href=&quot;http://example.com/dump/dump.zip&quot;
+               rel=&quot;http://www.openarchives.org/rs/dump&quot;/&gt;</span>
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>    
+</div>
+<p class="caption">Example 4.1: Dump discovery link.</p>
+
+<p>
+A Dump is a package that contains content hosted by a Source. A Dump may be used to transfer
+resources from a Source in bulk, without a Destination having to request the resources separately. 
+A Baseline Synchronization is a typical scenario for a Destination to obtain a Dump.
+</p>
+<p>
+The default Dump format for ResourceSync is the 
+<a href="http://en.wikipedia.org/wiki/Zip_(file_format)">Zip file format</a>. 
+However, it is possible for a Source to publish Dumps in other formats such as <a href="#warc">WARC</a>. 
+<a href="#AltDumpForm">Appendix B</a> provides guidelines to implement a Dump in the WARC format.
+</p>
+
+
+<h4>4.2.1. <a name="Manifest">Manifest</a></h4>
+<p>
+Each Dump must contain a <code>manifest.xml</code> file. The manifest describes the content of the
+Dump. It is formatted as a Sitemap with additional descriptive elements. 
+For each resource, described within the <code>url</code> element,
+a Manifest must include the element <code>rs:path</code> describing the mapping between the 
+resource's URI and its relative file path in the Dump.
+<a href="#ex_4_2">Example 4.2</a> shows a simple  <code>manifest.xml</code> file for a Dump containing two resources.
+</p>
+
+<a name="ex_4_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;Q2hlY2sgSW50ZWdyaXR5IQ==&lt;/rs:fixity&gt;
+      &lt;rs:size&gt;15672&lt;/rs:size&gt;
+      &lt;rs:mimetype&gt;text/html; charset=utf-8&lt;/rs:mimetype&gt;
+      &lt;rs:contentencoding&gt;gzip&lt;/rs:contentencoding&gt;
+      <span class="rs">&lt;rs:path&gt;resources/res1&lt;/rs:path&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+      &lt;rs:fixity type=&quot;md5&quot;&gt;A7kjY2sgSW50ZWdyaX6sgt=&lt;/rs:fixity&gt;
+      &lt;rs:size&gt;93660664&lt;/rs:size&gt;
+      &lt;rs:mimetype&gt;application/pdf&lt;/rs:mimetype&gt;
+      &lt;rs:contentencoding&gt;compress&lt;/rs:contentencoding&gt;
+      <span class="rs">&lt;rs:path&gt;resources/res2&lt;/rs:path&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>
+</div>
+<p class="caption">Example 4.2: A Dump Manifest.</p>
+
+<p>
+The requirements for the use of all ResourceSync Sitemaps elements, summarized in 
+<a href="#sitemap_md_tab1">Table 3.1</a>, <a href="#sitemap_md_tab2">Table 3.2</a>, 
+<a href="#sitemap_md_tab3">Table 3.3</a>, and <a href="#fixity_tab">Table 3.4</a>, 
+apply for Dump manifest files as well. 
+Particularly the use of the <code>rs:mimetype</code> and <code>rs:contentencoding</code>
+elements are recommended here.
+<a href="#manifest_tab">Table 4.1</a> summarizes the XML element required in Dump manifests.
+</p>
+
+<a name="manifest_tab"></a>
+<table class="elements-table">
+ <tr class="top">
+  <th>Element</th><th>Use</th><th class="desc">Description</th>
+ </tr>
+ <tr class="even">
+  <td><a href="#Manifest"><code>&lt;rs:path&gt;</code></a></td><td class="cent">required</td><td class="desc">Relative resource file path within a Dump.</td>
+ </tr>
+</table>
+<p class="caption">Table 4.1: Dump Manifest <code>rs:path</code>element.</p>
+
+<h3>4.3. <a name="AltConTrans">Alternate Content Transfer</a></h3>
+
+<p>
+Certain scenarios may require a Source to offer alternate methods of content transfer.
+ResourceSync recognizes the following cases:
+<ul>
+ <li>a Source provides its content through an alternate location e.g., a mirror</li>
+ <li>a Source only transfers partial content i.e., the actual changes and not the entire changed resource</li>
+ <li>a Source provides additional information on an alternate interpretation of a given resource's URI.</li>
+</ul>
+This section describes how these scenarios can be addressed in the ResourceSync framework.
+</p>
+
+<h4>4.3.1. <a name="AltConLoc">Alternate Content Location</a></h4>
+
+<p>
+In case where a Source promotes an alternate content location for its content, it needs to advertise
+the proper URIs to Destinations.
+It can do so by including an <code>xhtml:link</code> element as a child to each <code>url</code> element.
+The <code>xhtml:link</code> element can contain a reference to the alternate location of the resource 
+and the proper relation type and therefore convey the information required for the Destination to obtain 
+the content.
+<a href="#ex_4_3">Example 4.3</a> shows how a link can be included in a ResourceSync modified Sitemap. 
+</p>
+
+<a name="ex_4_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+       &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+       &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+       <span class="rs">&lt;xhtml:link rel=&quot;alternate http://www.openarchives.org/rs/mirror&quot;
+                   href=&quot;http://example.com/example-com-mirror/res1&quot;/&gt;</span>
+   &lt;/url&gt;
+&lt;urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.3: Alternate Content Transfer from a mirror site.</p>
+
+<h4>4.3.2. <a name="PartCon">Partial Content</a></h4>
+<p>
+Scenarios exist where it is more efficient for a Destination to only transfer the part of a resource
+that has actually changed instead of the entire resource. Minor changes such as fixed typos in or minor additions
+to large resources, for example, may not justify the transfer of the entire document, especially if these kind of
+changes occur frequently. 
+ResourceSync supports the transfer of partial content. A Source can include an <code>xhtml:link</code> 
+element as a child to each <code>url</code> element. It can contain a reference to the partial content, 
+a protocol, specifying the details of the partial content transfer between the Source and the Destination, 
+and the proper relation. 
+</p>
+<p>
+However, the implementation of this capability is left up to the Source and in general implementation 
+will be media type specific. Whichever protocol the Source uses, it needs to be understood by the 
+Destination in order to complete the partial resource transfer.
+<a href="#ex_4_4">Example 4.4</a> shows an <code>xhtml:link</code> element 
+containing information needed by a Destination for partial content transfer.
+</p>
+<p>
+Note that partial content transfer is only applicable in Change Sets (introduced in <a href="#Changesets">Section 5.1</a>)
+but not in Sitemaps.
+</p>
+
+<a name="ex_4_4"></a>
+<div class="exampleInner">
+<pre>
+&lt;urlset rs:type=&quot;changeset&quot;
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+       &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+       &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+       <span class="rs">&lt;xhtml:link rel=&quot;http://www.openarchives.org/rs/partial&quot; 
+                   rs:protocol=&quot;http://example.com/protocols/changesonly&quot;
+                   href=&quot;http://example.com/res1/diff251&quot;/&gt;</span>
+   &lt;/url&gt;
+&lt;urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.4: Partial Content Transfer in a Change Set.</p>
+
+<p class="todo">Note this is a forward reference. At this point we have not introduced Change Sets yet.</p>
+
+
+<h4>4.3.3. <a name="AltInt">Alternate Interpretation</a></h4>
+<p>
+For alternate content transfer it is essential for a Destination to understand what to expect when dereferencing 
+the URI provided in the <code>loc</code> element.
+<a href="#ex_4_5">Example 4.5</a> shows an example where the element contains further information about the
+resource that has changed. The URI shown is a baseURL of an <a href="#ref-oaipmh">OAI-PMH</a> repository and the 
+<code>rs:protocol</code> attribute points a Destination to the appropriate protocol specification.
+This additional pointer enables a Destination to understand that the given URI conforms to the OAI-PMH protocol.
+</p>
+
+<a name="ex_4_5"></a>
+<div class="exampleInner">
+<pre>
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+       <span class="rs">&lt;loc rs:protocol=&quot;http://www.openarchives.org/OAI/openarchivesprotocol.html&quot;&gt;
+            http://example.com/oaipmh&lt;/loc&gt;</span>
+       &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+&lt;urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.5: Alternate Content Transfer in an OAI-PMH repository.</p>
+
+
+<h2>5. <a name="ComChangeEv">Communicating Change Events</a></h2>
+
+<p>A Source may support communication of changes in its content as a way to enable Destination to efficiently 
+follow those changes. A Source may publish a description of recent changes, or may use XMPP PubSub or 
+HTTP Callback to push changes to a subscribing Destination.</p>
+
+<h3>5.1. <a name="Changesets">Change Sets</a></h3>
+<p>
+The ResourceSync framework introduces the notion of a <strong>Change Set</strong> that describes changes 
+at a Source. The Change Set is a special-purpose Sitemap that lists only recently changed resources as 
+well as the nature of their change. A Change Set is identified by a URI and if a Destination dereferences 
+this URI, it can expect a set of recent changes to be returned.
+</p>
+<p>
+Destinations, in order to keep up with the Source's changes, need to become aware if Change Sets are provided.
+If a Source implements Sitemaps to describe its content it can include the discovery link to a Change Set.
+The <code>xhtml:link</code> element can be used for that purpose.
+<a href="#ex_5_1">Example 5.1</a> shows a Sitemap including an <code>xhtml:link</code> element enabling the Destination 
+to discover the Change Set provided by a Source.
+</p>
+
+<a name="ex_5_1" ></a>
+<div class="exampleInnerDisco">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   <span class="rsdisco">&lt;xhtml:link href="http://example.com/changesets/most_recent.xml" 
+               rel=&quot;current http://www.openarchives.org/rs/changeset&quot;/&gt;</span>
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>    
+</div>
+<p class="caption">Example 5.1: Change Set discovery link in a Sitemap.</p>
+
+<p>
+The frequency of content change on a Source's end as well as the acceptable latency for synchronization
+on a Destination's end may vary between scenarios. 
+In the ResourceSync framework it is up to a Source to decide what the temporal interval is that 
+is covered by a Change Set. It may list all changes that occurred during the previous hour, 
+the current day, or since the most recent publication of a Sitemap. 
+A recent Change Set published by one Source may very well cover a much smaller or much larger
+temporal interval than a recent Change Set of another Source. It is up to a Source to define
+what &quot;recent&quot; means for its individual scenario.
+</p>
+<p>
+Change Sets are based on the Sitemap format which means that each Change Set:
+</p>
+<ul>
+ <li>must include the <code>urlset</code> root element with the recommended attribute <code>rs:type=&quot;changeset&quot;</code>,</li>
+ <li>should include an <code>xhtml:meta</code> element as a child of the <code>urlset</code> element expressing the last modification time of the Change Set,</li>
+ <li>must include a <code>url</code> entry as a child of the <code>urlset</code> element for each changed resource, and</li>
+ <li>must include a <code>loc</code> element as a child of the <code>url</code> element.</li>
+</ul>
+
+<p>
+The recommended addition of the attribute <code>rs:type=&quot;changeset&quot;</code> to the 
+<code>urlset</code> root element helps to distinguish between Change Sets and Sitemaps.
+Sitemaps do not have this attribute.
+The recommended last modification time of the entire Change Set in the <code>xhtml:meta</code> 
+element must be a date and time conforming to the <a href="#w3c-datetime">W3C Datetime</a> syntax.
+This time stamp provides one way for Destinations to determine whether a Change Set is new.
+</p>
+
+<p>
+Since the purpose of Change Sets is to convey informatation
+about changes in content hosted by a Source, it is essential to indicate the 
+nature of the change. Three types of content change are defined in the ResourceSync 
+framework: created, updated, and deleted.
+Each <code>url</code> element must include one and only one of the following child elements
+to indicate the change type and when it occurred:
+</p>
+<ul>
+ <li>to express a creation: <code>&lt;lastmod rs:type=&quot;created&quot;&gt;</code>datetime<code>&lt;/lastmod&gt;</code></li>
+ <li>to express an update: <code>&lt;lastmod rs:type=&quot;updated&quot;&gt;</code>datetime<code>&lt;/lastmod&gt;</code></li>
+ <li>to express a deletion: <code>&lt;expires&gt;</code>datetime<code>&lt;/expires&gt;</code>.</li>
+</ul>
+
+<p>For all three options, the date and time of the change must be included conforming to the
+<a href="#w3c-datetime">W3C Datetime</a> syntax.
+<a href="#changeset_tab1">Table 5.1</a> summarizes the three change types and their corresponding XML elements.
+</p>
+
+<a name="changeset_tab1"></a>
+<table class="elements-table">
+ <tr class="top">
+  <th>Change Type</th><th class="desc">XML Element</th>
+ </tr>
+ <tr class="odd">
+  <td>Create</td><td class="desc"><code>&lt;lastmod rs:type=&quot;created&quot;&gt;2012-07-17T19:22:00Z&lt;/lastmod&gt;</code></td>
+ </tr>
+ <tr class="even">
+  <td>Update</td><td class="desc"><code>&lt;lastmod rs:type=&quot;updated&quot;&gt;2012-07-17T19:22:00Z&lt;/lastmod&gt;</code></td>
+ </tr>
+ <tr class="odd">
+  <td>Delete</td><td class="desc"><code>&lt;expires&gt;2012-07-17T19:22:00Z&lt;/expires&gt;</code></td>
+ </tr>
+</table>
+<p class="caption">Table 5.1: XML elements expressing content change in Change Sets.</p>
+
+<p>
+<a href="#ex_5_2">Example 5.2</a> shows the content of a Change Set with three <code>url</code> elements each of which
+describes one change event. This example shows one update, one deletion, and one creation.
+The <code>urlset</code> root element contains the attribute <code>rs:type=&quot;changeset&quot;</code>
+and an <code>xhtml:meta</code> time stamp is also included.
+</p>
+
+<a name="ex_5_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+<span class="rs">&lt;urlset rs:type=&quot;changeset&quot;</span> 
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   <span class="rs">&lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;</span>
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      <span class="rs">&lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      <span class="rs">&lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3&lt;/loc&gt;
+      <span class="rs">&lt;lastmod rs:type=&quot;created&quot;&gt;2012-08-08T14:57:00Z&lt;/lastmod&gt;</span>
+   &lt;/url&gt;
+<span class="rs">&lt;/urlset&gt;</span>
+</pre>    
+</div>
+<p class="caption">Example 5.2: Change Set describing three content changes: an update, a deletion, and a creation.</p>
+
+<p>
+As seen in previous sections, a Source can add several optional child elements to each 
+<code>url</code> element. This is also applicable for Change Sets. For example, the elements
+<code>rs:size</code> and <code>rs:fixity</code> become particularly important for the Destination process Audit.
+
+<a href="#ex_5_3">Example 5.3</a> shows a Change Set with multiple optional elements
+for one change event.
+</p>
+
+<a name="ex_5_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset rs:type=&quot;changeset&quot;
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;rs:size&gt;15672&lt;/rs:size&gt;</span>
+      <span class="rs">&lt;rs:fixity type=&quot;md5&quot;&gt;Q2hlY2sgSW50ZWdyaXR5IQ==&lt;/rs:fixity&gt;</span>
+      <span class="rs">&lt;rs:mimetype&gt;application/pdf&lt;/rs:mimetype&gt;</span>
+      <span class="rs">&lt;rs:contentencoding&gt;gzip&lt;/rs:contentencoding&gt;</span>
+      <span class="rs">&lt;xhtml:link rel=&quot;DCTERMS.subject&quot; href=&quot;http://en.wikipedia.org/wiki/Category:Frogs&quot; title=&quot;Frogs&quot;/&gt;</span>
+      <span class="rs">&lt;xhtml:meta name=&quot;DC.subject&quot; content=&quot;Crocodiles&quot;/&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>    
+</div>
+<p class="caption">Example 5.3: Change Set with multiple optional elements.</p>
+
+<p>
+A unique identifier for each change event might be useful in some use cases. 
+This specification does not define a dedicated event identifying element.
+However, the ResourceSync framework recommends the combination of the values of 
+the <code>loc</code> and of the <code>lastmod</code> elements to be used for this purpose.  
+It is important to note that the framework considers it to be the Source's responsibility 
+to provide a sufficient granularity for the <code>lastmod</code> value to ensure a truly unique 
+identifier.
+</p>
+
+<h3>5.2. <a name="PushingChangesets">Pushing Change Sets</a></h3>
+
+<p>
+In the previous section a Source publishes Change Sets at a self-defined frequency. A Destination periodically
+needs to check for updates by pulling the Change Set. This setup implies a latency since the publication interval is
+usually unknown to the Destination.
+</p>
+<p>
+For scenarios where this latency is unexceptable or Destinations simply can not continuously
+pull for Change Sets, the ResourceSync framework features push-based approaches. 
+These approaches are suitable, for example, for environments with high frequency content changes 
+at the Source's end and a high synchronization demands at the Destination's end.
+Since change events can rapidly and continuously be pushed to Destinations, the latency inflicted by the Destination's 
+&quot;guessing&quot; of when to pull for a new Change Set is eliminated.
+</p>
+<p>
+Two push based approaches are described below: one based on XMPP and one based
+on HTTP Callback.
+</p>
+
+<h4>5.2.1. <a name="xmpp">XMPP</a></h4>
+
+<p>
+The <a href="http://xmpp.org/">Extensible Messaging and Presence Protocol (XMPP)</a>,
+more specifically, its <a href="http://xmpp.org/extensions/xep-0060.html">PubSub extension</a>,
+allows a Source to support subscription to Change Sets communicated via XMPP messaging
+infrastructure. 
+</p>
+<p>
+A Destination here also needs to become aware of this capability being offered by a Source. Similar to the previous section,
+<a href="#ex_5_4">Example 5.4</a> shows a Sitemap including an <code>xhtml:link</code> element. It enables Destinations 
+to discover all necessary information to receive the push-based Change Set provided by a Source.
+</p>
+
+<a name="ex_5_4"></a>
+<div class="exampleInnerDisco">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   <span class="rsdisco">&lt;xhtml:link href="xmpp:pubsub.example.com" 
+               rs:protocol="http://xmpp.org/extensions/xep-0060.html" 
+               rs:pubsubnode="Example_Node_Name"/&gt;</span>
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>    
+</div>
+<p class="caption">Example 5.4: Discovery link for pushing Change Sets via XMPP PubSub.</p>
+
+<p>
+An XMPP message sent by a Source is encapsulated in an <code>xmpp:iq</code> element. This element contains, amongst
+others, the address of the sender and the recipient. The protocol's PubSub extension adds the <code>xmpp:pubsub</code> and 
+the <code>xmpp:publish</code> element. The latter contains the name of the XMPP PubSub node the message is published 
+to.
+</p>
+<p>
+The body of the XMPP PubSub message is contained in an <code>xmpp:item</code> element. 
+As shown in <a href="#ex_5_5">Example 5.5</a>, the message itself is a Change Set encapsulated by the
+<code>urlset</code> element and each change event contained within a <code>url</code> element.
+All elements, required and optional, as introduced in the previous section, apply here too.
+</p>
+<p>
+<a href="#ex_5_5">Example 5.5</a> shows the same change events as seen in <a href="#ex_5_2">Example 5.2</a>
+but in form of an XMPP PubSub message. It is up to the Source to decide whether to bundle more than one change
+events into one XMPP PubSub message (as seen in <a href="#ex_5_5">Example 5.5</a>) or to send one message per
+change event in which case the encapsulating <code>urlset</code> would only include one <code>url</code> element.
+</p>
+<!--  new xmpp stanza sender view -->
+<a name="ex_5_5"></a>
+<div class="exampleInner">
+<pre>
+&lt;xmpp:iq from=&quot;sender@example.com&quot; type=&quot;set&quot; to=&quot;destination.com&quot; id=&quot;liAJUz3S&quot;
+         xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+         xmlns:xmpp=&quot;http://jabber.org/protocol/pubsub&quot;
+         xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+   &lt;xmpp:pubsub&gt;
+      &lt;xmpp:publish node=&quot;PubSub_NodeName&quot;&gt;
+         &lt;xmpp:item id="3294"&gt;
+            &lt;urlset rs:type=&quot;changeset&quot;&gt;
+               &lt;url&gt;
+                  &lt;loc&gt;http://example.com/res1&lt;/sm:loc&gt;
+                  &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+               &lt;/url&gt;
+               &lt;url&gt;
+                  &lt;loc&gt;http://example.com/res2&lt;/sm:loc&gt;
+                  &lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;
+               &lt;/url&gt;
+               &lt;url&gt;
+                  &lt;loc&gt;http://example.com/res3&lt;/sm:loc&gt;
+                  &lt;lastmod rs:type=&quot;created&quot;&gt;2012-08-08T14:57:00Z&lt;/lastmod&gt;
+               &lt;/url&gt;
+            &lt;/urlset&gt;
+         &lt;/xmpp:item&gt;
+      &lt;/xmpp:publish&gt;
+   &lt;/xmpp:pubsub&gt;
+&lt;/xmpp:iq&gt;
+</pre>    
+</div>
+<p class="caption">Example 5.5: Push-based XMPP message containing a Change Set.</p>
+
+<p>
+The <code>xmpp:item</code> element contains an identifier that is used within XMPP
+to distinguish between messages and, for example, to purge individual 
+(persistent) messages from an XMPP server.
+</p>
+
+<h4>5.2.2. <a name="callback">HTTP Callback</a></h4>
+
+<p>
+HTTP callback allows Sources to directly push Change Sets to registered Destinations
+without the need for other infrastructure.
+</p>
+<p>
+<a href="#ex_5_6">Example 5.6</a> shows how a Source can advertise the availability
+of HTTP callback in its Sitemap using the <code>xhtml:link</code> element.
+The <code>rs:protocol</code> attribute indicates the protocol that this capability 
+conforms to, and the <code>href</code> attribute gives the location of the 
+subscription interface. The subscription interface provided by the Source allows 
+Destinations to register their corresponding HTTP callback URIs. 
+</p>
+
+<a name="ex_5_6"></a>
+<div class="exampleInnerDisco">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   <span class="rsdisco">&lt;xhtml:link href="http://example.com/subscribe" 
+               rs:protocol=&quot;http://example.com/protocol/callback&quot;/&gt;</span>
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2012-08-08T13:22:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt; 
+</pre>    
+</div>
+<p class="caption">Example 5.6: Discovery link for pushing Change Sets via HTTP Callback.</p>
+
+<p>
+With this method a Source can push Change Sets to the specified URIs of registered Destinations.
+It is again up to the Source to decide whether to push Change Sets containing only one change event
+or bundle multiple change events into one Change Set.
+<a href="#ex_5_7">Example 5.7</a> shows the same three change events as seen in 
+<a href="#ex_5_5">Example 5.5</a> but communicated via the HTTP callback method in one Change Set.
+</p>
+
+<a name="ex_5_7"></a>
+<div class="exampleInner">
+<pre>
+&gt;&gt; Subscription Request &lt;&lt; 
+POST /subscribe HTTP/1.1
+Host: example.com
+
+callbackURI=http://aggregator.org/callback
+
+
+&gt;&gt; Change Notification &lt;&lt; 
+POST /callback HTTP/1.1
+Host: aggregator.org
+
+&lt;urlset rs:type=&quot;changeset&quot;
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+    &lt;url&gt;
+       &lt;loc&gt;http://example.com/res1&lt;/sm:loc&gt;
+       &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+    &lt;/url&gt;
+    &lt;url&gt;
+       &lt;loc&gt;http://example.com/res2&lt;/sm:loc&gt;
+       &lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;
+    &lt;/url&gt;
+    &lt;url&gt;
+       &lt;loc&gt;http://example.com/res3&lt;/sm:loc&gt;
+       &lt;lastmod rs:type=&quot;created&quot;&gt;2012-08-08T14:57:00Z&lt;/lastmod&gt;
+    &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>    
+</div>
+<p class="caption">Example 5.7: Push-based HTTP Callback method communicating a Change Set.</p>
+
+<h2>6. <a name="ProvAccVer">Providing Access to Versions</a></h2>
+
+<h3>6.1. <a name="HistChangeSets">Historical Change Sets</a></h3>
+
+<p>
+As mentioned in <a href="#Changesets">Section 5.1</a>, a Destination has no control
+over how many change events a Source includes in one Change Set.
+For scenarios with a relatively low resource change frequency, for example, 
+a Change Set generated over the course of one day
+might not contain many changes and hence be of very reasonable size.
+However, in cases with high change frequencies, the same Change Set may grow to an 
+extent that is unreasonable to be communicated to Destinations (again, this is 
+at the Source's discretion to decide), or may provide unacceptable latency.
+</p>
+
+
+<p>
+In order to enable Sources in high change frequency scenarios to
+communicate all changes, without having to accumulate all of them into
+one Change Set, a Source may provide historical Change Sets. These
+historical Change Sets can be seen as digests of past change events,
+covering a time span prior to the one covered by the current Change
+Set.
+</p>
+
+<p>
+A Destination can access the historical Change Sets by following a
+link that is included in the current Change Set. Such a link can be
+seen in <a href="#ex_6_1">Example 6.1</a>.
+The first link points to the URI of the current
+Change Set with the relation &quot;current&quot;. The second link, with the
+relation &quot;prev&quot;, points to a historical Change Set that covers changes
+that occurred in a time span previous and adjacent to the one covered
+by the current Change Set. This historical Change Set can in its turn
+include a link with a &quot;prev&quot; relation pointing at an even earlier
+historical Change Set, etc. A Destination can follow these links with
+a &quot;prev&quot; relation to collect all needed or available historical Change
+Sets. By analyzing the change events listed in the gathered Change
+Sets, for example looking at the datetime of each change, a
+Destination can determine whether it already processed a change. As
+soon as a Change Set is encountered that lists a previously processed
+change, there is no need to collect even more Change Sets.
+</p>
+
+<p>
+With historical Change Sets a Destination has yet another option to &quot;catch up&quot; 
+with a Source in case it has missed Change Sets and the Source has not yet generated a new 
+Sitemap and a new Dump.
+</p>
+
+<a name="ex_6_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset rs:type=&quot;changeset&quot;
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   <span class="rs">&lt;xhtml:link href=&quot;http://example.com/changesets/most_recent.xml&quot; 
+               rel=&quot;current http://www.openarchives.org/rs/changeset&quot;/&gt;</span>
+   <span class="rs">&lt;xhtml:link href=&quot;http://example.com/changesets/20120807.xml&quot; 
+               rel=&quot;prev http://www.openarchives.org/rs/changeset&quot;/&gt;</span>
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;created&quot;&gt;2012-08-08T14:57:00Z&lt;/lastmod&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 6.1: Change Set with links to historical Change Sets.</p>
+
+
+<h3>6.2. <a name="HistCon">Historical Content</a></h3>
+
+<p>
+A Source may implement a capability that allows a Destination to obtain prior versions
+of resources. Where Destinations need to obtain all versions of a resource, not just
+the current one, this capability becomes very useful. The ResourceSync framework features
+two implementation alternatives.
+</p>
+
+
+<h4>6.2.1. <a name="LinkVers">Link to Version</a></h4>
+
+<p>
+In addition to having a generic URI that applies to all versions of a
+resource, a Source may mint a URI that is associated with each
+particular version. When communicating about the resource, its
+generic URI is provided in the <code>loc</code> element whereas the URI of the
+specific version of the resource (the historical content) can be provided using 
+an <code>xhtml:link</code> element that has a relation type of &quot;self&quot; and of
+&quot;memento&quot;.
+It is up to the Source to decide
+for how long the version resource remains accessible.
+</p>
+
+<!--
+The ResourceSync framework provides the ability to incorporate resource memory.
+A Source that has implemented this capability enables Destinations to access prior versions of resources. 
+It requires the Source or a third party to keep a memory of changed resources and make the individual versions available 
+to Destinations.
+The framework features two implementation approaches for a Source.
+</p>
+<p>
+The first option is the use of resource version URIs. Each version of each resource gets its own URI, which the 
+Source can provide along with communicating the change event.
+-->
+
+<p>
+<a href="#ex_6_2">Example 6.2</a> shows a Change Set with version URIs included. In this example the URIs are minted
+with the help of the value of the <code>lastmod</code> elements. 
+</p>
+
+<a name="ex_6_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset rs:type=&quot;changeset&quot;
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link href="http://example.com/20120808081500/res1" 
+                  rel="memento"/&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;
+      <span class="rs">&lt;xhtml:link href="http://example.com/20120808132200/res2" 
+                  rel="memento"/&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;created&quot;&gt;2012-08-08T14:57:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link href="http://example.com/20120808145700/res3" 
+                  rel="memento"/&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>    
+</div>
+<p class="caption">Example 6.2: Change Set with links to a resource version.</p>
+
+
+<h4>6.2.2. <a name="LinkMemento">Link to Memento TimeGate</a></h4>
+
+<p>
+In addition to having a generic URI that applies to all versions of a
+resource, a Source can associate a TimeGate with the resource, as per
+the Memento protocol 
+[<a href="#Memento-Draft">Memento Internet Draft</a>].
+A TimeGate supports negotiation in the datetime dimensions to obtain a version of the
+resource as it existed at a specified moment in time, for example, the
+time provided in <code>lastmod</code>. When communicating about the resource, its
+generic URI is provided in the <code>loc</code> element whereas the URI of the
+TimeGate associated with the resource can be provided using an
+<code>xhtml:link</code> element that has a relation type of &quot;timegate&quot;. It is up to the
+Source to decide for how long version resources remains accessible.
+</p>
+
+<!--
+The second option is the use of Memento
+[<a href="#Memento-Draft">Memento Internet Draft</a>].
+The Source can include links to trusted
+timegates which can provide the desired version of the resource.
+-->
+
+<p>
+An example of a Change Set with links to a Memento TimeGate is shown in <a href="#ex_6_3">Example 6.3</a>.
+</p>
+
+<a name="ex_6_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset rs:type=&quot;changeset&quot;
+        xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;
+        xmlns:xhtml=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+   &lt;xhtml:meta name=&quot;DCTERMS.modified&quot; content=&quot;2012-08-08T16:30:00Z&quot;/&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;updated&quot;&gt;2012-08-08T08:15:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link href="http://example.com/timegate/http://example.com/res1" 
+                  rel="timegate"/&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;expires&gt;2012-08-08T13:22:00Z&lt;/expires&gt;
+      <span class="rs">&lt;xhtml:link href="http://example.com/timegate/http://example.com/res2" 
+                  rel="timegate"/&gt;</span>
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3&lt;/loc&gt;
+      &lt;lastmod rs:type=&quot;created&quot;&gt;2012-08-08T14:57:00Z&lt;/lastmod&gt;
+      <span class="rs">&lt;xhtml:link href="http://example.com/timegate/http://example.com/res3" 
+                  rel="timegate"/&gt;</span>
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>    
+</div>
+<p class="caption">Example 6.3: Change Set with links to Memento TimeGate.</p>
+
+<h2>7. <a name="AdvCap"></a>Advertising Capabilities</h2>
+
+<h3>7.1. <a name="robots"></a>robots.txt</h3>
+
+<p>
+<a href="#ex_7_1">Example 7.1</a> shows how 
+Destinations can discover a Sitemap via a Source's <code>robots.txt</code> file.
+</p>
+
+<a name="ex_7_1"></a>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">
+   User-agent: *
+   Sitemap: http://example.com/sitemap.xml
+</span>
+</pre>
+</div>
+<p class="caption">Example 7.1: robots.txt</p>
+
+<h3>7.2. <a name="DiscoLinks">Discovery Links</a></h3>
+<h4>7.2.1. <a name="xhtmllinkEle">xhtml:link Element</a></h4>
+<h4>7.2.2. <a name="HTTPLinkHrds">HTTP Link Headers</a></h4>
+<h4>7.2.3. <a name="HTMLLinkHrds">HTML Link Headers</a></h4>
+
+<h3>7.3. <a name="hostmetaDesc">host-meta Description</a></h3>
+<p class="todo">Based on Web Host Metadata specifications [<a href="#ref-rfc6415">RFC 6415</a>]</p>
+
+<h2>8. <a name="References">References</a></h2>
+
+<dl>
+<dt>[<a name="ref-webarch" id="ref-webarch">Web Architecture</a>]</dt>
+<dd><a href="http://www.w3.org/TR/webarch/"><cite>Architecture of the World Wide Web, Volume One</cite></a>,
+I. Jacobs and N. Walsh, Editors, World Wide Web Consortium, 15 January 2004.</dd>
+
+<dt>[<a name="ref-rfc1864">RFC 1864</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc1864.txt">
+The Content-MD5 Header Field -- HTTP/1.1</a></cite>,
+J. Myers and M. Rose, October 1995.</dd>
+
+<dt>[<a name="ref-rfc2616">RFC 2616</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc2616.txt">
+RFC 2616 Hypertext Transfer Protocol -- HTTP/1.1</a></cite>,
+R. Fielding, <i>et al.</i>, June 1999.</dd>
+
+<dt>[<a name="ref-rfc4287">RFC 4287</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4287.txt">
+RFC 4287: The Atom Syndication Format</a></cite>, 
+M. Nottingham, R. Sayre, December 2005.</dd>
+
+<dt>[<a name="ref-rfc4648">RFC 4648</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4648.txt">
+The Base16, Base32, and Base64 Data Encodings</a></cite>, 
+S. Josefsson, October 2006.</dd>
+
+<dt>[<a name="ref-rfc5988">RFC 5988</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc5988.txt">
+RFC 5988: Web Linking</a></cite>, 
+M. Nottingham, October 2010.</dd>
+
+<dt>[<a name="ref-rfc6120">RFC 6120</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc6120.txt">
+RFC 6120: Extensible Messaging and Presence Protocol (XMPP): Core</a></cite>, 
+P. Saint-Andre, March 2011.</dd>
+
+<dt>[<a name="ref-rfc6415">RFC 6415</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc6415.txt">
+RFC 6415: Web Host Metadata</a></cite>, 
+E. Hammer-Lahav, B.Cook, October 2011.</dd>
+
+<dt>[<a name="ref-sitemaps">Sitemaps</a>]</dt>
+<dd><cite><a href="http://www.sitemaps.org/protocol.html">Sitemaps XML format and protocol</a></cite>,
+sitemaps.org, 27 February 2008.</dd>
+
+<dt>[<a name="w3c-datetime" id="w3c-datetime">W3C Datetime</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/1998/NOTE-datetime-19980827">Date and Time Formats</a></cite>,
+Misha Wolf, Charles Wicksteed, 15 September 1997.</dd>
+
+<dt>[<a name="ref-oaipmh">The Open Archives Initiative Protocol for Metadata Harvesting</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The Open Archives Initiative Protocol for Metadata Harvesting</a></cite>,
+C. Lagoze, H. Van de Sompel <i>et al.</i>, December 2008</dd>
+
+<dt>[<a name="Memento-Draft" id="Memento-Draft">Memento Internet Draft</a>]</dt>
+<dd><cite><a href="http://www.mementoweb.org/guide/rfc/ID/">Memento Internet Draft</a></cite>,
+H. Van de Sompel, M. L. Nelson, R. D. Sanderson, May 2012</dd>
+
+<dt>[<a name="xmpp-0060">XEP-0060: Publish-Subscribe</a>]</dt>
+<dd><cite><a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a></cite>,
+Peter Millard, Peter Saint-Andre, Ralph Meijer, July 2010</dd>
+
+<dt>[<a name="warc">WARC</a>]</dt>
+<dd><cite><a href="http://bibnum.bnf.fr/WARC/warc_ISO_DIS_28500.pdf">WARC File Format</a></cite>,
+June 2006</dd>
+
+</dl>
+
+</div> <!--class="body"-->
+
+<div class="back">
+<div class="body">
+
+<h2><a name="ElemOv" ></a>A. XML Element Overview</h2>
+
+<p class="todo">to come: text with brief intro of <a href="#elem_ov_tab">Table A.1</a> containing all here introduced XML elements and the technologies they can be used in.</p>
+<p class="todo">to come: incorporate Dump somehow and show that a Manifest is required for it.</p>
+
+<a name="elem_ov_tab"></a>
+<table class="elem_overview-table" summary="XML Elements vs Technologies they are used for">
+ <tr class="top">
+  <th>XML Element</th><th colspan="4">Technology</th>
+ </tr>
+ <tr class="top">
+  <th>&nbsp;</th><th>Sitemap</th><th>Sitemap Index</th><th>Manifest</th><th>Change Set</th>
+ </tr>
+ <tr class="odd">
+  <td class="left"><a href="#sitemapindex"><code>&lt;sitemap&gt;</code></a></td><td></td><td class="req">required</td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left"><a href="#sitemapindex"><code>&lt;sitemapindex&gt;</code></a></td><td></td><td class="req">required</td><td></td><td></td>
+ </tr>
+ <tr class="odd">
+  <td class="left"><a href="#Sitemap"><code>&lt;urlset&gt;</code></a></td><td class="req">required</td><td></td><td class="req">required</td><td class="req">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left"><a href="#Sitemap"><code>&lt;url&gt;</code></a></td><td class="req">required</td><td></td><td class="req">required</td><td class="req">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left"><a href="#loc"><code>&lt;loc&gt;</code></a></td><td class="req">required</td><td class="req">required</td><td class="req">required</td><td class="req">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left"><a href="#lastmod"><code>&lt;lastmod&nbsp;rs:type=&quot;updated&quot;&gt;</code></a> or<br /><a href="#lastmod"><code>&lt;lastmod&nbsp;rs:type=&quot;created&quot;&gt;</code></a> or<br /><a href="#lastmod"><code>&lt;expires&gt;</code></a></td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td><td class="req">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left"><a href="#fixity"><code>&lt;rs:fixity&gt;</code></a></td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left"><a href="#size"><code>&lt;rs:size&gt;</code></a></td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left"><a href="#mimetype"><code>&lt;rs:mimetype&gt;</code></a></td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left"><a href="#contentencoding"><code>&lt;rs:contentencoding&gt;</code></a></td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left"><a href="#Manifest"><code>&lt;rs:path&gt;</code></a></td><td></td><td></td><td class="req">required</td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left"><a href="#Sitemap"><code>&lt;xhtml:meta&gt;</code></a></td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left"><a href="#AltConLoc"><code>&lt;xhtml:link&gt;</code></a></td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td><td class="opt">optional</td>
+ </tr>
+<!--
+ <tr class="even">
+  <td class="left"><a href="#publisher"><code>&lt;dc:publisher&gt;</code></a></td><td></td><td></td><td></td><td class="opt">optional</td>
+ </tr>
+-->
+</table>
+<p class="caption">Table A.1: All covered XML elements and the technologies they are used for.</p>
+
+
+<h2><a name="AltDumpForm"></a>B. Alternate Dump Formats: WARC</h2>
+<p class="todo">to come</p>
+
+
+<h2><a name="acknowledgments"></a>C. Acknowledgements</h2>
+
+<p>This specification is the work of 
+<a href="http://niso.org/">NISO</a> and the 
+<a href="http://www.openarchives.org/">Open Archives Initiative</a>. 
+Funding for ResourceSync is provided by the 
+<a href="http://www.sloan.org/">Alfred P. Sloan Foundation</a>. 
+UK participation is supported by the 
+<a href="http://www.jisc.ac.uk/">JISC</a>.</p>
+
+<p>This specification is based on the meetings of the ResourceSync 
+Technical Committee. The Technical Committee includes the editors 
+and (in alphabetical order):
+Manuel Bernhardt (Delving B.V.),
+Richard Jones (Cottage Labs),
+Graham Klyne (University of Oxford),
+Stuart Lewis (University of Edinburgh),
+Kevin Ford (Library of Congress),
+David Rosenthal (LOCKSS),
+Christian Sadilek (Red Hat),
+Shlomo Sanders (Ex Libris, Inc.),
+Sjoerd Siebinga (Delving B.V.),
+Ed Summers (Library of Congress),
+and 
+Jeff Young (Online Computer Library Center).</p>
+
+<p class="todo">Check participant status and affiliations</p>
+
+<div class="changelog">
+<h2><a name="changelog" >D. Change Log</a></h2>
+<table class="changelog" summary="change log">
+<tbody><tr>
+ <th>Date</th>
+ <th>Editor</th>
+ <th>Description</th>
+</tr>
+<tr>
+ <td>2012-08-13</td>
+ <td>martin, herbert, simeon, bernhard</td>
+ <td>first alpha-spec draft</td>
+</tr></tbody>
+</table>
+</div>
+
+</div>
+</div>
+    
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+    
+</body>
+</html>
+

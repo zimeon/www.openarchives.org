@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] character vs entity references
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tdb01r%40ecs.soton.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001103.html">
+   <LINK REL="Next"  HREF="001106.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] character vs entity references
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tdb01r%40ecs.soton.ac.uk"
+       TITLE="[OAI-implementers] character vs entity references">tdb01r@ecs.soton.ac.uk
+       </A><BR>
+    <I>Wed, 5 Nov 2003 17:04:39 -0000</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001103.html">[OAI-implementers] character vs entity references
+</A></li>
+        <LI> Next message: <A HREF="001106.html">[OAI-implementers] character vs entity references
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1105">[ date ]</a>
+              <a href="thread.html#1105">[ thread ]</a>
+              <a href="subject.html#1105">[ subject ]</a>
+              <a href="author.html#1105">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>----- Original Message ----- 
+From: &quot;Todd White&quot; &lt;<A HREF="mailto:tmwhite@merit.edu">tmwhite@merit.edu</A>&gt;
+
+
+&gt;<i> since i've been &quot;bugging&quot; the list with my recent questions about
+</I>&gt;<i> character encoding, i thought i would share the current solution that i've
+</I>&gt;<i> implemented in our OAI repository.  it's one line and i added it to a
+</I>&gt;<i> function that i had already implemented for processing all data as it
+</I>&gt;<i> passes from database to XML...
+</I>&gt;<i>
+</I>&gt;<i>  $str =~ s/([^ -~])/'&amp;#' . ord($1) . ';'/eg;
+</I>&gt;<i>
+</I>&gt;<i> this looks for any characters outside of the range from [space] to [tilde]
+</I>&gt;<i> and transforms each to its proper character reference.  for example, if an
+</I>&gt;<i> n-tilde is encountered, it is transformed into &amp;#241;
+</I>
+AFAIK a character reference is a reference into the Unicode character set,
+so its invalid whether its in &amp;#xx; form, utf-8, utf16 or whatever.
+
+You should either remove the characters or convert the character to its
+nearest equivalent in Unicode (for control characters there probably isn't
+one).
+
+e.g.
+use XML::Parser;
+while(&lt;&gt;) {
+s/([^ -~])/'&amp;#' . ord($1) . ';'/eg;
+print $_, &quot;\n&quot;;
+eval { XML::Parser-&gt;new-&gt;parse(&quot;&lt;root&gt;$_&lt;/root&gt;&quot;); };
+print $@ if $@;
+}
+
+Creates errors if you input formfeed (CTRL+L).
+
+All the best,
+Tim.
+
+&gt;<i> On Tue, 4 Nov 2003, Ed Summers wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; On Tue, Nov 04, 2003 at 09:58:55AM -0500, Todd White wrote:
+</I>&gt;<i> &gt; &gt; $string =~ tr/\0-\x{ff}//UC;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Search for tr/ in the following pages for some fun Perl archaeology.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;     <A HREF="http://www.perldoc.com/perl5.005_03/pod/perlop.html">http://www.perldoc.com/perl5.005_03/pod/perlop.html</A>
+</I>&gt;<i> &gt;     <A HREF="http://www.perldoc.com/perl5.6.0/pod/perlop.html">http://www.perldoc.com/perl5.6.0/pod/perlop.html</A>
+</I>&gt;<i> &gt;     <A HREF="http://www.perldoc.com/perl5.6.1/pod/perlop.html">http://www.perldoc.com/perl5.6.1/pod/perlop.html</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; You can see the UC modifiers were introduced in 5.6.0 and quickly
+</I>&gt;<i> &gt; dropped in 5.6.1 (and in versions thereafter). 5.6.0 is a notoriously
+</I>&gt;<i> &gt; buggy release, I think in part because of it's UTF8 handling. These
+</I>&gt;<i> &gt; problems have been fixed in versions &gt;= 5.8.0, which is the first
+</I>&gt;<i> &gt; recommended release of Perl for safely working with UTF8.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Funny, I always thought Perl held backwards compatability sacrosanct...
+</I>&gt;<i> &gt; not including Perl6 of course :)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; You might be interested in this list for Perl library folks:
+</I>&gt;<i> &gt; <A HREF="http://perl4lib.perl.org">http://perl4lib.perl.org</A> for discussion of Perl esoterica and more.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; //Ed
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001103.html">[OAI-implementers] character vs entity references
+</A></li>
+	<LI> Next message: <A HREF="001106.html">[OAI-implementers] character vs entity references
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1105">[ date ]</a>
+              <a href="thread.html#1105">[ thread ]</a>
+              <a href="subject.html#1105">[ subject ]</a>
+              <a href="author.html#1105">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

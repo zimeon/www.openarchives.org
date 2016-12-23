@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Namespaces in elements
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:thabing%40uiuc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000863.html">
+   <LINK REL="Next"  HREF="000861.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Namespaces in elements
+   </H1>
+    <B>Thomas G. Habing
+    </B> 
+    <A HREF="mailto:thabing%40uiuc.edu"
+       TITLE="[OAI-implementers] Namespaces in elements">thabing@uiuc.edu
+       </A><BR>
+    <I>Tue, 29 Apr 2003 10:14:04 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000863.html">[OAI-implementers] Namespaces in elements
+</A></li>
+        <LI> Next message: <A HREF="000861.html">[OAI-implementers] Namespaces in elements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#865">[ date ]</a>
+              <a href="thread.html#865">[ thread ]</a>
+              <a href="subject.html#865">[ subject ]</a>
+              <a href="author.html#865">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Jozef Kruger wrote:
+&gt;<i> Hi everybody,
+</I>&gt;<i> 
+</I>&gt;<i> I just implemented the output of my oai server by transforming our own
+</I>&gt;<i> xml format to for example dublin core (each supported output format
+</I>&gt;<i> having it's own .xsl stylesheet), however, in the transformed xml MSXML
+</I>&gt;<i> has replicated the dublin core namespace for each dc element:
+</I>&gt;<i> &lt;dc:title
+</I>&gt;<i> xmlns:dc=&quot;<A HREF="http://purl.org/dc/elements/1.1/"">http://purl.org/dc/elements/1.1/&quot;</A>&gt;Walangara&lt;/dc:title&gt; 
+</I>&gt;<i> Where it was:
+</I>&gt;<i> &lt;dc:title&gt;Walangara&lt;/dc:title&gt; 
+</I>&gt;<i> 
+</I>&gt;<i> My question is, is this a problem?
+</I>&gt;<i> Hussein's repository explorer does NOT complain about this, so that made
+</I>&gt;<i> me feel a little confident.
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Jozef Kruger (Adlib Information Systems B.V. the Netherlands)
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+Hi Jozef,
+
+Technically from an XML standpoint it is not a problem, but it is a terrible 
+waste of bytes.
+
+I think I've run into this problem with MSXML previously also.  If I 
+remember correctly I solved it by using different ways to create the output 
+elements.  In XSLT you can create output elements either by inserting the 
+element literally into the XSLT, such as the oai_dc:dc element below:
+
+&lt;xsl:template match=&quot;/&quot;&gt;
+   &lt;oai_dc:dc&gt;
+     &lt;xsl:apply-templates/&gt;
+   &lt;/oai_dc:dc&gt;
+&lt;/xsl:template&gt;
+
+Or, by using the the xsl:element tag, as shown:
+
+&lt;xsl:template match=&quot;/&quot;&gt;
+   &lt;xsl:element name=&quot;oai_dc:dc&quot;&gt;
+     &lt;xsl:apply-templates/&gt;
+   &lt;/xsl:element&gt;
+&lt;/xsl:template&gt;
+
+If I remember correctly, by mixing and matching which technique I used to 
+generate the output elements, I was able to eliminate the extraneous 
+namespace declarations.
+
+Try using the literal technique &lt;oai_dc:dc&gt; for the root element, but the 
+&lt;xsl:element name=&quot;dc:creator&quot;&gt; technique for the child elements.
+
+If after some experimentation this doesn't seem to work either, I could go 
+and maybe find some of my old stylesheets to see exactly what I did.
+
+Regards,
+	Tom
+
+
+-- 
+Thomas Habing
+Research Programmer, Digital Library Projects
+University of Illinois at Urbana-Champaign
+155 Grainger Engineering Library Information Center, MC-274
+<A HREF="mailto:thabing@uiuc.edu">thabing@uiuc.edu</A>, (217) 244-4425
+<A HREF="http://dli.grainger.uiuc.edu">http://dli.grainger.uiuc.edu</A>
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000863.html">[OAI-implementers] Namespaces in elements
+</A></li>
+	<LI> Next message: <A HREF="000861.html">[OAI-implementers] Namespaces in elements
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#865">[ date ]</a>
+              <a href="thread.html#865">[ thread ]</a>
+              <a href="subject.html#865">[ subject ]</a>
+              <a href="author.html#865">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

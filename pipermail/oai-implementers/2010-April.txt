@@ -1,0 +1,307 @@
+From timo at proescholdt.de  Wed Apr 14 12:01:32 2010
+From: timo at proescholdt.de (=?ISO-8859-1?Q?Timo_Pr=F6scholdt?=)
+Date: Wed Apr 14 12:01:41 2010
+Subject: [OAI-implementers] validation of OAI response
+Message-ID: <4BC5E6DC.1050308@proescholdt.de>
+
+Hello,
+
+the XMLSchema at http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd 
+requires strict validation for the content of <setDescription> in a 
+reply to a ListSets request, while allowing arbitrary namespaces.
+
+I'm wondering how one goes about validating such XML. It is clear that 
+one would validate against OAI-PMH.xsd, but in order to validate the
+content of <setDescription> one would also have to load the 
+corresponding XMLschema. Since the namespace can be anything it can 
+obviously not be imported into OAI-PMH.xsd.
+Is one supposed to fetch the XMLschema from the supplied schemaLocation
+before validating?
+
+The background of my question is that I'm tracking interoperability 
+issues between two OAI implementations. (joai,genoetwork). joai returns 
+the attached reply, which does not validate against OAI-PMH.xsd.
+
+any hints would be very much appreciated
+thanks
+Timo
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: joai_listsets_response.xml
+Type: text/xml
+Size: 881 bytes
+Desc: not available
+Url : http://www.openarchives.org/pipermail/oai-implementers/attachments/20100414/90920b35/joai_listsets_response.xml
+From hussein at cs.uct.ac.za  Wed Apr 14 17:12:27 2010
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Wed Apr 14 17:12:41 2010
+Subject: [OAI-implementers] validation of OAI response
+In-Reply-To: <4BC5E6DC.1050308@proescholdt.de>
+References: <4BC5E6DC.1050308@proescholdt.de>
+Message-ID: <4BC62FBB.4050109@cs.uct.ac.za>
+
+hi Tim
+
+it seems there is a small error in the specification of the XML schema 
+in joai. the setDescription's dc tag needs to have an absolute URL for 
+the oai_dc schema in schemaLocation, namely:
+
+   xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/
+                       http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+
+once that is fixed, it validates without a hitch.
+
+ttfn,
+----hussein
+
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+Timo Pr?scholdt wrote:
+> Hello,
+> 
+> the XMLSchema at http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd 
+> requires strict validation for the content of <setDescription> in a 
+> reply to a ListSets request, while allowing arbitrary namespaces.
+> 
+> I'm wondering how one goes about validating such XML. It is clear that 
+> one would validate against OAI-PMH.xsd, but in order to validate the
+> content of <setDescription> one would also have to load the 
+> corresponding XMLschema. Since the namespace can be anything it can 
+> obviously not be imported into OAI-PMH.xsd.
+> Is one supposed to fetch the XMLschema from the supplied schemaLocation
+> before validating?
+> 
+> The background of my question is that I'm tracking interoperability 
+> issues between two OAI implementations. (joai,genoetwork). joai returns 
+> the attached reply, which does not validate against OAI-PMH.xsd.
+> 
+> any hints would be very much appreciated
+> thanks
+> Timo
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+From jweather at ucar.edu  Wed Apr 14 19:57:31 2010
+From: jweather at ucar.edu (John Weatherley)
+Date: Wed Apr 14 19:58:04 2010
+Subject: [OAI-implementers] validation of OAI response
+In-Reply-To: <4BC62FBB.4050109@cs.uct.ac.za>
+References: <4BC5E6DC.1050308@proescholdt.de> <4BC62FBB.4050109@cs.uct.ac.za>
+Message-ID: <1c57e2568eb49a3e00337de780db6fb8.squirrel@webmail.dls.ucar.edu>
+
+Tim,
+
+jOAI does provide an absolute URL for the oai_dc schema in the
+schemaLocation, but the example you attached does not.
+
+For example, here's a ListSets response from the DLESE jOAI instance:
+http://www.dlese.org/oai/provider?verb=ListSets
+
+The Xerces validator that comes with jOAI shows it as valid:
+http://www.dlese.org/oai/provider?verb=Identify&rt=validate
+
+Could it be that the schemaLocation is being changed somewhere in your
+processing?
+
+ - john
+
+
+> hi Tim
+>
+> it seems there is a small error in the specification of the XML schema
+> in joai. the setDescription's dc tag needs to have an absolute URL for
+> the oai_dc schema in schemaLocation, namely:
+>
+>    xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/
+>                        http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+>
+> once that is fixed, it validates without a hitch.
+>
+> ttfn,
+> ----hussein
+>
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+>
+>
+> Timo Pr?scholdt wrote:
+>> Hello,
+>>
+>> the XMLSchema at http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd
+>> requires strict validation for the content of <setDescription> in a
+>> reply to a ListSets request, while allowing arbitrary namespaces.
+>>
+>> I'm wondering how one goes about validating such XML. It is clear that
+>> one would validate against OAI-PMH.xsd, but in order to validate the
+>> content of <setDescription> one would also have to load the
+>> corresponding XMLschema. Since the namespace can be anything it can
+>> obviously not be imported into OAI-PMH.xsd.
+>> Is one supposed to fetch the XMLschema from the supplied schemaLocation
+>> before validating?
+>>
+>> The background of my question is that I'm tracking interoperability
+>> issues between two OAI implementations. (joai,genoetwork). joai returns
+>> the attached reply, which does not validate against OAI-PMH.xsd.
+>>
+>> any hints would be very much appreciated
+>> thanks
+>> Timo
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+
+
+From timo at proescholdt.de  Thu Apr 15 05:27:50 2010
+From: timo at proescholdt.de (=?ISO-8859-1?Q?Timo_Pr=F6scholdt?=)
+Date: Thu Apr 15 05:27:54 2010
+Subject: [OAI-implementers] validation of OAI response
+In-Reply-To: <4BC62FBB.4050109@cs.uct.ac.za>
+References: <4BC5E6DC.1050308@proescholdt.de> <4BC62FBB.4050109@cs.uct.ac.za>
+Message-ID: <4BC6DC16.4060404@proescholdt.de>
+
+hi and thanks,
+
+
+did you import the oai_dc.xsd in the OAI-PMH.xsd? I can only get the
+jOAI response to validate if I add the oai-dc XMLschema to OAI-PMH.xsd using
+
+	<import namespace="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+schemaLocation="oai_dc.xsd"/>
+
+
+This is fine for this purpose here, but I'm wondering what a generic 
+solution would look like. Since any namespace can occur inside 
+<setDescription> I cannot import them all in OAI-PMH.xsd.
+
+thanks
+Timo
+
+
+P.S the incorrect xml doc in my email as due to my messing around with 
+the code. jOI does of course provide correct xml.
+
+
+
+On 4/14/2010 11:12 PM, Hussein Suleman wrote:
+> hi Tim
+>
+> it seems there is a small error in the specification of the XML schema
+> in joai. the setDescription's dc tag needs to have an absolute URL for
+> the oai_dc schema in schemaLocation, namely:
+>
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/
+> http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
+>
+> once that is fixed, it validates without a hitch.
+>
+> ttfn,
+> ----hussein
+>
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+>
+>
+> Timo Pr?scholdt wrote:
+>> Hello,
+>>
+>> the XMLSchema at http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd
+>> requires strict validation for the content of <setDescription> in a
+>> reply to a ListSets request, while allowing arbitrary namespaces.
+>>
+>> I'm wondering how one goes about validating such XML. It is clear that
+>> one would validate against OAI-PMH.xsd, but in order to validate the
+>> content of <setDescription> one would also have to load the
+>> corresponding XMLschema. Since the namespace can be anything it can
+>> obviously not be imported into OAI-PMH.xsd.
+>> Is one supposed to fetch the XMLschema from the supplied schemaLocation
+>> before validating?
+>>
+>> The background of my question is that I'm tracking interoperability
+>> issues between two OAI implementations. (joai,genoetwork). joai
+>> returns the attached reply, which does not validate against OAI-PMH.xsd.
+>>
+>> any hints would be very much appreciated
+>> thanks
+>> Timo
+>>
+>>
+>> ------------------------------------------------------------------------
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+
+
+From jweather at ucar.edu  Thu Apr 15 22:44:03 2010
+From: jweather at ucar.edu (John Weatherley)
+Date: Thu Apr 15 22:44:37 2010
+Subject: [OAI-implementers] validation of OAI response
+In-Reply-To: <4BC6DC16.4060404@proescholdt.de>
+References: <4BC5E6DC.1050308@proescholdt.de> <4BC62FBB.4050109@cs.uct.ac.za>
+	<4BC6DC16.4060404@proescholdt.de>
+Message-ID: <802fc15fe155c27cab5139f555347bc8.squirrel@webmail.dls.ucar.edu>
+
+Timo,
+
+You might try a different tool for validation. Many tools will
+automatically fetch all schemas that are referenced in the instance
+document and apply them to the element on which they appear.
+
+A number of validation tools are listed here, although this list is a bit
+old:
+http://www.w3.org/XML/Schema
+
+Best,
+
+ - john
+
+
+
+> hi and thanks,
+>
+>
+> did you import the oai_dc.xsd in the OAI-PMH.xsd? I can only get the
+> jOAI response to validate if I add the oai-dc XMLschema to OAI-PMH.xsd
+> using
+>
+> 	<import namespace="http://www.openarchives.org/OAI/2.0/oai_dc/"
+> schemaLocation="oai_dc.xsd"/>
+>
+>
+> This is fine for this purpose here, but I'm wondering what a generic
+> solution would look like. Since any namespace can occur inside
+> <setDescription> I cannot import them all in OAI-PMH.xsd.
+>
+> thanks
+> Timo
+>
+
+

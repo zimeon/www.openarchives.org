@@ -1,0 +1,1174 @@
+From Irina.Dijour at exlibris.co.il  Fri Dec  1 16:46:03 2006
+From: Irina.Dijour at exlibris.co.il (Irina Dijour)
+Date: Fri Dec  1 16:46:53 2006
+Subject: [OAI-implementers] sets - metadataPrefix relationship
+Message-ID: <8D054E2E14507243A096205AC4D6C2600E1B70@il-ex01.Corp.Exlibrisgroup.com>
+
+ 
+
+Hi, 
+
+ 
+
+I have a question concerning sets - metadataPrefix relationship.
+
+Is it permitted by the protocol to "attach" metadataPrefix to set?
+
+ 
+
+For example, is the following situation is valid:
+
+I define two sets  A and B. All the records from my repository belong to
+both sets.
+
+Set A "contains" records in marcxml. Set B "contains" records in oai_dc.
+
+ListSets response contains 2 sets: A and B
+
+ListMetadataFormats reponse contains 2 formats: marxml and oai_dc.
+
+ListRecords request with set=A, metadataPrefix=marcxml - results in list
+of records
+
+ListRecords request with set=A, metadataPrefix=oai_dc - results in error
+cannotDissemenateFormat
+
+ListRecords request with set=B, metadataPrefix=marcxml - results in
+error cannotDissemenateFormat
+
+ListRecords request with set=B, metadataPrefix=oai_dc - results in list
+of record
+
+GetRecord request for any record in my repository both with
+metadataPrefix=marcxml and with
+
+metadataPrefix=oai_dc results in the record in corresponding format.
+
+ 
+
+Sorry if I repeat the question which has been risen several months ago.
+I see that there was discussion
+
+on the same matter, but unfortunately I did not find answer on my
+question.
+
+ 
+
+Thanks,
+
+Irina Dijour
+
+ExLibris Ltd.
+
+
+-------------------------------------------------------- 
+This message has been scanned for viruses and
+dangerous content by Ex Libris Ltd, and is
+believed to be clean.
+--------------------------------------------------------
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20061201/d60a8e21/attachment.htm
+From gary at hulmail.harvard.edu  Fri Dec  1 17:04:58 2006
+From: gary at hulmail.harvard.edu (Gary McGath)
+Date: Fri Dec  1 17:06:25 2006
+Subject: [OAI-implementers] sets - metadataPrefix relationship
+In-Reply-To: <8D054E2E14507243A096205AC4D6C2600E1B70@il-ex01.Corp.Exlibrisgroup.com>
+References: <8D054E2E14507243A096205AC4D6C2600E1B70@il-ex01.Corp.Exlibrisgroup.com>
+Message-ID: <4570A70A.3080805@hulmail.harvard.edu>
+
+Irina Dijour wrote:
+
+> 
+> I have a question concerning sets - metadataPrefix relationship.
+> 
+> Is it permitted by the protocol to "attach" metadataPrefix to set?
+> 
+>  
+> 
+> For example, is the following situation is valid:
+> 
+> I define two sets  A and B. All the records from my repository belong to
+> both sets.
+> 
+> Set A "contains" records in marcxml. Set B "contains" records in oai_dc.
+> 
+> ListSets response contains 2 sets: A and B
+> 
+> ListMetadataFormats reponse contains 2 formats: marxml and oai_dc.
+> 
+> ListRecords request with set=A, metadataPrefix=marcxml - results in list
+> of records
+> 
+> ListRecords request with set=A, metadataPrefix=oai_dc - results in error
+> cannotDissemenateFormat
+> 
+> ListRecords request with set=B, metadataPrefix=marcxml - results in
+> error cannotDissemenateFormat
+> 
+> ListRecords request with set=B, metadataPrefix=oai_dc - results in list
+> of record
+> 
+> GetRecord request for any record in my repository both with
+> metadataPrefix=marcxml and with
+> 
+> metadataPrefix=oai_dc results in the record in corresponding format.
+
+My understanding is that you can have one set that delivers only oai_dc 
+records, and another that delivers only marcxml records; but in the 
+cases you give the appropriate error response would be noRecordsMatch 
+rather than cannotDisseminateFormat.
+
+Imagine a case where a set contained only one record that could be 
+returned as marcxml.  If your date range included that record, then 
+you'd return the record; if not, you'd return noRecordsMatch.  The same 
+logic applies if there are no records in the set that can be returned as 
+marcxml.
+
+-- 
+Gary McGath
+Digital Library Software Engineer
+Harvard University Library Office for Information Systems
+http://hul.harvard.edu/~gary/index.html
+
+
+From Conal.Tuohy at vuw.ac.nz  Sun Dec  3 16:52:01 2006
+From: Conal.Tuohy at vuw.ac.nz (Conal Tuohy)
+Date: Sun Dec  3 16:52:15 2006
+Subject: [OAI-implementers] sets - metadataPrefix relationship
+Message-ID: <F7642587567EC648BB0AE46EF0BCA5AF01A876ED@STAWINCOMAILCL1.staff.vuw.ac.nz>
+
+
+> Irina Dijour wrote:
+
+<snip/>
+> > ListRecords request with set=A, metadataPrefix=oai_dc - 
+> results in error
+> > cannotDissemenateFormat
+
+My interpretation of the spec is that "cannotDisseminateFormat" would be
+illegal, since the "mandatory" status of oai_dc means that you MUST be
+able to disseminate oai_dc metadata for every item. 
+
+Gary McGath wrote:
+> My understanding is that you can have one set that delivers 
+> only oai_dc 
+> records, and another that delivers only marcxml records; but in the 
+> cases you give the appropriate error response would be noRecordsMatch 
+> rather than cannotDisseminateFormat.
+
+I also think it would be wrong to return "noRecordsMatch", because in
+fact the item does exist (since it can be disseminated in marcxml). IMHO
+the correct approach is to return some oai_dc. NB the oai_dc schema has
+no mandatory child elements inside the "dc" element, though for the sake
+of form it would probably not be hard to generate a dc:title and a
+dc:identifier from the marcxml store. 
+
+Con
+
+From caar at loc.gov  Mon Dec  4 09:56:53 2006
+From: caar at loc.gov (Caroline Arms)
+Date: Mon Dec  4 09:55:51 2006
+Subject: [OAI-implementers] sets - metadataPrefix relationship
+Message-ID: <s573f0eb.073@loc.gov>
+
+Irina,
+
+If I understand the description of your situation correctly, you can do what you want with only one set.   
+
+Currently every record in the OAI repository for records for digitized historical materials at LC [See http://memory.loc.gov/ammem/oamh/index.html ] is available in several metadata formats.   This is also true for every set defined.  The set is thus a group of underlying records, independent of the format in which the records are harvestable.
+
+This is not the only way to implement sets, but it may be convenient for your situation as it was for mine.  
+
+The draft Best Practices for Data Providers on sets [http://oai-best.comm.nsdl.org/cgi-bin/wiki.pl?SetPractices]
+encourage data providers to use the SetDescription feature to indicate the formats in which records for a set can be harvested. If you have not seen that wiki page, there  may be other information that would be helpful. 
+
+Caroline Arms
+Library of Congress, Office of Strategic Initiatives
+caar@loc.gov 
+
+====Views expressed are my own, not those of the Library of Congress.====
+
+>>> "Irina Dijour" <Irina.Dijour@exlibris.co.il> 12/01/06 4:46 PM >>>
+ 
+
+Hi, 
+
+ 
+
+I have a question concerning sets - metadataPrefix relationship.
+
+Is it permitted by the protocol to "attach" metadataPrefix to set?
+
+ 
+
+For example, is the following situation is valid:
+
+I define two sets  A and B. All the records from my repository belong to
+both sets.
+
+Set A "contains" records in marcxml. Set B "contains" records in oai_dc.
+
+ListSets response contains 2 sets: A and B
+
+ListMetadataFormats reponse contains 2 formats: marxml and oai_dc.
+
+ListRecords request with set=A, metadataPrefix=marcxml - results in list
+of records
+
+ListRecords request with set=A, metadataPrefix=oai_dc - results in error
+cannotDissemenateFormat
+
+ListRecords request with set=B, metadataPrefix=marcxml - results in
+error cannotDissemenateFormat
+
+ListRecords request with set=B, metadataPrefix=oai_dc - results in list
+of record
+
+GetRecord request for any record in my repository both with
+metadataPrefix=marcxml and with
+
+metadataPrefix=oai_dc results in the record in corresponding format.
+
+ 
+
+Sorry if I repeat the question which has been risen several months ago.
+I see that there was discussion
+
+on the same matter, but unfortunately I did not find answer on my
+question.
+
+ 
+
+Thanks,
+
+Irina Dijour
+
+ExLibris Ltd.
+
+
+-------------------------------------------------------- 
+This message has been scanned for viruses and
+dangerous content by Ex Libris Ltd, and is
+believed to be clean.
+--------------------------------------------------------
+
+
+
+From thabing at uiuc.edu  Mon Dec  4 13:47:10 2006
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Mon Dec  4 13:47:21 2006
+Subject: [OAI-implementers] sets - metadataPrefix relationship
+In-Reply-To: <8D054E2E14507243A096205AC4D6C2600E1B70@il-ex01.Corp.Exlibrisgroup.com>
+References: <8D054E2E14507243A096205AC4D6C2600E1B70@il-ex01.Corp.Exlibrisgroup.com>
+Message-ID: <45746D2E.5040601@uiuc.edu>
+
+Hi,
+
+The definition of set from the specification is:
+
+"A set is an optional construct for grouping _items_ for the purpose of 
+selective harvesting."
+
+I've deliberately emphasized the word _item_ which also has a specific 
+meaning in the protocol:
+
+"An item is a constituent of a repository from which metadata about a 
+resource can be disseminated."
+
+This is to be differentiated from records:
+
+"A record is metadata expressed in a single format. A record is returned 
+in an XML-encoded byte stream in response to an OAI-PMH request for 
+metadata from an item."
+
+In other words a set is a grouping of items and not a grouping of 
+records (items represented in a specific metadata format).
+
+The protocol also requires every item to have a corresponding oai_dc 
+record.
+
+This implies to me that a request like:
+
+   ?verb=ListRecords&set=A&metadataPrefix=oai_dc
+
+must always return records for all the items belonging to that set, 
+assuming that set A is not empty.  For example, if set A has 10 items 
+then this request must always return all 10 records.
+
+A request for some other metadata format could return all the same items 
+in the requested format, no items, or a subset of the items that belong 
+to that set, depending on whether or which of those items are available 
+in the other format, for example:
+
+   ?verb=ListRecords&set=A&metadataPrefix=marcxml
+
+might return 10 records assuming that all the records have mappings to 
+marcxml.  It might just return 5 records because only half of the items 
+in set A have a mapping to marcxml, and the other half do not.  It might 
+also return no records with an error of noRecordsMatch or 
+cannotDisseminateFormat.  If there are items in the repository that can 
+be disseminated as marcxml, just not for this set, you should use 
+noRecordsMatch.  However, if the repository does not support marcxml at 
+all for any of its items, then use cannotDisseminateFormat.
+
+Hope this helps,
+	Tom
+
+Irina Dijour wrote:
+>  
+> 
+> Hi,
+> 
+>  
+> 
+> I have a question concerning sets ? metadataPrefix relationship.
+> 
+> Is it permitted by the protocol to ?attach? metadataPrefix to set?
+> 
+>  
+> 
+> For example, is the following situation is valid:
+> 
+> I define two sets  A and B. All the records from my repository belong to 
+> both sets.
+> 
+> Set A ?contains? records in marcxml. Set B ?contains? records in oai_dc.
+> 
+> ListSets response contains 2 sets: A and B
+> 
+> ListMetadataFormats reponse contains 2 formats: marxml and oai_dc.
+> 
+> ListRecords request with set=A, metadataPrefix=marcxml ? results in list 
+> of records
+> 
+> ListRecords request with set=A, metadataPrefix=oai_dc ? results in error 
+> cannotDissemenateFormat
+> 
+> ListRecords request with set=B, metadataPrefix=marcxml ? results in 
+> error cannotDissemenateFormat
+> 
+> ListRecords request with set=B, metadataPrefix=oai_dc ? results in list 
+> of record
+> 
+> GetRecord request for any record in my repository both with 
+> metadataPrefix=marcxml and with
+> 
+> metadataPrefix=oai_dc results in the record in corresponding format.
+> 
+>  
+> 
+> Sorry if I repeat the question which has been risen several months ago. 
+> I see that there was discussion
+> 
+> on the same matter, but unfortunately I did not find answer on my question.
+> 
+>  
+> 
+> Thanks,
+> 
+> Irina Dijour
+> 
+> ExLibris Ltd.
+> 
+> 
+> -----------------------------------------------------------------
+> This message has been scanned for viruses and
+> dangerous content by *Ex Libris Ltd* <http://www.exlibrisgroup.com>, and is
+> believed to be clean.
+> -----------------------------------------------------------------
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+Thomas G. Habing
+Research Programmer
+Grainger Engineering Library Information Center
+University of Illinois at Urbana-Champaign
+
+From Irina.Dijour at exlibris.co.il  Mon Dec  4 15:24:20 2006
+From: Irina.Dijour at exlibris.co.il (Irina Dijour)
+Date: Mon Dec  4 15:25:25 2006
+Subject: [OAI-implementers] sets - metadataPrefix relationship
+Message-ID: <8D054E2E14507243A096205AC4D6C2600E1B79@il-ex01.Corp.Exlibrisgroup.com>
+
+Hi, 
+
+Thank you all for the answers. I am agree with Caroline that the 
+best situation is when all the items can be returned in all the
+supported formats, not depending on the sets definition.
+Unfortunately I have some constraints in my repository.
+
+My understanding was that each item must have corresponding oai_dc
+record.
+I wanted to expose all these oai_dc records through special set of
+oai_dc
+records.
+Now it's clear to me that any item from any set must be available in
+oai_dc.
+I will think how to redesign my sets structure.
+
+Thanks a lot!
+Irina
+
+-----Original Message-----
+From: Thomas G. Habing [mailto:thabing@uiuc.edu] 
+Sent: Monday, December 04, 2006 8:47 PM
+To: Irina Dijour
+Cc: oai-implementers@openarchives.org
+Subject: Re: [OAI-implementers] sets - metadataPrefix relationship
+
+Hi,
+
+The definition of set from the specification is:
+
+"A set is an optional construct for grouping _items_ for the purpose of 
+selective harvesting."
+
+I've deliberately emphasized the word _item_ which also has a specific 
+meaning in the protocol:
+
+"An item is a constituent of a repository from which metadata about a 
+resource can be disseminated."
+
+This is to be differentiated from records:
+
+"A record is metadata expressed in a single format. A record is returned
+
+in an XML-encoded byte stream in response to an OAI-PMH request for 
+metadata from an item."
+
+In other words a set is a grouping of items and not a grouping of 
+records (items represented in a specific metadata format).
+
+The protocol also requires every item to have a corresponding oai_dc 
+record.
+
+This implies to me that a request like:
+
+   ?verb=ListRecords&set=A&metadataPrefix=oai_dc
+
+must always return records for all the items belonging to that set, 
+assuming that set A is not empty.  For example, if set A has 10 items 
+then this request must always return all 10 records.
+
+A request for some other metadata format could return all the same items
+
+in the requested format, no items, or a subset of the items that belong 
+to that set, depending on whether or which of those items are available 
+in the other format, for example:
+
+   ?verb=ListRecords&set=A&metadataPrefix=marcxml
+
+might return 10 records assuming that all the records have mappings to 
+marcxml.  It might just return 5 records because only half of the items 
+in set A have a mapping to marcxml, and the other half do not.  It might
+
+also return no records with an error of noRecordsMatch or 
+cannotDisseminateFormat.  If there are items in the repository that can 
+be disseminated as marcxml, just not for this set, you should use 
+noRecordsMatch.  However, if the repository does not support marcxml at 
+all for any of its items, then use cannotDisseminateFormat.
+
+Hope this helps,
+	Tom
+
+Irina Dijour wrote:
+>  
+> 
+> Hi,
+> 
+>  
+> 
+> I have a question concerning sets - metadataPrefix relationship.
+> 
+> Is it permitted by the protocol to "attach" metadataPrefix to set?
+> 
+>  
+> 
+> For example, is the following situation is valid:
+> 
+> I define two sets  A and B. All the records from my repository belong
+to 
+> both sets.
+> 
+> Set A "contains" records in marcxml. Set B "contains" records in
+oai_dc.
+> 
+> ListSets response contains 2 sets: A and B
+> 
+> ListMetadataFormats reponse contains 2 formats: marxml and oai_dc.
+> 
+> ListRecords request with set=A, metadataPrefix=marcxml - results in
+list 
+> of records
+> 
+> ListRecords request with set=A, metadataPrefix=oai_dc - results in
+error 
+> cannotDissemenateFormat
+> 
+> ListRecords request with set=B, metadataPrefix=marcxml - results in 
+> error cannotDissemenateFormat
+> 
+> ListRecords request with set=B, metadataPrefix=oai_dc - results in
+list 
+> of record
+> 
+> GetRecord request for any record in my repository both with 
+> metadataPrefix=marcxml and with
+> 
+> metadataPrefix=oai_dc results in the record in corresponding format.
+> 
+>  
+> 
+> Sorry if I repeat the question which has been risen several months
+ago. 
+> I see that there was discussion
+> 
+> on the same matter, but unfortunately I did not find answer on my
+question.
+> 
+>  
+> 
+> Thanks,
+> 
+> Irina Dijour
+> 
+> ExLibris Ltd.
+> 
+> 
+> -----------------------------------------------------------------
+> This message has been scanned for viruses and
+> dangerous content by *Ex Libris Ltd* <http://www.exlibrisgroup.com>,
+and is
+> believed to be clean.
+> -----------------------------------------------------------------
+> 
+> 
+>
+------------------------------------------------------------------------
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+Thomas G. Habing
+Research Programmer
+Grainger Engineering Library Information Center
+University of Illinois at Urbana-Champaign
+
+-------------------------------------------------------- 
+This message has been scanned for viruses and
+dangerous content by Ex Libris Ltd, and is
+believed to be clean.
+--------------------------------------------------------
+
+
+-------------------------------------------------------- 
+This message has been scanned for viruses and
+dangerous content by Ex Libris Ltd, and is
+believed to be clean.
+--------------------------------------------------------
+
+
+From editor at e-libro.com  Wed Dec  6 10:55:59 2006
+From: editor at e-libro.com (editor@e-libro.com)
+Date: Wed Dec  6 10:56:05 2006
+Subject: [OAI-implementers] Re: [OAI-general] Stargate project conclusions
+	and extension
+References: <4576DAA9.4080106@cis.strath.ac.uk>
+Message-ID: <00b301c7194f$06900100$0517a8c0@Eduardo>
+
+e-Libro | TRES NUEVOS PROGRAMAS:
+
+e-Librorevistas  + e-Librotesis + IaP
+
+Impresi?n a pedido
+
+
+
+Tesis
+
+
+
+e-Librotesis es un programa elaborado en cooperaci?n con las universidades 
+de Am?rica Latina, Espa?a y Portugal actualmente conectadas a la plataforma 
+e-Libro tecnolog?a eBrary. Se pretende que sea el recept?culo de ese c?mulo 
+de trabajos de investigaci?n que permanecen est?ticos en los anaqueles de 
+las bibliotecas, y, adem?s, la soluci?n para los autores que enfrentan 
+serias dificultades para editar, publicar e imprimir su trabajo de tesis.
+
+Autores y universidades recibir?n trimestralmente el pago de derechos, y 
+tendr?n asegurada, como cualquier libro de las colecciones de e-Libro, la 
+protecci?n contra la reproducci?n ilegal mediante la aplicaci?n del DRM 
+(Digital Right Managment).
+
+
+
+Las primeras 1600 tesis ya se pueden ver en www.e-libro.com.
+
+
+
+IaP (?impresi?n a pedido?)
+
+
+
+Tanto los autores como las universidades tendr?n a su disposici?n, al margen 
+de las novedosas herramientas de aprendizaje InfoTools? y las colecciones de 
+e-Libro?, a las que tendr?n acceso, la posibilidad de imprimir ejemplares 
+gracias a nuestro novedoso sistema IaP ?impreso a pedido?, cuyo software de 
+?ltima generaci?n permite hacer tirajes m?nimos (20 ejemplares, por ejemplo) 
+a un precio similar al de una impresi?n tradicional en offset, la que, a 
+diferencia de aqu?lla, exige hacer un elevado desembolso. Para tal efecto, 
+los libros de texto, los materiales de ayuda a la ense?anza y las tesis se 
+publicar?n tambi?n en www.e-libro.net, nuestro sitio hermano.
+
+
+
+Solicite informaci?n adicional a: isabel@e-libro.net
+
+la empresa mas importante en USA de ventas a bibliotecas publicas de libros 
+en IaP ha hecho una alianza estrat?gica con e-Libro. Ahora todos los 
+editores solo tienen que mandar sus archivos de sus libros a 
+contenidos@e-libro.net y nosotros los venderemos en las 122000 bibliotecas 
+p?blicas que hay en Estados Unidos.
+
+            Ahora los libros no se agotan m?s, tampoco hace falta bodega 
+para los libros nuevos, se imprime lo que se vende y cuando se vende y se 
+env?a a la biblioteca.
+
+
+
+Revistas Cient?ficas
+
+
+
+El programa e-Librorevistas aglutinar? selectas revistas acad?micas, para 
+ponerlas al alcance de los investigadores y los estudiantes usuarios de la 
+plataforma e-Libroebrary. Ser?, asimismo, una excelente oportunidad para las 
+publicaciones peri?dicas con problemas de distribuci?n o peque?os tirajes.
+
+Para llevar adelante este ambicioso programa, e-Libro ha creado el Instituto 
+Superior de Investigaci?n (ISI), donde se seleccionar?n las mejores revistas 
+acad?micas de Am?rica Latina, El Caribe, Espa?a y Portugal.
+
+El Proyecto e-Libro para la publicaci?n electr?nica cooperativa en Internet 
+responde a las necesidades de la comunicaci?n cient?fica en los pa?ses en 
+desarrollo, y proporciona una soluci?n eficiente para asegurar la 
+visibilidad y el acceso universal a la literatura en cuesti?n y superar el 
+fen?meno conocido como ciencia perdida.
+
+Este proyecto es el producto de la colaboraci?n de instituciones 
+internacionales relacionadas con la comunicaci?n cient?fica y de editores 
+especializados en el tema.
+
+Solicite informaci?n adicional a contenidos@e-libro.net
+
+
+
+
+
+Modelo e-Libro?
+
+
+
+El Modelo e-Libro? supone la concatenaci?n de los siguientes elementos:
+
+- La publicaci?n electr?nica de ediciones completas de revistas cient?ficas, 
+que representa, adem?s de la preservaci?n de las mismas, la organizaci?n de 
+bases de datos bibliogr?ficas, la recuperaci?n de textos por su contenido 
+(enriquecidos din?micamente con enlaces de hipertexto a bases de datos 
+internacionales, usando las InfoTools? o herramientas de aprendizaje) y la 
+producci?n de indicadores estad?sticos de uso e impacto de la literatura 
+cient?fica.
+
+- Criterios de evaluaci?n basados en los est?ndares internacionales de 
+comunicaci?n cient?fica.
+
+- Fomento y desarrollo de alianzas entre los actores internacionales de la 
+comunicaci?n cient?fica ?autores, editores, instituciones cient?ficas y 
+tecnol?gicas, agencias de apoyo, universidades, bibliotecas, centros de 
+informaci?n cient?fica y tecnol?gica, etc. ?, con el objetivo de diseminar 
+el conocimiento. El ?xito en el desarrollo de la plataforma e-Libro de 
+revistas cient?ficas de Am?rica Latina, El Caribe, Espa?a y Portugal en los 
+pr?ximos a?os contribuir? a que la informaci?n cient?fica y tecnol?gica 
+generada localmente quede r?pidamente disponible, lo que incidir? en el 
+aumento de su uso y beneficio en el proceso de toma de decisiones en los 
+diferentes niveles involucrados.
+
+- La poderosa plataforma e-Librotecnolog?a ebrary, su potente motor de 
+b?squeda y las InfoTools?, el software con sofisticadas herramientas de 
+aprendizaje l?deres en su tipo, adem?s de otros novedosos servicios.
+
+- El sistema IaP (?Impreso a Pedido? o Book on Demand), que permite imprimir 
+un m?nimo de 12 ejemplares de una revista, un journal o un libro que se 
+encuentren agotados y por razones de mercado no convenga reimprimir por los 
+medios tradicionales.
+
+- Uso de MARC21, lo que permite encontrar el texto desde cualquier 
+biblioteca acad?mica.
+
+
+
+Criterios de evaluaci?n
+
+
+
+Si bien el Modelo e-LibroTM tiene definidos desde un principio los criterios 
+de evaluaci?n para la admisi?n y permanencia de t?tulos en las colecciones 
+nacionales y/o regionales, en la medida en que el mismo se extienda a otros 
+pa?ses, se espera un enriquecimiento tal que conlleve a la generalizaci?n 
+progresiva con vistas al establecimiento de criterios ?nicos.
+
+La evaluaci?n emanar? de dos instancias principales: el Instituto Superior 
+de Investigaciones (ISI) y la recomendaci?n que hace la universidad.
+
+El ISI formar? un Consejo Editorial de car?cter p?blico; es decir que estar? 
+integrado por especialistas reconocidos, de origen nacional e internacional. 
+Se invitar? a participar en ?l a prestigiosos centros de investigaci?n, como 
+la UNESCO, las universidades que ya son usuarias de e-Libro.
+
+El Comit? Consultivo estar? formado por representantes de la comunidad 
+acad?mica. Tiene por objetivo, basado en la aplicaci?n de los criterios 
+e-Libro, proponer:
+
+- El enriquecimiento de los criterios de selecci?n.
+
+- El perfeccionamiento del software InfoTools.
+
+
+
+Los criterios propiamente dichos son b?sicamente los siguientes:
+
+- Revistas incluidas en ?ndices internacionales. Se aceptar?n 
+autom?ticamente aquellas publicaciones nacionales indizadas por 
+instituciones reconocidas, ministerios, universidades y centros de 
+investigaci?n.
+
+- Revistas no incluidas en ?ndices internacionales, para ser consideradas 
+por el Consejo Editorial. Cuando un t?tulo no est? autom?ticamente 
+habilitado para su admisi?n en la colecci?n e-Libro, el mismo deber? ser 
+evaluado por el Consejo Editorial.
+
+- Alcance de las colecciones. Como principio general, dentro de la colecci?n 
+e-Libro cabr?n las revistas cient?ficas que publican predominantemente 
+art?culos resultantes de investigaciones cient?ficas originales y otras 
+contribuciones de la misma ?ndole, que sean significativas para el ?rea 
+espec?fica de la publicaci?n. El proceso de revisi?n y aprobaci?n de las 
+contribuciones deber? ser realizado por especialistas.
+
+
+
+Si quiere ver la plataforma:
+
+http://pruebademo.ebrary.com
+
+Usuario: e-libro
+
+Clave: elcideditor667
+
+
+
+elibro
+
+5edovcid
+
+e-Libro, LA SOCIALIZACI?N DEL CONOCIMIENTO
+
+
+
+Nos gustar?a tomar contacto con ustedes para ver la posibilidad de subir 
+vuestros contenidos e investigaciones period?sticas.
+
+
+
+                 www.e-libro.es/presentacion
+
+edita libros y contenidos acad?micos, e investigaciones cient?ficas para 
+comercializar en forma electr?nica en las bibliotecas del mundo.
+
+S?lo en USA hay 12.000 bibliotecas que necesitan contenidos en castellano.
+
+e-Libro es una gigantesca plataforma para las bibliotecas (www.e-libro.es) 
+a la que ya est?n conectadas bibliotecas de Estados Unidos, Espa?a y Am?rica 
+Latina. Esta base de datos ofrece a sus usuarios los contenidos de m?s de 
+200 editoriales internacionalmente reconocidas (Universidad Complutense de 
+Madrid, Deusto, Gesti?n 2000, Harvard journals, Ariel, DIAZ DE SANTOS, 
+UNESCO, FLACSO, CLACSO, EUNSA, Editorial de la U. de Navarra, DYKINSON 
+[libros jur?dicos],  Editorial Sudamericana, ESEADE, McGraw-Hill, Random 
+House, Pearson, Harvard University Press, Cambridge University Press, 
+Penguin Classics, H?lice, etc.), as? como los apuntes acad?micos y los 
+trabajos de investigaci?n de todas las universidades conectadas a ella.
+
+
+
+Los objetivos de e-Libro? son:
+
+?Permitir a las bibliotecas incrementar sus colecciones de manera rentable y 
+eficiente, ahorrando gastos, espacio de almacenamiento y tiempo de trabajo. 
+Esta base de datos se integra al cat?logo propio de la biblioteca.
+
+?Ofrecer a los usuarios una documentaci?n cuantiosa, variada, actualizada y 
+siempre disponible, a la que pueden acceder a trav?s de un poderoso motor de 
+b?squeda. Asimismo tienen la posibilidad de subrayar, hacer anotaciones, 
+descargar a su ordenador o imprimir todo o parte de un documento.
+
+?Garantizar a los autores el escrupuloso respeto de sus derechos. Hoy 
+E-libro es la ?nica plataforma con contenidos que tiene un software para 
+liquidar los derechos de autor.
+
+Una vez que una biblioteca suscribe un convenio con e-libro?, adem?s de que 
+sus usuarios podr?n explorar la base de datos y leer los documentos, tendr?n 
+a su disposici?n una cuenta personal que les permitir? configurar su 
+biblioteca personal (anotaciones, libros consultados, etc.) y gestionar su 
+monedero electr?nico para descargar a su ordenador o imprimir todo o parte 
+de un documento.
+
+Todos estos documentos podr?n adquirirse en m?ltiples formatos.
+
+
+
+Las bibliotecas universitarias pueden hacer dos tipos de convenio con 
+e-libro?:
+
+1. Entregar sus contenidos y cobrar 30% por derechos de autor.
+
+2. Pagar un derecho por instalar la plataforma ebrary.
+
+
+
+e-libro? es un sistema fiable que integra esta base de datos a los cat?logos 
+existentes y dem?s recursos digitales utilizados por la biblioteca, 
+conformando una plataforma ?nica de b?squeda de informaci?n. Para ello 
+cuenta con un poderoso software de b?squeda, InfoTools?, que permite a los 
+usuarios tanto encontrar la informaci?n m?s completa y pertinente como 
+utilizarla interactuando con el texto de los documentos (notas, se?aladores, 
+etc.). Con ello las bibliotecas pueden a su vez crear enlaces sobre los 
+temas de su elecci?n, incluir definiciones, informaci?n biogr?fica, mapas, 
+traducciones y otros recursos digitales propios. Los usuarios podr?n acceder 
+instant?nea y directamente a estos recursos cuando seleccionen palabras o 
+frases, sin necesidad de cambiar de programa.
+
+
+Si quiere ver la plataforma:
+
+http://pruebademo.ebrary.com
+
+Usuario: e-libro
+
+Clave: elcideditor667
+
+
+
+Si quiere ver las colecciones:
+
+www.e-libro.com/colecciones
+
+
+
+Felipe Varela Lucas
+
+felipe.varela@e-libro.com
+
+
+
+
+
+
+
+----- Original Message ----- 
+From: "R John Robertson" <Robert.Robertson@cis.strath.ac.uk>
+To: <CETIS-METADATA@JISCMAIL.AC.UK>; <JISC-REPOSITORIES@JISCMAIL.AC.UK>; 
+<oai-general@openarchives.org>; <lis-serials@JISCMAIL.AC.UK>; "An informal 
+open list set up by the UK Serials Group" <LIS-E-JOURNALS@JISCMAIL.AC.UK>; 
+<oai-implementers@openarchives.org>
+Sent: Wednesday, December 06, 2006 9:58 AM
+Subject: [OAI-general] Stargate project conclusions and extension
+
+
+>
+> STARGATE (Static Repository Gateway and Toolkit:
+> Enabling small publishers to participate in OAI-PMH-based services)
+>
+> (apologies for cross-posting)
+>
+> In conjunction with four journal publishers, the STARGATE project 
+> investigated the use of static repositories as a means of exposing 
+> publisher metadata to OAI-based disclosure, discovery and alerting 
+> services within the JISC Information Environment and beyond. Our intent 
+> was to enable smaller publishers to participate in OAI-based services 
+> without having to implement and maintain an full repository.
+> The project has demonstrated that static repositories are easy to create 
+> and that the differences between fully-fledged and static OAI Repositories 
+> appear to have little impact on the participation of small journal 
+> publishers in OAI-based services.
+>
+> The project's outputs and final report are available from the project 
+> website http://cdlr.strath.ac.uk/stargate/
+>
+> The outputs are:
+> Stargate Tools Part 1: Introduction, key issues and relevant technologies
+> Stargate Tools Part 2: Creating Static Repositories, evaluating this 
+> method, and case studies
+> A database tool and associated VB modules
+> Stargate Tools Part 3: Issues for developing the use of OAI-based services 
+> by the publishing community
+>
+> We recommend to the wider community that the use of static repositories 
+> continues to be explored ? in particular as a flexible way to expose 
+> existing sets of structured information to OAI services.
+>
+> One of the issues that arose in the project was the apparent lack of a 
+> static repository gateway with any formal guarantee of availability. If 
+> data providers are going to use static repositories they depend on a third 
+> party to run a gateway. To our knowledge all of the existing gateways 
+> (including ours) operate as research gateways, and, as such, they make no 
+> promises about service availability.
+>
+> JISC have funded a brief extension to STARGATE to provide some further 
+> supporting documentation about the gateway software and other issues that 
+> would allow a community to assess the commitment required to run a gateway 
+> and support the use of static repositories.
+>
+> regards,
+> John
+>
+> -- 
+> R. John Robertson
+> Researcher/ STARGATE Project Manager
+> Centre for Digital Library Research
+> Department of Computer and Information Sciences
+> University of Strathclyde, Livingstone Tower
+> 26 Richmond Street, Glasgow, G1 1XH, UK
+> Tel: +44 (0) 141 548 5854
+> Website: http://cdlr.strath.ac.uk/
+>
+>
+> _______________________________________________
+> OAI-general mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-general
+>
+>
+>
+>
+> -- 
+> No virus found in this incoming message.
+> Checked by AVG Free Edition.
+> Version: 7.1.409 / Virus Database: 268.15.11/575 - Release Date: 12/6/2006
+>
+> 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/jpeg
+Size: 1900 bytes
+Desc: not available
+Url : http://www.openarchives.org/pipermail/oai-implementers/attachments/20061206/97b14ee4/attachment.jpg
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/jpeg
+Size: 3520 bytes
+Desc: not available
+Url : http://www.openarchives.org/pipermail/oai-implementers/attachments/20061206/97b14ee4/attachment-0001.jpg
+From gary at hulmail.harvard.edu  Wed Dec  6 11:51:02 2006
+From: gary at hulmail.harvard.edu (Gary McGath)
+Date: Wed Dec  6 11:51:44 2006
+Subject: [OAI-implementers] Re: [OAI-general] Stargate project conclusions
+	and extension
+In-Reply-To: <00b301c7194f$06900100$0517a8c0@Eduardo>
+References: <4576DAA9.4080106@cis.strath.ac.uk>
+	<00b301c7194f$06900100$0517a8c0@Eduardo>
+Message-ID: <4576F4F6.4050807@hulmail.harvard.edu>
+
+editor@e-libro.com wrote:
+> e-Libro | TRES NUEVOS PROGRAMAS:
+
+Isn't this an English-language list?
+
+
+-- 
+Gary McGath
+Digital Library Software Engineer
+Harvard University Libraries, Office for Information Systems
+
+From H.Enting at kenict.org  Wed Dec  6 17:01:21 2006
+From: H.Enting at kenict.org (Henk Enting)
+Date: Wed Dec  6 17:03:36 2006
+Subject: [OAI-implementers] multiple metadata formats in Listidentifiers
+References: <3CDEC65FBAE87844992977F4902B9BF50D6AF6@robin.kennisnet.org>
+Message-ID: <3CDEC65FBAE87844992977F4902B9BF50B3AB1@robin.kennisnet.org>
+
+Hello,
+ 
+If this question has already been asked (and answered): sorry for the inconvenience.
+ 
+Q: I would like to use the ListIdentifiers function with more than one metadata format. The way I understand OAI, I have to do multiple requests to get results for more than one metadata format, e.g.:
+ 
+1st request: http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_dc"
+2nd request: http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_czp"
+ 
+I already found an issue that covers this question [1]. It seems that the issue is still open, but it is a 2001 issue...!
+ 
+Could somebody tell me if this issue is resolved in OAI version 2.0? 
+ 
+To make it more clear, I would like to do one of the following requests:
+ 
+http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_dc&metadataPrefix="oai_czp"
+OR
+http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_dc,oai_czp"
+ 
+Thank you in advance,
+ 
+Henk Enting
+
+[1] http://www.dlib.vt.edu/projects/OAI/reports/OAI-Tech_Issue__Multiple_Best_Metadata_Return.html
+
+
+
+
+DISCLAIMER:
+
+Dit bericht (met bijlagen) is met grote zorgvuldigheid samengesteld. Voor mogelijke onjuistheid en/of onvolledigheid van de hierin verstrekte informatie kan Stichting Kennisnet Ict op School geen aansprakelijkheid aanvaarden, evenmin kunnen aan de inhoud van dit bericht (met bijlagen) rechten worden ontleend. De inhoud van dit bericht (met bijlagen) kan vertrouwelijke informatie bevatten en is uitsluitend bestemd voor de geadresseerde van dit bericht. Indien u niet de beoogde ontvanger van dit bericht bent, verzoekt Stichting Kennisnet Ict op School u dit bericht te verwijderen, eventuele bijlagen niet te openen en wijst Stichting Kennisnet Ict op School u op de onrechtmatigheid van het gebruiken, kopi?ren of verspreiden van de inhoud van dit bericht (met bijlagen).
+
+This message (with attachments) is given in good faith. Stichting Kennisnet Ict op School cannot assume any responsibility for the accuracy or reliability of the information contained in this message (with attachments), nor shall the information be construed as constituting any obligation on the part of Stichting Kennisnet Ict op School. The information contained in this message (with attachments) may be confidential or privileged and is only intended for the use of the named addressee. If you are not the intended recipient, you are requested by Stichting Kennisnet Ict op School to delete this message (with attachments) without opening it and you are notified by Stichting Kennisnet Ict op School that any disclosure, copying or distribution of the information contained in this message (with attachments) is strictly prohibited and unlawful.
+
+From simeon at cs.cornell.edu  Wed Dec  6 17:15:00 2006
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Wed Dec  6 17:15:51 2006
+Subject: [OAI-implementers] multiple metadata formats in Listidentifiers
+In-Reply-To: <3CDEC65FBAE87844992977F4902B9BF50B3AB1@robin.kennisnet.org>
+References: <3CDEC65FBAE87844992977F4902B9BF50D6AF6@robin.kennisnet.org>
+	<3CDEC65FBAE87844992977F4902B9BF50B3AB1@robin.kennisnet.org>
+Message-ID: <Pine.LNX.4.64.0612061711080.3541@dhcp103-124.cs.cornell.edu>
+
+
+Hi Henk,
+
+The resolution of the issue you mention in [1] was not to provide a 
+facility for requesting multiple or 'best' metadata formats. The main 
+reasons, if I recall correctly, were the difficulty in defining 'best' and 
+in concerns about increased response size. Also the XML structure of the 
+response would have to be changed to permit multiple metadata records each 
+with about blocks. It wasn't considered to be a worthwhile optimization.
+
+The solution if to make the two requests. Same amount of data transferred 
+so no real harm.
+
+Cheers,
+Simeon
+
+
+On Wed, 6 Dec 2006, Henk Enting wrote:
+> Hello,
+>
+> If this question has already been asked (and answered): sorry for the inconvenience.
+>
+> Q: I would like to use the ListIdentifiers function with more than one metadata format. The way I understand OAI, I have to do multiple requests to get results for more than one metadata format, e.g.:
+>
+> 1st request: http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_dc"
+> 2nd request: http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_czp"
+>
+> I already found an issue that covers this question [1]. It seems that the issue is still open, but it is a 2001 issue...!
+>
+> Could somebody tell me if this issue is resolved in OAI version 2.0?
+>
+> To make it more clear, I would like to do one of the following requests:
+>
+> http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_dc&metadataPrefix="oai_czp"
+> OR
+> http://...../handleRequest.xml?verb=ListIdentifiers&metadataPrefix="oai_dc,oai_czp"
+>
+> Thank you in advance,
+>
+> Henk Enting
+>
+> [1] http://www.dlib.vt.edu/projects/OAI/reports/OAI-Tech_Issue__Multiple_Best_Metadata_Return.html
+>
+>
+>
+>
+> DISCLAIMER:
+>
+> Dit bericht (met bijlagen) is met grote zorgvuldigheid samengesteld. Voor mogelijke onjuistheid en/of onvolledigheid van de hierin verstrekte informatie kan Stichting Kennisnet Ict op School geen aansprakelijkheid aanvaarden, evenmin kunnen aan de inhoud van dit bericht (met bijlagen) rechten worden ontleend. De inhoud van dit bericht (met bijlagen) kan vertrouwelijke informatie bevatten en is uitsluitend bestemd voor de geadresseerde van dit bericht. Indien u niet de beoogde ontvanger van dit bericht bent, verzoekt Stichting Kennisnet Ict op School u dit bericht te verwijderen, eventuele bijlagen niet te openen en wijst Stichting Kennisnet Ict op School u op de onrechtmatigheid van het gebruiken, kopiëren of verspreiden van de inhoud van dit bericht (met bijlagen).
+>
+> This message (with attachments) is given in good faith. Stichting Kennisnet Ict op School cannot assume any responsibility for the accuracy or reliability of the information contained in this message (with attachments), nor shall the information be construed as constituting any obligation on the part of Stichting Kennisnet Ict op School. The information contained in this message (with attachments) may be confidential or privileged and is only intended for the use of the named addressee. If you are not the intended recipient, you are requested by Stichting Kennisnet Ict op School to delete this message (with attachments) without opening it and you are notified by Stichting Kennisnet Ict op School that any disclosure, copying or distribution of the information contained in this message (with attachments) is strictly prohibited and unlawful.
+>
+>
+From orlyno at 013.net  Thu Dec 14 14:38:02 2006
+From: orlyno at 013.net (orly lior)
+Date: Thu Dec 14 14:38:05 2006
+Subject: [OAI-implementers] Post to list
+Message-ID: <004c01c71fb7$5e3a3e20$e8b816ac@o0n6p2>
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20061214/d6e8235f/attachment.htm
+From fadi_taher2000 at yahoo.com  Fri Dec 22 13:08:37 2006
+From: fadi_taher2000 at yahoo.com (Fadi Qutaishat)
+Date: Fri Dec 22 13:09:09 2006
+Subject: [OAI-implementers] confusion about the repository structure  
+Message-ID: <20061222180837.5155.qmail@web31115.mail.mud.yahoo.com>
+
+Hi all,
+
+I am really very new to the OAI/PMH and I am doing a
+research where I have to come up with general
+solutions which are out the scope of my research!!!
+Therefore, I beg your pardon if I ask a very basic or
+silly questions.
+
+I've done some initial readings but the thing which is
+I am (at this stage) confused about is how the
+structure of the data providers' metadata repositories
+should be. 
+
+should the service providers produce their metadata
+using the normal Dublin core (and then it would be
+automatically changed by OAI/PMH into the structure
+below when the metadata is harvested) or they still
+should use Dublin core but they have to follow this
+structure when creating the metadata files:
+
+**************************************
+header (mandatory)
+ ?  identifier (mandatory: 1 only)
+ ?  datestamp (mandatory: 1 only)
+ ?  setSpec elements (optional: 0, 1 or more)
+ ?  status attribute for deleted item
+
+metadata (mandatory): where DC should  be used or
+other metadata standareds 
+ ?  
+about (optional)
+ ?    rights statements
+ ?    provenance statements
+***************************************
+Again sorry for asking a very basic question.
+
+Any help is really appreciated.
+
+Fadi 
+ 
+
+__________________________________________________
+Do You Yahoo!?
+Tired of spam?  Yahoo! Mail has the best spam protection around 
+http://mail.yahoo.com 
+

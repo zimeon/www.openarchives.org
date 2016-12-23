@@ -1,0 +1,237 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta
+ data Harvesting Version 2 news
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:liu_x%40cs.odu.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000335.html">
+   <LINK REL="Next"  HREF="000337.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta
+ data Harvesting Version 2 news
+   </H1>
+    <B>Xiaoming Liu
+    </B> 
+    <A HREF="mailto:liu_x%40cs.odu.edu"
+       TITLE="FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta
+ data Harvesting Version 2 news">liu_x@cs.odu.edu
+       </A><BR>
+    <I>Thu, 07 Feb 2002 21:50:27 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000335.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+        <LI> Next message: <A HREF="000337.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#336">[ date ]</a>
+              <a href="thread.html#336">[ thread ]</a>
+              <a href="subject.html#336">[ subject ]</a>
+              <a href="author.html#336">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>--------------A07397DD47F45319B435C394
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+Maybe there is one way to implement a stateless protocol in current OAI: encode query parameters
+in ResumptionToken:
+
+For example, the format of resumptionToken could be
+from:to:Sets:MetadataSet:cursor
+
+one example is:
+resumptionToken= 1999:2000:math:oai_dc:100
+
+By this way,  the state information is kept in resumptionToken, the data provider doesn't need
+keep it. I have seen some implementations in this way.
+
+
+--- Walter Underwood wrote:
+&gt;<i> A request for all changes between two dates in the past should always get
+</I>&gt;<i> the same answer, so stateless harvesting should work.
+</I>
+This is a neat way, but I am now sure how well the past is kept in digital library ;-) Especially
+in OAI protocol, whenever a record is changed, its datestamp is changed too.  So even a request
+for past may not get the same answer.
+
+regards,
+liu
+
+
+
+
+
+
+
+
+Walter Underwood wrote:
+
+&gt;<i> Replying to two related messages ...
+</I>&gt;<i>
+</I>&gt;<i> --On Thursday, February 07, 2002 11:14:30 PM +0100 Martin Vesely &lt;<A HREF="mailto:Martin.Vesely@cern.ch">Martin.Vesely@cern.ch</A>&gt; wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The described way of caching data is very similar to how the OAI flow
+</I>&gt;<i> &gt; control is done in our repository. But still, I do not see how we can
+</I>&gt;<i> &gt; get rid of resumption tokens.
+</I>&gt;<i>
+</I>&gt;<i> A client can request elements 21-30 of a list, and get a response.
+</I>&gt;<i> That might be the very first request from that client. Or the first
+</I>&gt;<i> request after the server reboots. It could even go to a replica of
+</I>&gt;<i> the server. No resumption token is needed. Calculate the list, and
+</I>&gt;<i> return that portion of it.
+</I>&gt;<i>
+</I>&gt;<i> Here is a URL to get hits 21-30 about &quot;face on mars&quot; from the NASA
+</I>&gt;<i> search engine. No need to fetch hits 1-20 and get a resumption token.
+</I>&gt;<i> You can edit the &quot;st&quot; variable to change the start hit.
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://search.spacelink.nasa.gov/query.html?col=library+xreflib&qt=face+on+mars&st=21&nh=10">http://search.spacelink.nasa.gov/query.html?col=library+xreflib&amp;qt=face+on+mars&amp;st=21&amp;nh=10</A>
+</I>&gt;<i>
+</I>&gt;<i> --On Wednesday, February 06, 2002 01:59:55 PM -0500 &quot;Young,Jeff&quot; &lt;<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>&gt; wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I guess I'm saying that resumptionTokens don't necessarily guarantee you'll
+</I>&gt;<i> &gt; get &quot;all the new stuff&quot;, but could if appropriately implemented. The
+</I>&gt;<i> &gt; stateless alternative, though, seems to assume an idealistically static
+</I>&gt;<i> &gt; repository. If records are deleted from the repository, a stateless
+</I>&gt;<i> &gt; harvesting solution doesn't seem to allow for the possibility of getting all
+</I>&gt;<i> &gt; the new stuff.
+</I>&gt;<i>
+</I>&gt;<i> A request for all changes between two dates in the past should always get
+</I>&gt;<i> the same answer, so stateless harvesting should work. A half-open request,
+</I>&gt;<i> that is &quot;until now&quot;, will have time-varying results. If harvesters always
+</I>&gt;<i> make requests with both from and until, and make sure that the until date
+</I>&gt;<i> is not in the future, then stateless harvesting is safe.
+</I>&gt;<i>
+</I>&gt;<i> There should be some way to get the current time at the repository.
+</I>&gt;<i> Clock skew will cause nasty problems in time-based harvesting. The only
+</I>&gt;<i> safe solution is to always use the clock at the server, and to require
+</I>&gt;<i> that it is non-decreasing.
+</I>&gt;<i>
+</I>&gt;<i> wunder
+</I>&gt;<i> --
+</I>&gt;<i> Walter Underwood
+</I>&gt;<i> <A HREF="mailto:wunder@inktomi.com">wunder@inktomi.com</A>
+</I>&gt;<i> Senior Staff Engineer, Inktomi
+</I>&gt;<i> <A HREF="http://www.inktomi.com/">http://www.inktomi.com/</A>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+--------------A07397DD47F45319B435C394
+Content-Type: text/html; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+&lt;!doctype html public &quot;-//w3c//dtd html 4.0 transitional//en&quot;&gt;
+&lt;html&gt;
+Maybe there is one way to implement a stateless protocol in current OAI:
+encode query parameters in ResumptionToken:
+&lt;p&gt;For example, the format of resumptionToken could be
+&lt;br&gt;from:to:Sets:MetadataSet:cursor
+&lt;p&gt;one example is:
+&lt;br&gt;resumptionToken= 1999:2000:math:oai_dc:100
+&lt;p&gt;By this way,&amp;nbsp; the state information is kept in resumptionToken,
+the data provider doesn't need keep it. I&amp;nbsp;have seen some implementations
+in this way.
+&lt;br&gt;&amp;nbsp;
+&lt;p&gt;--- Walter Underwood wrote:
+&lt;br&gt;&gt; A request for all changes between two dates in the past should always
+get
+&lt;br&gt;&gt; the same answer, so stateless harvesting should work.
+&lt;p&gt;This is a neat way, but I am now sure how well the past is kept in digital
+library ;-) Especially in OAI&amp;nbsp;protocol, whenever a record is changed,
+its datestamp is changed too.&amp;nbsp; So even a request for past may not
+get the same answer.
+&lt;p&gt;regards,
+&lt;br&gt;liu
+&lt;br&gt;&amp;nbsp;
+&lt;br&gt;&amp;nbsp;
+&lt;br&gt;&amp;nbsp;
+&lt;br&gt;&amp;nbsp;
+&lt;br&gt;&amp;nbsp;
+&lt;br&gt;&amp;nbsp;
+&lt;br&gt;&amp;nbsp;
+&lt;p&gt;Walter Underwood wrote:
+&lt;blockquote TYPE=CITE&gt;Replying to two related messages ...
+&lt;p&gt;--On Thursday, February 07, 2002 11:14:30 PM +0100 Martin Vesely &amp;lt;<A HREF="mailto:Martin.Vesely@cern.ch">Martin.Vesely@cern.ch</A>&gt;
+wrote:
+&lt;br&gt;&gt;
+&lt;br&gt;&gt; The described way of caching data is very similar to how the OAI
+flow
+&lt;br&gt;&gt; control is done in our repository. But still, I do not see how we
+can
+&lt;br&gt;&gt; get rid of resumption tokens.
+&lt;p&gt;A client can request elements 21-30 of a list, and get a response.
+&lt;br&gt;That might be the very first request from that client. Or the first
+&lt;br&gt;request after the server reboots. It could even go to a replica of
+&lt;br&gt;the server. No resumption token is needed. Calculate the list, and
+&lt;br&gt;return that portion of it.
+&lt;p&gt;Here is a URL to get hits 21-30 about &quot;face on mars&quot; from the NASA
+&lt;br&gt;search engine. No need to fetch hits 1-20 and get a resumption token.
+&lt;br&gt;You can edit the &quot;st&quot; variable to change the start hit.
+&lt;p&gt;&lt;a href=&quot;<A HREF="http://search.spacelink.nasa.gov/query.html?col=library+xreflib&qt=face+on+mars&st=21&nh=10"">http://search.spacelink.nasa.gov/query.html?col=library+xreflib&amp;qt=face+on+mars&amp;st=21&amp;nh=10&quot;</A>&gt;<A HREF="http://search.spacelink.nasa.gov/query.html?col=library+xreflib&amp;qt=face+on+mars&amp;st=21&amp;nh=10</a">http://search.spacelink.nasa.gov/query.html?col=library+xreflib&amp;amp;qt=face+on+mars&amp;amp;st=21&amp;amp;nh=10&lt;/a</A>&gt;
+&lt;p&gt;--On Wednesday, February 06, 2002 01:59:55 PM -0500 &quot;Young,Jeff&quot; &amp;lt;<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>&gt;
+wrote:
+&lt;br&gt;&gt;
+&lt;br&gt;&gt; I guess I'm saying that resumptionTokens don't necessarily guarantee
+you'll
+&lt;br&gt;&gt; get &quot;all the new stuff&quot;, but could if appropriately implemented.
+The
+&lt;br&gt;&gt; stateless alternative, though, seems to assume an idealistically
+static
+&lt;br&gt;&gt; repository. If records are deleted from the repository, a stateless
+&lt;br&gt;&gt; harvesting solution doesn't seem to allow for the possibility of
+getting all
+&lt;br&gt;&gt; the new stuff.
+&lt;p&gt;A request for all changes between two dates in the past should always
+get
+&lt;br&gt;the same answer, so stateless harvesting should work. A half-open request,
+&lt;br&gt;that is &quot;until now&quot;, will have time-varying results. If harvesters
+always
+&lt;br&gt;make requests with both from and until, and make sure that the until
+date
+&lt;br&gt;is not in the future, then stateless harvesting is safe.
+&lt;p&gt;There should be some way to get the current time at the repository.
+&lt;br&gt;Clock skew will cause nasty problems in time-based harvesting. The
+only
+&lt;br&gt;safe solution is to always use the clock at the server, and to require
+&lt;br&gt;that it is non-decreasing.
+&lt;p&gt;wunder
+&lt;br&gt;--
+&lt;br&gt;Walter Underwood
+&lt;br&gt;<A HREF="mailto:wunder@inktomi.com">wunder@inktomi.com</A>
+&lt;br&gt;Senior Staff Engineer, Inktomi
+&lt;br&gt;&lt;a href=&quot;<A HREF="http://www.inktomi.com/"">http://www.inktomi.com/&quot;</A>&gt;<A HREF="http://www.inktomi.com/</a">http://www.inktomi.com/&lt;/a</A>&gt;
+&lt;p&gt;_______________________________________________
+&lt;br&gt;OAI-implementers mailing list
+&lt;br&gt;<A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+&lt;br&gt;&lt;a href=&quot;<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers"">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers&quot;</A>&gt;<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</a">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers&lt;/a</A>&gt;&lt;/blockquote&gt;
+&lt;/html&gt;
+
+--------------A07397DD47F45319B435C394--
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000335.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+	<LI> Next message: <A HREF="000337.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#336">[ date ]</a>
+              <a href="thread.html#336">[ thread ]</a>
+              <a href="subject.html#336">[ subject ]</a>
+              <a href="author.html#336">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

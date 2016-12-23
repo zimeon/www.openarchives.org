@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] oai :: how to handle errors during ListRecords
+	request?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20oai%20%3A%3A%20how%20to%20handle%20errors%20during%20ListRecords%0A%09request%3F&In-Reply-To=4520D0B1.2050704%40mpi.nl">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001636.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] oai :: how to handle errors during ListRecords
+	request?</H1>
+    <B>Simeon Warner</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20oai%20%3A%3A%20how%20to%20handle%20errors%20during%20ListRecords%0A%09request%3F&In-Reply-To=4520D0B1.2050704%40mpi.nl"
+       TITLE="[OAI-implementers] oai :: how to handle errors during ListRecords
+	request?">simeon at cs.cornell.edu
+       </A><BR>
+    <I>Mon Oct  2 18:04:16 EDT 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001636.html">[OAI-implementers] oai :: how to handle errors during ListRecords
+	request?
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1637">[ date ]</a>
+              <a href="thread.html#1637">[ thread ]</a>
+              <a href="subject.html#1637">[ subject ]</a>
+              <a href="author.html#1637">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Hi Matthias,
+
+There is no way to cope with an error in part of a ListRecords response. 
+This is essentially outside the OAI model, in which an error-free 
+repository is assumed. I think the server should return an HTTP 500 
+&quot;Internal Server Error&quot;, or perhaps a 503 &quot;Retry After&quot; if there is some 
+reasonable hope that the exception would not recur if the request were 
+attempted again. A harvester should abort the harvest if it gets an HTTP 
+500 error.
+
+The other option would be to consider that such an error condition 
+invalidates the resumptionToken and the give a badResumptionToken error
+(<A HREF="http://www.openarchives.org/OAI/2.0/guidelines-harvester.htm#resumptionTokenErrorRecovery">http://www.openarchives.org/OAI/2.0/guidelines-harvester.htm#resumptionTokenErrorRecovery</A>).
+
+Cheers,
+Simeon
+
+
+
+On Mon, 2 Oct 2006, Matthias Egger wrote:
+&gt;<i> Hi everybody,
+</I>&gt;<i>
+</I>&gt;<i> maybe this question has already arisen somewhere, but i couldn't make it out 
+</I>&gt;<i> in the documentation, so I need to ask the community:
+</I>&gt;<i>
+</I>&gt;<i> How do I handle errors which may occur during a ListRecords request?
+</I>&gt;<i> For example when during reading a destined result-record's dataset (a xml 
+</I>&gt;<i> file) some unpredicted error occurs, e.g. an IOException for some reason 
+</I>&gt;<i> whatsoever.
+</I>&gt;<i>
+</I>&gt;<i> So what am I supposed to provide in my response then:
+</I>&gt;<i>
+</I>&gt;<i> - throw away the whole result list and provide an oai-error code
+</I>&gt;<i>  (and which one in that case)?
+</I>&gt;<i>
+</I>&gt;<i> - just replace that one concerned record-dataset with an oai error-tag
+</I>&gt;<i>  (also here: which code then?)
+</I>&gt;<i>
+</I>&gt;<i> - ignore those errors and remove any failed record-dataset
+</I>&gt;<i>  from the returned result list?
+</I>&gt;<i>
+</I>&gt;<i> - ignore those errors and provide an empty record-tag for those datasets
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> is there a best-practice or any specified procedure?
+</I>&gt;<i> suggestions are very welcome.
+</I>&gt;<i>
+</I>&gt;<i> thanx so long
+</I>&gt;<i> matthias
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001636.html">[OAI-implementers] oai :: how to handle errors during ListRecords
+	request?
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1637">[ date ]</a>
+              <a href="thread.html#1637">[ thread ]</a>
+              <a href="subject.html#1637">[ subject ]</a>
+              <a href="author.html#1637">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

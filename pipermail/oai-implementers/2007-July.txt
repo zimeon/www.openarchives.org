@@ -1,0 +1,176 @@
+From tsach.moshkovits at exlibris.co.il  Mon Jul 30 15:17:41 2007
+From: tsach.moshkovits at exlibris.co.il (Tsach Moshkovits)
+Date: Mon Jul 30 15:18:14 2007
+Subject: [OAI-implementers] Question about sets definition
+Message-ID: <8D054E2E14507243A096205AC4D6C260EA84B0@il-ex01.Corp.Exlibrisgroup.com>
+
+Hi all,
+
+I have a question regarding implementing "sets" and "md-format" :
+
+If I understood correctly, the record-id together with the md-format identifies the data uniquely? 
+
+Meaning, looking at record "x" of format "oai_dc", must I see the same data whether the scope is set "A" or set "B"? or is it valid to see different data 
+for the same record and format in different scope (something like, set "A" will contain thin oai_dc and set "B" will contain richer oai_dc)?
+
+ 
+
+TIA,
+
+Tsach Moshkovits
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20070730/9a5b0468/attachment.htm
+From mln at cs.odu.edu  Mon Jul 30 15:34:50 2007
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Mon Jul 30 15:35:05 2007
+Subject: [OAI-implementers] Question about sets definition
+In-Reply-To: <8D054E2E14507243A096205AC4D6C260EA84B0@il-ex01.Corp.Exlibrisgroup.com>
+References: <8D054E2E14507243A096205AC4D6C260EA84B0@il-ex01.Corp.Exlibrisgroup.com>
+Message-ID: <Pine.GSO.4.58.0707301528580.16143@tango.cs.odu.edu>
+
+
+On Mon, 30 Jul 2007, Tsach Moshkovits wrote:
+
+> Hi all,
+>
+> I have a question regarding implementing "sets" and "md-format" :
+>
+> If I understood correctly, the record-id together with the md-format
+> identifies the data uniquely?
+>
+> Meaning, looking at record "x" of format "oai_dc", must I see the same
+> data whether the scope is set "A" or set "B"? or is it valid to see
+> different data for the same record and format in different scope
+> (something like, set "A" will contain thin oai_dc and set "B" will
+> contain richer oai_dc)?
+
+Tsach,
+
+No, you can not legally use sets to influence the contents of the record.
+
+One thing to remember is that GetRecord does not take the "set" argument,
+so record X would have to belong to sets A & B (which is fine), but when
+you do:
+
+?verb=GetRecord&metadataPrefix=oai_dc&identifier=X
+
+there is no way to specify if you want "thin" or "thick" oai_dc version of
+X.
+
+go ahead and create separate metadata formats to handle this situation.
+
+regards,
+
+Michael
+
+>
+>
+>
+> TIA,
+>
+> Tsach Moshkovits
+>
+>
+>
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From simeon at cs.cornell.edu  Mon Jul 30 16:46:13 2007
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Mon Jul 30 16:46:37 2007
+Subject: [OAI-implementers] Question about sets definition
+In-Reply-To: <Pine.GSO.4.58.0707301528580.16143@tango.cs.odu.edu>
+References: <8D054E2E14507243A096205AC4D6C260EA84B0@il-ex01.Corp.Exlibrisgroup.com>
+	<Pine.GSO.4.58.0707301528580.16143@tango.cs.odu.edu>
+Message-ID: <46AE4E15.1040209@cs.cornell.edu>
+
+I agree with Michael, it would be bad to use sets as a hook to obtain 
+different record from one items and such use leads to undefined behavior 
+as noted.
+
+This stems from the conception of sets as a mechanism for selective 
+harvesting
+(http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set):
+
+"A set is an optional construct for grouping items for the purpose of 
+selective harvesting. ..."
+
+One should think of set membership as an item level property. It would 
+be legitimate (though not necessarily useful) to have sets which group 
+items that have certain metadata formats available; but not to use the 
+set parameter to affect the content of records that are returned by 
+ListRecords. The metadata records themselves are obtained from items and 
+  are (http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Record):
+
+"... identified unambigiously by the combination of the unique 
+identifier of the item from which the record is available, the 
+metadataPrefix identifying the metadata format of the record, and the 
+datestamp of the record."
+
+Cheers,
+Simeon
+
+Michael Nelson wrote:
+> On Mon, 30 Jul 2007, Tsach Moshkovits wrote:
+> 
+>> Hi all,
+>>
+>> I have a question regarding implementing "sets" and "md-format" :
+>>
+>> If I understood correctly, the record-id together with the md-format
+>> identifies the data uniquely?
+>>
+>> Meaning, looking at record "x" of format "oai_dc", must I see the same
+>> data whether the scope is set "A" or set "B"? or is it valid to see
+>> different data for the same record and format in different scope
+>> (something like, set "A" will contain thin oai_dc and set "B" will
+>> contain richer oai_dc)?
+> 
+> Tsach,
+> 
+> No, you can not legally use sets to influence the contents of the record.
+> 
+> One thing to remember is that GetRecord does not take the "set" argument,
+> so record X would have to belong to sets A & B (which is fine), but when
+> you do:
+> 
+> ?verb=GetRecord&metadataPrefix=oai_dc&identifier=X
+> 
+> there is no way to specify if you want "thin" or "thick" oai_dc version of
+> X.
+> 
+> go ahead and create separate metadata formats to handle this situation.
+> 
+> regards,
+> 
+> Michael
+> 
+>>
+>>
+>> TIA,
+>>
+>> Tsach Moshkovits
+>>
+>>
+>>
+>>
+> 
+> ----
+> Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+> Dept of Computer Science, Old Dominion University, Norfolk VA 23529
+> +1 757 683 6393 +1 757 683 4900 (f)
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+

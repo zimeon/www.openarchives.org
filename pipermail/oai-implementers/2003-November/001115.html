@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Simple XSTL OAI harvester
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001114.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Simple XSTL OAI harvester
+   </H1>
+    <B>Young,Jeff
+    </B> 
+    <A HREF="mailto:jyoung%40oclc.org"
+       TITLE="[OAI-implementers] Simple XSTL OAI harvester">jyoung@oclc.org
+       </A><BR>
+    <I>Sun, 16 Nov 2003 13:58:06 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001114.html">[OAI-implementers] OAI Harvester Plug-In for DSpace
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1115">[ date ]</a>
+              <a href="thread.html#1115">[ thread ]</a>
+              <a href="subject.html#1115">[ subject ]</a>
+              <a href="author.html#1115">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: text/plain;
+	charset=&quot;iso-8859-1&quot;
+
+It occurred to me on Friday that it would be possible to write an extremely
+simple OAI harvester using XSTL, so I skipped my morning break and wrote one
+that I am now making available as open-source. The result is the
+&quot;xoaiharvester.xsl&quot; stylesheet (attached), which is only 80 lines long
+(excluding the disclaimer). (It only supports OAI-PMH v2.0 repositories for
+now. Let me know if you want to use it with other versions.)
+
+It is driven from a &quot;harvest.pl&quot; PERL script (attached) that is about 25
+lines long (excluding the disclaimer). This PERL script is also responsible
+for managing the from/until dates one needs for incremental harvesting. If
+you don't like PERL, you could rewrite it in any other scripting language
+pretty easily. To run it the way I have it set up, you will need to have
+Java installed and the xalan.jar file in your classpath. If you don't like
+Java or Xalan, you should be able to make minor changes to the PERL script
+to invoke the XSTL transformation in some other way.
+
+To operate it, you need a configuration file for each repository to be
+harvested. Attached is an &quot;xtcat.oclc.org.xml&quot; file to use as an example.
+The &quot;baseURL&quot; and &quot;metadataPrefix&quot; elements are required, but the &quot;set&quot;
+element is optional.
+
+The command to run it could then be placed in a cron job to perform the
+incremental harvest:
+
+perl harvest.py xtcat.oclc.org
+
+The result is a file named &quot;xtcat.oclc.org.YYYY-MM-DD.xml&quot; (contains the
+harvest results) and &quot;xtcat.oclc.org.lastHarvested&quot; (contains the date to
+use for the next incremental harvest). Doing something with the results file
+is left as an exercise for the user. :-)
+
+Now, I'm thinking I could create an OAI repository using XSLT that is almost
+this simple. My boss, Thom Hickey, wrote an OAI repository with only 2 pages
+of (rather dense) Python code. I'm thinking maybe I can beat this and even
+have some white space to spare. :-) I'll post it if I get some spare time to
+try it.
+
+Jeff
+
+ &lt;&lt;xoaiharvester.xsl&gt;&gt;  &lt;&lt;xtcat.oclc.org.xml&gt;&gt;  &lt;&lt;harvest.pl&gt;&gt; 
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+
+
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: application/octet-stream;
+	name=&quot;xoaiharvester.xsl&quot;
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename=&quot;xoaiharvester.xsl&quot;
+
+&lt;?xml version=3D&quot;1.0&quot; encoding=3D&quot;utf-8&quot;?&gt;=0A=
+=0A=
+&lt;!--=0A=
+     Copyright (c) 2000-2003 OCLC Online Computer Library Center,=0A=
+     Inc. and other contributors. All rights reserved. The contents =
+of=0A=
+     this file, as updated from time to time by the OCLC Office of=0A=
+     Research are subject to OCLC Research Public License Version =
+2.0=0A=
+     (the &quot;License&quot;); you may not use this file except in compliance=0A=
+     with the License.  You may obtain a current copy of the License=0A=
+     at <A HREF="http://purl.org/oclc/research/ORPL/.">http://purl.org/oclc/research/ORPL/.</A> Software distributed=0A=
+     under the License is distributed on an &quot;AS IS&quot; basis, WITHOUT=0A=
+     WARRANTY OF ANY KIND, either express or implied.  See the =
+License=0A=
+     for the specific language governing rights and limitations =
+under=0A=
+     the License.  This software consists of voluntary contributions=0A=
+     made by many individuals on behalf of OCLC Research.  For more=0A=
+     information on OCLC Research, please see=0A=
+     <A HREF="http://www.oclc.org/research/.=0A=">http://www.oclc.org/research/.=0A=</A>
+     =0A=
+     This is the Original Code.=0A=
+     The Initial Developers of the Original Code is Jeffrey Young =
+(mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>).=0A=
+     Portions created by OCLC are Copyright (C) 2003.  All Rights =
+Reserved.=0A=
+     (version: 2003 November 14)=0A=
+--&gt;=0A=
+=0A=
+&lt;xsl:stylesheet=0A=
+  xmlns:xsl=3D&quot;<A HREF="http://www.w3.org/1999/XSL/Transform"=0A=">http://www.w3.org/1999/XSL/Transform&quot;=0A=</A>
+  =
+xmlns:xoaih=3D&quot;<A HREF="http://errol.oclc.org/xmlregistry.oclc.org/xoai/xoaiharve=">http://errol.oclc.org/xmlregistry.oclc.org/xoai/xoaiharve=</A>
+ster&quot;=0A=
+  version=3D&quot;1.0&quot;&gt;=0A=
+=0A=
+  &lt;xsl:output method=3D&quot;xml&quot; indent=3D&quot;yes&quot;/&gt;=0A=
+=0A=
+  &lt;xsl:param name=3D&quot;from&quot; /&gt;=0A=
+  &lt;xsl:param name=3D&quot;until&quot; /&gt;=0A=
+=0A=
+  &lt;xsl:template match=3D&quot;/xoaih:repository&quot;&gt;=0A=
+    &lt;xsl:variable name=3D&quot;setArg&quot;&gt;=0A=
+      &lt;xsl:if test=3D&quot;xoaih:set&quot;&gt;=0A=
+        &lt;xsl:text&gt;&amp;amp;set=3D&lt;/xsl:text&gt;=0A=
+        &lt;xsl:value-of select=3D&quot;xoaih:set&quot; /&gt;=0A=
+      &lt;/xsl:if&gt;=0A=
+    &lt;/xsl:variable&gt;=0A=
+    &lt;xsl:variable name=3D&quot;fromArg&quot;&gt;=0A=
+      &lt;xsl:if test=3D&quot;$from&quot;&gt;=0A=
+        &lt;xsl:text&gt;&amp;amp;from=3D&lt;/xsl:text&gt;=0A=
+        &lt;xsl:value-of select=3D&quot;$from&quot; /&gt;=0A=
+      &lt;/xsl:if&gt;=0A=
+    &lt;/xsl:variable&gt;=0A=
+    &lt;xsl:variable name=3D&quot;untilArg&quot;&gt;=0A=
+      &lt;xsl:if test=3D&quot;$until&quot;&gt;=0A=
+        &lt;xsl:text&gt;&amp;amp;until=3D&lt;/xsl:text&gt;=0A=
+        &lt;xsl:value-of select=3D&quot;$until&quot; /&gt;=0A=
+      &lt;/xsl:if&gt;=0A=
+    &lt;/xsl:variable&gt;=0A=
+    =0A=
+    &lt;xoaih:harvest&gt;=0A=
+      &lt;xsl:apply-templates =
+select=3D&quot;document(concat(xoaih:baseURL,'?verb=3DIdentify'))&quot; /&gt;=0A=
+      &lt;xsl:apply-templates=0A=
+        =
+select=3D&quot;document(concat(xoaih:baseURL,'?verb=3DListMetadataFormats'))&quot;=
+ /&gt;=0A=
+      &lt;xsl:apply-templates=0A=
+        select=3D&quot;document(concat(xoaih:baseURL,'?verb=3DListSets'))&quot; =
+/&gt;=0A=
+      &lt;xsl:apply-templates=0A=
+        =
+select=3D&quot;document(concat(xoaih:baseURL,'?verb=3DListRecords&amp;amp;metadat=
+aPrefix=3D',xoaih:metadataPrefix,$setArg,$fromArg,$untilArg))&quot; /&gt;=0A=
+    &lt;/xoaih:harvest&gt;=0A=
+  &lt;/xsl:template&gt;=0A=
+  =0A=
+  &lt;!-- Process OAI responses --&gt;=0A=
+  =0A=
+  &lt;xsl:template match=3D&quot;/oai20:OAI-PMH&quot; =
+xmlns:oai20=3D&quot;<A HREF="http://www.openarchives.org/OAI/2.0/"">http://www.openarchives.org/OAI/2.0/&quot;</A>&gt;=0A=
+    &lt;xsl:variable name=3D&quot;resumptionToken&quot;=0A=
+      select=3D&quot;oai20:*/oai20:resumptionToken&quot; /&gt;=0A=
+    =0A=
+    &lt;xsl:copy-of select=3D&quot;.&quot; /&gt;=0A=
+=0A=
+    &lt;xsl:apply-templates select=3D&quot;oai20:error&quot; /&gt;=0A=
+    =0A=
+    &lt;xsl:if test=3D&quot;$resumptionToken&quot;&gt;=0A=
+      &lt;xsl:message&gt;=0A=
+        &lt;xsl:value-of select=3D&quot;$resumptionToken&quot; /&gt;=0A=
+      &lt;/xsl:message&gt;=0A=
+      &lt;xsl:apply-templates select=3D&quot;document(concat(oai20:request,=0A=
+                                   '?verb=3D',=0A=
+                                   oai20:request/@verb,=0A=
+                                   '&amp;amp;resumptionToken=3D',=0A=
+                                   $resumptionToken))&quot; /&gt;=0A=
+    &lt;/xsl:if&gt;=0A=
+  &lt;/xsl:template&gt;=0A=
+=0A=
+  &lt;!-- report problems --&gt;=0A=
+  =0A=
+  &lt;xsl:template =
+match=3D&quot;oai20:error[not(../oai20:request/@verb=3D'ListSets')]&quot; =
+xmlns:oai20=3D&quot;<A HREF="http://www.openarchives.org/OAI/2.0/"">http://www.openarchives.org/OAI/2.0/&quot;</A>&gt;=0A=
+    &lt;xsl:message&gt;=0A=
+      &lt;xsl:value-of select=3D&quot;@code&quot; /&gt;=0A=
+      &lt;xsl:text&gt; : &lt;/xsl:text&gt;=0A=
+      &lt;xsl:value-of select=3D&quot;.&quot; /&gt;=0A=
+    &lt;/xsl:message&gt;=0A=
+  &lt;/xsl:template&gt;=0A=
+    =0A=
+  &lt;!-- strip out stylesheet references --&gt;=0A=
+  =0A=
+  &lt;xsl:template match=3D&quot;processing-instruction('xml-stylesheet')&quot; =
+/&gt;=0A=
+  =0A=
+&lt;/xsl:stylesheet&gt;=0A=
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: application/octet-stream;
+	name=&quot;xtcat.oclc.org.xml&quot;
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename=&quot;xtcat.oclc.org.xml&quot;
+
+&lt;?xml version=3D&quot;1.0&quot; encoding=3D&quot;UTF-8&quot;?&gt;=0A=
+&lt;xoaih:repository =
+xmlns:xoaih=3D&quot;<A HREF="http://errol.oclc.org/xmlregistry.oclc.org/xoai/xoaiharve=">http://errol.oclc.org/xmlregistry.oclc.org/xoai/xoaiharve=</A>
+ster&quot;&gt;=0A=
+  =
+&lt;xoaih:baseURL&gt;<A HREF="http://alcme.oclc.org/xtcat/servlet/OAIHandler</xoaih:bas=">http://alcme.oclc.org/xtcat/servlet/OAIHandler&lt;/xoaih:bas=</A>
+eURL&gt;=0A=
+  &lt;xoaih:metadataPrefix&gt;oai_etdms&lt;/xoaih:metadataPrefix&gt;=0A=
+  &lt;xoaih:set&gt;ETD&lt;/xoaih:set&gt;=0A=
+&lt;/xoaih:repository&gt;=0A=
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: application/octet-stream;
+	name=&quot;harvest.pl&quot;
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename=&quot;harvest.pl&quot;
+
+#! /usr/bin/perl=0A=
+#     Copyright (c) 2000-2003 OCLC Online Computer Library Center,=0A=
+#     Inc. and other contributors. All rights reserved. The contents =
+of=0A=
+#     this file, as updated from time to time by the OCLC Office of=0A=
+#     Research are subject to OCLC Research Public License Version =
+2.0=0A=
+#     (the &quot;License&quot;); you may not use this file except in =
+compliance=0A=
+#     with the License.  You may obtain a current copy of the =
+License=0A=
+#     at <A HREF="http://purl.org/oclc/research/ORPL/.">http://purl.org/oclc/research/ORPL/.</A> Software distributed=0A=
+#     under the License is distributed on an &quot;AS IS&quot; basis, WITHOUT=0A=
+#     WARRANTY OF ANY KIND, either express or implied.  See the =
+License=0A=
+#     for the specific language governing rights and limitations =
+under=0A=
+#     the License.  This software consists of voluntary =
+contributions=0A=
+#     made by many individuals on behalf of OCLC Research.  For more=0A=
+#     information on OCLC Research, please see=0A=
+#     <A HREF="http://www.oclc.org/research/.=0A=">http://www.oclc.org/research/.=0A=</A>
+#     =0A=
+#     This is the Original Code.=0A=
+#     The Initial Developers of the Original Code is Jeffrey Young =
+(mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>).=0A=
+#     Portions created by OCLC are Copyright (C) 2003.  All Rights =
+Reserved.=0A=
+#     (version: 2003 November 14)=0A=
+  =0A=
+$lastHarvestedFileName =3D $ARGV[0].&quot;.lastHarvested&quot;;=0A=
+open (LASTHARVESTED, $lastHarvestedFileName);=0A=
+$from =3D &lt;LASTHARVESTED&gt;;=0A=
+chomp $from;=0A=
+print $ARGV[0].&quot;: Incremental harvest from &quot;.$from.&quot;\n&quot;;=0A=
+if (length($from) &gt; 0) {=0A=
+  $from =3D &quot; -PARAM from '&quot;.$from.&quot;'&quot;;=0A=
+}=0A=
+close(LASTHARVESTED);=0A=
+=0A=
+$untilDate =3D `date -u '+%Y-%m-%d'`;=0A=
+chomp $untilDate;=0A=
+$until =3D &quot; -PARAM until '&quot;.$untilDate.&quot;'&quot;;=0A=
+=0A=
+$outFileName =3D $ARGV[0].&quot;.&quot;.$untilDate.&quot;.xml&quot;;=0A=
+=0A=
+if (-e $outFileName) {=0A=
+  die(&quot;ERROR! Output File Exists. Delete '&quot;.$outFileName.&quot;' before =
+proceeding.\n&quot;);=0A=
+}=0A=
+=0A=
+system(&quot;java org.apache.xalan.xslt.Process -IN &quot;.$ARGV[0].&quot;.xml -XSL =
+xoaiharvester.xsl -OUT &quot;.$outFileName.$from.$until);=0A=
+=0A=
+open(LASTHARVESTED, &quot;&gt;&quot;.$lastHarvestedFileName);=0A=
+print LASTHARVESTED $untilDate;=0A=
+close(LASTHARVESTED);=0A=
+=0A=
+
+------_=_NextPart_000_01C3AC73.91F6DF3A--
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001114.html">[OAI-implementers] OAI Harvester Plug-In for DSpace
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1115">[ date ]</a>
+              <a href="thread.html#1115">[ thread ]</a>
+              <a href="subject.html#1115">[ subject ]</a>
+              <a href="author.html#1115">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

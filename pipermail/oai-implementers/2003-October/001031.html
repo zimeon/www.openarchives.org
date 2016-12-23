@@ -1,0 +1,138 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] OAI Identifier Resolver (revised)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001028.html">
+   <LINK REL="Next"  HREF="001032.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] OAI Identifier Resolver (revised)
+   </H1>
+    <B>Young,Jeff
+    </B> 
+    <A HREF="mailto:jyoung%40oclc.org"
+       TITLE="[OAI-implementers] OAI Identifier Resolver (revised)">jyoung@oclc.org
+       </A><BR>
+    <I>Mon, 20 Oct 2003 10:18:09 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001028.html">[OAI-implementers] Static Repository Gateway 2.0.1
+</A></li>
+        <LI> Next message: <A HREF="001032.html">[OAI-implementers] OAI identifier resolver
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1031">[ date ]</a>
+              <a href="thread.html#1031">[ thread ]</a>
+              <a href="subject.html#1031">[ subject ]</a>
+              <a href="author.html#1031">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I changed the operation of the OAI Identifier Resolver slightly and added
+new functionality. Here are the new and improved examples::
+ 
+Basic URL (just like before):
+<A HREF="http://purl.org/oai/oai:VTETD:etd-06152001-152749">http://purl.org/oai/oai:VTETD:etd-06152001-152749</A> - implicit oai_dc
+GetRecord
+ 
+This basic URL can then be appended as needed to obtain various views of the
+item. 
+ 
+The following examples are like before, but use &quot;?ext&quot; instead of &quot;.ext&quot; as
+the switch.
+ 
+<A HREF="http://purl.org/oai/oai:VTETD:etd-06152001-152749?ListMetadataFormats">http://purl.org/oai/oai:VTETD:etd-06152001-152749?ListMetadataFormats</A>
+<A HREF="http://purl.org/oai/oai:VTETD:etd-06152001-152749?oai_dc">http://purl.org/oai/oai:VTETD:etd-06152001-152749?oai_dc</A> - explicit oai_dc
+GetRecord
+<A HREF="http://purl.org/oai/oai:VTETD:etd-06152001-152749?oai_marc">http://purl.org/oai/oai:VTETD:etd-06152001-152749?oai_marc</A> - explicit
+oai_marc GetRecord
+<A HREF="http://purl.org/oai/oai:VTETD:etd-06152001-152749?POI">http://purl.org/oai/oai:VTETD:etd-06152001-152749?POI</A> - A redirect to the
+first resolvable dc:identifier in the oai_dc GetRecord.
+ 
+The following examples represent new functionality. The &quot;.ext&quot; is like the
+&quot;?ext&quot; version except that it resovles to the content of the &lt;metadata&gt;
+element in the GetRecord response rather than the entire GetRecord response:
+<A HREF="http://purl.org/oai/oai:VTETD:etd-06152001-152749.oai_dc">http://purl.org/oai/oai:VTETD:etd-06152001-152749.oai_dc</A> - The oai_dc record
+without the OAI wrapper
+<A HREF="http://purl.org/oai/oai:VTETD:etd-06152001-152749.oai_marc">http://purl.org/oai/oai:VTETD:etd-06152001-152749.oai_marc</A> - The oai_marc
+record without the OAI wrapper
+ 
+What's cool about this new feature is that you can now store XML content in
+an OAI repository and access it with natural looking URLs (see the last
+example in the list). Here is an example of an XHTML document stored in an
+OAI repository:
+<A HREF="http://purl.org/oai/test/xhtmlTest">http://purl.org/oai/test/xhtmlTest</A> - An implicit oai_dc GetRecord response
+describing a xhtml document.
+<A HREF="http://purl.org/oai/test/xhtmlTest?oai_dc">http://purl.org/oai/test/xhtmlTest?oai_dc</A> - An explicit oai_dc GetRecord
+response
+<A HREF="http://purl.org/oai/test/xhtmlTest?xhtml">http://purl.org/oai/test/xhtmlTest?xhtml</A> - An OAI GetRecord response for the
+same item in xhtml format
+<A HREF="http://purl.org/oai/test/xhtmlTest.xhtml">http://purl.org/oai/test/xhtmlTest.xhtml</A> - The XHTML document itself.
+ 
+Here is an example of an XML Schema document stored in an OAI repository:
+<A HREF="http://purl.org/oai/test/xsdTest">http://purl.org/oai/test/xsdTest</A> - An oai_dc GetRecord response describing
+an XML Schema document
+<A HREF="http://purl.org/oai/test/xsdTest?xsd">http://purl.org/oai/test/xsdTest?xsd</A> - An OAI GetRecord response for the
+same item in xsd format
+<A HREF="http://purl.org/oai/test/xsdTest.xsd">http://purl.org/oai/test/xsdTest.xsd</A> - The XML Schema document itself
+ 
+Note that this also works for the Handle example which was causing problems
+earlier:
+ 
+<A HREF="http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659">http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659</A> - Implied oai_dc GetRecord
+response
+<A HREF="http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659?ListMetadataFormats">http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659?ListMetadataFormats</A>
+<A HREF="http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659?oai_dc">http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659?oai_dc</A> - explicit oai_dc
+GetRecord response
+<A HREF="http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659?POI">http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659?POI</A> - a redirect to the
+first resolvable dc:identifier
+<A HREF="http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659.oai_dc">http://purl.org/oai/hpds1.mit.edu/hdl:1721.1/659.oai_dc</A> - The oai_dc content
+without the OAI wrapper.
+ 
+The reason the Handle example is no longer a problem is because before I was
+too lazy to verify the metadataPrefix to make sure I wasn't hacking up the
+identifier by mistake. This isn't a problem now because I have to get the
+record anyway to pull out the &lt;metadata&gt; portion to send back. Now, if I
+discover it is a problem, I restore the identifier and force the
+metadataPrefix back to the oai_dc default and try again.
+ 
+Jeff
+
+---
+Jeffrey A. Young
+Consulting Software Engineer
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001028.html">[OAI-implementers] Static Repository Gateway 2.0.1
+</A></li>
+	<LI> Next message: <A HREF="001032.html">[OAI-implementers] OAI identifier resolver
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1031">[ date ]</a>
+              <a href="thread.html#1031">[ thread ]</a>
+              <a href="subject.html#1031">[ subject ]</a>
+              <a href="author.html#1031">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

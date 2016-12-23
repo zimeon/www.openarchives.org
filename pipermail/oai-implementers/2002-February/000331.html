@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:Martin%20Vesely%20%3cMartin.Vesely%40cern.ch%3e">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000329.html">
+   <LINK REL="Next"  HREF="000334.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+   </H1>
+    <B>Martin Vesely
+    </B> 
+    <A HREF="mailto:Martin%20Vesely%20%3cMartin.Vesely%40cern.ch%3e"
+       TITLE="FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news">Martin Vesely &lt;Martin.Vesely@cern.ch&gt;
+       </A><BR>
+    <I>Thu, 7 Feb 2002 23:14:30 +0100 (CET)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000329.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+        <LI> Next message: <A HREF="000334.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#331">[ date ]</a>
+              <a href="thread.html#331">[ thread ]</a>
+              <a href="subject.html#331">[ subject ]</a>
+              <a href="author.html#331">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello,
+
+The described way of caching data is very similar to how the OAI flow
+control is done in our repository. But still, I do not see how we can
+get rid of resumption tokens.
+
+Since HTTP is request-response, the cached data cannot be sent by the
+server with no additional request. The subsequent request has to identify
+itself, so the server knows what data are requested. Resumption token is
+nothing but an identifier for server and for the reason of identification
+is necessary.
+
+I think that the harvesting transaction inevitably deals with such amount
+of data that it hardly can be delivered within one HTTP request-response
+session. Therefore there has to be some mechanism to enable the transfer
+in smaller parts in a sequence of sessions.
+
+There is always a way to issue ListIdentifiers and a sequence of
+GetRecord(s), which actually is the way to avoid resumption tokens for
+those who have this preference.
+
+A connected issue: Could the protocol be made stateless by a statement
+about the OAI transaction? Then this statement should be added to the
+protocol. For example: The OAI-transaction is composed of an OAI-request
+and a full OAI-response.  Before last package of OAI-response is
+delivered, the OAI-transaction is considered not to be finished.
+
+The same way how stateless HTTP deals with underlying packets. This way
+the harvester cannot supply any part of the response before it has the
+complete harvest available.
+
+
+Regards,
+Martin
+
+--
+CERN Document Server ** &lt;<A HREF="http://cds.cern.ch/">http://cds.cern.ch/</A>&gt; ** &lt;<A HREF="mailto:cds.support@cern.ch">cds.support@cern.ch</A>&gt;
+Room: Bldg 510-1-015 ** Voice: +41-22-7673527 ** Fax: +41-22-7678142
+
+On Wed, 6 Feb 2002, Walter Underwood wrote:
+
+&gt;<i>--On Wednesday, February 6, 2002 2:18 PM -0500 Simeon Warner &lt;<A HREF="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</A>&gt; wrote:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> My main objection to including an option for harvesters to specify the
+</I>&gt;&gt;<i> maximum number of records they wish to get in a reply is that this will
+</I>&gt;&gt;<i> force ALL repositories to implement resumptionTokens.  Currently, small
+</I>&gt;&gt;<i> repsotiories (say a few thousand records) can happily ignore that part of
+</I>&gt;&gt;<i> the spec.
+</I>&gt;<i>
+</I>&gt;<i>I suggest getting rid of resumption tokens to make it
+</I>&gt;<i>simpler for all sizes of repositories.
+</I>&gt;<i>
+</I>&gt;<i>A very simple server can always calculate the entire result list,
+</I>&gt;<i>then send the portion requested, for example, records 21-30.
+</I>&gt;<i>Cache the result list to speed things up.
+</I>&gt;<i>
+</I>&gt;<i>Internally, this is much easier to implement than resumption
+</I>&gt;<i>tokens. Caching is independent of the correctness of the list,
+</I>&gt;<i>so the two are loosely coupled. For simple databases, the slow
+</I>&gt;<i>part is getting data from disk, and the existing OS file cache
+</I>&gt;<i>will already provided the most important level of caching.
+</I>&gt;<i>
+</I>&gt;<i>Large systems will probably use commercial databases, which
+</I>&gt;<i>provide additional levels of caching.
+</I>&gt;<i>
+</I>&gt;<i>A repository with only a few thousand records could load them
+</I>&gt;<i>into memory at startup and reboot when there is a change.
+</I>&gt;<i>1K per record, 10K records is only 10Meg. No caching needed.
+</I>&gt;<i>
+</I>&gt;<i>wunder
+</I>&gt;<i>--
+</I>&gt;<i>Walter R. Underwood
+</I>&gt;<i>Senior Staff Engineer
+</I>&gt;<i>Inktomi Enterprise Search
+</I>&gt;<i><A HREF="http://search.inktomi.com/">http://search.inktomi.com/</A>
+</I>&gt;<i>_______________________________________________
+</I>&gt;<i>OAI-implementers mailing list
+</I>&gt;<i><A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i><A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000329.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+	<LI> Next message: <A HREF="000334.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#331">[ date ]</a>
+              <a href="thread.html#331">[ thread ]</a>
+              <a href="subject.html#331">[ subject ]</a>
+              <a href="author.html#331">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

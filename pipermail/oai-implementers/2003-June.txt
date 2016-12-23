@@ -1,0 +1,785 @@
+From timo.hellgren@vtt.fi  Thu Jun  5 10:05:46 2003
+From: timo.hellgren@vtt.fi (Timo Hellgren)
+Date: Thu, 05 Jun 2003 12:05:46 +0300
+Subject: [OAI-implementers] Announcement: VTT Publications Register OAI 2.0 compatible
+Message-ID: <4.3.2.7.2.20030605115941.00c36eb8@vttmail.vtt.fi>
+
+Over 47,000 records on science and technology ready for
+harvesting.
+
+VTT Publications Register (JURE) has recently added support
+for the OAI MPH 2.0. JURE contains metadata about publications
+written by research staff of VTT, including also material published
+by some other party than VTT. Many of the monographs and articles
+are also available as fulltext (set publication:fulltext). However, access
+to the fulltext  material published by other parties than VTT may be
+restricted. (There are e.g. links to fulltext-articles published by
+commercial publishers and vendors.)
+
+More information on VTT http://www.vtt.fi/indexe.htm
+VTT Publications Register http://www.otalib.fi/vtt/jure/search.html
+The base URL is http://cgi.vtt.fi/progs/inf/OAI
+
+Only oai_dc metadata format is currently supported. Sets are implemented.
+
+In case of problems or questions contact me.
+
+Best regards,
+Timo Hellgren (timo.hellgren@vtt.fi)
+VTT Information Service
+http://www.vtt.fi/inf/
+P.O. box 2000
+FIN-02044 VTT (located in Espoo)
+Finland
+
+
+From ramon@ibict.br  Thu Jun  5 13:25:53 2003
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Thu, 5 Jun 2003 09:25:53 -0300
+Subject: [OAI-implementers] Schema Validation
+Message-ID: <3DB871E13177D61198850000E222F2EBDFF9B5@ebano2.ibict.br>
+
+Dear implementers,
+
+I'm searching the previous messages too, but I haven´t found an answer yet.
+Asking it now may be faster..
+
+I need to know if the protocol validates XML Schemas. I mean does the
+Service Provider program do that or the Harvester do it, and if either does
+it, how it´s accomplished. Apparently it doesn´t. There is no log of
+accessing the XSD file, and the code only outputs a valid header for the
+record...
+
+The only place I have seen a schema validation is testing the repository in
+the OAI Explorer.
+
+We are using the Protocol and the Harvesting program from Hussein Suleman,
+for OAI 2.0.
+
+............................................................................
+.................................................
+Ramón Martins S. da Fonseca
+Desenvolvimento Web
+IBICT - Instituto Brasileiro de Informação em Ciência e Tecnologia
++55 61 217 6443 / 6347
+............................................................................
+.................................................
+
+
+From hussein@cs.uct.ac.za  Thu Jun  5 13:47:33 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Thu, 05 Jun 2003 14:47:33 +0200
+Subject: [OAI-implementers] Schema Validation
+References: <3DB871E13177D61198850000E222F2EBDFF9B5@ebano2.ibict.br>
+Message-ID: <3EDF3BE5.2060203@cs.uct.ac.za>
+
+hi Ramon
+
+i guess the short answer is that validation is not required either by a 
+harvester or service provider (if these are separated). however, in 
+quality-critical applications it is a good idea to do it.
+
+that said, i think some of us assume the responses are more-or-less 
+valid if we know that the archive has passed the RE and OAI Registry 
+tests - so we don't test while harvesting. philosophically, in the 
+extreme case, if a static archive was tested properly once, why should 
+every service provider have to test it again?
+
+but if you really want to ... to test for post-registration changes that 
+make the archive non-compliant, you would have to do schema validation 
+on every response/record obtained. to test for validity of every single 
+record (rather than a sample like the RE checks) you could write a 
+simple harvester that obtains and validates all the records of an 
+archive (i have heard of such programs but havent seen one listed on the 
+OAI website yet).
+
+ttfn,
+----hussein
+
+
+Ramon Martins Sodoma da Fonseca wrote:
+> Dear implementers,
+> 
+> I'm searching the previous messages too, but I haven´t found an answer yet.
+> Asking it now may be faster..
+> 
+> I need to know if the protocol validates XML Schemas. I mean does the
+> Service Provider program do that or the Harvester do it, and if either does
+> it, how it´s accomplished. Apparently it doesn´t. There is no log of
+> accessing the XSD file, and the code only outputs a valid header for the
+> record...
+> 
+> The only place I have seen a schema validation is testing the repository in
+> the OAI Explorer.
+> 
+> We are using the Protocol and the Harvesting program from Hussein Suleman,
+> for OAI 2.0.
+> 
+> ............................................................................
+> .................................................
+> Ramón Martins S. da Fonseca
+> Desenvolvimento Web
+> IBICT - Instituto Brasileiro de Informação em Ciência e Tecnologia
+> +55 61 217 6443 / 6347
+> ............................................................................
+> .................................................
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From hickey@oclc.org  Fri Jun  6 21:56:04 2003
+From: hickey@oclc.org (Hickey,Thom)
+Date: Fri, 6 Jun 2003 16:56:04 -0400
+Subject: [OAI-implementers] A 'one-page' harvester in Python
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98056A576B@OA3-SERVER.oa.oclc.org>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C32C6E.0B0B1C34
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+I've attached a one page (or at least it was one page until I put our legal
+text into it!) Python script that will pull records from a repository and
+dump them to a file.  In spite of its length it:
+
+  o Handles resumption tokens
+  o Notices OAI errors
+  o Supports compression
+  o Respects 503 Retry-After's
+
+It doesn't know much about XML, though, so the file created is just a
+collection of the downloaded XML responses, and the only metadata format it
+asks for is oai_dc, even though it does ask the repository for the metadata
+formats supported.  Sets are ignored, but would be fairly easy to add.
+
+I tested it using Python 2.2.2 under Windows 2000 against several
+repositories.
+
+It is invoked by:
+  python harverst.py [repository-address outputfile]
+e.g.:
+  python harvest.py alcme.oclc.org/ndltd/servlet/OAIHandler ndltd.out
+
+If you just run the script without parameters it defaults the NDLTD
+repository (around 39,000 digital thesis and dissertation records).
+
+Anyway, I thought it was interesting to see how much could be done in less
+than 60 lines.
+
+--Th
+
+
+------_=_NextPart_000_01C32C6E.0B0B1C34
+Content-Type: application/octet-stream;
+	name="harvest.py"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="harvest.py"
+
+import sys, urllib2, zlib, time, re=0A=
+## Copyright (c) 2000-2003 OCLC Online Computer Library Center, Inc. =
+and other=0A=
+## contributors.  All rights reserved.  The contents of this file, as =
+updated=0A=
+## from time to time by the OCLC Office of Research are subject to =
+OCLC=0A=
+## Research Public License Version 2.0 (the "License"); you may not use =
+this=0A=
+## file except in compliance with the License.  You may obtain a =
+current copy=0A=
+## of the License at http://purl.oclc.org/oclc/research/ORPL/.  =
+Software=0A=
+## distributed under the License is distributed on an "AS IS" basis, =
+WITHOUT=0A=
+## WARRANTY OF ANY KIND, either express or implied.  See the License =
+for the=0A=
+## specific language governing rights and limitations under the =
+License.  This=0A=
+## software consists of voluntary contributions made by many =
+individuals on=0A=
+## behalf of OCLC Research.  For more information on OCLC Research, =
+please see=0A=
+## http://www.oclc.org/research/.  This is the Original Code.  The =
+Initial=0A=
+## Developer of the Original Code is Thomas Hickey =
+(mailto:hickey@oclc.org).=0A=
+## Portions created by OCLC are Copyright (C) 2003.  All Rights =
+Reserved.=0A=
+=0A=
+def getResumptionToken(data):=0A=
+    mo =3D re.search('<resumptionToken[^>]*>(.*)</resumptionToken>', =
+data)=0A=
+    if mo: return mo.group(1)=0A=
+def getFile(serverString, command, verbose=3D1):=0A=
+    remoteAddr =3D serverString+'?verb=3D%s'%command=0A=
+    if verbose: print "getFile '%s'"%remoteAddr=0A=
+    headers =3D {'User-Agent': 'OAIHarvester/2.0',=0A=
+               'Accept': 'text/html',=0A=
+               'Accept-Encoding': 'compress, deflate'}=0A=
+    try:=0A=
+        req =3D urllib2.Request(remoteAddr, None, headers)=0A=
+        remoteFile =3D urllib2.urlopen(req)=0A=
+        remoteData =3D remoteFile.read()=0A=
+        remoteFile.close()=0A=
+    except urllib2.HTTPError, exValue:=0A=
+        if exValue.code=3D=3D503:=0A=
+            retryWait =3D int(exValue.hdrs.get("Retry-After", "-1"))=0A=
+            if retryWait<0: return None=0A=
+            print 'Waiting %d seconds'%retryWait=0A=
+            time.sleep(retryWait)=0A=
+            return getFile(serverString, command, 0)=0A=
+        print exValue=0A=
+        return None=0A=
+    try:=0A=
+        remoteData =3D zlib.decompressobj().decompress(remoteData)=0A=
+    except:=0A=
+        pass=0A=
+    mo =3D re.search('<error *code=3D\"([^"]*)">(.*)</error>', =
+remoteData)=0A=
+    if mo:=0A=
+        print >>sys.stderr,"OAIERROR: code=3D%s '%s'"%(mo.group(1), =
+mo.group(2))=0A=
+        sys.exit(1)=0A=
+    return remoteData=0A=
+def writeWithLF(ofile, data):=0A=
+    if not data: return=0A=
+    ofile.write(data)=0A=
+    if data[-1]!=3D'\n': ofile.write('\n')=0A=
+def writeRecords(outFile, serverString, mdformat, sDate=3DNone, =
+eDate=3DNone):=0A=
+    if not sDate and not eDate:=0A=
+        verb=3D'ListRecords&metadataPrefix=3D%s'%(mdformat)=0A=
+    else:=0A=
+        =
+verb=3D'ListRecords&metadataPrefix=3D%s&from=3D%s&until=3D%s'%(mdformat,=
+ sDate, eDate)=0A=
+    data =3D getFile(serverString, verb)=0A=
+    while data:=0A=
+        writeWithLF(outFile, data)=0A=
+        reTok =3D getResumptionToken(data)=0A=
+        if not reTok: break=0A=
+        data =3D getFile(serverString, =
+"ListRecords&resumptionToken=3D%s"%reTok)=0A=
+if __name__=3D=3D"__main__":=0A=
+    try:    serverName, outName =3D sys.argv[1:]=0A=
+    except: serverName, outName =3D =
+'alcme.oclc.org/ndltd/servlet/OAIHandler', 'harvest.out'=0A=
+    serverString =3D 'http://%s'%serverName=0A=
+    print "Writing to file %s from archive at %s"%(outName, =
+serverName)=0A=
+    outFile =3D file(outName, 'wb')=0A=
+    writeWithLF(outFile, getFile(serverString, 'Identify'))=0A=
+    writeWithLF(outFile, getFile(serverString, =
+'ListMetadataFormats'))=0A=
+    writeRecords(outFile, serverString, 'oai_dc')=0A=
+
+------_=_NextPart_000_01C32C6E.0B0B1C34--
+
+From simeon@cs.cornell.edu  Tue Jun 10 04:57:00 2003
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Mon, 9 Jun 2003 23:57:00 -0400 (EDT)
+Subject: [OAI-implementers] Re: OAI validation question
+In-Reply-To: <3EE52B47.3050200@adelaide.edu.au>
+Message-ID: <Pine.LNX.4.44.0306092348210.15814-100000@ice.cs.cornell.edu>
+
+Steve,
+
+(I'm cc'ing th respone to oai-implemeters, the best place for such
+questions.)
+
+On Tue, 10 Jun 2003, Steve Thomas wrote:
+> Hi.
+> 
+> I'm trying to get my repository script to validate, and I have 
+> it down to one error:
+> 
+> Response to this request did not give error code 'badArgument':
+> verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=junk&until=1990-01-10
+
+There should be a badArgument error because you have both a
+resumptionToken and metadataPrefix/until arguments. resumptionToken is an
+exclusive argument so the metadataPrefix/until arguments are not allowed
+in the same request. (see
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ProtocolMessages
+for explanation of exclusive argument)
+ 
+> Problem is, I can't see what's wrong with that. My script 
+> returns this:
+> 
+> <OAI-PMH ... >
+> <responseDate>2003-06-09T23:37:22Z</responseDate>
+> <request verb="ListRecords" until="1990-01-10" 
+> resumptionToken="junk" metadataPrefix="oai_dc">
+> http://etext.library.adelaide.edu.au/cgi-bin/OAI-lite.pl
+> </request>
+> <error code="badResumptionToken"/>
+> </OAI-PMH>
+> 
+> which should be OK, no?
+
+Note also that when there is a badArgument error, you must not include the
+attributes in the <request> element.
+(http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#HTTPResponseFormat)
+
+Cheers,
+Simeon.
+ 
+> I don't see where there's a badArgument in the request, unless 
+> its the 'until' date (because I support the date+time 
+> granularity -- but then the spec says I have to support date-only).
+> 
+> Can someone tell me where I'm going wrong here?
+> 
+> Regards,
+> Steve
+
+
+From jperkins@ca.inter.net  Tue Jun 10 10:51:25 2003
+From: jperkins@ca.inter.net (John Perkins)
+Date: Tue, 10 Jun 2003 06:51:25 -0300
+Subject: [OAI-implementers] OAI and Soap
+In-Reply-To: <Pine.LNX.4.44.0306092348210.15814-100000@ice.cs.cornell.edu>
+References: <Pine.LNX.4.44.0306092348210.15814-100000@ice.cs.cornell.edu>
+Message-ID: <p04320401bb0b5511c0bd@[10.50.163.53]>
+
+I'm interested to know if there are any implementers who have 
+experimented with OAI over SOAP and the status of those experiments. 
+I remember Herbert saying a while back that he knew of some but don't 
+recall seeing any responses at that time.  Regards, John Perkins
+
+From hussein@cs.uct.ac.za  Tue Jun 10 11:44:50 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Tue, 10 Jun 2003 12:44:50 +0200
+Subject: [OAI-implementers] OAI and Soap
+References: <Pine.LNX.4.44.0306092348210.15814-100000@ice.cs.cornell.edu> <p04320401bb0b5511c0bd@[10.50.163.53]>
+Message-ID: <3EE5B6A2.5070104@cs.uct.ac.za>
+
+hi
+
+i did some tests a long time ago and the basics seem to be fairly 
+straight-forward.
+
+the fine-print could be another matter however ... so i have a group of 
+students doing an in-depth study of SOAP applied to the OAI-PMH, 
+including a draft spec rewrite, baseline tools and implementations, 
+testing tools, an end-to-end SOAP-OAI-based system, performance 
+evaluations and comparisons, etc.
+
+their final report will be completed by the beginning of october and 
+will be submitted to the OAI as a feasability study - this will 
+hopefully serve as the basis for a new working group to develop a formal 
+SOAP-OAI spec.
+
+also, we need to be a little cautious - W3C recently upped the new SOAP 
+spec to "proposed recommendation". it would be wise to wait until it is 
+a "recommendation" before OAI finalises a SOAP spec.
+
+ttfn,
+----hussein
+
+
+John Perkins wrote:
+> I'm interested to know if there are any implementers who have 
+> experimented with OAI over SOAP and the status of those experiments. I 
+> remember Herbert saying a while back that he knew of some but don't 
+> recall seeing any responses at that time.  Regards, John Perkins
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From zubair@cs.odu.edu  Tue Jun 10 12:17:00 2003
+From: zubair@cs.odu.edu (zubair@cs.odu.edu)
+Date: Tue, 10 Jun 2003 07:17:00 -0400
+Subject: [OAI-implementers] OAI and Soap
+Message-ID: <OF75B8E5B3.DA6FE048-ON85256D41.003DCFC7@cs.odu.edu>
+
+John,
+
+Here is my earlier email regarding OAI SOAP gateway to the list.
+
+Zubair
+
+----- Forwarded by M Zubair/ODUCS on 06/10/2003 07:13 AM -----
+                                                                                                                                      
+                    M Zubair                                                                                                          
+                                         To:     Sandro Zic <sandro.zic@zzoss.com>                                                    
+                    05/11/2003           cc:     herbert van de sompel <herbertv@lanl.gov>, OAI-implementers@oaisrv.nsdl.cornell.edu, 
+                    12:08 PM             oai-implementers-admin@oaisrv.nsdl.cornell.edu                                               
+                                         Subject:     Re: [OAI-implementers] Trying to gauge interest on two features(Document link:  
+                                         Mohammad Zubair)                                                                             
+                                                                                                                                      
+
+
+
+One of my students implemented a OAI-SOAP gateway. Here is the URL if you
+are interested in looking at that.
+
+http://www.cs.odu.edu/~rl/OAI_SOAP/gateway.html
+
+
+Zubair
+
+
+
+|--------+---------------------------------------------->
+|        |          John Perkins <jperkins@ca.inter.net>|
+|        |          Sent by:                            |
+|        |          oai-implementers-admin@oaisrv.nsdl.c|
+|        |          ornell.edu                          |
+|        |                                              |
+|        |                                              |
+|        |          06/10/2003 06:21 AM                 |
+|        |                                              |
+|--------+---------------------------------------------->
+  >--------------------------------------------------------------------------------------------------|
+  |                                                                                                  |
+  |      To:     oai-implementers@oaisrv.nsdl.cornell.edu                                            |
+  |      cc:                                                                                         |
+  |      Subject:     [OAI-implementers] OAI and Soap                                                |
+  >--------------------------------------------------------------------------------------------------|
+
+
+
+
+I'm interested to know if there are any implementers who have
+experimented with OAI over SOAP and the status of those experiments.
+I remember Herbert saying a while back that he knew of some but don't
+recall seeing any responses at that time.  Regards, John Perkins
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+
+
+
+
+From ssarapat@enc.org  Thu Jun 12 18:46:12 2003
+From: ssarapat@enc.org (Steve Sarapata)
+Date: Thu, 12 Jun 2003 13:46:12 -0400
+Subject: [OAI-implementers] Registered Data Providers
+Message-ID: <A05D4B246586C34E907B5EF9E17CA5F3027D65E3@sagan.enc.org>
+
+A little guidance please,
+
+I have four collections which share the same base URL. I would like to
+be able to publish within the Registered Data Providers list the names
+of these four collections. Is there a way/mechanism to accomplish this?
+
+Thanks,
+Steve
+
+
+Stephen P Sarapata
+Eisenhower National Clearinghouse
+The Ohio State University
+1929 Kenny Road
+Columbus, OH 43210-1079
+614.247.6259 (Voice)
+614.292.2066 (Fax)
+
+
+
+From bergmark@cs.cornell.edu  Thu Jun 12 20:06:44 2003
+From: bergmark@cs.cornell.edu (Donna Bergmark)
+Date: Thu, 12 Jun 2003 15:06:44 -0400
+Subject: [OAI-implementers] Registered Data Providers
+In-Reply-To: Your message of "Thu, 12 Jun 2003 13:46:12 EDT."
+ <A05D4B246586C34E907B5EF9E17CA5F3027D65E3@sagan.enc.org>
+Message-ID: <200306121906.h5CJ6it15140@elgin.cs.cornell.edu>
+
+Steve,
+
+You cannot use the exact same baseURL for four different
+collections, because the baseURL is a database key.  Could
+you vary the baseURL in such as way that the same code
+would run but the string is different?
+
+I am thinking of something like
+http:/server/dir1/dirx/servlet-script where dirx says collection
+x but really on your machine they are all the same directory?
+
+If so, this would achieve the result you want, of 4 collections
+being registered and displayed.
+
+Donna
+
+From hickey@oclc.org  Fri Jun 13 20:59:59 2003
+From: hickey@oclc.org (Hickey,Thom)
+Date: Fri, 13 Jun 2003 15:59:59 -0400
+Subject: [OAI-implementers] Experience with large-scale harvesting
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98056A57A4@OA3-SERVER.oa.oclc.org>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_001_01C331E6.5E75CAB2
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+Since creating a one-page Python OAI-PMH harvester (see an improved, even
+shorter, version at  http://purl.oclc.org/net/hickey/oai/harvest.py
+<http://purl.oclc.org/net/hickey/oai/harvest.py> ) , I've been seeing how
+our OAI repositories perform on full harvests.
+ 
+OCLC Research runs two main repositories of metadata about theses and
+dissertations:
+ 
+XTCat ( http://alcme.oclc.org/xtcat/ <http://alcme.oclc.org/xtcat/> ) with
+some 4.3 million bibliographic records 
+NDLTD ( http://alcme.oclc.org/ndltd/ <http://alcme.oclc.org/ndltd/> ) which
+has around 38,000 records.
+ 
+My workstation can harvest XTCat in around 90 minutes if compression is used
+(over a 10 megabit line).  Without compression it takes at least half again
+as long, and my machine is much busier.  I was slightly surprised at the
+difference in bytes-received that compression makes:  8:1 for the larger
+database and 7:1 for the smaller.
+ 
+Harvesting at home via a cable modem takes slightly less than 4 hours to
+harvest the 4.3 million records.  That is about 300 records/second.  Each
+record is about 1,000 bytes (uncompressed).
+ 
+The 90 minute harvest is 800 records/second (800,000 bytes/second).  The
+best time observed for doing two harvests simultaneously was 120 minutes, or
+1,200 records/second.  The most records/second observed was slightly more
+than 1,400 records/second when running four simultaneous harvests, probably
+close to the maximum rate the repository can support.
+ 
+Running multiple harvests simultaneously did find a weakness in the
+repository code, which would occasionally run out of memory.  We seem to
+have that fixed now, but I expect that error recovery is important for
+reliably accomplishing large harvests.
+ 
+--Th
+
+------_=_NextPart_001_01C331E6.5E75CAB2
+Content-Type: text/html;
+	charset="iso-8859-1"
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+
+<META content="MSHTML 6.00.2600.0" name=GENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>Since creating a 
+one-page Python OAI-PMH harvester (see an improved,&nbsp;even 
+shorter,&nbsp;version at&nbsp;<A 
+href="http://purl.oclc.org/net/hickey/oai/harvest.py">http://purl.oclc.org/net/hickey/oai/harvest.py</A>) 
+, I've been seeing how our OAI repositories perform on full 
+harvests.</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>OCLC Research runs 
+two main repositories of metadata about theses and 
+dissertations:</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>XTCat (<A 
+href="http://alcme.oclc.org/xtcat/">http://alcme.oclc.org/xtcat/</A>)&nbsp;with 
+some 4.3 million bibliographic records </SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>NDLTD (<A 
+href="http://alcme.oclc.org/ndltd/">http://alcme.oclc.org/ndltd/</A>)&nbsp;which 
+has around 38,000 records.</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>My workstation can 
+harvest XTCat in around 90 minutes if compression is used (over a 10 megabit 
+line).&nbsp; Without compression it takes at least half again as long, and my 
+machine is much busier.&nbsp; I was slightly surprised at the difference in 
+bytes-received that compression makes:&nbsp; 8:1 for the larger database and 7:1 
+for the smaller.</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>Harvesting at home 
+via a cable modem takes slightly less than 4 hours to harvest the 4.3 million 
+records.&nbsp; That is about 300 records/second.&nbsp; Each record is about 
+1,000 bytes (uncompressed).</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>The 90 minute 
+harvest is 800 records/second (800,000 bytes/second).&nbsp; The best time 
+observed for doing two harvests simultaneously was 120 minutes, or 1,200 
+records/second.&nbsp; The most records/second observed was slightly more than 
+1,400 records/second when running four simultaneous harvests, probably close to 
+the maximum rate&nbsp;the repository can support.</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=776144917-13062003>Running multiple 
+harvests simultaneously did find a weakness in the repository code, which would 
+occasionally run out of memory.&nbsp;&nbsp;We seem to have that fixed now, but I 
+expect&nbsp;that error recovery is important for reliably accomplishing large 
+harvests.</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=776144917-13062003>--Th</SPAN></FONT></DIV></BODY></HTML>
+
+------_=_NextPart_001_01C331E6.5E75CAB2--
+
+From sandro.zic@zzoss.com  Mon Jun 30 14:56:00 2003
+From: sandro.zic@zzoss.com (Sandro Zic)
+Date: Mon, 30 Jun 2003 15:56:00 +0200
+Subject: [OAI-implementers] Fwd: [Oai-pear-devel] PEAR::OAI 0.4.0 Released
+Message-ID: <200306301556.00985.sandro.zic@zzoss.com>
+
+FYI
+
+Currently, PEAR::OAI implements an OAI data provider only. Development of an 
+OAI harvester class is under way.
+
+Sandro
+
+----------  Forwarded Message  ----------
+
+Subject: [Oai-pear-devel] PEAR::OAI 0.4.0 Released
+Date: Monday 30 June 2003 14:18
+
+The PEAR::OAI developers team is happy to announce the immediate availability
+of PEAR::OAI 0.4.0.
+
+Please notice these important changes:
+- PEAR::OAI server reduced to only care about protocol layer, content
+ response is created by backend
+- more documentation, now edited online in a Wiki at
+http://www.zzoss.com/phpwiki/index.php/PearOai
+
+### Description ###
+
+PEAR::OAI is a PHP class library for the Open Archives Initiative Protocol
+ for Metadata Harvesting (http://www.openarchives.org). This library provides
+ a Server (= Repository) and in the future also a Client (= Harvester)
+interface. This package is conformant to and makes use of PEAR
+(http://pear.php.net) classes.
+
+### Featurs ###
+
+- full OAI-PMH version 2.0 compliance (tested with OAI Repository Explorer)
+- easy and flexible configuration (well documented)
+- modular data backend system allows plug-in of several data storage
+interfaces that wrap different data structures
+- integrated template output system to provide arbitrary metadata format
+output, provided as a plugin module
+- compressed XML support, which greatly reduces used bandwidth
+- garbage collection of resumption tokens (via PHP session functions)
+- resumption token sessions can be stored in filesystem or database
+- checking expiration date of resumption tokens
+- debug mode to track errors in logfile
+- object oriented PHP
+- PEARDoc (~JavaDoc) inline documentation
+
+### Changelog ###
+
+New Featurs:
+
+- PEAR::OAI server reduced to only care about protocol layer, content
+ response is created by backend
+- modular plugin architecture for various types of backends provided by
+different vendors
+- modular plugin architecture for markup output
+- getRecord takes metadata prefix as argument
+- moved methods for identifier masquerading to backend abstract class
+(Server/Backend.php)
+- check if backend supports a certain method
+- split descriptions (e.g. friends) from Identify.tpl to separate templates
+- new helper class for template parsing (Server/Output.php)
+- using static oai prefix when dealing with masquerading (better performance)
+
+Bugs fixed:
+
+- renamed Server/tpl/ListIdentifiers_oai_dc.tpl to
+Server/tpl/ListIdentifiers.tpl because there is no output specific to a
+metadata format
+- stripped off php version check in OAI_Base::xmlEncode() because we only
+ work with PHP >= 4.2.0
+- all XML output UTF-8 encoded
+
+Miscellaneous
+
+- replaced OAI_Base::recordStorage() with OAI_Server::backend()
+- OAI_Server::backend takes instantiated backend object as argument
+- deleted template_path option for OAI, instead, we have packages for output,
+located in the OAI/Output/ directory
+- more documentation, now edited online in a Wiki at
+http://www.zzoss.com/phpwiki/index.php/PearOai
+
+### Links ###
+
+Find more information at http://www.zzoss.com/phpwiki/index.php/PearOai.
+
+
+-------------------------------------------------------
+This SF.Net email sponsored by: Free pre-built ASP.NET sites including
+Data Reports, E-commerce, Portals, and Forums are available now.
+Download today and enter to win an XBOX or Visual Studio .NET.
+http://aspnet.click-url.com/go/psa00100006ave/direct;at.asp_061203_01/01
+_______________________________________________
+Oai-pear-devel mailing list
+Oai-pear-devel@lists.sourceforge.net
+https://lists.sourceforge.net/lists/listinfo/oai-pear-devel
+
+-------------------------------------------------------
+
+
+From Patrick Hochstenbach <hochsten@lanl.gov>  Mon Jun 30 18:20:08 2003
+From: Patrick Hochstenbach <hochsten@lanl.gov> (Patrick CH Hochstenbach)
+Date: Mon, 30 Jun 2003 11:20:08 -0600 (MDT)
+Subject: [OAI-implementers] OAI Static Repository Gateway [software release]
+Message-ID: <Pine.LNX.4.44.0306301118350.23742-100000@lark.lanl.gov>
+
+Hi,
+
+We are pleased to announce the release of our software implementation of an OAI
+Static Repository Gateway.  Our Static Repository Gateway software is compliant
+with the alpha specification for the OAI Static Repository and Static Repository
+Gateway available at
+http://www.openarchives.org/OAI/2.0/guidelines-static-repository.htm .
+
+* Our software is available at SourceForge
+https://sourceforge.net/projects/srepod/
+* A brief description is available at http://srepod.sourceforge.net/
+
+We would like to emphasize that the OAI Implementation Guideline for the Static
+Repository and for the Static Repository Gateway are in alpha phase, and hence
+are subject to change.  As a result, there are no guarantees that our current
+implementation will be compatible with the final OAI specification for the
+Static Repository and for the Static Repository Gateway, when released.
+
+Greetings
+
+Patrick Hochstenbach, Henry Jerez, Herbert Van de Sompel
+Digital Library Research & Prototyping Team
+Los Alamos National Laboratory, Research Library
+
+-- 
+ Patrick Hochstenbach  -------------------,   ,==.    ,----------   PO Box 1663 
+ Los Alamos National Laboratory          /   /@  |   /               Los Alamos 
+ Research Library, MS P362              /   /_  <   /     New Mexico 87544-7113 
+ +1 (505) 665 1475 -------------------'    =" `g'  '--------  hochsten@lanl.gov
+
+
+

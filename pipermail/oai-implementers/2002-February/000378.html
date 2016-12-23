@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Validating ListMetadataFormats
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:Steven%20Bird%20%3csb%40ldc.upenn.edu%3e">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000380.html">
+   <LINK REL="Next"  HREF="000381.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Validating ListMetadataFormats
+   </H1>
+    <B>Steven Bird
+    </B> 
+    <A HREF="mailto:Steven%20Bird%20%3csb%40ldc.upenn.edu%3e"
+       TITLE="[OAI-implementers] Validating ListMetadataFormats">Steven Bird &lt;sb@ldc.upenn.edu&gt;
+       </A><BR>
+    <I>Wed, 20 Feb 2002 16:32:41 EST</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000380.html">[OAI-implementers] OAI Identifiers
+</A></li>
+        <LI> Next message: <A HREF="000381.html">[OAI-implementers] Launch of OAIster Project
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#378">[ date ]</a>
+              <a href="thread.html#378">[ thread ]</a>
+              <a href="subject.html#378">[ subject ]</a>
+              <a href="author.html#378">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I wrote:
+
+&gt;<i> I would like to use an XML validation language (e.g. XML Schema) to test
+</I>&gt;<i> that the document returned by ListMetadataFormats includes a specific
+</I>&gt;<i> format.  The return typically lists multiple formats, and I just want to
+</I>&gt;<i> check that the list includes one specific format, e.g.:
+</I>&gt;<i>
+</I>&gt;<i> &lt;ListMetadataFormats&gt;
+</I>&gt;<i>   ...
+</I>&gt;<i>   &lt;metadataFormat&gt;
+</I>&gt;<i>     &lt;metadataPrefix&gt;olac&lt;/metadataPrefix&gt;
+</I>&gt;<i>     &lt;schema&gt;<A HREF="http://www.language-archives.org/OLAC/0.4/olac.xsd</schema">http://www.language-archives.org/OLAC/0.4/olac.xsd&lt;/schema</A>&gt;
+</I>&gt;<i>     &lt;metadataNamespace&gt;<A HREF="http://www.language-archives.org/OLAC/0.4/</metadataNamespace">http://www.language-archives.org/OLAC/0.4/&lt;/metadataNamespace</A>&gt;
+</I>&gt;<i>   &lt;/metadataFormat&gt;
+</I>&gt;<i>   ...
+</I>&gt;<i> &lt;/ListMetadataFormats&gt;
+</I>&gt;<i> 
+</I>&gt;<i> The ListMetadataFormats container is supposed to have set semantics.  I
+</I>&gt;<i> guess I need a set-membership test, and it also needs to work on element
+</I>&gt;<i> content (not just element names, attribute names, or attribute values).
+</I>
+
+Leigh Dodds replied:
+&gt;<i> You should take a look at Schematron [1] which is an validation language
+</I>&gt;<i> implemented using XSLT.  ... Schematron provides the kinds of constraints
+</I>&gt;<i> checking that you require ...
+</I>
+
+Actually, I don't believe that it possible to implement a set-membership
+test using schematron.  As I understand it, schematron only lets you assert
+implication relations between xpath expressions.
+
+Here is a simpler statement of the problem.  Check that one of the
+elements in the following list is OLAC (two versions):
+
+&lt;set&gt;
+  &lt;elt&gt;a&lt;/elt&gt;
+  &lt;elt&gt;b&lt;/elt&gt;
+  &lt;elt&gt;c&lt;/elt&gt;
+  &lt;elt&gt;olac&lt;/elt&gt;
+  &lt;elt&gt;d&lt;/elt&gt;
+&lt;/set&gt;
+
+&lt;set&gt;
+  &lt;elt&gt;&lt;a/&gt;&lt;/elt&gt;
+  &lt;elt&gt;&lt;b/&gt;&lt;/elt&gt;
+  &lt;elt&gt;&lt;c/&gt;&lt;/elt&gt;
+  &lt;elt&gt;&lt;olac/&gt;&lt;/elt&gt;
+  &lt;elt&gt;&lt;d/&gt;&lt;/elt&gt;
+&lt;/set&gt;
+
+The schematron rule context is just &quot;/set&quot;, and the assertion (which cannot
+be expressed in schematron) is that one of the &lt;elt&gt; elements contains
+&quot;olac&quot; or &lt;olac/&gt;.
+
+All of the other OLAC requirements can be checked with schematron, and
+here is the schematron code I wrote a couple of weeks ago:
+[<A HREF="http://www.ldc.upenn.edu/sb/schematron/olac-pmh.xml]">http://www.ldc.upenn.edu/sb/schematron/olac-pmh.xml]</A>
+
+Thus, I think we are left writing programs to validate the response to the
+Identify and ListMetadataFormats requests.  I'd be glad to be proven wrong,
+so please let me know if schematron or some other XML validation language
+can do a set-membership test.
+
+Thanks,
+Steven Bird
+
+--
+<A HREF="mailto:Steven.Bird@ldc.upenn.edu">Steven.Bird@ldc.upenn.edu</A>  <A HREF="http://www.ldc.upenn.edu/sb">http://www.ldc.upenn.edu/sb</A>
+Assoc Director, LDC; Adj Assoc Prof, CIS &amp; Linguistics
+Linguistic Data Consortium, University of Pennsylvania
+3615 Market St, Suite 200, Philadelphia, PA 19104-2608
+
+
+
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000380.html">[OAI-implementers] OAI Identifiers
+</A></li>
+	<LI> Next message: <A HREF="000381.html">[OAI-implementers] Launch of OAIster Project
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#378">[ date ]</a>
+              <a href="thread.html#378">[ thread ]</a>
+              <a href="subject.html#378">[ subject ]</a>
+              <a href="author.html#378">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,456 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML Schema problem?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:herbertv%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000098.html">
+   <LINK REL="Next"  HREF="000097.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML Schema problem?
+   </H1>
+    <B>herbert van de sompel
+    </B> 
+    <A HREF="mailto:herbertv%40cs.cornell.edu"
+       TITLE="[OAI-implementers] XML Schema problem?">herbertv@cs.cornell.edu
+       </A><BR>
+    <I>Mon, 23 Apr 2001 11:21:06 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000098.html">[OAI-implementers] XML Schema problem?
+</A></li>
+        <LI> Next message: <A HREF="000097.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#99">[ date ]</a>
+              <a href="thread.html#99">[ thread ]</a>
+              <a href="subject.html#99">[ subject ]</a>
+              <a href="author.html#99">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi Thomas,
+
+thanks for this. this approach sounds good to me:
+
+* it validates with XSV
+
+* it would be nice if Jeff could test this approach in Xerces
+
+* I checked this with the most recent XML Schema specs, and the nice
+thing about it is that this approach would not require any changes to be
+made when moving over at a certain point.
+
+If Jeff comes back with a positive message, I suggest to go for Thomas'
+approach.
+
+herbert
+
+
+
+&quot;Thomas G. Habing&quot; wrote:
+&gt;<i> 
+</I>&gt;<i> Herbert-
+</I>&gt;<i> 
+</I>&gt;<i> In the XSDs, wouldn't it be simpler to change use attribute value in the
+</I>&gt;<i> status attribute declaration to &quot;optional&quot; (delete the value attribute) and
+</I>&gt;<i> then tie it's type to an enumerated list that only allows the value
+</I>&gt;<i> &quot;deleted&quot;.  With no value attribute and the use attribute set to optional
+</I>&gt;<i> (as opposed to default or fixed) in the status attribute declaration, the
+</I>&gt;<i> parser shouldn't assume a value.  The enumerated list still restricts the
+</I>&gt;<i> allowable values of the status attribute in document instances.  This seems
+</I>&gt;<i> to work in other parsers but we've not tried it in Xerces.  Here's the
+</I>&gt;<i> attribute declaration as we're suggesting:
+</I>&gt;<i> 
+</I>&gt;<i>   &lt;complexType name=&quot;recordType&quot;&gt;
+</I>&gt;<i>    &lt;sequence&gt;
+</I>&gt;<i>      &lt;element name=&quot;header&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot;
+</I>&gt;<i> type=&quot;oai:headerType&quot;/&gt;
+</I>&gt;<i>      &lt;element name=&quot;metadata&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;
+</I>&gt;<i> type=&quot;oai:metadataType&quot;/&gt;
+</I>&gt;<i>      &lt;element name=&quot;about&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;
+</I>&gt;<i> type=&quot;oai:aboutType&quot;/&gt;
+</I>&gt;<i>    &lt;/sequence&gt;
+</I>&gt;<i>      &lt;attribute name=&quot;status&quot; use=&quot;optional&quot; type=&quot;oai:statusType&quot;/&gt;
+</I>&gt;<i>   &lt;/complexType&gt;
+</I>&gt;<i> 
+</I>&gt;<i>  ...
+</I>&gt;<i> 
+</I>&gt;<i>   &lt;simpleType name=&quot;statusType&quot;&gt;
+</I>&gt;<i>     &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i>      &lt;enumeration value=&quot;deleted&quot;/&gt;
+</I>&gt;<i>     &lt;/restriction&gt;
+</I>&gt;<i>    &lt;/simpleType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> Tim Cole
+</I>&gt;<i> Tom Habing
+</I>&gt;<i> University of Illinois
+</I>&gt;<i> 
+</I>&gt;<i> herbert van de sompel wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; hi Jeff,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Thanks for this.  Your consideration is correct, there is a problem in
+</I>&gt;<i> &gt; the schema that use the &quot;status&quot; attribute.  That is GetRecord,
+</I>&gt;<i> &gt; ListRecords and ListIdentifiers.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; This is what the September 2000 schema specs say re specifying
+</I>&gt;<i> &gt; occurencies of attributes.  In the excerpt that I include, reference is
+</I>&gt;<i> &gt; made to the following declaration in an xsd file:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &lt;xsd:attribute name=&quot;country&quot; type=&quot;xsd:NMTOKEN&quot; use=&quot;fixed&quot;
+</I>&gt;<i> &gt; value=&quot;US&quot;/&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &quot;
+</I>&gt;<i> &gt; Attributes may appear once or not at all (the default), and so the
+</I>&gt;<i> &gt; syntax for specifying occurrences of attributes
+</I>&gt;<i> &gt; is different than the syntax for elements. In particular, a use
+</I>&gt;<i> &gt; attribute is used in an attribute declaration to
+</I>&gt;<i> &gt; indicate whether the attribute is required or optional, and if optional
+</I>&gt;<i> &gt; whether the attribute's value is fixed or
+</I>&gt;<i> &gt; whether there is a default. A second attribute, value, provides any
+</I>&gt;<i> &gt; value that is called for. To illustrate, po.xsd
+</I>&gt;<i> &gt; contains a declaration for the country attribute, which is declared with
+</I>&gt;<i> &gt; use and value values of fixed and US
+</I>&gt;<i> &gt; respectively. This declaration means that the appearance of a country
+</I>&gt;<i> &gt; attribute is optional, although its value
+</I>&gt;<i> &gt; must be US if it does appear, and if it does not appear, a schema
+</I>&gt;<i> &gt; processor will create a country attribute with
+</I>&gt;<i> &gt; this value.
+</I>&gt;<i> &gt; &quot;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; This last line indicates that Xerces is doing the right thing, which is
+</I>&gt;<i> &gt; obviously not what we want to happen.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; With Michael Nelson, I have revised the XML Schema that involved a
+</I>&gt;<i> &gt; status attribute.  The solution was less straightforward than one would
+</I>&gt;<i> &gt; hope.  There is no simple way to express what we really would like to
+</I>&gt;<i> &gt; express: the status attribute may occur, and if it occurs its value must
+</I>&gt;<i> &gt; be &quot;deleted&quot;.  The workaround is to list legitimate values of the status
+</I>&gt;<i> &gt; attribute and specify a default.  We chose the values to be &quot;deleted&quot;
+</I>&gt;<i> &gt; and &quot;not deleted&quot;, with &quot;not deleted&quot; as the default.  With this in
+</I>&gt;<i> &gt; place, one can express in a schema that the status attribute may appear,
+</I>&gt;<i> &gt; and that its default value (if the attribute does not appear) is &quot;not
+</I>&gt;<i> &gt; deleted&quot;.  One can also express that there is only one other legitimate
+</I>&gt;<i> &gt; value for status.  It is &quot;deleted&quot;.  And this one must be specified,
+</I>&gt;<i> &gt; since it is not the default value.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Using this approach nothing really changes for data providers (nor
+</I>&gt;<i> &gt; service providers, really).  But I guess Xerces will do the right thing,
+</I>&gt;<i> &gt; now, add the default value of &quot;not deleted&quot; to all records that do not
+</I>&gt;<i> &gt; have the status attribute specified.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The way to express the above approach in the schema is different for the
+</I>&gt;<i> &gt; Sep/Oct 2000 specs that we use and for the most recent XML specs.  but
+</I>&gt;<i> &gt; that is another story, to be addressed later.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I attach the edited xsd files.  I will put them in place, unless someone
+</I>&gt;<i> &gt; disagrees with the approach taken.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; many greetings
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; herbert
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &quot;Jeffrey A. Young&quot; wrote:
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Someone noticed that my OAIHarvester isn't working correctly lately. It
+</I>&gt;<i> &gt; &gt; turns out that the Xerces XML parser is convinced that all the records I
+</I>&gt;<i> &gt; &gt; harvest are flagged as status=&quot;deleted&quot;. Since this clearly isn't the case,
+</I>&gt;<i> &gt; &gt; I started stripping the program down until I had a small example program
+</I>&gt;<i> &gt; &gt; showing this effect. The Java source code is attached. Basically, if I do
+</I>&gt;<i> &gt; &gt; DocumentBuilderFactory.setValidating(true) and then convert the XML to a DOM
+</I>&gt;<i> &gt; &gt; Document, it silently &quot;corrects&quot; my records to status=&quot;deleted&quot;. If I dump
+</I>&gt;<i> &gt; &gt; the Document, all looks fine, but when I actually query the status
+</I>&gt;<i> &gt; &gt; attribute, it reports back with a value of &quot;deleted&quot;. On the other hand, if
+</I>&gt;<i> &gt; &gt; I specify setValidating(false), everything works fine. I suspect the problem
+</I>&gt;<i> &gt; &gt; is that the XML Schema needs to make the status attribute optional. Another
+</I>&gt;<i> &gt; &gt; possibility is that Xerces is processing the XML Schema incorrectly. I can
+</I>&gt;<i> &gt; &gt; ignore the problem by always using setValidating(false), but that doesn't
+</I>&gt;<i> &gt; &gt; seem right. If someone has a better solution, I would appreciate it. Thanks.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Jeff
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; ---
+</I>&gt;<i> &gt; &gt; Jeffrey A. Young
+</I>&gt;<i> &gt; &gt; Senior Consulting Systems Analyst
+</I>&gt;<i> &gt; &gt; Office of Research, Mail Code 710
+</I>&gt;<i> &gt; &gt; OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> &gt; &gt; 6565 Frantz Road
+</I>&gt;<i> &gt; &gt; Dublin, OH   43017-3395
+</I>&gt;<i> &gt; &gt; www.oclc.org
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Voice:  614-764-4342
+</I>&gt;<i> &gt; &gt; Fax:            614-764-2344
+</I>&gt;<i> &gt; &gt; Email:  <A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;   ------------------------------------------------------------------------
+</I>&gt;<i> &gt; &gt;                 Name: Test.java
+</I>&gt;<i> &gt; &gt;    Test.java    Type: unspecified type (application/octet-stream)
+</I>&gt;<i> &gt; &gt;             Encoding: quoted-printable
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt; Herbert Van de Sompel
+</I>&gt;<i> &gt; Visiting Assistant Professor
+</I>&gt;<i> &gt; Cornell University -- Computer Science
+</I>&gt;<i> &gt; tel + 1 - 607 - 255 - 3085
+</I>&gt;<i> &gt; fax + 1 - 607 - 255 - 4428
+</I>&gt;<i> &gt; <A HREF="http://www.cs.cornell.edu/people/herbertv/">http://www.cs.cornell.edu/people/herbertv/</A>
+</I>&gt;<i> &gt; digital life in libraries used to be primitive
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   ----------------------------------------------------------------------------
+</I>&gt;<i> &gt; &lt;schema xmlns=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema"">http://www.w3.org/2000/10/XMLSchema&quot;</A>
+</I>&gt;<i> &gt;          xmlns:oai=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"">http://www.openarchives.org/OAI/1.0/OAI_GetRecord&quot;</A>
+</I>&gt;<i> &gt;          targetNamespace=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"">http://www.openarchives.org/OAI/1.0/OAI_GetRecord&quot;</A>
+</I>&gt;<i> &gt;          elementFormDefault=&quot;qualified&quot;
+</I>&gt;<i> &gt;          attributeFormDefault=&quot;unqualified&quot;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;annotation&gt;
+</I>&gt;<i> &gt;   &lt;documentation&gt;
+</I>&gt;<i> &gt;     Schema to verify validity of responses to GetRecord OAI-protocol request.
+</I>&gt;<i> &gt;     This Schema validated at <A HREF="http://www.w3.org/2000/09/webdata/xsv">http://www.w3.org/2000/09/webdata/xsv</A> on 2001-04-22
+</I>&gt;<i> &gt;     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+</I>&gt;<i> &gt;   &lt;/documentation&gt;
+</I>&gt;<i> &gt;  &lt;/annotation&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;element name=&quot;GetRecord&quot; type=&quot;oai:GetRecordType&quot;/&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- response to GetRecord-request --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;complexType name=&quot;GetRecordType&quot;&gt;
+</I>&gt;<i> &gt;   &lt;sequence&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;timeInstant&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;record&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:recordType&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/sequence&gt;
+</I>&gt;<i> &gt;  &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define recordType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- a record has a header and a metadata part --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;complexType name=&quot;recordType&quot;&gt;
+</I>&gt;<i> &gt;   &lt;sequence&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;header&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;oai:headerType&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;metadata&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:metadataType&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;about&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:aboutType&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/sequence&gt;
+</I>&gt;<i> &gt;     &lt;attribute name=&quot;status&quot; use=&quot;default&quot; value=&quot;not deleted&quot; type=&quot;oai:statusType&quot;/&gt;
+</I>&gt;<i> &gt;  &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define headerType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- a header has a unique identifier and a datestamp --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;complexType name=&quot;headerType&quot;&gt;
+</I>&gt;<i> &gt;   &lt;sequence&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;identifier&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;uriReference&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;datestamp&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;date&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/sequence&gt;
+</I>&gt;<i> &gt;  &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define metadataType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- metadata must be expressed in XML that is compliant with another XML Schema --&gt;
+</I>&gt;<i> &gt;  &lt;!-- metadata must be explicitely qualified in the response --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;complexType name=&quot;metadataType&quot;&gt;
+</I>&gt;<i> &gt;   &lt;sequence&gt;
+</I>&gt;<i> &gt;    &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/sequence&gt;
+</I>&gt;<i> &gt;  &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define aboutType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- data &quot;about&quot; the record must be expressed in XML --&gt;
+</I>&gt;<i> &gt;  &lt;!-- that is compliant with an XML Schema defined by a community --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;complexType name=&quot;aboutType&quot;&gt;
+</I>&gt;<i> &gt;   &lt;sequence&gt;
+</I>&gt;<i> &gt;    &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/sequence&gt;
+</I>&gt;<i> &gt;  &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define statusType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- a record can have a status of &quot;deleted&quot; or &quot;not deleted&quot;. --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;simpleType name=&quot;statusType&quot;&gt;
+</I>&gt;<i> &gt;    &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i> &gt;     &lt;enumeration value=&quot;deleted&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;enumeration value=&quot;not deleted&quot;/&gt;
+</I>&gt;<i> &gt;    &lt;/restriction&gt;
+</I>&gt;<i> &gt;   &lt;/simpleType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;/schema&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   ----------------------------------------------------------------------------
+</I>&gt;<i> &gt; &lt;schema xmlns=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema"">http://www.w3.org/2000/10/XMLSchema&quot;</A>
+</I>&gt;<i> &gt;           xmlns:oai=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"">http://www.openarchives.org/OAI/1.0/OAI_ListRecords&quot;</A>
+</I>&gt;<i> &gt;           targetNamespace=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"">http://www.openarchives.org/OAI/1.0/OAI_ListRecords&quot;</A>
+</I>&gt;<i> &gt;           elementFormDefault=&quot;qualified&quot;
+</I>&gt;<i> &gt;           attributeFormDefault=&quot;unqualified&quot;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;annotation&gt;
+</I>&gt;<i> &gt;    &lt;documentation&gt;
+</I>&gt;<i> &gt;      Schema to verify validity of responses to ListRecords OAI-protocol request.
+</I>&gt;<i> &gt;     This Schema validated at <A HREF="http://www.w3.org/2000/09/webdata/xsv">http://www.w3.org/2000/09/webdata/xsv</A> on 2001-04-22
+</I>&gt;<i> &gt;     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+</I>&gt;<i> &gt;    &lt;/documentation&gt;
+</I>&gt;<i> &gt;   &lt;/annotation&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;element name=&quot;ListRecords&quot; type=&quot;oai:ListRecordsType&quot;/&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;!-- response to ListRecords-request --&gt;
+</I>&gt;<i> &gt;   &lt;!-- this response may contain an optional resumptionToken --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;complexType name=&quot;ListRecordsType&quot;&gt;
+</I>&gt;<i> &gt;    &lt;sequence&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;timeInstant&quot;/&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;record&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;oai:recordType&quot;/&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;resumptionToken&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+</I>&gt;<i> &gt;    &lt;/sequence&gt;
+</I>&gt;<i> &gt;    &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;!-- define recordType --&gt;
+</I>&gt;<i> &gt;   &lt;!-- a record has a header and a metadata part --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;complexType name=&quot;recordType&quot;&gt;
+</I>&gt;<i> &gt;    &lt;sequence&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;header&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;oai:headerType&quot;/&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;metadata&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:metadataType&quot;/&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;about&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:aboutType&quot;/&gt;
+</I>&gt;<i> &gt;    &lt;/sequence&gt;
+</I>&gt;<i> &gt;     &lt;attribute name=&quot;status&quot; use=&quot;default&quot; value=&quot;not deleted&quot; type=&quot;oai:statusType&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;!-- define headerType --&gt;
+</I>&gt;<i> &gt;   &lt;!-- a header has a unique identifier and a datestamp --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;complexType name=&quot;headerType&quot;&gt;
+</I>&gt;<i> &gt;    &lt;sequence&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;identifier&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;uriReference&quot;/&gt;
+</I>&gt;<i> &gt;      &lt;element name=&quot;datestamp&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;date&quot;/&gt;
+</I>&gt;<i> &gt;    &lt;/sequence&gt;
+</I>&gt;<i> &gt;   &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;!-- define metadataType --&gt;
+</I>&gt;<i> &gt;   &lt;!-- metadata must be expressed in XML that complies with another XML Schema --&gt;
+</I>&gt;<i> &gt;   &lt;!-- metadata must be explicitely qualified in the response --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   &lt;complexType name=&quot;metadataType&quot;&gt;
+</I>&gt;<i> &gt;    &lt;sequence&gt;
+</I>&gt;<i> &gt;     &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot;/&gt;
+</I>&gt;<i> &gt;    &lt;/sequence&gt;
+</I>&gt;<i> &gt;   &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define aboutType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- data &quot;about&quot; the record must be expressed in XML --&gt;
+</I>&gt;<i> &gt;  &lt;!-- that is compliant with an XML Schema defined by a community --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;complexType name=&quot;aboutType&quot;&gt;
+</I>&gt;<i> &gt;   &lt;sequence&gt;
+</I>&gt;<i> &gt;    &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/sequence&gt;
+</I>&gt;<i> &gt;  &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define statusType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- a record can have a status of &quot;deleted&quot; or &quot;not deleted&quot;. --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;simpleType name=&quot;statusType&quot;&gt;
+</I>&gt;<i> &gt;    &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i> &gt;     &lt;enumeration value=&quot;deleted&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;enumeration value=&quot;not deleted&quot;/&gt;
+</I>&gt;<i> &gt;    &lt;/restriction&gt;
+</I>&gt;<i> &gt;   &lt;/simpleType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &lt;/schema&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;   ----------------------------------------------------------------------------
+</I>&gt;<i> &gt; &lt;schema xmlns=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema"">http://www.w3.org/2000/10/XMLSchema&quot;</A>
+</I>&gt;<i> &gt;          xmlns:oai=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"">http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers&quot;</A>
+</I>&gt;<i> &gt;          targetNamespace=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"">http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers&quot;</A>
+</I>&gt;<i> &gt;          elementFormDefault=&quot;qualified&quot;
+</I>&gt;<i> &gt;          attributeFormDefault=&quot;unqualified&quot;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;annotation&gt;
+</I>&gt;<i> &gt;   &lt;documentation&gt;
+</I>&gt;<i> &gt;     Schema to verify validity of responses to ListIdentifiers OAI-protocol request.
+</I>&gt;<i> &gt;     This Schema validated at <A HREF="http://www.w3.org/2000/09/webdata/xsv">http://www.w3.org/2000/09/webdata/xsv</A> on 2001-04-22
+</I>&gt;<i> &gt;     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+</I>&gt;<i> &gt;   &lt;/documentation&gt;
+</I>&gt;<i> &gt;  &lt;/annotation&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;element name=&quot;ListIdentifiers&quot; type=&quot;oai:ListIdentifiersType&quot;/&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- response to ListIdentifiers-request --&gt;
+</I>&gt;<i> &gt;  &lt;!-- records have an optional &quot;deleted&quot; status --&gt;
+</I>&gt;<i> &gt;  &lt;!-- this response may contain an optional resumptionToken --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;complexType name=&quot;ListIdentifiersType&quot;&gt;
+</I>&gt;<i> &gt;   &lt;sequence&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;timeInstant&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element ref=&quot;oai:identifier&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;element name=&quot;resumptionToken&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+</I>&gt;<i> &gt;   &lt;/sequence&gt;
+</I>&gt;<i> &gt;  &lt;/complexType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;element name=&quot;identifier&quot;&gt;
+</I>&gt;<i> &gt;   &lt;complexType&gt;
+</I>&gt;<i> &gt;    &lt;simpleContent&gt;
+</I>&gt;<i> &gt;     &lt;extension base=&quot;uriReference&quot;&gt;
+</I>&gt;<i> &gt;      &lt;attribute name=&quot;status&quot; use=&quot;default&quot; value=&quot;not deleted&quot; type=&quot;oai:statusType&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;/extension&gt;
+</I>&gt;<i> &gt;    &lt;/simpleContent&gt;
+</I>&gt;<i> &gt;   &lt;/complexType&gt;
+</I>&gt;<i> &gt;  &lt;/element&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;!-- define statusType --&gt;
+</I>&gt;<i> &gt;  &lt;!-- a record can have a status of &quot;deleted&quot; or &quot;not deleted&quot;. --&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;simpleType name=&quot;statusType&quot;&gt;
+</I>&gt;<i> &gt;    &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;<i> &gt;     &lt;enumeration value=&quot;deleted&quot;/&gt;
+</I>&gt;<i> &gt;     &lt;enumeration value=&quot;not deleted&quot;/&gt;
+</I>&gt;<i> &gt;    &lt;/restriction&gt;
+</I>&gt;<i> &gt;   &lt;/simpleType&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;  &lt;/schema&gt;
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i> Thomas G. Habing
+</I>&gt;<i> Research Programmer, Digital Library Initiative
+</I>&gt;<i> University of Illinois at Urbana-Champaign
+</I>&gt;<i> 052 Grainger Engineering Library, MC-274
+</I>&gt;<i> <A HREF="mailto:thabing@uiuc.edu">thabing@uiuc.edu</A>, (217) 244-7809
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+<A HREF="http://www.cs.cornell.edu/people/herbertv/">http://www.cs.cornell.edu/people/herbertv/</A>
+digital life in libraries used to be primitive
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000098.html">[OAI-implementers] XML Schema problem?
+</A></li>
+	<LI> Next message: <A HREF="000097.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#99">[ date ]</a>
+              <a href="thread.html#99">[ thread ]</a>
+              <a href="subject.html#99">[ subject ]</a>
+              <a href="author.html#99">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

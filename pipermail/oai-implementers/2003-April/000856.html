@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] User Specific Archive Access
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:hussein%40cs.uct.ac.za">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000854.html">
+   <LINK REL="Next"  HREF="000852.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] User Specific Archive Access
+   </H1>
+    <B>Hussein Suleman
+    </B> 
+    <A HREF="mailto:hussein%40cs.uct.ac.za"
+       TITLE="[OAI-implementers] User Specific Archive Access">hussein@cs.uct.ac.za
+       </A><BR>
+    <I>Wed, 23 Apr 2003 11:17:21 +0200</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000854.html">[OAI-implementers] User Specific Archive Access
+</A></li>
+        <LI> Next message: <A HREF="000852.html">[OAI-implementers] User Specific Archive Access
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#856">[ date ]</a>
+              <a href="thread.html#856">[ thread ]</a>
+              <a href="subject.html#856">[ subject ]</a>
+              <a href="author.html#856">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi
+
+some late comments:
+
+firstly, i think we should address a philosophical/theoretical issue 
+that is hinted at by this problem. OAI-PMH is based on the premise that 
+interoperability can best be promoted by shifting the &quot;implementation 
+burden&quot; from the data providers to the service providers - making those 
+who have a greater desire for interoperability pay the costs in terms of 
+complexity. JSTOR appears to offer precisely the inverse scenario to the 
+classical data/service provider split. if i am reading the thread 
+correctly, JSTOR is the driving force behind this interoperability 
+effort and, by my understanding, should therefore centrally handle the 
+complexity and offer subscribing libraries the simplest possible 
+interface (OAI-PMH?).
+
+that said, in the ideal case, a subscribing institution should get a 
+cohesive view of their subcollection, independently of other subscribers.
+
+how could this work in practice?
+- do you need virtual data providers? i am not sure this is necessary - 
+you should be able to use IP- or some other authentication and determine 
+what data to make visible transparently
+- do you need to store additional data for each harvester? i hope not, 
+as this will break some of the basic idempotence properties of OAI-PMH. 
+if each record in your archive has &quot;published&quot; and &quot;modified&quot; dates, you 
+could screen for accessible subsets on the basis of matching the 
+published dates to subscription rules (on a per access basis of course), 
+while allowing date-based harvesting on the basis of modification dates 
+(with the provision that modification = max (modification, 
+subscription)) ... i hope this makes sense :)
+- unsubscriptions are going to be tricky! if you expose metadata 
+differently for different users, &quot;deletions&quot; may become a nightmare, so 
+if possible i would suggest looking into not using the PMH's deletions 
+feature.
+
+in any event, i think it is doable with an appropriately structured 
+database, with a not-too-complex set of subscription rules and without 
+additional storage or per-harvester data.
+
+ttfn,
+----hussein
+
+
+Michael Krot wrote:
+&gt;<i> Hi all,
+</I>&gt;<i> 
+</I>&gt;<i> Thanks to all for your input - it is very nice to get worthwhile 
+</I>&gt;<i> feedback so quickly!  I realize that access restriction is beyond the 
+</I>&gt;<i> scope of the OAI standard, but it is unforntunately a messy part of life 
+</I>&gt;<i> over here. I'm not so interested in the how of access restriction, ip 
+</I>&gt;<i> recognition, controlling rights, etc. - these things I can handle.  The 
+</I>&gt;<i> interesting part to me is managing this huge metadata repository in such 
+</I>&gt;<i> a way as to provide the metadata I want a user to see given the 
+</I>&gt;<i> constraints of the OAI standard.
+</I>&gt;<i> 
+</I>&gt;<i> I will try to address some of the questions you all have raised:
+</I>&gt;<i> 
+</I>&gt;<i> 1)  Mr. Krichel made some comments about service providers and 
+</I>&gt;<i> subscriptions to JSTOR.  JSTOR actually has more user groups than just 
+</I>&gt;<i> service providers.
+</I>&gt;<i> We also deal directly with Libraries (who may want the metadata to 
+</I>&gt;<i> create their own search engines), Publishers (who will want the metadata 
+</I>&gt;<i> for an entire run of a journal and have no
+</I>&gt;<i> access restrictions at all), and other business partners who want access 
+</I>&gt;<i> to our metadata.
+</I>&gt;<i> 
+</I>&gt;<i> Having such diverse groups with varying technical skills raises a number 
+</I>&gt;<i> of issues - among them is how can we get the user the metadata that only 
+</I>&gt;<i> they want/need and what are the implications in regards to OAI selective 
+</I>&gt;<i> harvesting rules.
+</I>&gt;<i> 
+</I>&gt;<i> 2)  As far as sharing ALL our metadata - this would greatly simplify my 
+</I>&gt;<i> life in regards to this issue, but it is a business decision that is out 
+</I>&gt;<i> of my hands.  I would still restrict by Journal, so users would only get 
+</I>&gt;<i> metadata for those journals they subscribe to, but I would let them see 
+</I>&gt;<i> ALL content for that journal including content that is not yet available 
+</I>&gt;<i> on the public site (usually due to agreements with publishers).  These 
+</I>&gt;<i> records could be flagged as &quot;not yet publically available&quot; and 
+</I>&gt;<i> consequently screened out by the end user.
+</I>&gt;<i> There are two major problems I see with this approach:
+</I>&gt;<i> 
+</I>&gt;<i> a)  Metadata has some inherent value to it.  What's stopping someone 
+</I>&gt;<i> from providing links to other content providers using our metadata to 
+</I>&gt;<i> point to other providers?  Perhaps this question could be worked out in 
+</I>&gt;<i> a legal metadata sharing contract.    I said before this is a business 
+</I>&gt;<i> decision that is out of my hands for now...
+</I>&gt;<i> b)  Users may not want to screen out large chunks of content that they 
+</I>&gt;<i> can't yet see.  I'm already worried about the technical barriers that 
+</I>&gt;<i> using OAI may provide for some of our less technically inclined 
+</I>&gt;<i> partners, this might further complicate the process for them.
+</I>&gt;<i> 
+</I>&gt;<i> Yeah, yeah...information wants to be free...I know that song and dance.  
+</I>&gt;<i> It certainly would make life easier, but I'm not sure it makes good 
+</I>&gt;<i> policy.,
+</I>&gt;<i> 
+</I>&gt;<i> 3)   Do I have this right that the &quot;creation date&quot; for a given object is 
+</I>&gt;<i> subjective?  That is, does the creation date refer to the date that this 
+</I>&gt;<i> object became available to repository for that particular user?  I'm 
+</I>&gt;<i> guessing yes.
+</I>&gt;<i> If this is the case, we can potenially do some behind-the-sceens 
+</I>&gt;<i> spoofing of the creation date to reflect the time that this record 
+</I>&gt;<i> became available to the user.  We would aslo have to spoof the modified 
+</I>&gt;<i> date in the same way, so that no record had a modified date older than 
+</I>&gt;<i> the creation date.    This would be a fairly complex process and would 
+</I>&gt;<i> require us to maintain information about what a user was able to see at 
+</I>&gt;<i> a given point in time.  It would also require us to gather data about 
+</I>&gt;<i> the record such as the published date (this is how we restrict access) 
+</I>&gt;<i> and the date the record was publically released.  A difficult problem, 
+</I>&gt;<i> but not impossible.
+</I>&gt;<i> 
+</I>&gt;<i> 4)  The virtual repository idea is interesting, but would likely be 
+</I>&gt;<i> unmangeable if we start getting large amounts of users when are dealing 
+</I>&gt;<i> with millions of records.
+</I>&gt;<i> 
+</I>&gt;<i> Thanks to you all - I really appreciate your help!
+</I>&gt;<i> 
+</I>&gt;<i> Michael Krot
+</I>&gt;<i> Data Manager
+</I>&gt;<i> JSTOR
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+
+-- 
+=====================================================================
+hussein suleman ~ <A HREF="mailto:hussein@cs.uct.ac.za">hussein@cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+=====================================================================
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000854.html">[OAI-implementers] User Specific Archive Access
+</A></li>
+	<LI> Next message: <A HREF="000852.html">[OAI-implementers] User Specific Archive Access
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#856">[ date ]</a>
+              <a href="thread.html#856">[ thread ]</a>
+              <a href="subject.html#856">[ subject ]</a>
+              <a href="author.html#856">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

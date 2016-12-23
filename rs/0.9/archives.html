@@ -1,0 +1,680 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ResourceSync Framework Specification - Archives</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+<link rel="stylesheet" href="css/resourcesync.css" type="text/css"/>
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/rs/">CURRENT ResourceSync SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logo and ReSync title">
+    <tbody><tr>
+      <td><img alt="NISO logo" src="img/niso_logo.png"/></td>
+      <td><img alt="OAI logo" src="img/OA100.gif" width="100" height="70"/></td>
+      <td class="OREtext">Open Archives Initiative<br />ResourceSync Framework Specification</td>
+      <td><img alt="ReSync logo" src="img/resync_logo.jpg"/></td>
+    </tr>
+  </tbody>
+ </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ResourceSync Framework Specification - Archives - Beta Draft</h2>
+  <h3 class="subTitle">7 June 2013</h3>
+</div><!--div-titleBlock-->
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/0.9/archives">http://www.openarchives.org/rs/0.9/archives</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/archives">http://www.openarchives.org/rs/archives</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/0.6/archives">http://www.openarchives.org/rs/0.6/archives</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors:</dt>
+    <dd>Martin Klein, Robert Sanderson, Herbert Van de Sompel - Los Alamos National Laboratory</dd>
+    <dd>Simeon Warner - Cornell University</dd>
+    <dd>Bernhard Haslhofer - University of Vienna</dd>
+    <dd>Michael Nelson - Old Dominion University</dd>
+    <dd>Carl Lagoze - University of Michigan</dd>
+</dl>
+
+
+<div class="abstract">
+<h2><a name="abstract"></a>Abstract</h2>
+<p>The ResourceSync specifications describe a synchronization framework 
+for the web consisting of various capabilities that allow third party 
+systems to remain synchronized with a server's evolving resources. 
+This ResourceSync Archives specification describes additional capabilities
+that extend the core specification to provide historical information
+about a set of resources.</p>
+
+<p>This specification is one of several documents comprising the
+<a href="toc">ResourceSync Framework Specifications</a>.</p>
+</div>
+    
+<div class="abstract">
+<h2><a name="status"></a>Status of this Document</h2>
+<p style="color:red">
+This specification is a beta draft released for public comment. Feedback is 
+most welcome on the <a href="https://groups.google.com/d/forum/resourcesync">ResourceSync Google Group</a>.
+</p>
+</div>
+
+<div class="toc">
+<h2><a name="contents"></a>Table of Contents</h2>
+<p class="toc">
+
+1. <a href="#Introduction">Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#MotivExamples">Motivating Examples</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#NotConv">Notational Conventions</a><br />
+2. <a href="#ResourceListArch">Resource List Archives</a><br />
+3. <a href="#ResourceDumpArch">Resource Dump Archives</a><br />
+4. <a href="#ChangeListArch">Change List Archives</a><br />
+5. <a href="#ChangeDumpArch">Change Dump Archives</a><br />
+6. <a href="#AdvCaps">Advertising Archive Capabilities</a><br />
+7. <a href="#References">References</a><br />
+</p>
+
+<h3><a name="appendices"></a>Appendices</h3>
+<p class="toc">
+A. <a href="#Acknowledgments">Acknowledgements</a><br/>
+B. <a href="#Changelog">Change Log</a></p>
+</div>
+
+
+<div class="body">
+<h2>1. <a name="Introduction">Introduction</a></h2>
+
+<p>The <strong>ResourceSync</strong> specifications introduce a range
+of easy to implement capabilities that a server may support in order
+to enable remote systems to remain more tightly in step with its
+evolving resources. They also describe how a server can advertise the
+capabilities it supports. Remote systems can inspect this information
+to determine how best to remain aligned with the evolving data.</p>
+
+<p>This <strong>ResourceSync Archives</strong> specification adds to
+the framework capabilities that allow a server to provide historical
+data based on Archives of the core capabilities (Resource Lists, Resource 
+Dumps, Change Lists, and Change Dumps). Like all other capabilities,
+Archives are implemented using the document formats introduced 
+by the <a href="#ref-sitemaps">Sitemap protocol</a>. Each Archive 
+capability is optional and may be implemented independently of any
+other Archive capability. Archives need not be implemented in order to 
+support synchronization with ResourceSync, but may facilitate certain 
+use cases.</p>
+
+<p>For example, a Change List Archive allows a server to list a timestamped 
+set of historical Change Lists, thus allowing description of changes 
+over an extended period without placing addition requirements on 
+the generation and rotation of the current Change List.
+A Resource Dump Archive allows a server to list a timestamped 
+set of historical Resource Dumps, providing snapshots of the server's
+resources at different times. A remote server may select an appropriate
+historical Resource Dump to synchronize with a past state of the 
+server's resources.</p>
+
+<p>
+This document is structured as follows:
+</p>
+<ul>
+  <li>The remainder of this section provides example use cases and introduces some 
+    notational conventions.</li>
+  <li><a href="#ResourceListArch">Section 2. Resource List Archives</a> describes how
+    a server can provide access to historical Resource Lists.</li>
+  <li><a href="#ResourceDumpArch">Section 3. Resource Dump Archives</a> describes how
+    a server can provide access to historical Resource Dumps, which might be used
+    to provide complete snapshots of the source.</li>
+  <li><a href="#ChangeListArch">Section 4. Change List Archives</a> describes how 
+    a server can provide access to historical Change Lists and extend the range 
+    time period over which incremental synchronization is possible.</li>
+  <li><a href="#ChangeDumpArch">Section 5. Change Dump Archives</a> describes how
+    a server can provide access to historical Change Dumps.</li>
+  <li><a href="#AdvCaps">Section 6. Advertising Archive Capabilities</a> describes 
+    how a server can advertise the Archive capabilities along with other ResourceSync 
+    capabilities it supports.</li>
+</ul>
+
+
+<h3>1.1. <a name="MotivExamples"></a>Motivating Examples</h3>
+
+<p>Many projects and services have synchronization needs and have
+implemented ad hoc solutions. ResourceSync provides a standard
+synchronization method that will reduce implementation effort and
+facilitate easier reuse of resources. Archive capabilities allow 
+historical data to be described within the same framework as 
+current synchronization information. This section describes 
+motivating examples for the Archive capabilities.</p>
+ 
+<p>The way in which a ResourceSync Source generates Change Lists
+will be determined by the particular technical configuration of
+the Source, the frequency of changes, and the intended use. While 
+Change Lists that use the Sitemap index format and a set of Sitemaps
+may have a very large number of entries, it may be convenient to
+rotate individual lists of changes frequently and avoid generating
+a very large Change List. Change List Archives add flexibility while
+retaining the ability for a Source to make available a complete
+change history enabling incremental synchronization from any past 
+state. A Source with very frequent changes might create separate 
+Sitemap files as part of a Change List at hourly intervals, and 
+perhaps each month (about 720 hours) start a new Change List while
+archiving the old one. If all the resource states were recorded 
+in addition to the change information, then Change Dumps and a 
+Change Dump Archive could be used to optimize download of the
+changed resources.</p>
+
+<p>Many services provide snapshots of historical content either 
+as stable reference points, or to permit the evolution of the 
+service's resources to be studied in situations where describing
+all updates would be difficult. Examples include 
+<a href="http://en.wikipedia.org/wiki/Wikipedia:Snapshots">Wikipedia Snapshots</a> and 
+<a href="http://developers.nature.com/docs/read/linked_data/linked_data_releases/Snapshots">Nature 
+Linked Data Snapshots</a>. The Resource Dump Archive capability 
+provides the opportunity to describe such snapshots in a consistent
+and machine-navigable way.</p>
+
+<p>Resource List Snapshots provide the ability for servers to 
+describe the state of their resources at particular points in 
+time. This would allow clients to investigate changes expressed 
+in the metadata or to compare the current state with historical
+state.</p>
+
+<h3>1.2. <a name="NotConv">Notational Conventions</a></h3>
+
+<p>This specification uses the terms "resource", "representation", "request",
+"response", "content negotiation", "client", and "server" as
+described in [<a href="#ref-webarch">Architecture of the World Wide Web</a>].</p>
+
+<p>Throughout this document, the following namespace prefix bindings
+are used:</p>
+
+<a name="tab_1_1"></a>
+<table class="namespace-table" summary="namespaces used in this document">
+ <tbody><tr class="top">
+  <th class="left">Prefix</th><th class="center">Namespace URI</th><th class="right">Description</th>
+ </tr>
+  <tr class="odd">
+  <td class="left"></td><td class="center"><code>http://www.sitemaps.org/schemas/sitemap/0.9</code></td>
+  <td class="right">Sitemap XML elements defined in the <a href="#ref-sitemaps">Sitemap protocol</a></td>
+ </tr>
+ <tr class="even">
+    <td class="left"><code>rs</code></td><td class="center"><code>http://www.openarchives.org/rs/terms/</code></td>
+  <td class="right">Namespace for elements and attributes introduced by ResourceSync</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 1.1: Namespace prefix bindings used in this document</p>
+
+
+<h2>2. <a name="ResourceListArch">Resource List Archives</a></h2>
+
+<p>
+As part of the regular update of its Resource List, a Source might maintain 
+old Resource Lists to provide historical snapshot views of its content.
+Such Resource List Archives provide an easy way for a Destination 
+to compare the states of the resources at different times.
+</p>
+<p>
+A Resource List Archive is based on the <code>&lt;url&gt;</code> document 
+format introduced by the Sitemap protocol. It has the <code>&lt;url&gt;</code> 
+root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;url&gt;</code> 
+must have a <code>capability</code> attribute that has a value of 
+<code>resourcelist-archive</code> and it must have a <code>from</code> attribute 
+that conveys the time the Resource List Archive was created.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;url&gt;</code> 
+points to the Capability List with the relation type <code>resourcesync</code> 
+(see <a href="#AdvCaps">Section 6</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;url&gt;</code> per 
+Resource List. This element does not have attributes, but uses child elements to convey 
+information about the Resource List. The <code>&lt;url&gt;</code> element has the 
+following child elements: 
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Resource List.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element conveys the last modification time of the Resource List with the URI provided in <code>&lt;loc&gt;</code>, expressed as a <a href="#w3c-datetime">W3C Datetime</a>; the use of a complete date and time expressed in UTC using the format
+<code>YYYY-MM-DDThh:mm:ss[.s]Z</code> is recommended.</li>
+ </ul></li>
+</ul>
+<p>
+<a href="#arch_ex_2_1">Example 2.1</a> shows a Resource List Archive that points 
+to the current Resource List <code>http://example.com/resourcedump3.xml</code>
+and two Resource Lists created in the two previous months. It is recommended
+that the Resource List documents referred to have a navigational top level 
+<code>&lt;rs:ln&gt;</code> element with the relation type <code>up</code>
+that points to the Resource List Archive.
+</p>
+<a name="arch_ex_2_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcelist-archive&quot;</span>
+         from=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcelist1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-11-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcelist2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-12-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcelist3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.1: A Resource List Archive</p>
+
+
+<h2>3. <a name="ResourceDumpArch">Resource Dump Archives</a></h2>
+
+<p>
+As part of the regular maintenance of its data, a Source might 
+maintain old Resource Dumps. For a Destination that wishes to 
+compare or archive versions of the data over time, access to 
+these Resource Dumps allows the packaged historical data to be 
+downloaded all at once, rather than requiring the Source to 
+support access to the individual resource versions, and for 
+the Destination to collect them one at a time.
+</p>
+<p>
+A Resource Dump Archive not only points to the current Resource 
+Dump but also to previously created and published Resource Dumps.
+Each of these Resource Dumps represents a snapshot of the Source's
+data at a certain point in time - the creation time of the Resource
+Dump.
+</p>
+<p>
+A Resource Dump Archive is based on the <code>&lt;urlset&gt;</code>
+document format introduced by the Sitemap protocol. It has the 
+<code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>resourcedump-archive</code> and it 
+must have a <code>from</code> attribute that conveys the time the Resource Dump Archive was created.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 6</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per Resource Dump. This element does not have attributes, 
+but uses child elements to convey information about the Resource Dump. The <code>&lt;url&gt;</code> element has the following child elements: 
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Resource Dump.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#ResourceListArch">Section 2</a>.</li>
+ </ul></li>
+</ul>
+<p>
+<a href="#arch_ex_3_1">Example 3.1</a> shows a Resource Dump 
+Archive that points to the current Resource Dump 
+<code>http://example.com/resourcedump3.xml</code> and two 
+Resource Dumps created in the two previous months. It is 
+recommended that Resource Dump documents referred to in 
+<a href="#arch_ex_3_1">Example 3.1</a> have a navigational top 
+level <code>&lt;rs:ln&gt;</code> element with the relation 
+<code>up</code> that points to the Resource Dump Archive.
+</p>
+<a name="arch_ex_3_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcedump-archive&quot;</span>
+         from=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcedump1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-11-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcedump2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-12-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcedump3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 3.1: A Resource Dump Archive</p>
+
+<h2>4. <a name="ChangeListArch">Change List Archives</a></h2>
+<p>
+A Change List (<a href="resourcesync#ChangeList">ResourceSync Core: 
+Change List</a>) describes the changes in a Source's resources over a 
+certain period of time. The Source determines the length of that time 
+interval. If a Source wishes to offer Change Lists covering prior 
+temporal intervals, it can provide a <b>Change List Archive</b>.
+A Change List Archive provides a list of pointers to individual 
+Change Lists which would usually represent consecutive lists of changes.
+</p>
+<p>
+A Change List Archive is based on the <code>&lt;urlset&gt;</code> 
+document format introduced by the Sitemap protocol. It has the 
+<code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>changelist-archive</code>.
+It also should have both the <code>from</code> and the <code>until</code> attributes to convey 
+the temporal interval covered by the collection of Change Lists in the Change List Archive. 
+The complete set of changes from all of the Change Lists combined should include all changes 
+that occurred in the specified interval.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 6</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per Change List. This element does not have attributes, 
+but uses child elements to convey information about the Change List. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Change List.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#ResourceListArch">Section 2</a>.</li>
+ </ul></li>
+</ul>
+
+<p>
+The pointers in a Change List Archive must be in chronological order. 
+The associated datetime can be used by Destinations to determine if 
+new changes are available to be processed. By downloading the Change 
+Lists a destination may inspect the <code>from</code> and <code>until</code> 
+attributes of the top-level <code>&lt;rs:md&gt;</code> element to 
+determine whether the Change Lists are consecutive and without any
+time gaps.
+</p>
+<p>
+<a href="#arch_ex_4_1">Example 4.1</a> shows a Change List Archive 
+that points to three Change Lists created on consecutive days. 
+To ease navigation for Destinations, the Change Lists referred to 
+in the below example will have the top level <code>&lt;rs:ln&gt;</code> 
+element with the relation type <code>up</code> that points to the 
+Change List Archive.
+</p>
+<a name="arch_ex_4_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changelist-archive&quot;</span>
+         from=&quot;2013-01-01T09:00:00Z&quot;
+         until=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changelist1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-01T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changelist2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changelist3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.1: A Change List Archive</p>
+
+
+<h2>5. <a name="ChangeDumpArch">Change Dump Archives</a></h2>
+<p>
+If a Source decides to offer Change Dumps of prior temporal intervals, 
+it may provide a <b>Change Dump Archive</b>. A Change Dump Archive 
+points to a number of Change Dumps.
+</p>
+<p>
+A Change Dump Archive is based on the <code>&lt;urlset&gt;</code> document 
+format introduced by the Sitemap protocol. It has the 
+<code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>changedump-archive</code>.
+It also should have both the <code>from</code> and the <code>until</code> attributes to convey 
+the temporal interval covered by the collection of Change Dumps in the Change Dump Archive. 
+The complete set of changes from all of the Change Dumps combined should include all changes 
+that occurred in the specified interval.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 6</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per Change Dump. This element does not have attributes, but uses child elements to convey information about the Change Dump. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Change Dump.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#ResourceListArch">Section 2</a>.</li>
+ </ul></li>
+</ul>
+<p>
+The pointers in a Change Dump Archive must be in chronological order. 
+The associated datetime can be used by Destinations to determine if 
+new changes have to be processed. By downloading the Change Dumps a 
+destination may inspect the <code>from</code> and <code>until</code> 
+attributes of the top-level <code>&lt;rs:md&gt;</code> element to 
+determine whether the Change Dumps are consecutive and without any 
+time gaps.
+</p>
+<p>
+An example for a Change Dump Archive is shown in 
+<a href="#arch_ex_5_1">Example 5.1</a> below. It points to three Change 
+Dumps that were created in consecutive weeks. It is recommended that
+each Change Dump referred to have the top level <code>&lt;rs:ln&gt;</code> 
+element with the relation type <code>up</code> that points to the Change
+Dump Archive.
+</p>
+<a name="arch_ex_5_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changedump-archive&quot;</span>
+         from=&quot;2012-12-20T09:00:00Z&quot;
+         until=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changedump-w1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-12-20T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changedump-w2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-12-27T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changedump-w3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 5.1: A Change Dump Archive</p>
+
+<h2>6. <a name="AdvCaps"></a>Advertising Archive Capabilities</h2>
+<p>
+In order to make use of the capabilities that a Source provides, a 
+Destination must first determine which capabilities are supported, and 
+the URIs of the corresponding capability documents. The Archive 
+capabilities described in this specification may be added to a 
+Capability List in the same manner as other ResourceSync capabilities
+(see <a href="resourcesync#CapabilityList">ResourceSync Core: 
+Capability List</a>).</p>
+
+<p>The four additional Archive capabilities describe in this 
+specification that a Source can point to are: 
+<code>resourcelist-archive</code>, <code>resourcedump-archive</code>,
+<code>changelist-archive</code>, and <code>changedump-archive</code>.
+These values have been shown in the <code>&lt;rd:md capability="..."&gt;</code>
+attributes in <a href="#arch_ex_2_1">Example 2.1</a>, 
+<a href="#arch_ex_3_1">Example 3.1</a>, <a href="#arch_ex_4_1">Example 4.1</a>, 
+and <a href="#arch_ex_5_1">Example 5.1</a>. A Capability List may contain only 
+one entry per capability.</p>
+
+<p>A resource that is covered by one capability listed in a Capability List 
+must also be covered by all other capabilities that are enumerated in that 
+Capability List. With this understanding, Destinations can select from 
+the capabilities offered the best one to serve their synchronization goal
+for the particular set of resources.</p>
+
+<p>The Capability List is based on the <code>&lt;urlset&gt;</code> format
+and is described in detail in <a href="resourcesync#CapabilityList">ResourceSync
+Core: Capability List</a>. <a href="#arch_ex_6_1">Example 6.1</a> shows 
+a Capability List where the Source offers eight capabilities: a Resource
+List, a Resource Dump, a Change List, a Change Dump, a Resource List Archive,
+a Resource Dump Archive, a Change List Archive, and a Change Dump Archive.</p>
+
+<a name="arch_ex_6_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;describedby&quot;
+         href=&quot;http://example.com/info_about_set1_of_resources.xml&quot;
+         type=&quot;application/xml&quot;/&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/resourcesync_description.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;capabilitylist&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcelist.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcelist&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcedump.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcedump&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/changelist.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;changelist&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/changedump.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;changedump&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      <span class="rs">&lt;loc&gt;http://example.com/dataset1/resourcelist-archive.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcelist-archive&quot;/&gt;</span>
+  &lt;/url&gt;
+  &lt;url&gt;
+      <span class="rs">&lt;loc&gt;http://example.com/dataset1/resourcedump-archive.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcedump-archive&quot;/&gt;</span>
+  &lt;/url&gt;
+  &lt;url&gt;
+      <span class="rs">&lt;loc&gt;http://example.com/dataset1/changelist-archive.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;changelist-archive&quot;/&gt;</span>
+  &lt;/url&gt;
+  &lt;url&gt;
+      <span class="rs">&lt;loc&gt;http://example.com/dataset1/changedump-archive.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;changedump-archive&quot;/&gt;</span>
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 6.1: A Capability List which includes Archive capabilities</p>
+
+<p>The provision of Archive capabilities and their inclusion one or more 
+Capability Lists does not change how a source would expose a ResourceSync 
+Description (see <a href="resourcesync#ResourceSyncDesc">ResourceSync 
+Core: ResourceSync Description</a>), or the discovery of the ResourceSync 
+Description document (see <a href="resourcesync#Discovery">ResourceSync 
+Core: Discovery</a>).</p>
+
+<h2>7. <a name="References">References</a></h2>
+
+<dl>
+<dt>[<a name="ref-webarch" id="ref-webarch">Web Architecture</a>]</dt>
+<dd><a href="http://www.w3.org/TR/webarch/"><cite>Architecture of the World Wide Web, Volume One</cite></a>,
+I. Jacobs and N. Walsh, Editors, World Wide Web Consortium, 15 January 2004.</dd>
+
+<dt>[<a name="ref-sitemaps">Sitemaps</a>]</dt>
+<dd><cite><a href="http://www.sitemaps.org/protocol.html">Sitemaps XML format and protocol</a></cite>,
+sitemaps.org, 27 February 2008.</dd>
+
+<dt>[<a name="w3c-datetime" id="w3c-datetime">W3C Datetime</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/1998/NOTE-datetime-19980827">Date and Time Formats</a></cite>,
+Misha Wolf, Charles Wicksteed, 15 September 1997.</dd>
+</dl>
+
+</div> <!--class="body"-->
+
+<div class="back">
+<div class="body">
+
+<h2><a name="Acknowledgments"></a>A. Acknowledgements</h2>
+
+<p>This specification is the collaborative work of 
+<a href="http://niso.org/">NISO</a> and the 
+<a href="http://www.openarchives.org/">Open Archives Initiative</a>. 
+Funding for ResourceSync is provided by the 
+<a href="http://www.sloan.org/">Alfred P. Sloan Foundation</a>. 
+UK participation is supported by 
+<a href="http://www.jisc.ac.uk/">Jisc</a>.</p>
+
+<p>
+We also thank numerous individual contributors including:
+Martin Haye (California Digital Library), 
+Richard Jones (Cottage Labs), 
+Graham Klyne (University of Oxford), 
+Stuart Lewis (University of Edinburgh), 
+Peter Murray (Lyrasis), 
+David Rosenthal (LOCKSS), 
+Shlomo Sanders (Ex Libris, Inc.), 
+Ed Summers (Library of Congress), 
+Paul Walk (UKOLN), 
+Vincent Wehren (Microsoft), 
+Zhiwu Xie (Virginia Tech), and
+Jeff Young (Online Computer Library Center).
+</p>
+
+<div class="Changelog">
+<h2><a name="Changelog">B. Change Log</a></h2>
+<table class="Changelog" summary="Change log">
+<tbody><tr>
+ <th>Date</th>
+ <th>Editor</th>
+ <th>Description</th>
+</tr>
+<tr>
+ <td>2013-06-07</td>
+ <td>simeon</td>
+ <td>version 0.9</td>
+</tr>
+<tr>
+ <td>2013-05-06</td>
+ <td>simeon</td>
+ <td>separated archives portion for version 0.6</td>
+</tr>
+<tr>
+ <td>2013-02-01</td>
+ <td>martin, herbert, rob, simeon</td>
+ <td>beta spec draft</td>
+</tr>
+<tr>
+ <td>2012-08-13</td>
+ <td>martin, herbert, simeon, bernhard</td>
+ <td>first alpha spec draft</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+    
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="img/cc-by-sa-3.0-88x31.png"/></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+</body>
+</html>
+
+
+

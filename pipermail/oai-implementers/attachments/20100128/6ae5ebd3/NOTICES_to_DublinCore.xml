@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsl:stylesheet
+   version="1.0"
+   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+>
+   <xsl:output
+      method="xml"
+      indent="yes"
+      encoding="UTF-8"
+      omit-xml-declaration="yes"
+   />
+<!--==========================================================================
+La forme canonique d'un record OAI est décrite par
+http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd
+Cependant, le fluxml résultant de l'application de ce xsl ne doit comporter
+que le sous-arbre "metadata", p.ex. :
+<?xml version="1.0" encoding="UTF-8" ?>
+<metadata>
+   <oai_dc:dc ... >
+      <dc:title> ... </dc:title>
+      <dc:creator> ... </dc:creator>
+      ...
+   </oai_dc:dc>
+</metadata>
+===========================================================================-->
+   <xsl:template match="/">
+      <metadata>
+         <oai_dc:dc
+            xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+            xmlns:dc="http://purl.org/dc/elements/1.1/"
+         >
+            <dc:title><xsl:value-of select="NOTICES/T_DORIS/TITRE" /></dc:title>
+            <xsl:for-each select="NOTICES/T_DORIS/AUTEUR1_ENS/AUTEUR1_BLOC">
+               <dc:creator><xsl:value-of select="./AUTEUR1/@display" /><xsl:if test="(./FONCTION1)"> (<xsl:value-of select="./FONCTION1/@display" />) </xsl:if></dc:creator>
+            </xsl:for-each>
+            <xsl:for-each select="NOTICES/T_DORIS/AUTEUR2_ENS/AUTEUR2_BLOC">
+               <dc:contributor><xsl:value-of select="./AUTEUR2/@display" /><xsl:if test="(./FONCTION2)"> (<xsl:value-of select="./FONCTION2/@display" />) </xsl:if></dc:contributor>
+            </xsl:for-each>
+            <dc:identifier >http://193.50.138.43:8080/flora/jsp/index_view_direct.jsp?record=default:NOTICES:<xsl:value-of select="NOTICES/DORIS_KEY" /></dc:identifier>
+            <dc:coverage>
+                <xsl:value-of select="NOTICES/T_DORIS/SUJET_LIEU" />
+                -
+                <xsl:value-of select="NOTICES/T_DORIS/COUV_DEB_DATE" />
+                -
+                <xsl:value-of select="NOTICES/T_DORIS/COUV_FIN_DATE" />
+            </dc:coverage>
+            <dc:date>
+                <xsl:value-of select="NOTICES/T_DORIS/CREAT_AN" />
+                <xsl:value-of select="NOTICES/T_DORIS/PUBL_DEB_AN" />
+                <xsl:if test="(NOTICES/T_DORIS/PUBL_DEB_AN)">
+                    - 
+                    <xsl:value-of select="NOTICES/T_DORIS/PUBL_FIN_AN" />
+                </xsl:if>
+                <xsl:value-of select="NOTICES/T_DORIS/EXEC_AN/@display" />
+            </dc:date>
+            <dc:format>
+                <xsl:choose>
+                  <xsl:when test="NOTICES/GESTION7='1'">image/jpeg</xsl:when>
+                  <xsl:when test="NOTICES/GESTION7='2'">application/pdf</xsl:when>
+                  <xsl:otherwise> </xsl:otherwise>
+                </xsl:choose>
+           </dc:format>
+            <dc:language><xsl:value-of select="NOTICES/T_DORIS/LANGUE/@display" /></dc:language>
+            <dc:publisher><xsl:value-of select="NOTICES/T_DORIS/EDITEUR/@display" /></dc:publisher>
+            <dc:rights>
+               <xsl:choose>
+                   <xsl:when test="NOTICES/GESTION6='1'">Document libre de droits</xsl:when>
+                   <xsl:when test="NOTICES/GESTION6='2'">Document sous droits</xsl:when>
+                   <xsl:otherwise>Droits d'auteur a vérifer</xsl:otherwise>
+               </xsl:choose> 
+            </dc:rights>
+            <dc:source><xsl:value-of select="NOTICES/T_DORIS/COTE" /></dc:source>
+            <dc:subject>
+               <xsl:value-of select="NOTICES/T_DORIS/SUJET_COMMUN/@display" />
+               <xsl:value-of select="NOTICES/T_DORIS/SUJET_PERS/@display" />
+            </dc:subject>
+            <dc:type>
+                  <xsl:value-of select="NOTICES/T_DORIS/TYPE/@display" />
+           </dc:type>
+            
+         </oai_dc:dc>
+      </metadata>
+</xsl:template>
+</xsl:stylesheet>
+

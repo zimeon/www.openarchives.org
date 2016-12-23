@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Error reporting from OAI implementations
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:thabing%40uiuc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000128.html">
+   <LINK REL="Next"  HREF="000130.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Error reporting from OAI implementations
+   </H1>
+    <B>Thomas G. Habing
+    </B> 
+    <A HREF="mailto:thabing%40uiuc.edu"
+       TITLE="[OAI-implementers] Error reporting from OAI implementations">thabing@uiuc.edu
+       </A><BR>
+    <I>Mon, 07 May 2001 09:58:51 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000128.html">[OAI-implementers] Error reporting from OAI implementations
+</A></li>
+        <LI> Next message: <A HREF="000130.html">[OAI-implementers] Overriding http headers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#129">[ date ]</a>
+              <a href="thread.html#129">[ thread ]</a>
+              <a href="subject.html#129">[ subject ]</a>
+              <a href="author.html#129">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Jozef,
+
+Check section 3.1.2.2, Status-Code, in the OAI spec.  Essentially this error
+would require that you return an HTTP status code of 400.  However, in
+addition to the HTTP Status-Code you may also want to send a human-readable
+Reason-Phrase (See section 6.1, Status-Line, in the HTTP protocol spec:
+<A HREF="ftp://ftp.isi.edu/in-notes/rfc2616.txt">ftp://ftp.isi.edu/in-notes/rfc2616.txt</A>).
+
+In the case of a missing metadataPrefix, I use:
+
+  400 Bad Request ('metadataPrefix' is a required parameter)
+
+Just for good measure I also send an error message in the body of the HTML
+response, such as:
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt; 
+ &lt;html xmlns=&quot;<A HREF="http://www.w3.org/1999/xhtml"">http://www.w3.org/1999/xhtml&quot;</A>&gt;
+  &lt;head&gt;
+   &lt;title&gt;400 Bad Request ('metadataPrefix' is a required parameter)&lt;/title&gt; 
+  &lt;/head&gt;
+  &lt;body&gt;
+   &lt;h4&gt;400 Bad Request ('metadataPrefix' is a required parameter)&lt;/h4&gt; 
+  
+&lt;p&gt;<A HREF="http://bolder.grainger.uiuc.edu/oaisimple/oai.asp?verb=GetRecord&identifier=oai:uiuc:184500</p">http://bolder.grainger.uiuc.edu/oaisimple/oai.asp?verb=GetRecord&amp;identifier=oai:uiuc:184500&lt;/p</A>&gt; 
+  &lt;/body&gt;
+ &lt;/html&gt;
+
+but this probably isn't that useful in a protocol which is mostly for
+machine consumption.
+
+Does anyone else think it might be useful to define some standard (or
+recommended) HTTP Reason-Phrases in the OAI spec?  This might make it easier
+to diagnose problems from web logs; instead of error '400' or '400 Bad
+Request', you've got '400 Missing metadatPrefix'.  Plus it would give
+protocol implementers one less thing to have to think about.
+
+Kind regards,
+		Tom
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+<A HREF="mailto:thabing@uiuc.edu">thabing@uiuc.edu</A>, (217) 244-7809
+
+
+&gt;<i> Jozef Kruger wrote:
+</I>&gt;<i> 
+</I>&gt;<i> Hello everybody,
+</I>&gt;<i> 
+</I>&gt;<i> As a programmer for Adlib Information Systems (the Netherlands), I am
+</I>&gt;<i> implementing the OAI protocol for our database. I have a question about
+</I>&gt;<i> the error reporting. When an OAI-call is done, with for instance the wrong
+</I>&gt;<i> parameters (e.g. metadataPrefix is missing), how do I correctly report the
+</I>&gt;<i> error. Is there a standard way for doing this? And if so, what way? :)
+</I>&gt;<i> 
+</I>&gt;<i> thanks very much.
+</I>&gt;<i> 
+</I>&gt;<i> Jozef Kruger
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000128.html">[OAI-implementers] Error reporting from OAI implementations
+</A></li>
+	<LI> Next message: <A HREF="000130.html">[OAI-implementers] Overriding http headers
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#129">[ date ]</a>
+              <a href="thread.html#129">[ thread ]</a>
+              <a href="subject.html#129">[ subject ]</a>
+              <a href="author.html#129">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

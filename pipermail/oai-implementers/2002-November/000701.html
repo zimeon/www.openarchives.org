@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: [OAI-general] OAI interop site back up - 76 of 126 sites fail ing
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ajk%40mds.rmit.edu.au">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000699.html">
+   <LINK REL="Next"  HREF="000702.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: [OAI-general] OAI interop site back up - 76 of 126 sites fail ing
+   </H1>
+    <B>'Alan Kent'
+    </B> 
+    <A HREF="mailto:ajk%40mds.rmit.edu.au"
+       TITLE="[OAI-implementers] Re: [OAI-general] OAI interop site back up - 76 of 126 sites fail ing">ajk@mds.rmit.edu.au
+       </A><BR>
+    <I>Tue, 12 Nov 2002 11:13:18 +1100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000699.html">[OAI-implementers] RE: [OAI-general] OAI interop site back up - 76
+ of 126 sites failing
+</A></li>
+        <LI> Next message: <A HREF="000702.html">[OAI-implementers] deep nesting problem in DP9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#701">[ date ]</a>
+              <a href="thread.html#701">[ thread ]</a>
+              <a href="subject.html#701">[ subject ]</a>
+              <a href="author.html#701">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Mon, Nov 11, 2002 at 10:28:33AM -0500, Young,Jeff wrote:
+&gt;<i> I see that Alan hasn't been able to do a complete harvest of our XTCat
+</I>&gt;<i> repository yet. I also know that he isn't alone in this failure. One
+</I>&gt;<i> possible reason for this might be that the XTCat repository itself is flaky.
+</I>&gt;<i> Another possibility, though, is that people are writing harvesters that
+</I>&gt;<i> ignore the potential for unavoidable problems when harvesting large
+</I>&gt;<i> repositories. With 4+ million records, XTCat is probably the largest
+</I>&gt;<i> repository out there by far. My concern, then, is that OAI seems to be fine
+</I>&gt;<i> for all the &quot;toy&quot; ;-) repositories out there now, but people planning large
+</I>&gt;<i> repositories should be skeptical about its efficacy.
+</I>&gt;<i> 
+</I>&gt;<i> I wrote some suggestions on the XTCat home page
+</I>&gt;<i> (<A HREF="http://alcme.oclc.org/xtcat/index.html">http://alcme.oclc.org/xtcat/index.html</A>) that I think can help, but I doubt
+</I>&gt;<i> that anyone has adopted any of these suggestions. These suggestions are to:
+</I>&gt;<i> 1) retry failed requests a few times before giving up, 2) retry later with
+</I>&gt;<i> the last resumptionToken rather than restart from scratch, and 3) write the
+</I>&gt;<i> responses to a file for later processing rather than perform synchronous
+</I>&gt;<i> updates to a database.
+</I>&gt;<i> 
+</I>&gt;<i> Even if XTCat is occasionally flaky, which may or may not be the case, these
+</I>&gt;<i> actions can greatly mitigate any problems that occur.
+</I>&gt;<i> 
+</I>&gt;<i> Jeff
+</I>
+I may actually turn off harvesting xtcat - I forgot it was 4,000,000
+records! I think I will run out of disk space trying to harvest it. :-)
+
+In terms of the retry suggestions, our code does remember the last
+resumption token of when it failed. Currently we do not retry immediately
+(which we could do), but rather since the harvests are scheduled regularly,
+we wait until the next harvest time comes along and attempt to resume from
+then. So we do (2) but not (1) at present. We don't do (3) because
+we find that updating the database takes about the same time as the HTTP
+request (ie, its not a significant bottle neck). (This is not always true
+- it depends on the site.) It also avoids big temporary files (our
+database compresses the records, so the database *plus* full text indexes
+is often smaller than the input data.) But if you have a slow database
+engine I understand what you are getting at.
+
+The latest request for xtcat returned a HTML page by the way.
+In the Apache generated HTML it had the text
+
+    &quot;The requested resource (/xtcat/servlet/OAIHandler) is
+    not available.&quot;
+
+A previous day we had DNS lookup error! (alcme.oclc.org).
+
+Is this any criticism of xtcat? No, more that I agree completely that
+doing long duration things over HTTP is prone to all sorts of little
+unexpected problems.
+
+So I will look at putting (1) on the feature list (immediate retries),
+but only for OAI data providers that report that they support idempotent
+resumption tokens (which xtcat I assume does).
+
+But I better find some more disk space before I try to complete the
+harvest!!!! (I have around 1,100,000 records so far.)
+
+Alan
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000699.html">[OAI-implementers] RE: [OAI-general] OAI interop site back up - 76
+ of 126 sites failing
+</A></li>
+	<LI> Next message: <A HREF="000702.html">[OAI-implementers] deep nesting problem in DP9
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#701">[ date ]</a>
+              <a href="thread.html#701">[ thread ]</a>
+              <a href="subject.html#701">[ subject ]</a>
+              <a href="author.html#701">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

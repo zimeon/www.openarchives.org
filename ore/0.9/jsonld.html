@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>ORE Specification - Resource Map Implementation in JSON-LD</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="http://www.openarchives.org/ore/1.0/ore-spec.css" type="text/css" />
+<link href="http://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+        pre,code {
+            font-family: 'Consolas', 'Inconsolata', 'Monaco', monospace;
+        }
+        .warning {
+           background-color: #fcd;
+           padding: 0.5ex;
+           margin: 2ex;
+        }
+        @media screen {
+          pre {
+            max-height: 30em;
+            border: 1px solid #888;
+            overflow: auto;
+            padding: 1em;
+          }
+        }
+        </style>
+</head>
+
+<body>
+<div id="header">
+  <table class="layout">
+    <tr>
+      <td><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="http://www.openarchives.org/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - Resource Map Implementation in JSON-LD</h2>
+  <h3 class="subTitle">2014-08-14</h3>
+</div><!--div-titleBlock-->
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.9/jsonld">http://www.openarchives.org/ore/0.9/jsonld</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/jsonld">http://www.openarchives.org/ore/jsonld</a></dd>
+  <!--
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.9/jsonld">http://www.openarchives.org/ore/0.9/jsonld</a></dd>
+  -->
+</dl>
+<dl class="EditorsContributors" prefix="pav: http://purl.org/pav/ foaf: http://xmlns.com/foaf/0.1/">
+  <dt>Editors</dt>
+  <dd><a rel="pav:authoredBy" href="http://orcid.org/0000-0001-9842-9718">
+        <span property="foaf:name">Stian Soiland-Reyes</span></a>,
+      <a href="http://www.cs.manchester.ac.uk/">University of Manchester</a></dd>
+  <dd><a rel="pav:contributedBy" href="http://orcid.org/0000-0003-4913-1485">
+        <span property="foaf:name">Matthew Gamble</span></a>,
+      <a href="http://www.cs.manchester.ac.uk/">University of Manchester</a></dd>
+  <dd><a rel="pav:contributedBy" href="http://orcid.org/0000-0002-9260-0753">
+         <span property="foaf:name">Oscar Corcho</span></a>,
+      <a href="http://www.oeg-upm.net/">Universidad Politecnica de Madrid</a></dd>
+  <dt>Contributors</dt>
+  <dd><a property="pav:contributedBy" href="http://orcid.org/0000-0002-7970-7855">
+        <span property="foaf:name">Simeon Warner</span></a>,
+      <a href="http://www.cornell.edu/">Cornell University</a></dd>
+</dl>
+
+
+<section>
+<div class="abstract" id="abstract">
+<h2>Abstract</h2>
+
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+defines standards for the description and exchange of aggregations of
+Web resources. OAI-ORE introduces the notion of a Resource Map, an
+RDF Graph [<a href="#RDF_Concepts">RDF Concepts</a>] which
+describes the Aggregation, the aggregated Resources of which it is
+composed, and the relationships between them (and/or the relationships
+between these and other resources).</p>
+
+<p>Since a Resource Map is an RDF Graph, it can be serialized using 
+any RDF syntax.  This document outlines the use of one such syntax 
+for the serialization of Resource Maps: 
+<a href="http://www.w3.org/TR/json-ld/">JSON-LD</a> [<a href="#JSON-LD">JSON-LD</a>]. 
+Two companion documents
+<a href="http://www.openarchives.org/ore/1.0/rdfa">ORE RDFa</a> [<a href="#ORE_RDFa">ORE RDFa</a>] and
+<a href="http://www.openarchives.org/ore/1.0/rdfxml">ORE RDF/XML</a> [<a href="#ORE_RDFXML">ORE RDF/XML</a>]
+outline the serialization of Resource Maps in
+<a href="http://www.w3.org/TR/rdfa-syntax/">RDFa Syntax</a> [<a href="#RDFa_Syntax">RDFa Syntax</a>] and
+<a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax</a> [<a href="#RDFXML_Syntax">RDF/XML Syntax</a>]
+respectively.</p>
+
+<p>This document is intended for implementers who have an understanding of ORE concepts
+and are responsible for the development of applications which generate or process
+Resource Maps using JSON-LD. Readers who want a high-level understanding of the motivation
+for ORE, and of the solution it provides, should read the 
+<a href="http://www.openarchives.org/ore/1.0/primer">Primer</a> [<a href="#ORE_Primer">ORE Primer</a>];
+readers who want further details of the JSON-LD syntax should consult the W3C
+<a href="http://www.w3.org/TR/json-ld/">JSON-LD specification</a> [<a href="#JSON-LD">JSON-LD</a>].</p>
+
+<p>This is one of several documents comprising the 
+<a href="http://www.openarchives.org/ore/1.0/toc">OAI-ORE specifications and user
+guides</a>.</p>
+
+<p class="warning">This is a beta specification released for public comment. Please send feedback
+to the <a href="https://groups.google.com/d/forum/oai-ore">OAI-ORE Google Group</a>.</p>
+
+</div>
+</section>
+<hr />
+
+<section id="toc">
+<h2>Table of Contents</h2>
+<p class="toc" role="directory" id="respecContents">
+<a href="#introduction">1. Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#notational_conventions">1.1 Notational Conventions</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#namespaces">1.2 Namespaces</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#conformance">1.3 Conformance</a><br />
+<a href="#syntax">2. Overview of ORE in JSON-LD syntax</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#aggregation">2.1 ResourceMap, describes, Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#isDescribedBy">2.2 isDescribedBy</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#similarTo">2.3 similarTo</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#aggregates">2.4 aggregates</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#isAggregatedBy">2.5 isAggregatedBy, isDescribedBy</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#proxies">2.6 proxies, proxyFor, proxyIn</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#provenance">2.7 lineage and provenance of proxy</a><br />
+<a href="#context">3. ORE JSON-LD context</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#additional-contexts">3.1 Additional contexts</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#context-content">3.2 Content of ORE JSON-LD context</a><br />
+<a href="#complete-example">4. Complete example</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#example-jsonld">4.1 Example JSON-LD</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#example-triples">4.2 Example triples</a><br />
+<a href="#frame">5. ORE JSON-LD frame</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#example-framing">5.1 Example framing</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;<a href="#framing-proxies">5.2 Framing proxies</a><br />
+<a href="#references">6. References</a><br />
+<a href="#acknowledgements">A. Acknowledgements</a><br />
+<a href="#changelog">B. Change Log</a>
+</p>
+</section>
+<hr />
+
+<section id="introduction">
+<h2>1. Introduction</h2>
+
+<p>
+Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+defines standards for the description and exchange of aggregations
+of web resources. The
+<a href="http://www.openarchives.org/ore/1.0/datamodel">OAI-ORE Abstract Data Model</a>
+[<a href="#ORE_Model">ORE Model</a>]
+introduces the notion of a Resource Map, an 
+<a href="http://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/#section-rdf-graph">RDF Graph</a>
+[<a href="#RDF_Concepts">RDF Concepts</a>] which describes the
+Aggregation, the aggregated Resources of which it is composed,
+and the relationships between them (and/or the relationships
+between these and other resources). A Resource Map is
+an RDF Graph and can thus be serialized using any RDF syntax.
+This document outlines the use of the JSON-LD syntax for 
+serialization of Resource Maps.
+</p>
+
+<p>
+The <a href="http://www.w3.org/TR/json-ld/">JSON-LD specification</a> [<a href="#JSON-LD">JSON-LD</a>]
+describes a format for serialising RDF
+graphs as <a href="http://www.ietf.org/rfc/rfc4627.txt">JSON</a> [<a href="#RFC4627">RFC4627</a>].
+In short, the JSON-LD format allows the use of JSON Objects (maps/dictionaries)
+to represent an RDF resource. The JSON-LD reserved key
+<a href="http://www.w3.org/TR/2014/REC-json-ld-20140116/#node-identifiers"><code>@id</code></a> 
+defines the IRI for the resource, and
+<a href="http://www.w3.org/TR/2014/REC-json-ld-20140116/#specifying-the-type"><code>@type</code></a>
+defines the <code>rdf:type</code> (class of the
+resource). Other RDF properties are defined using additional keys on the
+resource, and can point to either other JSON Objects, JSON Lists (multiple
+property relations) or to plain JSON literals.  The JSON-LD
+<a href="http://www.w3.org/TR/2014/REC-json-ld-20140116/#the-context"><code>@context</code></a>
+can define
+prefixes and short-hand names, thus avoiding the need to use full IRIs
+for identifying properties and types. This specification includes a
+<a href="#context">ORE JSON-LD context</a> for this purpose.
+</p>
+
+<p>
+JSON-LD allows for several equivalent representations of the same graph
+triples, and a compliant ORE JSON-LD document might therefore not follow the
+JSON structure exactly as listed in the examples of this document.
+See the <a href="#frame">framing section</a> for measures to
+shape an ORE JSON-LD document into a predictable JSON structure.
+</p>
+
+<section id="notational_conventions">
+<h3>1.1 Notational Conventions</h3>
+
+<p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;,
+&quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+&quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,
+&quot;NOT RECOMMENDED&quot;,
+&quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be
+interpreted as described in RFC 2119
+[<a href="http://www.ietf.org/rfc/rfc2119.txt">RFC2119</a>].</p>
+
+<p>This specification uses the common term <em>URI</em> to mean both IRI
+[<a href="http://www.ietf.org/rfc/rfc3987">RFC3987</a>]
+and URI [<a href="http://www.ietf.org/rfc/rfc3986">RFC3986</a>].
+JSON-LD <a href="http://www.w3.org/TR/json-ld/#iris">natively supports IRIs</a>
+without any special measures.
+</p>
+</section>
+
+
+<section id="namespaces">
+<h3>1.2 Namespaces</h3>
+
+<p>This specification uses the following namespaces and prefixes:</p>
+
+  <table class="namespace-table">
+   <tr>
+    <th>Prefix</th>
+    <th>Namespace URI</th>
+    <th>Description</th>
+   </tr>
+   <tr>
+    <td><span class="code">ore</span></td>
+    <td><span class="code">http://www.openarchives.org/ore/terms/</span></td>
+    <td><a href="http://www.openarchives.org/ore/1.0/vocabulary">ORE</a> vocabulary</td>
+   </tr>
+   <tr>
+    <td><span class="code">rdf</span></td>
+    <td><span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#</span></td>
+    <td><a href="http://www.w3.org/TR/rdf-schema/">RDF</a> built-in vocabulary </td>
+   </tr>
+   <tr>
+    <td><span class="code">rdfs</span></td>
+    <td><span class="code">http://www.w3.org/2000/01/rdf-schema#</span></td>
+    <td><a href="http://www.w3.org/TR/rdf-schema/">RDFS</a> vocabulary </td>
+   </tr>
+   <tr>
+    <td><span class="code">owl</span></td>
+    <td><span class="code">http://www.w3.org/2002/07/owl#</span></td>
+    <td><a href="http://www.w3.org/TR/owl2-primer/">OWL</a> vocabulary </td>
+   </tr>
+   <tr>
+    <td><span class="code">dcterms</span></td>
+    <td><span class="code">http://purl.org/dc/terms/</span></td>
+    <td><a href="http://dublincore.org/documents/2012/06/14/dcmi-terms/">Dublin Core Terms</a></td>
+   </tr>
+   <tr>
+    <td><span class="code">dcmitype</span></td>
+    <td><span class="code">http://purl.org/dc/dcmitype/</span></td>
+    <td><a href="http://dublincore.org/documents/2012/06/14/dcmi-terms/?v=dcmitype#H7">Dublin Core DCMI types</a></td>
+   </tr>
+   <tr>
+    <td><span class="code">fabio</span></td>
+    <td><span class="code">http://purl.org/spar/fabio/</span></td>
+    <td><a href="http://purl.org/spar/fabio/">FaBiO</a>, the FRBR-aligned Bibliographic Ontology</td>
+   </tr>
+   <tr>
+    <td><span class="code">foaf</span></td>
+    <td><span class="code">http://xmlns.com/foaf/0.1/</span></td>
+    <td><a href="http://xmlns.com/foaf/spec/">FOAF</a> vocabulary</td>
+  </tr>
+   <tr>
+    <td><span class="code">prov</span></td>
+    <td><span class="code">http://w3.org/ns/prov#/</span></td>
+    <td><a href="http://www.w3.org/TR/prov-o/">PROV ontology</a></td>
+   </tr>
+   <tr>
+    <td><span class="code">pav</span></td>
+    <td><span class="code">http://purl.org/pav/</span></td>
+    <td><a href="http://purl.org/pav/html">PAV</a> ontology</td>
+   </tr>
+   <tr>
+    <td><span class="code">schema</span></td>
+    <td><span class="code">http://schema.org/</span></td>
+    <td><a href="http://schema.org/">schema.org</a> vocabulary</td>
+  </tr>
+  </table>
+</section>
+
+<section id="conformance">
+<h3>1.3 Conformance</h3>
+
+<p>The Internet Media Type (MIME type) for JSON-LD is
+<a href="http://www.w3.org/TR/json-ld/#application-ld-json"><code>application/ld+json</code></a>.
+Where JSON-LD is used to provide representations of ORE Resource Maps, that
+media type SHOULD be used. For backwards compatibility, the JSON-LD
+specification allows for the alternative content-type of
+<code>application/json</code>, in which case the
+<a href="http://www.w3.org/TR/json-ld/#interpreting-json-as-json-ld">JSON-LD context Link header</a>
+MUST be present.
+</p>
+
+<p>A consumer of ORE Resource Maps encoded in
+JSON-LD SHOULD support all of the syntactic conventions defined by
+JSON-LD. This allowance for different syntactic conventions is
+supported by conformant
+<a href="http://json-ld.org/#developers">JSON-LD parsers</a> 
+[see <a href="#JSON-LD-Community">JSON-LD Community</a>].
+</p>
+</section>
+</section>
+
+
+<section id="syntax">
+<h2>2. Overview of ORE in JSON-LD syntax</h2>
+
+<p>
+An ORE Resource Map expressed as a JSON-LD resource MUST be valid
+<a href="https://www.ietf.org/rfc/rfc4627">JSON</a> [<a href="#RFC4627">RFC4627</a>], and
+MUST be valid <a href="http://www.w3.org/TR/json-ld/">JSON-LD</a> [<a href="#JSON-LD">JSON-LD</a>].
+</p>
+
+<p>
+An ORE JSON-LD resource MUST define a JSON-LD <code>@context</code>,
+which SHOULD be <code>https://w3id.org/ore/context</code>
+(see <a href="#context">ORE JSON-LD context</a> below).
+</p>
+<p>
+The <code>@type</code> SHOULD be provided for ORE resources of type
+<code>Aggregation</code>,
+<code>ResourceMap</code>,
+<code>Proxy</code>, and MAY be provided for resources of type
+<code>AggregatedResource</code> and others.
+</p>
+
+<section id="aggregation">
+<h4>ResourceMap, describes, Aggregation</h4>
+<p>
+The <a href="http://www.openarchives.org/ore/1.0/datamodel#Resource_Map"><code>ResourceMap</code></a>
+SHOULD be the top-level JSON object
+(indicating that the JSON-LD document <em>is</em> the resource map),
+in which case it MUST indicate which
+<a href="http://www.openarchives.org/ore/1.0/datamodel#Aggregation"><code>Aggregation</code></a>
+it <a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-describes"><code>describes</code></a>:
+</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  <strong>
+  "@type": "ResourceMap",
+  "@id": "",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation"
+  }
+  </strong>
+}
+</pre>
+
+<p>The Aggregation MUST have an <code>@id</code> to identify it; this URI SHOULD be absolute.
+The ResourceMap MAY have an identifier using <code>@id</code>, which MUST be different from
+the Aggregation URI.</p>
+</section>
+
+
+<section id="isDescribedBy">
+<h4>isDescribedBy</h4>
+<p>The <code>Aggregation</code> MAY list
+<a href="http://www.openarchives.org/ore/1.0/datamodel#ReM-to-aggr">other resource maps</a>
+it <a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-is-described-by"><code>isDescribedBy</code></a>,
+which SHOULD be given as a JSON list of URIs:</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      <strong>
+      "isDescribedBy": [
+          "http://example.com/aggregation-1.rdf",
+          "http://example.com/aggregation-1.jsonld"
+      ]
+      </strong>
+  }
+}
+</pre>
+</section>
+
+
+<section id="similarTo">
+<h4>similarTo</h4>
+
+<p>
+If an <code>Aggregation</code> can be considered
+<a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-similarTo">similar to</a> another
+resource, like a journal article identified with a DOI, then this MAY be indicated using
+<code>similarTo</code>:
+</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      <strong>
+      "similarTo": "http://dx.doi.org/10.1002/cpe.1594"
+      </strong>
+  }
+}
+</pre>
+</section>
+
+
+<section id="aggregates">
+<h4>aggregates</h4>
+<p>All resources aggregated by this <code>Aggregation</code> MUST be listed using
+<a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-aggregates"><code>aggregates</code></a>,
+which SHOULD be given as a JSON list. The list MUST
+contain either URI strings or JSON Objects, which SHOULD specify their URI
+with <code>@id</code>:</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      <strong>
+      "aggregates": [
+          "http://example.com/document-1",
+          { "@id": "http://other.example.org/data-2",
+            "@type": "AggregatedResource"
+          }
+      ]
+      </strong>
+  }
+}
+</pre>
+
+<p>
+Aggregated resources MAY specify their
+<code>"@type": "<a href="http://www.openarchives.org/ore/1.0/vocabulary#aggr_res">AggregatedResource</a>"</code>.
+If a
+more specific type of the resource is known (e.g. <a href="http://purl.org/dc/dcmitype/MovingImage">dcmitype:MovingImage</a> or
+<a href="http://purl.org/spar/fabio/MagazineNewsItem">fabio:MagazineNewsItem</a>),
+it is RECOMMENDED to specify this using <code>@type</code> and the full URI of
+the class. A JSON List MAY be used to indicate multiple types. Example:
+</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      <strong>
+      "aggregates": [
+          "http://example.com/document-1",
+          { "@id": "http://other.example.org/data-2",
+            "@type": ["AggregatedResource",
+                      "http://purl.org/dc/dcmitype/Dataset",
+                      "http://www.w3.org/ns/dcat#Dataset"]
+          }
+      ]
+      </strong>
+  }
+}
+</pre>
+
+<p>
+Additional descriptions of aggregated resources MAY be provided using other RDF vocabularies
+following the <a href="http://www.w3.org/TR/json-ld/">JSON-LD syntax</a>.
+The example below shows how to to indicate the <a href="http://www.w3.org/TR/prov-primer/">provenance</a>
+of an aggregated resource using
+<a href="http://www.w3.org/TR/prov-o/">PROV-O</a> [<a href="#PROV-O">PROV-O</a>]
+and <a href="http://purl.org/pav/html">PAV</a> [<a href="#PAV">PAV</a>].
+When using third-party vocabularies it may be desirable to add prefixes using
+<a href="#additional-contexts">additional contexts</a> as a list.
+</p>
+
+<pre>
+{ "@context": [
+    "https://w3id.org/ore/context",
+    {
+      "foaf": "http://xmlns.com/foaf/0.1/",
+      "schema": "http://schema.org/",
+      "prov": "http://www.w3.org/ns/prov#",
+      "pav": "http://purl.org/pav/"
+    }
+  ],
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "aggregates": [
+          "http://example.com/document-1",
+          {  "@id": "http://example.com/blog/",
+          <strong>
+             "@type": "schema:BlogPosting",
+             "prov:wasDerivedFrom": {
+                 "@id": "http://example.com/document-1"
+             },
+             "pav:authoredBy": {
+                "@id": "http://orcid.org/0000-0001-9842-9718",
+                "foaf:name": "Stian Soiland-Reyes"
+             }
+          </strong>
+          }
+      ]
+  }
+}
+</pre>
+</section>
+
+<section id="isAggregatedBy">
+<h4>isAggregatedBy, isDescribedBy</h4>
+<p>
+If a resource is also part of a <em>different</em> <code>Aggregation</code>,
+then this can be indicated with
+<a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-is-aggregated-by"><code>isAggregatedBy</code></a>:
+</p>
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "aggregates": [
+          { "@id": "http://other.example.org/data-2",
+          <strong>
+            "isAggregatedBy": {
+                "@id": "http://other.example.org/aggregation-2",
+                "@type": "Aggregation"
+            }
+          </strong>
+          }
+      ]
+   }
+}
+</pre>
+
+<p>
+It is NOT RECOMMENDED to detail the <a href="#aggregates"><code>aggregates</code></a>
+of the other <code>Aggregation</code>, but one MAY use
+<a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-is-described-by"><code>isDescribedBy</code></a>
+to indicate its <code>ResourceMap</code> representations.</p>
+
+<p>In the special case of <em>aggregating another Aggregation</em>,
+that SHOULD be typed as an <code>Aggregation</code>,
+and there SHOULD be at least one <code>ResourceMap</code>
+representation indicated with <code>isDescribedBy</code>:
+</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "aggregates": [
+          { "@id": "http://other.example.org/aggregation-2",
+          <strong>
+            "@type": "Aggregation",
+            "isDescribedBy": [ "http://other.example.org/aggregation-2.rdf",
+                               "http://other.example.org/aggregation-2.jsonld" ]
+          </strong>
+          }
+      ]
+   }
+}
+</pre>
+</section>
+
+
+<section id="proxies">
+<h4>proxies, proxyFor, proxyIn</h4>
+
+<p>
+A <a href="http://www.openarchives.org/ore/1.0/datamodel#Proxies">Proxy</a>
+represents an <code>AggregatedResource</code> as it exists in a specific <code>Aggregation</code>,
+which can be used as a
+<a href="http://www.openarchives.org/ore/1.0/datamodel#ProxyTarget">subject in other annotations</a>
+and aggregations. Proxies
+SHOULD be provided for each aggregated resource:
+</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "aggregates": [
+          { "@id": "http://example.com/document-1" }
+      ],
+      <strong>
+      "proxies": [
+              { "@id": "urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2",
+                "@type": "Proxy",
+                "proxyFor": "http://example.com/document-1" }
+      ]
+      </strong>
+  }
+}
+</pre>
+
+<p>
+The property <code>proxies</code> SHOULD be a JSON List of resources,
+each of which SHOULD have
+<code>"@type": "<a href="http://www.openarchives.org/ore/1.0/vocabulary#proxy">Proxy</a>"</code> and MUST
+identify the aggregated resource using <a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-proxyFor"><code>proxyFor</code></a>.
+The resource identified by <code>proxyFor</code> MUST be listed under <a href="#aggreates"><code>aggregates</code></a>.
+</p>
+<p>
+The proxy MUST be identified with an URI using <code>@id</code>, which MAY
+be a randomly generated <a href="http://www.ietf.org/rfc/rfc4122.txt">UUID</a>
+[<a href="RFC4122">UUID</a>]
+using the <code>urn:uuuid:</code> scheme.
+</p>
+
+<p>Note that, unlike in other serializations of ORE resource maps,
+the property <a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-proxyIn"><code>proxyIn</code></a>
+SHOULD NOT be given for proxies listed under
+<code>proxies</code> (it is already given as <code>proxies</code> is a
+<a href="http://www.w3.org/TR/json-ld/#reverse-properties"><code>@reverse</code></a>
+property for <code>proxyIn</code>);
+however in the special case of <em>aggregating
+a proxy</em>, that MUST specify <code>proxyIn</code>, which MUST be a different Aggregation:</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "aggregates": [
+          { "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602",
+<strong>
+            "@type": "Proxy",
+            "proxyFor": "http://example.com/document-1",
+            "proxyIn": "http://other.example.org/aggregation-3"
+</strong>
+          }
+      ]
+  }
+}
+</pre>
+<p>
+Such "external" proxies MUST NOT be listed under <code>proxies</code> as a proxy can
+only be <code>proxyFor</code> for a single <code>Aggregation</code>, and an
+aggregation SHOULD NOT aggregate its own proxies. The <code>proxyIn</code>
+MAY be expanded to a JSON Object with <code>@id</code> and <code>"@type": "Aggregation"</code>
+to provide <code>isDescribedBy</code> .
+</p>
+</section>
+
+<section id="provenance">
+<h4>lineage and provenance of proxy</h4>
+<p>
+If an aggregated resource was <em>discovered in a different aggregation</em>, this
+<a href="http://www.openarchives.org/ore/1.0/vocabulary#ore-lineage">lineage</a>
+can be described between the corresponding proxies:
+</p>
+
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "aggregates": [
+          { "@id": "http://example.com/document-1" },
+      ],
+      "proxies": [
+              { "@id": "urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2",
+                "@type": "Proxy",
+                "proxyFor": "http://example.com/document-1"
+                <strong>
+                "lineage" {
+                    "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602",
+                    "@type": "Proxy",
+                    "proxyFor": "http://example.com/document-1",
+                    "proxyIn": "http://other.example.org/aggregation-3"
+                }
+                </strong>
+      ]
+  }
+}
+</pre>
+
+<p>
+Other kinds of <em>provenance of a proxy</em> (e.g. who aggregated the given resource)
+MAY be stated using vocabularies like
+<a href="http://www.w3.org/TR/prov-o/">PROV-O</a>
+and <a href="http://purl.org/pav/html">PAV</a>. The example below says that Matthew
+aggregated <code>document-1</code> (e.g. created its proxy in this aggregation)
+on the 17th of May 2014 (without implying that he created <code>document-1</code>):
+</p>
+
+<pre>
+{ "@context": [
+    "https://w3id.org/ore/context",
+    {
+      "foaf": "http://xmlns.com/foaf/0.1/",
+      "prov": "http://www.w3.org/ns/prov#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "prov:generatedAtTime": { "@type": "xsd:dateTime" }
+    }
+  ],
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "aggregates": [
+          "http://example.com/document-1"
+      ],
+      "proxies": [
+                  { "@id": "urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2",
+                    "@type": "Proxy",
+                    "proxyFor": "http://example.com/document-1",
+<strong>
+                    "prov:attributedTo": {
+                        "@id": "http://orcid.org/0000-0003-4913-1485",
+                        "foaf:name": "Matthew Gamble"
+                    },
+                    "prov:generatedAtTime": "2014-05-17T14:00:00Z"
+</strong>
+                  }
+      ]
+  }
+}
+</pre>
+
+</section>
+</section>
+
+
+<section id="context">
+
+<h2>3. ORE JSON-LD context</h2>
+
+<p>
+A <a href="http://www.w3.org/TR/2014/REC-json-ld-20140116/#the-context">JSON-LD context</a>
+defines how to understand identifiers in a JSON-LD document.
+The <a href="context.json">ORE context</a> thus defines how to
+interpret documents according to the <a href="#syntax">ORE
+JSON-LD syntax</a> as defined above. This allows
+these documents to be processed using <a
+href="http://json-ld.org/#developers">JSON-LD tools</a>, for instance to
+convert to other RDF formats.
+</p>
+
+<p>
+The context is available from <a href="https://w3id.org/ore/context">https://w3id.org/ore/context</a>,
+from where it SHOULD be included using the <code>@context</code>
+keyword at the top-level node of ORE JSON-LD documents:
+</p>
+
+<pre>
+  { <strong>"@context": "https://w3id.org/ore/context"</strong>,
+    "@type": "ResourceMap",
+    "...": ""
+  }
+</pre>
+
+
+<section id="additional-contexts">
+<h3>3.1 Additional contexts</h3>
+<p>
+In order to facilitate usage of additional RDF vocabularies,
+one MAY instead specify
+<a href="http://www.w3.org/TR/json-ld/#the-context"><code>@context</code></a>
+as a JSON List which includes the
+ORE context and additional contexts as either URIs or
+JSON objects:
+</p>
+
+<pre>
+{ "@context": [
+    "https://w3id.org/ore/context",
+    <strong>"http://example.com/other/context",
+    {
+      "prov": "http://www.w3.org/ns/prov#",
+      "xsd": "http://www.w3.org/2001/XMLSchema#",
+      "prov:generatedAtTime": { "@type": "xsd:dateTime" }
+    }</strong>
+  ],
+  "@type": "ResourceMap",
+  "...": ""
+}
+</pre>
+</section>
+
+<section id="context-content">
+<h3>3.2 Content of ORE JSON-LD context</h3>
+
+<!--
+<div class="draft">
+An alternative context is available at
+<a href="https://w3id.org/ore/context-ore">https://w3id.org/ore/context-ore</a>,
+which defines ORE terms with the <code>ore:</code> prefix. This context MAY be used instead,
+for instance to avoid naming conflicts when including the ORE context in another JSON-LD context.
+</div>
+-->
+
+<p>
+The content of the <a href="context.json">ORE JSON-LD context</a> at time of writing is:
+</p>
+<pre>
+{
+  "@context" : {
+    "Proxy" : {
+      "@id" : "http://www.openarchives.org/ore/terms/Proxy"
+    },
+    "proxyFor" : {
+      "@id" : "http://www.openarchives.org/ore/terms/proxyFor",
+      "@type" : "@id"
+    },
+    "lineage" : {
+      "@id" : "http://www.openarchives.org/ore/terms/lineage",
+      "@type" : "@id"
+    },
+    "describes" : {
+      "@id" : "http://www.openarchives.org/ore/terms/describes",
+      "@type" : "@id"
+    },
+    "AggregatedResource" : {
+      "@id" : "http://www.openarchives.org/ore/terms/AggregatedResource"
+    },
+    "ResourceMap" : {
+      "@id" : "http://www.openarchives.org/ore/terms/ResourceMap"
+    },
+    "similarTo" : {
+      "@id" : "http://www.openarchives.org/ore/terms/similarTo",
+      "@type" : "@id"
+    },
+    "Aggregation" : {
+      "@id" : "http://www.openarchives.org/ore/terms/Aggregation"
+    },
+    "isAggregatedBy" : {
+      "@id" : "http://www.openarchives.org/ore/terms/isAggregatedBy",
+      "@type" : "@id"
+    },
+    "proxyIn" : {
+      "@id" : "http://www.openarchives.org/ore/terms/proxyIn",
+      "@type" : "@id"
+    },
+    "aggregates" : {
+      "@id" : "http://www.openarchives.org/ore/terms/aggregates",
+      "@type" : "@id"
+    },
+    "isDescribedBy" : {
+      "@id" : "http://www.openarchives.org/ore/terms/isDescribedBy",
+      "@type" : "@id"
+    },
+    "proxies": {
+      "@reverse" : "http://www.openarchives.org/ore/terms/proxyIn"
+    }
+  }
+}
+</pre>
+</section>
+</section>
+
+
+<section id="complete-example">
+<h2>4. Complete example</h2>
+<p>
+The following <a href="jsonld-examples/complete-example.json">complete example</a>
+shows a <em>ResourceMap</em> describing <code>aggregation-1</code>
+containing 4 resources (<code>document-1</code>,
+<code>data-2</code>,  <code>aggregation-3</code> and
+a <em>proxy for document-1 within aggregation-3</em>).  <code>data-2</code> is also
+known to be aggregated by <code>aggregation-2</code>.
+</p>
+<p>
+The aggregated resource <code>aggregation-3</code> is itself an aggregation
+with its own resource maps and proxies, but they are not detailed fully here (except
+for the aggregated external proxy <code>urn:uuid:095612..</code>).
+</p>
+<p>
+Finally our aggregation has its own set of
+identified <code>proxies</code>, one for each aggregated resource.
+Here, the lineage of
+<code>data-2</code>'s aggregation is shown to be originating from
+<code>aggregation-2</code>.
+</p>
+
+
+<section id="example-jsonld">
+<h3>4.1 Example JSON-LD</h3>
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+  "@id": "",
+  "@type": "ResourceMap",
+  "describes": {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "Aggregation",
+      "isDescribedBy": [
+          "http://example.com/aggregation-1.rdf",
+          "http://example.com/aggregation-1.jsonld"
+      ],
+      "aggregates": [
+          "http://example.com/document-1",
+          { "@id": "http://other.example.org/data-2",
+            "isAggregatedBy": {
+                "@id": "http://other.example.org/aggregation-2",
+                "@type": "Aggregation",
+                "isDescribedBy": "http://other.example.org/aggregation-2.rdf"
+            }
+          },
+          { "@id": "http://other.example.org/aggregation-3",
+            "@type": "Aggregation",
+            "isDescribedBy": [ "http://other.example.org/aggregation-3.rdf",
+                               "http://other.example.org/aggregation-3.jsonld" ]
+          },
+          { "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602",
+            "@type": "Proxy",
+            "proxyFor": "http://example.com/document-1",
+            "proxyIn": "http://other.example.org/aggregation-3"
+          }
+      ],
+      "proxies": [
+              { "@id": "urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2",
+                "@type": "Proxy",
+                "proxyFor": "http://example.com/document-1"
+              },
+              { "@id": "urn:uuid:05bd5e0c-94c7-4856-a53f-7f6cf0756751",
+                "@type": "Proxy",
+                "proxyFor": "http://other.example.org/data-2",
+                "lineage": {
+                   "@id": "urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66",
+                   "@type": "Proxy",
+                   "proxyFor": "http://other.example.org/data-2",
+                   "proxyIn": "http://other.example.org/aggregation-2" }
+              },
+              { "@id": "urn:uuid:c0f5f1ad-5269-4cfc-b9f5-e9621c499f53",
+                "@type": "Proxy",
+                "proxyFor": "http://other.example.org/aggregation-3"
+              },
+              { "@id": "urn:uuid:318745e0-5ea4-4a68-8a0a-ab27ab96985a",
+                "@type": "Proxy",
+                "proxyFor": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602"
+              }
+      ],
+      "similarTo": "http://dx.doi.org/10.1002/cpe.1594"
+  }
+}
+</pre>
+</section>
+
+<section id="example-triples">
+<h3>4.2 Example triples</h3>
+
+<p>If processed with the <a href="#context">ORE JSON-LD context</a> and
+<a href="http://www.w3.org/TR/json-ld-api/#deserialize-json-ld-to-rdf-algorithm">using a JSON-LD library to generate RDF</a>,
+the following <a href="jsonld-examples/complete-triples.nt">triples</a> are expressed:</p>
+
+<pre>
+&lt;&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/ResourceMap&gt; .
+&lt;&gt; &lt;http://www.openarchives.org/ore/terms/describes&gt; &lt;http://example.com/aggregation-1&gt; .
+
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Aggregation&gt; .
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.openarchives.org/ore/terms/isDescribedBy&gt; &lt;http://example.com/aggregation-1.jsonld&gt; .
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.openarchives.org/ore/terms/isDescribedBy&gt; &lt;http://example.com/aggregation-1.rdf&gt; .
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.openarchives.org/ore/terms/similarTo&gt; "http://dx.doi.org/10.1002/cpe.1594" .
+
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.openarchives.org/ore/terms/aggregates&gt; &lt;http://example.com/document-1&gt; .
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.openarchives.org/ore/terms/aggregates&gt; &lt;http://other.example.org/aggregation-3&gt; .
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.openarchives.org/ore/terms/aggregates&gt; &lt;http://other.example.org/data-2&gt; .
+&lt;http://example.com/aggregation-1&gt; &lt;http://www.openarchives.org/ore/terms/aggregates&gt; &lt;urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602&gt; .
+
+&lt;http://other.example.org/data-2&gt; &lt;http://www.openarchives.org/ore/terms/isAggregatedBy&gt; &lt;http://other.example.org/aggregation-2&gt; .
+
+&lt;http://other.example.org/aggregation-2&gt; &lt;http://www.openarchives.org/ore/terms/isDescribedBy&gt; &lt;http://other.example.org/aggregation-2.rdf&gt; .
+&lt;http://other.example.org/aggregation-2&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Aggregation&gt; .
+
+&lt;http://other.example.org/aggregation-3&gt; &lt;http://www.openarchives.org/ore/terms/isDescribedBy&gt; &lt;http://other.example.org/aggregation-3.jsonld&gt; .
+&lt;http://other.example.org/aggregation-3&gt; &lt;http://www.openarchives.org/ore/terms/isDescribedBy&gt; &lt;http://other.example.org/aggregation-3.rdf&gt; .
+&lt;http://other.example.org/aggregation-3&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Aggregation&gt; .
+
+
+&lt;urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Proxy&gt; .
+&lt;urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2&gt; &lt;http://www.openarchives.org/ore/terms/proxyFor&gt; &lt;http://example.com/document-1&gt; .
+&lt;urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2&gt; &lt;http://www.openarchives.org/ore/terms/proxyIn&gt; &lt;http://example.com/aggregation-1&gt; .
+
+
+&lt;urn:uuid:05bd5e0c-94c7-4856-a53f-7f6cf0756751&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Proxy&gt; .
+&lt;urn:uuid:05bd5e0c-94c7-4856-a53f-7f6cf0756751&gt; &lt;http://www.openarchives.org/ore/terms/proxyFor&gt; &lt;http://other.example.org/data-2&gt; .
+&lt;urn:uuid:05bd5e0c-94c7-4856-a53f-7f6cf0756751&gt; &lt;http://www.openarchives.org/ore/terms/proxyIn&gt; &lt;http://example.com/aggregation-1&gt; .
+&lt;urn:uuid:05bd5e0c-94c7-4856-a53f-7f6cf0756751&gt; &lt;http://www.openarchives.org/ore/terms/lineage&gt; &lt;urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66&gt; .
+
+&lt;urn:uuid:c0f5f1ad-5269-4cfc-b9f5-e9621c499f53&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Proxy&gt; .
+&lt;urn:uuid:c0f5f1ad-5269-4cfc-b9f5-e9621c499f53&gt; &lt;http://www.openarchives.org/ore/terms/proxyFor&gt; &lt;http://other.example.org/aggregation-3&gt; .
+&lt;urn:uuid:c0f5f1ad-5269-4cfc-b9f5-e9621c499f53&gt; &lt;http://www.openarchives.org/ore/terms/proxyIn&gt; &lt;http://example.com/aggregation-1&gt; .
+
+&lt;urn:uuid:318745e0-5ea4-4a68-8a0a-ab27ab96985a&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Proxy&gt; .
+&lt;urn:uuid:318745e0-5ea4-4a68-8a0a-ab27ab96985a&gt; &lt;http://www.openarchives.org/ore/terms/proxyFor&gt; &lt;urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602&gt; .
+&lt;urn:uuid:318745e0-5ea4-4a68-8a0a-ab27ab96985a&gt; &lt;http://www.openarchives.org/ore/terms/proxyIn&gt; &lt;http://example.com/aggregation-1&gt; .
+
+
+&lt;urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Proxy&gt; .
+&lt;urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66&gt; &lt;http://www.openarchives.org/ore/terms/proxyFor&gt; &lt;http://other.example.org/data-2&gt; .
+&lt;urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66&gt; &lt;http://www.openarchives.org/ore/terms/proxyIn&gt; &lt;http://other.example.org/aggregation-2&gt; .
+
+&lt;urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602&gt; &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#type&gt; &lt;http://www.openarchives.org/ore/terms/Proxy&gt; .
+&lt;urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602&gt; &lt;http://www.openarchives.org/ore/terms/proxyFor&gt; &lt;http://example.com/document-1&gt; .
+&lt;urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602&gt; &lt;http://www.openarchives.org/ore/terms/proxyIn&gt; &lt;http://other.example.org/aggregation-3&gt; .
+</pre>
+
+</section>
+</section>
+
+
+<section id="frame">
+<h2>5. ORE JSON-LD frame</h2>
+
+<p>
+JSON-LD, as all RDF serialization, allow many degrees of freedom for
+representing the same RDF graph. Thus, an ORE Resource Map could appear
+in other JSON structures than the one defined in this document. This could
+particularly be the case if converting an ORE Resource Map to JSON-LD using
+regular RDF libraries.
+</p>
+
+<p>
+By facilitating <a href="http://json-ld.org/spec/latest/json-ld-framing/">JSON-LD Framing</a>
+[<a href="#JSON-LD-Framing">JSON-LD Framing</a>]
+with the <a href="frame.json">ORE JSON-LD Frame</a>, followed by
+<a href="http://www.w3.org/TR/json-ld-api/#compaction-algorithms">JSON-LD Compaction</a>,
+a predictable JSON structure is returned that can be used by consumers without
+requiring any further JSON-LD or RDF knowledge.
+</p>
+
+<p class="warning">
+  <strong>Note:</strong>
+  At time of writing,
+  <a href="http://json-ld.org/spec/latest/json-ld-framing/">JSON-LD Framing</a>
+  a <em>draft specification</em> which is still subject to change.
+  This section is therefore to be considered as <em>experimental</em>.
+  The ORE JSON-LD Frame at <a href="https://w3id.org/ore/frame">https://w3id.org/ore/frame</a>
+  might subsequently be updated independently of this document in order to be compliant with
+  later updates of the JSON-LD Framing specification.
+</p>
+
+<p>
+The <a href="frame.json">ORE JSON-LD frame</a> is available at
+<a href="https://w3id.org/ore/frame">https://w3id.org/ore/frame</a>, which
+at time of writing is:
+</p>
+
+<pre id="frame.json">
+ { "@context": "https://w3id.org/ore/context",
+   "describes": {
+     "@type": "Aggregation",
+     "isDescribedBy":  { "@embed": false } ,
+     "aggregates":  { "@embed": true }  ,
+     "proxies":  { "@embed": true }
+   }
+ }
+</pre>
+
+
+<section id="example-framing">
+<h3>5.1 Example framing</h3>
+<p>For example, say we have a <a href="jsonld-examples/unstructured.json">&quot;unstructured&quot;
+JSON-LD ORE manifest</a>
+after serializing a Resource Map as triples in JSON-LD:
+</p>
+
+<pre class="big-example">
+{
+  "@graph": [
+    {
+      "@id": "http://example.com/aggregation-1",
+      "@type": "http://www.openarchives.org/ore/terms/Aggregation",
+      "http://www.openarchives.org/ore/terms/aggregates": [
+        {
+          "@id": "http://example.com/document-1"
+        },
+        {
+          "@id": "http://other.example.org/data-2"
+        },
+        {
+          "@id": "http://other.example.org/aggregation-3"
+        },
+        {
+          "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602"
+        }
+      ],
+      "http://www.openarchives.org/ore/terms/isDescribedBy": [
+        {
+          "@id": "http://example.com/aggregation-1.rdf"
+        },
+        {
+          "@id": "http://example.com/aggregation-1.jsonld"
+        }
+      ],
+      "http://www.openarchives.org/ore/terms/similarTo": {
+        "@id": "http://dx.doi.org/10.1002/cpe.1594"
+      }
+    },
+    {
+      "@id": "index.html",
+      "@type": "http://www.openarchives.org/ore/terms/ResourceMap",
+      "http://www.openarchives.org/ore/terms/describes": {
+        "@id": "http://example.com/aggregation-1"
+      }
+    },
+    {
+      "@id": "http://other.example.org/aggregation-2",
+      "@type": "http://www.openarchives.org/ore/terms/Aggregation",
+      "http://www.openarchives.org/ore/terms/isDescribedBy": {
+        "@id": "http://other.example.org/aggregation-2.rdf"
+      }
+    },
+    {
+      "@id": "http://other.example.org/aggregation-3",
+      "@type": "http://www.openarchives.org/ore/terms/Aggregation",
+      "http://www.openarchives.org/ore/terms/isDescribedBy": [
+        {
+          "@id": "http://other.example.org/aggregation-3.rdf"
+        },
+        {
+          "@id": "http://other.example.org/aggregation-3.jsonld"
+        }
+      ]
+    },
+    {
+      "@id": "http://other.example.org/data-2",
+      "http://www.openarchives.org/ore/terms/isAggregatedBy": {
+        "@id": "http://other.example.org/aggregation-2"
+      }
+    },
+    {
+      "@id": "urn:uuid:05bd5e0c-94c7-4856-a53f-7f6cf0756751",
+      "@type": "http://www.openarchives.org/ore/terms/Proxy",
+      "http://www.openarchives.org/ore/terms/lineage": {
+        "@id": "urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66"
+      },
+      "http://www.openarchives.org/ore/terms/proxyFor": {
+        "@id": "http://other.example.org/data-2"
+      },
+      "http://www.openarchives.org/ore/terms/proxyIn": {
+        "@id": "http://example.com/aggregation-1"
+      }
+    },
+    {
+      "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602",
+      "@type": "http://www.openarchives.org/ore/terms/Proxy",
+      "http://www.openarchives.org/ore/terms/proxyFor": {
+        "@id": "http://example.com/document-1"
+      },
+      "http://www.openarchives.org/ore/terms/proxyIn": {
+        "@id": "http://other.example.org/aggregation-3"
+      }
+    },
+    {
+      "@id": "urn:uuid:318745e0-5ea4-4a68-8a0a-ab27ab96985a",
+      "@type": "http://www.openarchives.org/ore/terms/Proxy",
+      "http://www.openarchives.org/ore/terms/proxyFor": {
+        "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602"
+      },
+      "http://www.openarchives.org/ore/terms/proxyIn": {
+        "@id": "http://example.com/aggregation-1"
+      }
+    },
+    {
+      "@id": "urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66",
+      "@type": "http://www.openarchives.org/ore/terms/Proxy",
+      "http://www.openarchives.org/ore/terms/proxyFor": {
+        "@id": "http://other.example.org/data-2"
+      },
+      "http://www.openarchives.org/ore/terms/proxyIn": {
+        "@id": "http://other.example.org/aggregation-2"
+      }
+    },
+    {
+      "@id": "urn:uuid:c0f5f1ad-5269-4cfc-b9f5-e9621c499f53",
+      "@type": "http://www.openarchives.org/ore/terms/Proxy",
+      "http://www.openarchives.org/ore/terms/proxyFor": {
+        "@id": "http://other.example.org/aggregation-3"
+      },
+      "http://www.openarchives.org/ore/terms/proxyIn": {
+        "@id": "http://example.com/aggregation-1"
+      }
+    },
+    {
+      "@id": "urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2",
+      "@type": "http://www.openarchives.org/ore/terms/Proxy",
+      "http://www.openarchives.org/ore/terms/proxyFor": {
+        "@id": "http://example.com/document-1"
+      },
+      "http://www.openarchives.org/ore/terms/proxyIn": {
+        "@id": "http://example.com/aggregation-1"
+      }
+    }
+  ]
+}
+</pre>
+
+<p>
+    If we <em>expand</em> this JSON-LD document using <a href="https://w3id.org/ore/context">https://w3id.org/ore/context</a>,
+    then <em>frame</em> it using <a href="https://w3id.org/ore/frame">https://w3id.org/ore/frame</a>
+    we get the <a href="jsonld-examples/framed-example.json">framed JSON</a>:
+</p>
+
+
+<pre>
+{
+  "@context": "https://w3id.org/ore/context",
+  "@graph": [
+    {
+      "@id": "index.html",
+      "@type": "ResourceMap",
+      "describes": {
+        "@id": "http://example.com/aggregation-1",
+        "@type": "Aggregation",
+        "aggregates": [
+          "http://example.com/document-1",
+          {
+            "@id": "http://other.example.org/data-2",
+            "isAggregatedBy": {
+              "@id": "http://other.example.org/aggregation-2",
+              "@type": "Aggregation",
+              "isDescribedBy": [
+                "http://other.example.org/aggregation-2.rdf"
+              ]
+            }
+          },
+          {
+            "@id": "http://other.example.org/aggregation-3",
+            "@type": "Aggregation",
+            "isDescribedBy": [
+              "http://other.example.org/aggregation-3.rdf",
+              "http://other.example.org/aggregation-3.jsonld"
+            ]
+          },
+          {
+            "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602",
+            "@type": "Proxy",
+            "proxyFor": "http://example.com/document-1",
+            "proxyIn": "http://other.example.org/aggregation-3"
+          }
+        ],
+        "isDescribedBy": [
+          "http://example.com/aggregation-1.rdf",
+          "http://example.com/aggregation-1.jsonld"
+        ],
+        "similarTo": "http://dx.doi.org/10.1002/cpe.1594"
+      }
+    }
+  ]
+}
+</pre>
+
+<p>
+  Note that JSON-LD Framing always gives a <code>@graph</code> JSON List
+  in case there are several Resource Maps that match the pattern.
+  The properties <code>aggregates</code> and <code>isDescribedBy</code>
+  if present, will after processing always be a JSON list, even if there
+  is only a single resource.
+  </p>
+</section>
+
+<section id="framing-proxies">
+<h3>5.2 Framing proxies</h3>
+<p>
+  Note: <code>@reverse</code> properties like <code>proxies</code> is not
+  at the time of writing commonly supported by JSON-LD Framing processors, and
+  therefore have to be extracted separately using this
+  <a href="jsonld-examples/frame-proxies.json">frame for proxies</a>:
+</p>
+<pre>
+{ "@context": "https://w3id.org/ore/context",
+
+   "@type": "Proxy",
+   "proxyFor": {
+     "@embed": false
+   },
+   "proxyIn": {
+     "@embed": false
+   },
+  "lineage": {
+    "@embed": false,
+    "@omitDefault": true
+  }
+}
+</pre>
+
+<p>When the above frame is processed against the earlier example it
+   will return a <a href="jsonld-examples/framed-proxies.json">list of all the proxies</a>
+   (including those in other aggregations):</p>
+<pre>
+{
+  "@context": "https://w3id.org/ore/context",
+  "@graph": [
+    {
+      "@id": "urn:uuid:05bd5e0c-94c7-4856-a53f-7f6cf0756751",
+      "@type": "Proxy",
+      "lineage": "urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66",
+      "proxyFor": "http://other.example.org/data-2",
+      "proxyIn": "http://example.com/aggregation-1"
+    },
+    {
+      "@id": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602",
+      "@type": "Proxy",
+      "proxyFor": "http://example.com/document-1",
+      "proxyIn": "http://other.example.org/aggregation-3"
+    },
+    {
+      "@id": "urn:uuid:318745e0-5ea4-4a68-8a0a-ab27ab96985a",
+      "@type": "Proxy",
+      "proxyFor": "urn:uuid:09561248-bf55-4c85-930a-9a7a60e81602",
+      "proxyIn": "http://example.com/aggregation-1"
+    },
+    {
+      "@id": "urn:uuid:360ea070-efee-11e3-ac10-0800200c9a66",
+      "@type": "Proxy",
+      "proxyFor": "http://other.example.org/data-2",
+      "proxyIn": "http://other.example.org/aggregation-2"
+    },
+    {
+      "@id": "urn:uuid:c0f5f1ad-5269-4cfc-b9f5-e9621c499f53",
+      "@type": "Proxy",
+      "proxyFor": "http://other.example.org/aggregation-3",
+      "proxyIn": "http://example.com/aggregation-1"
+    },
+    {
+      "@id": "urn:uuid:d4e63599-d28d-4966-8606-dbb985a865f2",
+      "@type": "Proxy",
+      "proxyFor": "http://example.com/document-1",
+      "proxyIn": "http://example.com/aggregation-1"
+    }
+  ]
+}
+</pre>
+</section>
+</section>
+
+<section id="references">
+<h2>6. References</h2>
+
+<dl>
+
+<dt id="JSON-LD">[JSON-LD]</dt>
+<dd><cite><a href="http://www.w3.org/TR/json-ld/">JSON-LD 1.0</a></cite>,
+Manu Sporny, Gregg Kellogg, Markus Lanthaler (editors).
+W3C Recommendation 16 January 2014. <br />
+<a href="http://www.w3.org/TR/2014/REC-json-ld-20140116/">http://www.w3.org/TR/2014/REC-json-ld-20140116/</a><br />
+Latest version at
+<a href="http://www.w3.org/TR/json-ld/">http://www.w3.org/TR/json-ld/</a>
+</dd>
+
+<dt id="JSON-LD-Community">[JSON-LD Community]</dt>
+<dd><cite><a href="http://json-ld.org/">JSON for Linking Data</a> (website)</cite>,
+A website run by the <i>JSON for Linking Data W3C Community Group</i>
+(<a href="http://www.w3.org/community/json-ld/">http://www.w3.org/community/json-ld/</a>).
+</dd>
+
+<dt id="JSON-LD-Framing">[JSON-LD Framing]</dt>
+<dd><cite><a href="http://www.w3.org/TR/json-ld/">JSON-LD Framing 1.0</a></cite>,
+Manu Sporny, Gregg Kellogg, Dave Longley, Markus Lanthaler (editors).
+Draft Community Group Specification 28 March 2013.<br />
+<a href="http://json-ld.org/spec/latest/json-ld-framing/">http://json-ld.org/spec/latest/json-ld-framing/</a>
+</dd>
+
+<dt id="ORE_Model">[ORE Model]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/1.0/datamodel">ORE Specification - Abstract Data Model</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner. 2008-10-17.<br />
+<a href="http://www.openarchives.org/ore/1.0/datamodel">http://www.openarchives.org/ore/1.0/datamodel</a><br />
+Latest version at
+<a href="http://www.openarchives.org/ore/datamodel">http://www.openarchives.org/ore/datamodel</a>
+</dd>
+
+<dt id="ORE_Primer">[ORE Primer]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/1.0/primer">ORE User Guide - Primer</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner. 2008-10-17.<br />
+<a href="http://www.openarchives.org/ore/1.0/primer">http://www.openarchives.org/ore/1.0/primer</a><br />
+Latest version at
+<a href="http://www.openarchives.org/ore/primer">http://www.openarchives.org/ore/primer</a>
+</dd>
+
+<dt id="ORE_RDFa">[ORE RDFa]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/1.0/rdfa">ORE User Guide - Resource Map Implementation in RDFa</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner. 2008-10-17.<br />
+<a href="http://www.openarchives.org/ore/1.0/rdfa">http://www.openarchives.org/ore/1.0/rdfa</a><br />
+Latest version at
+<a href="http://www.openarchives.org/ore/rdfa">http://www.openarchives.org/ore/rdfa</a>
+</dd>
+
+<dt>[<a id="ORE_RDFXML">ORE RDFXML</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/1.0/rdfxml">ORE User Guide - Resource Map Implementation in RDF/XML</a></cite>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-10-17.
+Available at http://www.openarchives.org/ore/1.0/rdfxml .</dd>
+
+<dt id="PAV">[PAV]</dt>
+<dd><cite><a href="http://purl.org/pav/html">PAV ontology: provenance, authoring and versioning</a></cite>,
+Paolo Ciccarese, Stian Soiland-Reyes, Khalid Belhajjame, Alasdair J G Gray, Carole Goble, Tim Clark.
+<i>Journal of Biomedical Semantics 2013</i>, <b>4</b>:37. <br />
+<a href="http://purl.org/pav/html">http://purl.org/pav/html</a>
+doi:<a href="http://dx.doi.org/10.1186/2041-1480-4-37">10.1186/2041-1480-4-37</a>
+</dd>
+
+<dt id="PROV-O">[PROV-O]</dt>
+<dd><cite><a href="http://www.w3.org/TR/prov-o/">PROV Ontology</a></cite>,
+Timothy Lebo, Satya Sahoo, Deborah McGuinness (editors).
+W3C Recommendation 30 April 2013.<br />
+<a href="http://www.w3.org/TR/2013/REC-prov-o-20130430/">http://www.w3.org/TR/2013/REC-prov-o-20130430/</a><br />
+Latest version at
+<a href="http://www.w3.org/TR/prov-o/">http://www.w3.org/TR/prov-o/</a>
+</dd>
+
+<dt>[<a id="RDFa_Syntax">RDFa Syntax</a>]</dt>
+<dd><a href="http://www.w3.org/TR/2008/PR-rdfa-syntax-20080904/"><cite>RDFa
+in XHTML: Syntax and Processing. A collection of attributes
+and processing rules for extending XHTML to support RDF</cite></a>,
+Ben Adida, Mark Birbeck, Shane McCarron and Steven Pemberton, Editors,
+W3C Proposed Recommendation 4 September 2008.<br />
+Available at http://www.w3.org/TR/2008/PR-rdfa-syntax-20080904/ .<br />
+<a href="http://www.w3.org/TR/rdfa-syntax/">Latest version</a> available
+at http://www.w3.org/TR/rdfa-syntax/. </dd>
+
+<dt id="RDF_Concepts">[RDF Concepts]</dt>
+<dd><cite><a href="http://www.w3.org/TR/rdf11-concepts/">RDF 1.1 Concepts and Abstract Syntax</a></cite>,
+Richard Cyganiak, David Wood, Markus Lanthaler (editors).
+W3C Recommendation 25 February 2014.<br />
+<a href="http://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/">http://www.w3.org/TR/2014/REC-rdf11-concepts-20140225/</a><br />
+Latest version
+at <a href="http://www.w3.org/TR/rdf-concepts/">http://www.w3.org/TR/rdf-concepts/</a></dd>
+
+<dt>[<a id="RDFXML">RDFXML</a>]</dt> <dd><cite><a
+href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML Syntax
+Specification (Revised)</a></cite>, Dave Beckett and Brian McBrde,
+Editors. W3C Recommendation, 10 February 2004,<br />
+http://www.w3.org/TR/2004/REC-rdf-syntax-grammar-20040210/ .<br /> <a
+href="http://www.w3.org/TR/rdf-syntax-grammar/">Latest version</a>
+available at http://www.w3.org/TR/rdf-syntax-grammar/.</dd>
+
+<dt  id="RFC2119">[RFC2119]</dt> <dd>
+<cite><a href="http://www.ietf.org/rfc/rfc2119.txt">
+Key words for use in RFCs to Indicate Requirement Levels</a></cite>,
+Scott Bradner. IETF RFC 2119, March 1997. <br />
+<a href="http://www.ietf.org/rfc/rfc2119.txt">http://www.ietf.org/rfc/rfc2119.txt</a></dd>
+
+<dt id="RFC3986">[RFC3986]</dt> <dd>
+<cite><a href="http://www.ietf.org/rfc/rfc3986.txt">Uniform Resource
+Identifier (URI): Generic Syntax</a></cite>, Tim Berners-Lee,
+Roy T. Fielding, Larry Masinter. IETF RFC 3986, January 2005.<br />
+<a href="http://www.ietf.org/rfc/rfc3986.txt">http://www.ietf.org/rfc/rfc3986.txt</a>
+</dd>
+
+<dt id="RFC3987">[RFC3987]</dt> <dd>
+<cite><a
+href="http://www.ietf.org/rfc/rfc3987.txt">Internationalized
+Resource Identifiers (IRIs)</a></cite>, Martin J. D&#252;rst, Michel Suignard.
+IETF RFC 3987, January 2005.<br />
+<a href="http://www.ietf.org/rfc/rfc3987.txt">http://www.ietf.org/rfc/rfc3987.txt</a>
+</dd>
+
+<dt id="RFC4122">[RFC4122]</dt><dd>
+<cite><a href="http://www.ietf.org/rfc/rfc4122.txt">A Universally Unique IDentifier (UUID) URN Namespace</a></cite>,
+Paul J. Leach, Micheel Mealling, Rich Salz.
+IETF RFC 4122, July 2005.<br />
+<a href="http://www.ietf.org/rfc/rfc4122.txt">http://www.ietf.org/rfc/rfc4122.txt</a>
+</dd>
+
+<dt id="RFC4627">[RFC4627]</dt><dd>
+<cite><a href="http://www.ietf.org/rfc/rfc4627.txt">The application/json Media Type for JavaScript Object Notation (JSON)</a></cite>,
+Douglas Crockford. IETF RFC 4627, July 2006.<br />
+<a href="http://www.ietf.org/rfc/rfc4627.txt">http://www.ietf.org/rfc/rfc4627.txt</a>
+</dd>
+
+</dl>
+</section>
+
+<div class="back">
+<div class="body">
+
+<div id="acknowledgements">
+<h2>A. Acknowledgements</h2>
+<p>
+The Open Archives Initiative Object Reuse and Exchange specifications are 
+the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. 
+Work on this document by Stian Soiland-Reyes was funded by
+the EU FP7 project <a href="http://www.biovel.eu/">BioVeL</a> (FP7 RI-283359).
+Funding for Open Archives Initiative Object Reuse and Exchange was provided by the
+<a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, the
+<a href="http://nsf.gov">National Science Foundation</a>, and the
+<a href="http://www.cni.org">Coalition for Networked Information</a>. 
+</p>
+</div>
+</div>
+
+<div class="changelog" id="changelog">
+<h2>B. Change Log</h2>
+<table class="changelog">
+       <tbody><tr>
+            <th>Date</th>
+            <th>Editor</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>2014-08-14</td>
+            <td>simeon</td>
+            <td>Integrate with other OAI-ORE specs, v0.9</td>
+        </tr>
+        <tr>
+            <td>2014-08-06</td>
+            <td>stain</td>
+            <td>Warning about frame spec, scrollbar on long examples</td>
+        </tr>
+        <tr>
+            <td>2014-08-03</td>
+            <td>ocorcho</td>
+            <td>Simplified JSON-LD Frame </td>
+        </tr>
+        <tr>
+            <td>2014-07-30</td>
+            <td>stain</td>
+            <td>Clarified previously draft sections (incl. proxies)</td>
+        </tr>
+        <tr>
+            <td>2014-06-11</td>
+            <td>stain</td>
+            <td>Fixing syntax issues</td>
+        </tr>
+        <tr>
+            <td>2014-06-05</td>
+            <td>stain</td>
+            <td>First draft</td>
+        </tr>
+</tbody>
+</table>
+
+<p>See also the current 
+<a href="http://stain.github.io/ore/jsonld.html">editors' draft</a>.
+For detailed changelog, see the 
+<a href="https://github.com/stain/ore/commits/gh-pages">Github commits</a>.</p>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

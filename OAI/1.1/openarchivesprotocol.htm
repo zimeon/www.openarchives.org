@@ -1,0 +1,5575 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   <meta name="GENERATOR" content="Microsoft FrontPage 4.0">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   <title>Open Archives Protocol</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- saved from url=(0063)http://eweb.cs.cornell.edu/cdlrg/dienst/protocols/protocol5.htm -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<body bgcolor="#FFFFFF">
+
+<div ALIGN=right></div>
+
+<table BORDER=0 WIDTH="97%" borderColor="#ffffff" borderColorDark="#ffffff" borderColorLight="#ffffff" >
+
+  <tbody> <br>
+
+  </tbody> 
+
+  <tr> 
+
+    <td ALIGN=CENTER VALIGN=CENTER rowspan="2" HEIGHT="54"><a href="http://www.openarchives.org"><img src="http://www.openarchives.org/images/OA100.gif" align="absbottom" border="0"></a></td>
+
+    <td ALIGN=LEFT VALIGN=CENTER WIDTH="87%" HEIGHT="27"> 
+
+      <h1><b>The Open Archives Initiative Protocol for Metadata Harvesting<font size=+1> 
+
+        </font></b></h1>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td ALIGN=LEFT VALIGN=CENTER WIDTH="87%" HEIGHT="27"> 
+
+      <h4>Protocol Version 1.1 of 2001-07-02<br>
+
+        Document Version 2001-06-20<br>
+
+        http://www.openarchives.org/OAI/openarchivesprotocol.htm<br>
+
+<BR>
+
+        Previous version:
+
+      <a href="http://www.openarchives.org/OAI/1.0/openarchivesprotocol.htm">Protocol Version 1.0 of 2001-01-21</a><br>
+        <a href="http://www.openarchives.org/OAI/1.1/migration.htm">Instructions</a> 
+        for migrating from Version 1.0 to 1.1</h4>
+
+      </td>
+
+  </tr>
+
+</table>
+
+<p><b>Editors</b></p>
+
+<p><a href="mailto:herbertv@cs.cornell.edu">Herbert Van de Sompel</a> &lt;<a href="mailto:herbertv@cs.cornell.edu">herbertv@cs.cornell.edu</a>&gt; 
+
+  -- <a href="http://www.cs.cornell.edu">Cornell University - Computer Science</a> 
+
+  <br>
+
+  <a href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</a> &lt;<a href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</a>&gt; 
+
+  -- <a href="http://www.cs.cornell.edu">Cornell University - Computer Science</a></p>
+
+<p><b>Table of Contents</b></p>
+
+<p> <a href="#Introduction">Introduction</a> <br>
+
+  <a href="#Definitions and Concepts">Definitions and Concepts</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Repository">Repository</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Record">Record</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Unique Identifier">Unique Identifier</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Datestamp">Datestamp</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Set">Set</a><br>
+
+  <a href="#Protocol Features">Protocol Features</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#HTTP embedding of OAI requests">HTTP embedding 
+
+  of OAI requests</a> <br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#HTTP Request Format">HTTP 
+
+  Request Format</a> <br>
+
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="#HTTP Response Format">HTTP 
+
+  Response Format</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Dates">Dates and Times</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Metadata Namespaces">Metadata Prefix and Metadata 
+
+  Schema<br>
+
+  </a> &nbsp;&nbsp;&nbsp; <a href="#Flow Control">Flow Control</a> <br>
+
+  <a href="#Protocol Requests and Responses">Protocol Requests and Responses</a> 
+
+  <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#GetRecord">GetRecord</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#Identify">Identify</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#ListIdentifers">ListIdentifiers</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#ListMetadataFormats">ListMetadataFormats</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#ListRecords">ListRecords</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#ListSets">ListSets</a> <br>
+
+  <a href="#appendix 1">Appendix 1: Sample XML Schema for metadata formats</a> 
+
+  <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#dublincore">Dublin Core</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#rfc1807">rfc1807</a> <br>
+
+  &nbsp;&nbsp;&nbsp; <a href="#marc">oai_marc</a> <br>
+
+  <a href="#appendix 2">Appendix 2: Sample XML Schema for <font face="Courier New, Courier, mono" size="2">description</font> 
+
+  part of reply to Identify request</a><br>
+
+  &nbsp;&nbsp;&nbsp;<a href="#oai-identifier"><font face="Courier New, Courier, mono" size="2">description</font> 
+
+  for repositories that share the OAI format for unique identifiers of records</a><br>
+
+  &nbsp;&nbsp;&nbsp;<a href="#eprint"><font face="Courier New, Courier, mono" size="2">description</font> 
+
+  for repositories in the e-print community</a> <br>
+
+  <a href="#acknowledgements">Acknowledgements</a><font> </font></p>
+
+<font> 
+
+<h1> 1.&nbsp;<a NAME="Introduction"></a>Introduction</h1>
+
+</font> 
+
+<p><font color="#000000">The goal of the Open Archives Initiative Protocol for 
+
+  Metadata Harvesting (referred to as the OAI protocol in the remainder of this 
+
+  document) is to supply and promote an application-independent interoperability 
+
+  framework that can be used by a variety of communities who are engaged in publishing 
+
+  content on the Web.&nbsp;&nbsp; The OAI protocol described in this document 
+
+  permits <i> metadata harvesting. </i>The result is an interoperability framework 
+
+  with two classes of participants:</font></p>
+
+<ul>
+
+  <li><font color="#000000"><i>Data Providers </i>administer systems that support 
+
+    the OAI protocol as a means of exposing metadata about the content in their 
+
+    systems;</font></li>
+
+  <li><font color="#000000"><i>Service Providers </i>issue OAI protocol requests 
+
+    to the systems of data providers and use the returned metadata as a basis 
+
+    for building value-added services.</font></li>
+
+</ul>
+
+<font> 
+
+<h1> <a NAME="Definitions and Concepts"></a>2. Definitions and Concepts</h1>
+
+<h2> 2.1&nbsp;<a NAME="Repository"></a>Repository</h2>
+
+</font> 
+
+<p><font><b>A <i>repository</i> is a network accessible server to which OAI protocol 
+
+  requests, embedded in HTTP, can be submitted.</b>&nbsp; The OAI protocol provides 
+
+  access to metadata from OAI-compliant repositories.&nbsp; This metadata is output 
+
+  in the form of a <a href="#Record">record</a>.&nbsp; A record is the result 
+
+  of a protocol request issued to the repository to disseminate metadata from 
+
+  an <i>item</i>. An <i>item</i> can be considered a constituent of the repository.&nbsp; 
+
+  The&nbsp; nature of an item -- for example, what type of metadata is actually 
+
+  stored in the item, what type is derived on-the-fly,&nbsp; and whether the item 
+
+  includes the &quot;full content&quot; described by the metadata -- is outside 
+
+  the scope of the OAI protocol.&nbsp; All uses of the term <i>repository</i> 
+
+  in the remainder of this document should be interpreted as an <i>OAI-compliant 
+
+  repository</i>.</font></p>
+
+<font> 
+
+<h2> 2.2&nbsp;<a NAME="Record"></a>Record</h2>
+
+<b>A <i>record</i> is an XML-encoded byte stream that is returned by a repository 
+
+in response to an OAI protocol request for metadata from an item in that repository.</b>&nbsp; 
+
+OAI records -- referred to for the remainder of this document as <i>records</i> 
+
+-- are organized into the following parts: </font> 
+
+<ul>
+
+  <font> 
+
+  <li> <i><a name="header"></a>header</i> -- information that is common to all 
+
+    records and that is necessary for the harvesting process. This information 
+
+    is independent of the metadata format disseminated in the record. The header 
+
+    consists of two parts: 
+
+    <ul>
+
+      <li>the <a href="#Unique%20Identifier">unique identifier</a> -- the key 
+
+        for extracting metadata from an item in a repository; </li>
+
+      <li>the <a href="#Deleted Record">datestamp</a> -- the date of creation, 
+
+        deletion, or latest date of modification of an item, the effect of which 
+
+        is a change in the metadata of a record disseminated from that item.</li>
+
+    </ul>
+
+  </li>
+
+  </font> 
+
+  <li><font> <i>metadata </i>-- a single manifestation of the metadata from an 
+
+    item.&nbsp; The OAI protocol supports multiple manifestations (formats) of 
+
+    metadata for any single item.&nbsp; At a minimum, repositories must be able 
+
+    to return records with metadata expressed in the <a href="http://purl.org/DC/documents/rec-dces-19990702.htm">Dublin 
+
+    Core</a> format, without any <a href="http://purl.org/DC/documents/rec/dcmes-qualifiers-20000711.htm">qualification</a>. 
+
+    Optionally, a repository may also be capable of disseminating other formats 
+
+    of metadata.&nbsp; The specific manifestation that should be returned in a 
+
+    record is specified by means of an argument -- the <a href="#Metadata Namespaces and Metadata Format Identifiers">metadata 
+
+    prefix</a> -- in the <a href="#GetRecord"><font face="Courier New, Courier, mono" size="2">GetRecord</font></a></font> 
+
+    or <a href="#ListRecords"><font face="Courier New, Courier, mono" size="2">ListRecords</font></a> 
+
+    protocol request that produces the record.&nbsp; The <font face="Courier New" size="2"><a href="#ListMetadataFormats">ListMetadataFormats</a></font><b> 
+
+    </b>protocol request returns the list of metadata formats available from a 
+
+    repository, or from a specific item (which can be specified as an argument 
+
+    to the <font face="Courier New" size="2"><a href="#ListMetadataFormats">ListMetadataFormats</a></font><b> 
+
+    </b>service request).</li>
+
+  <li> <font color="#000000"><i>about</i> -- an optional container to hold data 
+
+    about the metadata part of the record. Typically, the <i>about</i> container 
+
+    could be used to hold rights information regarding the metadata part of the 
+
+    record, terms and conditions for usage of the metadata part of the record, 
+
+    etc. The internal structure of the about container is not defined by the protocol. 
+
+    It is left to individual communities to decide on its syntax and semantics. 
+
+    </font></li>
+
+</ul>
+
+<p>The example shows a record and its components: </p>
+
+<ul>
+
+  <li>the <i>header</i> part with: 
+
+    <ul>
+
+      <li>a unique identifier equal to <font face="Courier New, Courier, mono" size="2">oai:arXiv:quant-ph/9901001</font>; 
+
+      </li>
+
+      <li>a datestamp equal to <font face="Courier New, Courier, mono" size="2">1999-01-01</font>;</li>
+
+    </ul>
+
+  </li>
+
+  <li><font color="#000000">the <i>metadata</i> part expressed in unqualified 
+
+    Dublin Core.&nbsp; Note that the root element within the metadata part includes 
+
+    three attributes:&nbsp;&nbsp;&nbsp;&nbsp;</font> 
+
+    <ul>
+
+      <li><font color="#000000">&nbsp;<font face="Courier New, Courier, mono" size="2">xmlns</font> 
+
+        -- the value of which is the namespace URI (as defined by the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+        namespace specification</a>) of the metadata that follows in this part.</font></li>
+
+      <li><font face="Courier New, Courier, mono" size="2" color="#000000">xmlns:xsi</font><font color="#000000"> 
+
+        -- the value of which must always be the URI shown in the example, which 
+
+        is the namespace URI for XML schema.</font></li>
+
+      <li><font face="Courier New, Courier, mono" size="2" color="#000000">xsi:schemaLocation</font><font color="#000000"> 
+
+        -- the value of which is a pair, the first part is the namespace URI (as 
+
+        defined by the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+        namespace specification</a>) of the metadata that follows in this part, 
+
+        and the second part is the URL of the XML schema for validation of the 
+
+        metadata.&nbsp;&nbsp;</font></li>
+
+    </ul>
+
+  </li>
+
+  <li><font color="#000000">the <i>about</i> part of the record which uses a -- 
+
+    fictional -- eprints-about.xsd schema as a means to express properties of 
+
+    the metadata part of the record.&nbsp; Note that the root element within the 
+
+    about part includes three attributes:&nbsp;&nbsp;&nbsp;&nbsp;</font> 
+
+    <ul>
+
+      <li><font color="#000000">&nbsp;<font face="Courier New, Courier, mono" size="2">xmlns</font> 
+
+        -- the value of which is the namespace URI (as defined by the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+        namespace specification</a>) of the XML elements that follow in this part.</font></li>
+
+      <li><font face="Courier New, Courier, mono" size="2" color="#000000">xmlns:xsi</font><font color="#000000"> 
+
+        -- the value of which must always be the URI shown in the example, which 
+
+        is the namespace URI for XML schema.</font></li>
+
+      <li><font face="Courier New, Courier, mono" size="2" color="#000000">xsi:schemaLocation</font><font color="#000000"> 
+
+        -- the value of which is a pair, the first part is the namespace URI (as 
+
+        defined by the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+        namespace specification</a>) of the elements that follow in this part, 
+
+        and the second part is the URL of the XML schema for validation of the 
+
+        about part.&nbsp;</font></li>
+
+    </ul>
+
+  </li>
+
+</ul>
+
+<table width="65%" border="1" cellpadding="0" align="center">
+
+  <tr> 
+
+    <td> 
+
+      <pre>  &lt;header&gt;
+
+   &lt;identifier&gt;oai:arXiv:quant-ph/9901001&lt;/identifier&gt;
+
+   &lt;datestamp&gt;1999-01-01&lt;/datestamp&gt;
+
+  &lt;/header&gt;
+
+  &lt;metadata&gt;
+
+   &lt;dc xmlns="http://purl.org/dc/elements/1.1/" 
+
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+       xsi:schemaLocation="http://purl.org/dc/elements/1.1/
+
+                           http://www.openarchives.org/OAI/1.1/dc.xsd&quot;&gt;
+
+    &lt;title&gt;Quantum slow motion&lt;/title&gt;
+
+    &lt;creator&gt;Hug, M.&lt;/creator&gt;
+
+    &lt;creator&gt;Milburn, G. J.&lt;/creator&gt;
+
+    &lt;description&gt;We simulate the center of mass motion of cold atoms in a <br>     standing, amplitude modulated, laser field as an example of a system<br>     that has a classical mixed phase-space.&lt;/description&gt;
+
+    &lt;date&gt;1999-01-01&lt;/date&gt;
+
+    &lt;type&gt;e-print&lt;/type&gt;
+
+    &lt;identifier&gt;http://arXiv.org/abs/quant-ph/9901001&lt;/identifier&gt;
+
+   &lt;/dc&gt;
+
+  &lt;/metadata&gt;
+
+  <font color="#000000">&lt;about&gt;
+
+   &lt;ea xmlns=&quot;http://www.arXiv.org/eprints-about&quot;
+
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+       xsi:schemaLocation="http://www.arXiv.org/eprints-about
+
+                           http://www.arXiv.org/eprints-about.xsd&quot;&gt;
+
+    &lt;archive&gt;The Los Alamos arXiv&lt;/archive&gt;
+
+    &lt;usage&gt;Metadata may be used without restrictions as long as the OAI <br>     identifier remains attached to it.&lt;/usage&gt;
+
+   &lt;/ea&gt;
+
+  &lt;/about&gt;</font>
+
+</pre>
+
+    </td>
+
+  </tr>
+
+</table>
+
+<p>The protocol supports the notion of a <i>deleted record</i>, which may be used 
+
+  by repositories as follows.&nbsp; When returning a harvested record or identifier 
+
+  of a record, the&nbsp; <font face="Courier New" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+  and <font face="Courier New" size="2"><a href="#ListIdentifers">ListIdentifiers</a></font> 
+
+  service requests may indicate a status of &quot;deleted&quot;.&nbsp; This status 
+
+  means that an item has been deleted and therefore no record can be disseminated 
+
+  from it.&nbsp;&nbsp; The length of time that a given repository keeps track 
+
+  of deleted items is not defined by the protocol.&nbsp; Therefore, the only <i>guaranteed 
+
+  </i>method in the protocol for determining whether a record can be returned 
+
+  by a repository (its corresponding item still exists) is through the <font face="Courier New" size="2"><a href="#GetRecord">GetRecord</a></font> 
+
+  service request.</p>
+
+<h2> 2.3&nbsp;<a NAME="Unique Identifier"></a>Unique Identifier</h2>
+
+<p><b>A <i>unique identifier</i> is a key for extracting metadata from an item 
+
+  in a repository.</b>&nbsp; The OAI protocol specifies that each item may disseminate 
+
+  metadata in <a href="#Metadata Namespaces and Metadata Format Identifiers">multiple 
+
+  formats</a>. All of the members of this group of possible metadata formats disseminated 
+
+  from a single item share the same unique identifier.&nbsp; Each record disseminated 
+
+  by a <font face="Courier New" size="2"><a href="#GetRecord">GetRecord</a></font> 
+
+  or <font face="Courier New" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+  protocol request is identified by the combination of this unique identifier 
+
+  and a <a href="#Metadata Namespaces and Metadata Format Identifiers">metadata 
+
+  prefix</a>, which identifies the metadata format. </p>
+
+<p> The format of unique identifiers corresponds to that of&nbsp; the <a href="http://www.ietf.org/rfc/rfc2396.txt?number=2396">URI 
+
+  (Uniform Resource Identifier) </a>syntax. An individual community may develop 
+
+  a URI scheme for coordinated use across its repositories. For an example, see 
+
+  the format for identifiers proposed in <a href="#oai-identifier">Appendix 2</a>.</p>
+
+<p>These unique identifiers play two roles in the protocol:</p>
+
+<ol>
+
+  <li>Identifiers are returned by both the <a href="#ListIdentifers"><font face="Courier New, Courier, mono" size="2">ListIdentifiers</font></a> 
+
+    and <a href="#ListRecords"><font face="Courier New, Courier, mono" size="2">ListRecords</font></a> 
+
+    requests; they can be used as keys to request metadata from items.</li>
+
+  <li>An identifier, in combination with a <a href="#Metadata Namespaces and Metadata Format Identifiers">metadata 
+
+    prefix</a>, is used in the <font><a href="#GetRecord"><font face="Courier New, Courier, mono" size="2">GetRecord</font></a></font> 
+
+    protocol request as a means of requesting a record with a specific metadata 
+
+    format from an item. &nbsp;This means that the resulting record is identified 
+
+    by the combination of the identifier and the metadata prefix.</li>
+
+</ol>
+
+<p> Note that the identifier described here is <i>not</i> that of the item.&nbsp; 
+
+  The nature of the item identifier is outside the scope of the OAI protocol.&nbsp;&nbsp;</p>
+
+<p>Since many clients of the OAI protocol may want to access the content associated 
+
+  with harvested metadata, <font color="#000000">it is highly recommended that 
+
+  repositories use an element in metadata records to establish a linkage between 
+
+  the record (and its identifier) and the identifier (URL, URN, DOI, etc.) of 
+
+  the associated item.</font>&nbsp;<font color="#000000"> The mandatory Dublin 
+
+  Core format provides the </font><font face="Courier New, Courier, mono" size="2">identifier</font><font color="#000000"> 
+
+  element that can be used for this purpose.</font></p>
+
+<h2>2.4&nbsp;<a name="Datestamp">Datestamp</a></h2>
+
+<p><b>A <i>datestamp</i> is the date of creation, deletion, or latest date of 
+
+  modification of an item, the effect of which is a change in the metadata of 
+
+  a record disseminated from that item.</b> Every record returned by the <a href="#GetRecord"><font face="Courier New, Courier, mono" size="2">GetRecord</font></a> 
+
+  and <a href="#ListRecords"><font face="Courier New, Courier, mono" size="2">ListRecords</font></a> 
+
+  service requests contains its respective&nbsp;datestamp in the <a href="#header">header</a>.&nbsp; 
+
+  Datestamps are used as values of optional arguments -- <font face="Courier New, Courier, mono" size="2">until</font> 
+
+  or <font face="Courier New, Courier, mono" size="2">from</font> -- to the <a href="#ListRecords"><font face="Courier New, Courier, mono" size="2">ListRecords</font></a> 
+
+  and<font face="Courier New" size="2"> </font> <a href="#ListIdentifers"><font face="Courier New, Courier, mono" size="2">ListIdentifiers</font></a> 
+
+  requests to specify selective harvesting (by date) from the repository.&nbsp; 
+
+  The value of a datestamp must comply to the specifications for <a href="#Dates"> 
+
+  dates</a> in the OAI protocol.&nbsp; </p>
+
+<h2> 2.5 <a name="Set"></a>Set</h2>
+
+<p><b>A <i>set</i> is an optional construct for grouping items in a repository 
+
+  for the purpose of selective harvesting of records.&nbsp;</b>Each repository 
+
+  may define a hierarchical organization of items; the hierarchy can have several 
+
+  top-level nodes.&nbsp; Each node in the hierarchy is a Set, which has:</p>
+
+<ul>
+
+  <li>a <font face="Courier New, Courier, mono" size="2">setTag</font> -- a non-space 
+
+    separated string of alphanumeric characters;</li>
+
+  <li>a <font face="Courier New, Courier, mono" size="2">setSpec</font> -- a colon 
+
+    [<font face="Courier New" size="2">:</font>] separated list of <font face="Courier New" size="2">setTags</font> 
+
+    of each node on the path leading from a root element to the actual node;</li>
+
+  <li>a <font face="Courier New, Courier, mono" size="2">setName</font> -- a string 
+
+    useful for display purposes.</li>
+
+</ul>
+
+<p>The&nbsp;<a name="following is an example"></a>following is an example of a 
+
+  possible Set hierarchy in a repository:</p>
+
+<ul>
+
+  <li> Institutions 
+
+    <ul>
+
+      <li>Oceanside University of Nebraska</li>
+
+    </ul>
+
+  </li>
+
+  <ul>
+
+    <li> Valley View University of Florida</li>
+
+  </ul>
+
+  <li>Subjects</li>
+
+  <ul>
+
+    <li>Existential Kenesiology</li>
+
+    <li> Quantum Psychology</li>
+
+  </ul>
+
+</ul>
+
+<p>The following table shows a representation of the above Set hierarchy by means 
+
+  of <font face="Courier New, Courier, mono" size="2">setName</font>s, <font face="Courier New, Courier, mono" size="2">setTag</font>s 
+
+  and <font face="Courier New, Courier, mono" size="2">setSpec</font>s :</p>
+
+<table width="70%" border="1" cellpadding="0" align="center">
+
+  <tr> 
+
+    <td width="38%"> 
+
+      <div align="center"><font face="Courier New, Courier, mono" size="2">setName</font></div>
+
+    </td>
+
+    <td width="29%"> 
+
+      <div align="center"><font face="Courier New, Courier, mono" size="2">setTag</font></div>
+
+    </td>
+
+    <td width="33%"> 
+
+      <div align="center"><font face="Courier New, Courier, mono" size="2">setSpec</font></div>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="38%">Institutions</td>
+
+    <td width="29%"><font face="Courier New" size="2">institution</font></td>
+
+    <td width="33%"><font face="Courier New" size="2">institution</font></td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="38%">Oceanside University of Nebraska</td>
+
+    <td width="29%"><font face="Courier New" size="2">nebraska</font></td>
+
+    <td width="33%"><font face="Courier New" size="2">institution</font>:<font face="Courier New" size="2">nebraska</font></td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="38%">Valley View University of Florida</td>
+
+    <td width="29%"><font face="Courier New" size="2">florida</font></td>
+
+    <td width="33%"><font face="Courier New" size="2">institution:florida</font></td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="38%">Subjects</td>
+
+    <td width="29%"><font face="Courier New" size="2">subject</font></td>
+
+    <td width="33%"><font face="Courier New" size="2">subject</font></td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="38%">Existential Kenesiology</td>
+
+    <td width="29%"><font face="Courier New" size="2">kenesiology</font></td>
+
+    <td width="33%"><font face="Courier New" size="2">subject:kenesiology</font></td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="38%">Quantum Psychology</td>
+
+    <td width="29%"><font face="Courier New" size="2">quantum</font></td>
+
+    <td width="33%"><font face="Courier New" size="2">subject:quantum</font></td>
+
+  </tr>
+
+</table>
+
+<p>Each item&nbsp; in a repository may be organized in one Set, several Sets, 
+
+  or no Sets at all. A client should not assume that harvesting every Set in a 
+
+  repository will retrieve records for every item in the repository. Items may 
+
+  also be organized in interior nodes in the Set hierarchy.&nbsp; Thus, in the 
+
+  example above, it is conceivable that an individual item is organized in both 
+
+  <font face="Courier New" size="2">subject</font> and <font face="Courier New" size="2">florida</font>.&nbsp;</p>
+
+<p> The actual meaning of a Set or of the arrangement of Sets in a repository 
+
+  is not defined in the protocol, nor is there any way to derive this meaning 
+
+  through the protocol.&nbsp; It is expected that individual communities who use 
+
+  the OAI protocol may formulate well-defined Set configurations with perhaps 
+
+  a controlled vocabulary for Set names, and may even develop mechanisms for exposing 
+
+  these to service providers.&nbsp; For example, a group of cooperating e-print 
+
+  archives in a specific discipline may agree on Sets that arrange items in their 
+
+  repositories based on a controlled subject classification.&nbsp; Note that there 
+
+  is no mechanism for "reverse lookup"; that is, determining the Set or Sets that 
+
+  an item -- from which a record was disseminated -- is organized in.&nbsp;&nbsp; 
+
+<p>A repository's Set hierarchy is represented in the protocol via <font face="Courier New" size="2">setSpecs. 
+
+  <a href="#ListSets">ListSets</a></font> returns the configuration of Sets in 
+
+  a repository as a list of <font face="Courier New" size="2">setSpecs</font>.&nbsp; 
+
+  Any of these <font face="Courier New" size="2">setSpecs</font>&nbsp; can be 
+
+  used as optional arguments to <font face="Courier New" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+  or <font face="Courier New" size="2"><a href="#ListIdentifers">ListIdentifiers</a></font> 
+
+  to specify the target Set for selective harvesting from the repository.&nbsp; 
+
+  In the <a href="#following is an example">previous example</a> of a Set hierarchy, 
+
+  the <font face="Courier New" size="2">setSpec</font> <font size="2" face="Courier New, Courier, mono">institution:nebraska</font> 
+
+  can be used in a protocol request to return only those records that are disseminated 
+
+  from items organized in the Set represented by this <font face="Courier New, Courier, mono" size="2">setSpec</font>.&nbsp; 
+
+  Three&nbsp; issues should be noted here: </p>
+
+<ul>
+
+  <li> As described above an individual item may be organized in more than one 
+
+    Set; meaning that different <font face="Courier New" size="2">setSpec</font> 
+
+    arguments may return the same record(s).</li>
+
+  <li> As described above an individual item may not be organized in any Set; 
+
+    meaning that an exhaustive repetition of <font face="Courier New" size="2"><a href="#ListRecords">ListRecords</a></font>&nbsp; 
+
+    requests with all possible <font face="Courier New" size="2">setSpec</font>s 
+
+    will <i>not</i> return all records in the repository.&nbsp; The only guaranteed 
+
+    method of returning all records is a <font face="Courier New" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+    or <font face="Courier New" size="2"><a href="#ListIdentifers">ListIdentifiers</a> 
+
+    </font>request with no <font face="Courier New" size="2">setSpec</font> argument.</li>
+
+  <li> Using a <font face="Courier New, Courier, mono" size="2">setSpec</font> 
+
+    as an argument in a protocol request will return: 
+
+    <ul>
+
+      <li>all records from items in the Set specified by the <font face="Courier New, Courier, mono" size="2">setSpec</font>,</li>
+
+      <li>all records from items in Sets that are descendent from the Set specified 
+
+        by the <font face="Courier New, Courier, mono" size="2">setSpec</font>.&nbsp;&nbsp;<br>
+
+      </li>
+
+    </ul>
+
+    <p>Using the <a href="#following is an example">previous example</a> of a 
+
+      Set hierarchy, a <font face="Courier New" size="2">setSpec</font> of <font face="Courier New" size="2">institution</font> 
+
+      to the <font face="Courier New" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+      protocol request will return all records from items organized within the 
+
+      <font face="Courier New" size="2">institution</font> Set and within the 
+
+      descendent Sets <font face="Courier New" size="2">florida</font> and <font face="Courier New" size="2">nebraska</font>. 
+
+  </li>
+
+</ul>
+
+<h1> 3.0&nbsp;<a NAME="Protocol Features"></a>Protocol Features</h1>
+
+<h2> <a NAME="HTTP embedding of OAI requests"></a>3.1 HTTP embedding of OAI requests</h2>
+
+OAI <a href="#Protocol Requests and Responses">protocol requests</a> are expressed 
+
+as <a href="http://www.ietf.org/rfc/rfc2616.txt">HTTP</a> requests. A typical 
+
+implementation uses a standard Web server, such as <a href="http://www.apache.org">Apache</a>, 
+
+that is configured to dispatch OAI requests to the software handling these requests. 
+
+The remainder of this section describes the aspects of the protocol that are specific 
+
+to the HTTP embedding. 
+
+<h3> <a NAME="HTTP Request Format"></a>3.1.1 HTTP Request Format</h3>
+
+OAI protocol requests may be expressed using either the HTTP <font face="Courier New" size="2">GET</font> 
+
+or <font face="Courier New" size="2">POST</font> methods. There is a single base 
+
+URL, <font face="Courier New" size="2">BASE-URL</font>, for all requests.&nbsp; 
+
+At a minimum, the <font face="Courier New" size="2">BASE-URL </font>specifies 
+
+the Internet host and port of an HTTP server acting as a repository.&nbsp; Typically, 
+
+the <font face="Courier New" size="2">BASE-URL</font> will also specify a <i>path</i> 
+
+that is specified by the respective HTTP server as the handler for OAI protocol 
+
+requests. Note that the composition of this path and its presence or absence is 
+
+determined by the configuration of the repository's HTTP server. 
+
+<p>In addition to the <font face="Courier New" size="2">BASE-URL</font>, all requests 
+
+  consist of a list of <i>keyword arguments</i>, which take the form <font face="Courier New" size="2">key=value</font> 
+
+  pairs. Arguments may appear in any order and multiple arguments should be separated 
+
+  by ampersands [<font face="Courier New" size="2">&amp;</font>].&nbsp; At a minimum, 
+
+  each OAI protocol request has one <font face="Courier New" size="2">key=value</font> 
+
+  pair that specifies the OAI protocol request issued by the client: 
+
+<ul>
+
+  <li><font face="Courier New" size="2">key</font> is the string '<font face="Courier New" size="2">verb'</font>; 
+
+  </li>
+
+  <li><font face="Courier New" size="2">value</font> is one of the defined OAI 
+
+    protocol requests.&nbsp; </li>
+
+</ul>
+
+<p>The number and nature of additional <font face="Courier New" size="2">key=value</font> 
+
+  pairs is dependent on the arguments for the individual protocol request. 
+
+<p>Libraries such as <font face="Courier New" size="2"><a href="http://www.ics.uci.edu/pub/websoft/libwww-perl/">libwww-perl</a></font> 
+
+  will decode <font face="Courier New" size="2">GET</font> and <font face="Courier New" size="2">POST</font> 
+
+  requests seamlessly; the application does not even need to know which method 
+
+  was used. The advantage of <font face="Courier New" size="2">POST</font> is 
+
+  that there are no limitations on the length of the arguments. 
+
+<h4> <a name="http get encoding"></a>3.1.1.1 <a name="Encoding an OAI protocol request in an HTTP GET"> 
+
+  Encoding an OAI protocol request in a URL for an HTTP GET</a></h4>
+
+URLs for<font face="Courier New" size="2"> GET</font> requests have keyword arguments 
+
+appended to the <font face="Courier New" size="2">BASE-URL</font>, separated by 
+
+a question mark [<font face="Courier New" size="2">?</font>].&nbsp; For example, 
+
+the URL of a <font face="Courier New" size="2"><a href="#GetRecord">GetRecord</a></font> 
+
+protocol request to a repository with <font face="Courier New" size="2">BASE-URL</font> 
+
+that is<font face="Terminal"> </font><font face="Courier New" size="2">http://an.oa.org/OAI-script</font><font face="Terminal"> 
+
+</font>might be: 
+
+<dl> 
+
+  <dd> <font face="Courier New" size="2">http://an.oa.org/OAI-script?<br>
+
+    &nbsp; verb=GetRecord&amp;identifier=oai:arXiv:hep-th/9901001&amp;metadataPrefix=oai_dc</font></dd>
+
+</dl>
+
+<p>However, since special characters in URIs must be <a href="#Special%20characters">encoded</a>, 
+
+  the valid form of the above above <font face="Courier New, Courier, mono" size="2">GET</font> 
+
+  request URL is: </p>
+
+<p><font face="Courier New" size="2">http://an.oa.org/OAI-script?<br>
+
+  &nbsp; verb=GetRecord&amp;identifier=oai%3AarXiv%3Ahep-th%2F9901001&amp;metadataPrefix=oai_dc</font></p>
+
+<h4> 3.1.1.2 Encoding an OAI protocol request in an HTTP POST</h4>
+
+The keyword arguments for an OAI protocol request are carried in the message body 
+
+of the HTTP POST.&nbsp; The <font face="Courier New" size="2">Content-Type </font>of 
+
+the request should be <font face="Courier New" size="2">application/x-www-form-urlencoded</font>. 
+
+For example, submitting the same request as above using the <font face="Courier New" size="2">POST</font> 
+
+method would use just <font face="Courier New" size="2">BASE-URL</font> as the 
+
+URL, with the format of the <font face="Courier New" size="2">POST</font> being: 
+
+<blockquote> <font size="2" face="Courier New, Courier, mono">POST http://an.oa.org/OAI-script 
+
+  HTTP/1.0 <br>
+
+  Content-Length: 78<br>
+
+  Content-Type: application/x-www-form-urlencoded<br>
+
+  verb=GetRecord&amp;identifier=oai</font><font face="Courier New" size="2">%3A</font><font size="2" face="Courier New, Courier, mono">arXiv</font><font face="Courier New" size="2">%3A</font><font size="2" face="Courier New, Courier, mono">hep-th%2F9901001&amp;metadataPrefix=oai_dc</font><font face="Courier New" size="2"></font> 
+
+</blockquote>
+
+<h4> <a NAME="Special characters"></a>3.1.1.3 Encoding of special characters in 
+
+  keyword arguments of OAI protocol requests</h4>
+
+The <a href="http://www.ietf.org/rfc/rfc2396.txt">syntax rules for URIs</a> restrict 
+
+a few characters to special roles in certain contexts, and require that if these 
+
+characters are used in any other way that they be written as an escape sequence, 
+
+i.e. a percent sign followed by the character code in hexadecimal. The reserved 
+
+characters include: <br>
+
+&nbsp;&nbsp;&nbsp; 
+
+<center>
+
+  <table BORDER="1" WIDTH="61%" >
+
+    <caption> </caption>
+
+    <center>
+
+      <tbody> </tbody> 
+
+    </center>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"><i>Character</i></td>
+
+      <td ALIGN=CENTER WIDTH="65%"><i>URI Role</i></td>
+
+      <td ALIGN=CENTER WIDTH="21%"><i>Escape Sequence</i></td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">/</font> 
+
+        </center>
+
+      </td>
+
+      <td WIDTH="65%" align="center">Path Component Separator</td>
+
+      <td ALIGN=CENTER WIDTH="21%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">%2F</font> 
+
+        </center>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">?</font> 
+
+        </center>
+
+      </td>
+
+      <td ALIGN=CENTER WIDTH="65%">Query Component Separator</td>
+
+      <td ALIGN=CENTER WIDTH="21%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">%3F</font> 
+
+        </center>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">#</font> 
+
+        </center>
+
+      </td>
+
+      <td ALIGN=CENTER WIDTH="65%">Fragment Identifier</td>
+
+      <td ALIGN=CENTER WIDTH="21%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">%23</font> 
+
+        </center>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">=</font> 
+
+        </center>
+
+      </td>
+
+      <td ALIGN=CENTER WIDTH="65%">Name/Value Separator</td>
+
+      <td ALIGN=CENTER WIDTH="21%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">%3D</font> 
+
+        </center>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">&amp;</font> 
+
+        </center>
+
+      </td>
+
+      <td ALIGN=CENTER WIDTH="65%">Argument Separator in Query Component</td>
+
+      <td ALIGN=CENTER WIDTH="21%"> 
+
+        <center>
+
+          <font face="Courier New" size="2">%26</font> 
+
+        </center>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"><font face="Courier New" size="2">:</font></td>
+
+      <td ALIGN=CENTER WIDTH="65%">Host Port Separator</td>
+
+      <td ALIGN=CENTER WIDTH="21%"><font face="Courier New" size="2">%3A</font></td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%"><font face="Courier New" size="2">;</font></td>
+
+      <td ALIGN=CENTER WIDTH="65%">Authority Namespace Separator</td>
+
+      <td ALIGN=CENTER WIDTH="21%"><font face="Courier New" size="2">%3B</font></td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%">' '</td>
+
+      <td ALIGN=CENTER WIDTH="65%">Space Character</td>
+
+      <td ALIGN=CENTER WIDTH="21%"><font face="Courier New" size="2">%20</font></td>
+
+    </tr>
+
+    <tr> 
+
+      <td ALIGN=CENTER WIDTH="14%">%</td>
+
+      <td ALIGN=CENTER WIDTH="65%">Escape Indicator</td>
+
+      <td ALIGN=CENTER WIDTH="21%"><font face="Courier New, Courier, mono" size="2">%25</font></td>
+
+    </tr>
+
+    <tr>
+
+      <td ALIGN=CENTER WIDTH="14%">+</td>
+
+      <td ALIGN=CENTER WIDTH="65%">Escaped Space</td>
+
+      <td ALIGN=CENTER WIDTH="21%"><font face="Courier New, Courier, mono" size="2">%2B</font></td>
+
+    </tr>
+
+  </table>
+
+  <p align="left">As a result, these characters must be represented by their respective 
+
+    escape sequence if their use does not correspond to their established URI 
+
+    role.&nbsp; In case of the OAI protocol, this means that the reserved characters 
+
+    have to be encoded when they in the <font face="Courier New, Courier, mono" size="2">value</font> 
+
+    part of the <font face="Courier New, Courier, mono" size="2">key=value</font> 
+
+    pairs of which the list of keyword arguments of the OAI protocol request consists. 
+
+    This applies for both the <font face="Courier New, Courier, mono" size="2">GET</font> 
+
+    and <font face="Courier New" size="2">POST</font> encoding of the OAI protocol 
+
+    requests.</p>
+
+  <h3 align="left"> <a NAME="HTTP Response Format"></a>3.1.2 HTTP Response Format</h3>
+
+  <div align="left">Responses to protocol requests are formatted as HTTP responses, 
+
+    with appropriate HTTP header fields. Every OAI protocol request returns a 
+
+    <font face="Courier New" size="2">Content-Type</font> of <font face="Courier New" size="2">text/xml</font>.&nbsp; 
+
+    Similarly, the success or error status of each protocol request is returned 
+
+    via the HTTP <font face="Courier New" size="2">Status-Code</font>. </div>
+
+  <h4 align="left"> <a NAME="MIME Types"></a>3.1.2.1 Content-Type</h4>
+
+  <p align="left">The <font face="Courier New" size="2">Content-Type</font> returned 
+
+    for all OAI protocol requests is <font face="Courier New" size="2">text/xml</font>.&nbsp; 
+
+    Encoding of the XML is done using the UTF-8 representation of Unicode, whereby:</p>
+
+</center>
+
+<ul>
+
+  <li> 
+
+    <div align="left"> <font color="#000000"> The use of character references 
+
+      is preferred over the use of entity references.&nbsp; Character references 
+
+      allow XML responses to be treated as stand-alone documents that can be manipulated 
+
+      without dependency on entity declarations external to the document.</font></div>
+
+  </li>
+
+  <li> 
+
+    <div align="left">The use of a hexadecimal representation of character references 
+
+      is preferred over decimal representations, since Unicode character encodings 
+
+      are defined using hex numbers. For instance, <font face="Courier New, Courier, mono" size="2">&amp;#x00A9;</font> 
+
+      is preferred over <font face="Courier New, Courier, mono" size="2">&amp;#169;</font> 
+
+      for encoding &#169; . </div>
+
+  </li>
+
+</ul>
+
+<center>
+
+  <p align="left">The XML data for all responses has the following common markup: 
+
+  </p>
+
+  <div align="left"> 
+
+    <ol>
+
+      <li>The first tag output is an XML declaration where the <tt>version</tt> 
+
+        is always <font face="Courier New" size="2">1.0</font> and the <tt>encoding</tt> 
+
+        is always <font face="Courier New" size="2">UTF-8</font>, eg: <font face="Courier New" size="2">&lt;?xml 
+
+        version="1.0" encoding="UTF-8" ?></font></li>
+
+      <li><font color="#000000">The remaining content is enclosed in a root element 
+
+        that has the same name as the verb of the respective OAI protocol request. 
+
+        As shown, this element has three attributes:</font> 
+
+        <ul>
+
+          <li><font face="Courier New, Courier, mono" size="2" color="#000000">xmlns</font><font color="#000000"> 
+
+            -- the value of which is the namespace URI (as defined by the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+            namespace specification</a>) of the actual OAI protocol request (refer 
+
+            to the documentation of each protocol request for that URI).</font></li>
+
+          <li><font face="Courier New, Courier, mono" size="2" color="#000000">xmlns:xsi</font><font color="#000000"> 
+
+            -- the value of which must always be the URI shown the example, which 
+
+            is the namespace URI for XML schema.</font></li>
+
+          <li><font face="Courier New, Courier, mono" size="2" color="#000000">xsi:schemaLocation</font><font color="#000000"> 
+
+            -- is a pair, the first part is the namespace URI (as defined by the 
+
+            <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+            namespace specification</a>) of the protocol request, and the second 
+
+            part is the URL of the XML schema for validation of the response.&nbsp;</font></li>
+
+        </ul>
+
+      </li>
+
+      <li><font color="#000000">For all responses, the first two children of the 
+
+        root element are:</font> 
+
+        <ul>
+
+          <li><font color="#000000"><font face="Courier New, Courier, mono" size="2">responseDate</font> 
+
+            -- a timestamp (compliant with the <a href="#Dates">dates and times 
+
+            </a>specifications) indicating the time and date that the response 
+
+            was sent.&nbsp; This <i>must</i> be expressed in the local time of 
+
+            the repository.</font></li>
+
+          <li><font color="#000000"><font face="Courier New, Courier, mono" size="2">requestURL</font> 
+
+            -- the URL for an HTTP <font face="Courier New, Courier, mono" size="2">GET</font> 
+
+            request that could be used to re-submit the protocol request that 
+
+            generated this response.&nbsp; Note that this URL is <a href="#Encoding an OAI protocol request in an HTTP GET">encoded</a> 
+
+            exactly as in protocol requests.&nbsp;In addition, in the encoded 
+
+            URL all ampersand characters (<font face="Courier New, Courier, mono" size="2">&amp;</font>) 
+
+            that are used to separate arguments must be encoded as <font size="2" face="Courier New, Courier, mono">&amp;amp;</font> 
+
+            in order to obtain valid XML.</font></li>
+
+        </ul>
+
+      </li>
+
+    </ol>
+
+  </div>
+
+</center>
+
+<center>
+
+  <div align="left"> For example, the reply to the <font face="Courier New, Courier, mono" size="2">GetRecord</font> 
+
+    protocol request shown <a href="#http get encoding">above</a> will be of the 
+
+    form: </div>
+
+</center>
+
+<center>
+
+  <div align="left"> 
+
+    <p><font face="Courier New" size="2">&lt;?xml version="1.0" encoding="UTF-8" 
+
+      ?><br>
+
+      &lt;GetRecord <br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp;xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord&quot; 
+
+      <br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"<br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp;xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_GetRecord<br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd&quot;&gt;<br>
+
+      &nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt;<br>
+
+      &nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI-script?verb=GetRecord 
+
+      <br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;amp;identifier=oai%3AarXiv%3Ahep-th%2F9901001<br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;amp;metadataPrefix=oai_dc&lt;/requestURL&gt; 
+
+      <br>
+
+      &nbsp;&nbsp;&nbsp;&nbsp; <i>list of records</i> <br>
+
+      &lt;/GetRecord></font> </p>
+
+    </div>
+
+  <h4 align="left"><a NAME="Status Codes"></a>3.1.2.2 Status-Code</h4>
+
+  <div align="left">The OAI protocol uses the HTTP <font size="2" face="Courier New, Courier, mono">Status-Code</font> 
+
+    to indicate the success or nature of the failure of the request. A normal 
+
+    response to an OAI protocol request is signaled with the HTTP <font face="Courier New, Courier, mono" size="2">200</font> 
+
+    <font face="Courier New, Courier, mono" size="2">Status-Code</font>. Error 
+
+    returns are signaled with the appropriate <font face="Courier New, Courier, mono" size="2">4xx</font> 
+
+    code as specified in the HTTP protocol. The following HTTP <font face="Courier New, Courier, mono" size="2">Status-Code</font> 
+
+    has a special meaning when returned in the context of responses to OAI protocol 
+
+    requests: 
+
+    <ul>
+
+      <li> <font color="#000000"> <font face="Courier New" size="2">400</font> 
+
+        - a <font face="Courier New, Courier, mono" size="2">Status-Code</font> 
+
+        of <font face="Courier New, Courier, mono" size="2">400</font> is returned 
+
+        when the syntax of the protocol request is illegal, i.e.:</font> 
+
+        <ul>
+
+          <li><font color="#000000">illegal verbs are used in the request;</font></li>
+
+          <li><font color="#000000">illegal arguments are used in the request.</font></li>
+
+        </ul>
+
+      </li>
+
+    </ul>
+
+    <p>OAI compliant repositories may also employ other HTTP <font size="2" face="Courier New, Courier, mono">Status-Codes</font> 
+
+      in manners as defined by the HTTP protocol. The following list includes 
+
+      <font size="2" face="Courier New, Courier, mono">Status-Codes</font> that 
+
+      may be useful for load balancing of OAI repositories:</p>
+
+  </div>
+
+</center>
+
+<ul>
+
+  <li> 
+
+    <center>
+
+      <div align="left"> <font face="Courier New, Courier, mono" size="2">302</font> 
+
+        - Allows the repository to temporarily redirect an OAI protocol request 
+
+        to another repository. The URI of the temporary repository should be given 
+
+        by the <font face="Courier New, Courier, mono" size="2">Location</font> 
+
+        field in the HTTP response.</div>
+
+    </center>
+
+  </li>
+
+  <li> 
+
+    <center>
+
+      <div align="left"> 
+
+        <p><font face="Courier New" size="2">503</font> - Service unavailable, 
+
+          a <font face="Courier New, Courier, mono" size="2">Retry-After</font> 
+
+          period is specified.&nbsp; Clients should wait this period before attempting 
+
+          another OAI protocol request (Clients that do not observe the <font face="Courier New, Courier, mono" size="2">Retry-After</font> 
+
+          period may be denied access).&nbsp;</p>
+
+      </div>
+
+    </center>
+
+  </li>
+
+</ul>
+
+<center>
+
+  <div align="left">Repositories should use the HTTP <font face="Courier New" size="2">Reason-Phrase</font> 
+
+    to provide additional information about an error that is useful to a human 
+
+    reader. </div>
+
+</center>
+
+<blockquote> 
+
+  <center>
+
+    <div align="left"></div>
+
+  </center>
+
+</blockquote>
+
+<center>
+
+  <div align="left"></div>
+
+  <h2 align="left"> <a NAME="Dates"></a>3.2 Dates and Times</h2>
+
+  <div align="left"> 
+
+    <p>Dates and times are uniformly encoded throughout the protocol.&nbsp; Their 
+
+      use is as follows: </p>
+
+  </div>
+
+</center>
+
+<ul>
+
+  <li> 
+
+    <center>
+
+      <div align="left"><a name="date"></a><i>Protocol Requests</i>: Values for 
+
+        the optional <font face="Courier New, Courier, mono" size="2"> from</font> 
+
+        and <font face="Courier New, Courier, mono" size="2">until</font> arguments 
+
+        in <font face="Courier New, Courier, mono" size="2"><a href="#ListIdentifiers">ListIdentifiers</a></font> 
+
+        and <font face="Courier New, Courier, mono" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+        protocol requests, as well as for <a href="#Datestamp">datestamps</a> 
+
+        in the headers of records are encoded using the "<a href="http://www.w3.org/TR/NOTE-datetime">Complete 
+
+        date" variant of ISO8601</a>.&nbsp;That format is <font face="Courier New" size="2">YYYY-MM-DD</font> 
+
+        where <font face="Courier New" size="2">YYYY</font> is the year, <font face="Courier New" size="2">MM</font> 
+
+        is the month of the year between 01 (January) and 12 (December), and <font face="Courier New" size="2">DD</font> 
+
+        is the day of the month between 01 and 28 or 29 or 30 or 31, depending 
+
+        on length of month and whether it is a leap year. For example: 1957-03-20 
+
+        is March 20th 1957.</div>
+
+    </center>
+
+  </li>
+
+  <li> 
+
+    <center>
+
+      <div align="left"><a name="time"></a><i>Protocol Responses</i>:&nbsp; Each 
+
+        protocol response includes a <font face="Courier New, Courier, mono" size="2">responseDate</font> 
+
+        element, which <i> must</i> be the time and date of the response in the 
+
+        <i>local</i> time of the repository.&nbsp; This&nbsp;is encoded using 
+
+        the "<a href="http://www.w3.org/TR/NOTE-datetime">Complete date plus hours, 
+
+        minutes and seconds" variant of ISO8601</a>.&nbsp;&nbsp; That format is 
+
+        <font face="Courier New, Courier, mono" size="2">YYYY-MM-DDThh:mm:ssTZD, 
+
+        </font>with the following meanings:</div>
+
+      <div align="left"> 
+
+        <ul>
+
+          <li> <font face="Courier New, Courier, mono" size="2">YYYY, MMM, DD 
+
+            </font>is the same as for <a href="#date">dates</a>.<font face="Courier New, Courier, mono"> 
+
+            &nbsp;</font> </li>
+
+          <li> <font size="2">T</font> is the character &quot;T&quot;,&nbsp;</li>
+
+          <li> <font face="Courier New, Courier, mono" size="2">hh</font> are 
+
+            the hours (between 00 and 23), <font size="2" face="Courier New, Courier, mono">mm</font> 
+
+            are the minutes (between 00 and 59) and <font size="2" face="Courier New, Courier, mono">ss</font> 
+
+            the seconds (between 00 and 59).&nbsp;</li>
+
+          <li> <font face="Times New Roman, Times, serif" size="2">TZD</font> 
+
+            is an indication of the time zone of the repository, expressed as 
+
+            an offset from UTC.&nbsp; A time zone offset of "+hh:mm" indicates 
+
+            that the date/time uses a local time zone which is "hh" hours and 
+
+            "mm" minutes ahead of UTC. A time zone offset of "-hh:mm" indicates 
+
+            that the date/time uses a local time zone which is "hh" hours and 
+
+            "mm" minutes behind UTC.&nbsp;</li>
+
+        </ul>
+
+        <p> For instance, <font face="Courier New" size="2"> 1957-03-20T20:30:00+00:00</font> 
+
+          is UTC 8:30 PM on March 20th 1957. 
+
+      </div>
+
+    </center>
+
+  </li>
+
+</ul>
+
+<center>
+
+  <div align="left"> 
+
+    <div align="left"> 
+
+      <div align="left"> 
+
+        <h2><a name="Metadata Namespaces"></a>3.3 <a name="Metadata Namespaces and Metadata Format Identifiers">Metadata 
+
+          Prefix and Metadata Schema</a> </h2>
+
+        <center>
+
+          <div align="left">
+
+            <div align="left">
+
+              <div align="left">
+
+                <p><font color="#000000">Each metadata format that is included 
+
+                  in records disseminated by the OAI protocol is identified within 
+
+                  the protocol requests to a repository by a <i>metadata prefix 
+
+                  </i>and across multiple repositories by the URL of a <i>metadata 
+
+                  schema</i>:</font></p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </center>
+
+        <ul>
+
+          <li> <font color="#000000">The <i><a name="metadata format identifier"></a>metadata 
+
+            prefix</i> must be a non-space embedded string consisting of alphanumeric 
+
+            characters or an underscore [<font face="Courier New" size="2">_</font>] 
+
+            character.&nbsp; For the purpose of clarity in this document, all 
+
+            metadata prefixes will be preceded by the string <font face="Courier New" size="2">oai_</font> 
+
+            (for example, <font face="Courier New" size="2">oai_dc</font>).&nbsp;&nbsp;</font></li>
+
+          <li> <font color="#000000">The <i><a name="metadataSchema"></a>metadata 
+
+            schema</i> is an <a href="http://www.w3.org/XML/Schema">XML schema</a> 
+
+            that may be used as a test of conformance of the metadata included 
+
+            in the record.&nbsp; It is highly recommended that the schema include 
+
+            comments that aid in human understandability. &nbsp;</font> 
+
+            <center>
+
+              <div align="left"> 
+
+                <div align="left"></div>
+
+              </div>
+
+            </center>
+
+          </li>
+
+        </ul>
+
+        <center>
+
+          <div align="left"> 
+
+            <div align="left"> 
+
+              <div align="left"> 
+
+                <p><font color="#000000">The metadata formats that are available 
+
+                  for a repository (or for a specific identifier) can be obtained 
+
+                  through the <font face="Courier New" size="2"><a href="#ListMetadataFormats">ListMetadataFormats</a></font> 
+
+                  protocol request.&nbsp;&nbsp;&nbsp;For each metadata format 
+
+                  that is supported, the response to the <font face="Courier New" size="2"><a href="#ListMetadataFormats">ListMetadataFormats</a></font> 
+
+                  protocol requests contains the metadata prefix of the format 
+
+                  and the URL of the metadata schema for the metadata format.&nbsp; 
+
+                  Optionally, this response may also contain the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+                  namespace</a> URI associated with the format.</font> </p>
+
+                <p><font color="#000000">Metadata prefixes are used in the <font face="Courier New, Courier, mono" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+                  and <font face="Courier New, Courier, mono" size="2"><a href="#GetRecord">GetRecord</a></font> 
+
+                  protocol requests, to request records that include metadata 
+
+                  in the format identified by the metadata prefix.&nbsp;</font> 
+
+                </p>
+
+                <p><font color="#000000">The metadata in each <a href="#Record">record</a> 
+
+                  returned by <font face="Courier New, Courier, mono" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+                  and <font face="Courier New, Courier, mono" size="2"><a href="#GetRecord">GetRecord</a> 
+
+                  </font>complies to the conventions of the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+
+                  namespace specification</a>. This means that the root element 
+
+                  of the metadata part must contain an <font face="Courier New, Courier, mono" size="2">xmlns</font> 
+
+                  attribute, the value of which is the namespace URI of the metadata 
+
+                  format.&nbsp; The root element should also contain an <font face="Courier New, Courier, mono" size="2">xsi:schemaLocation 
+
+                  </font>attribute that has a value that includes the URL of the 
+
+                  XML schema for validation of the metadata.&nbsp; This URL should 
+
+                  match the URL of the <i>metadata schema </i>for the <i>metadata 
+
+                  prefix </i>included as an argument to the <font face="Courier New, Courier, mono" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+                  or <font face="Courier New, Courier, mono" size="2"><a href="#GetRecord">GetRecord</a> 
+
+                  </font>request (the mapping from <i>metadata prefix </i>to <i>metadata 
+
+                  schema</i> is defined<i> </i>by the repository's response to 
+
+                  the <font face="Courier New" size="2"><a href="#ListMetadataFormats">ListMetadataFormats</a></font> 
+
+                  protocol request).</font> </p>
+
+                <p><font color="#000000">The OAI protocol mandates one <i>required 
+
+                  </i>metadata format for the purpose of interoperability. This 
+
+                  format is <a href="http://purl.org/DC/documents/rec-dces-19990702.htm">Dublin 
+
+                  Core</a>, without any <a href="http://purl.org/DC/documents/rec/dcmes-qualifiers-20000711.htm">qualification</a>. 
+
+                  Therefore, the protocol reserves the metadata prefix '<font face="Courier New" size="2">oai_dc</font>', 
+
+                  and the URL of a metadata schema for unqualified Dublin Core, 
+
+                  which is <a href="http://www.openarchives.org/OAI/1.1/dc.xsd"> http://www.openarchives.org/OAI/1.1/dc.xsd</a>.</font> 
+
+                </p>
+
+                <p><font color="#000000">Certain communities may adopt guidelines 
+
+                  for sharing of metadata prefixes and/or metadata schema throughout 
+
+                  the community.&nbsp; Such guidelines are outside of the scope 
+
+                  of the OAI protocol.</font></p>
+
+              </div>
+
+              <p><font color="#000000"><a href="#appendix 1">Appendix 1</a> provides 
+
+                some sample XML Schema and instance documents for common metadata 
+
+                formats such as Dublin Core, MARC and RFC1807</font></p>
+
+            </div>
+
+          </div>
+
+        </center>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</center>
+
+<center><div align="left"><div align="left"></div>
+
+    <div align="left"></div>
+
+  </div>
+
+  <h2 align="left"> <a name="Flow Control"></a>3.4&nbsp;Flow Control</h2>
+
+  <div align="left"> 
+
+    <div align="left"> 
+
+      <p><font color="#000000">A number of OAI protocol requests return a <i>list 
+
+        </i>of discrete entities; <font face="Courier New" size="2">ListRecords</font> 
+
+        returns a list of records, <font face="Courier New" size="2">ListIdentifiers</font> 
+
+        returns a list of identifiers, and <font face="Courier New" size="2">ListSets</font> 
+
+        returns a list of <font face="Courier New" size="2">setSpecs</font>.&nbsp; 
+
+        In some cases, these lists may be large and it may be practical to partition 
+
+        them among a series of protocol requests and responses.&nbsp; This partitioning 
+
+        is accomplished as follows:</font></p>
+
+    </div>
+
+  </div>
+
+</center>
+
+<ul>
+
+  <li> 
+
+    <center>
+
+      <div align="left"> 
+
+        <div align="left"><font color="#000000">A repository replies to a protocol 
+
+          request with an <i>incomplete list</i> and a <font face="Courier New, Courier, mono" size="2">resumptionToken;</font></font></div>
+
+      </div>
+
+    </center>
+
+  </li>
+
+  <li> 
+
+    <center>
+
+      <div align="left"> 
+
+        <div align="left"><font color="#000000">In order to make the response 
+
+          a <i>complete list</i>, the client will need to issue one or more protocol 
+
+          requests with <font face="Courier New" size="2">resumptionTokens</font> 
+
+          as arguments.&nbsp; A complete response then consists of the combination 
+
+          of the <i> incomplete lists</i> from the sequence of protocol requests.</font> 
+
+        </div>
+
+      </div>
+
+    </center>
+
+  </li>
+
+</ul>
+
+<center>
+
+  <div align="left"> 
+
+    <p align="left"><font color="#000000">The details on flow control and the 
+
+      <font face="Courier New, Courier, mono" size="2">resumptionToken</font> 
+
+      are as follows:</font></p>
+
+    <div align="left"> 
+
+      <ul>
+
+        <li><font color="#000000">The only defined use of <font face="Courier New, Courier, mono" size="2">resumptionToken</font> 
+
+          is as follows:</font> 
+
+          <ul>
+
+            <li><font color="#000000">a client receives a <font face="Courier New, Courier, mono" size="2">resumptionToken</font> 
+
+              from a repository as part of a reply to a protocol request;</font></li>
+
+            <li><font color="#000000">the client copies the <font face="Courier New, Courier, mono" size="2">resumptionToken</font> 
+
+              and includes it in a subsequent protocol request.</font></li>
+
+          </ul>
+
+          <font color="#000000"> All other uses of <font face="Courier New, Courier, mono" size="2">resumptionToken</font> 
+
+          by a client are illegal and hence will return a <font face="Courier New, Courier, mono" size="2">Status-Code</font> 
+
+          of <font size="2" face="Courier New, Courier, mono">400</font> from 
+
+          the repository.</font> </li>
+
+        <li><font color="#000000">In all cases when a <font face="Courier New" size="2">resumptionToken</font> 
+
+          is issued, the incomplete list will always consist of complete entities; 
+
+          e.g., all individual records returned in an incomplete record list from 
+
+          a <font face="Courier New" size="2">ListRecords</font> request will 
+
+          be intact.</font></li>
+
+        <li> <font color="#000000"> The format of the <font face="Courier New" size="2">resumptionToken</font> 
+
+          is undefined by the OAI protocol and should be considered opaque by 
+
+          the client.</font></li>
+
+        <li> <font color="#000000"> The protocol does not define the semantics 
+
+          of incompleteness.&nbsp; Therefore, a client should not assume that 
+
+          the members in an <i>incomplete list </i>conform to some selection criteria 
+
+          (e.g., date ordering).</font></li>
+
+        <li> <font color="#000000"> The <i>time-to-live</i> of an individual <font face="Courier New" size="2">resumptionToken</font> 
+
+          is undefined by the OAI protocol.&nbsp; It is conceivable that there 
+
+          will be instances when a repository considers an individual <font face="Courier New" size="2">resumptionToken</font> 
+
+          extinct; i.e. the time span between the issuance of the <font face="Courier New" size="2">resumptionToken</font> 
+
+          and its use in a subsequent request is "too long".&nbsp; In that case, 
+
+          the request will return a <font face="Courier New, Courier, mono" size="2">Status-Code</font> 
+
+          of <font face="Courier New, Courier, mono" size="2">400</font> (illegal 
+
+          arguments) and the client will need to reinitiate the sequence of requests 
+
+          (and dispose of the existing <i>incomplete list</i>).&nbsp; Since the 
+
+          format of a <font face="Courier New" size="2">resumptionToken</font> 
+
+          is opaque, there is no defined way for a client to determine its <i>time-to-live.</i></font></li>
+
+        <li> <font color="#000000"> Before including a <font face="Courier New" size="2">resumptionToken</font> 
+
+          in a subsequent request, a client should encode any <a href="#Special characters">special 
+
+          characters</a> in it.&nbsp;</font></li>
+
+      </ul>
+
+    </div>
+
+  </div>
+
+  <div align="left">The use of the <font face="Courier New" size="2">resumptionToken</font> 
+
+    in the context of a series of <font face="Courier New" size="2"><a href="#ListRecords">ListRecords</a></font> 
+
+    requests is as follows: 
+
+    <ul>
+
+      <li> The response to a <font face="Courier New" size="2">ListRecords</font> 
+
+        protocol request consists of a <i>record list </i>(a list of records).&nbsp; 
+
+        This <i>record list</i> is distinguished as <i>incomplete</i> -- in contrast 
+
+        to <i>complete --</i> if the response to the <font face="Courier New" size="2">ListRecords</font> 
+
+        protocol&nbsp;request includes a <font face="Courier New" size="2">resumptionToken</font>.</li>
+
+      <li> If a <i>record list</i> is incomplete, the client should include the 
+
+        <font face="Courier New" size="2">resumptionToken</font> as the only argument 
+
+        to a subsequent <font face="Courier New" size="2">ListRecords</font> request.&nbsp; 
+
+        The response to this request is a continuation of the<i> incomplete record 
+
+        list</i> that resulted from the <font face="Courier New" size="2">ListRecords</font> 
+
+        protocol request that issued the <font face="Courier New" size="2">resumptionToken</font>.&nbsp; 
+
+        The client may then merge the records from the continuation with the <i>incomplete 
+
+        record list</i>.</li>
+
+      <li> This subsequent request may itself result in a reply that contains 
+
+        a <font face="Courier New" size="2">resumptionToken</font>. The client 
+
+        should then continue to issue <font face="Courier New" size="2">ListRecord</font> 
+
+        requests using the <font face="Courier New" size="2">resumptionToken</font> 
+
+        from the previous request, merging returned records with the <i>incomplete 
+
+        record list</i> until a reply does no longer contain a <font face="Courier New" size="2">resumptionToken</font>. 
+
+        The absence of a <font face="Courier New" size="2">resumptionToken</font> 
+
+        informs the client that all records that make up a <i>complete record 
+
+        list</i> have been gathered.</li>
+
+    </ul>
+
+    <p>This flow control mechanism, in combination with the <a href="#Status Codes"><font face="Courier New, Courier, mono" size="2">503</font> 
+
+      <font face="Courier New, Courier, mono" size="2">Status-Code</font></a>, 
+
+      provides some basic tools with which a repository can enforce an <i> acceptable 
+
+      use policy</i> for its harvesting interface.&nbsp; Communities implementing 
+
+      the OAI protocol may need more extensive tools to enforce acceptable use 
+
+      policies for either the harvesting interface of their repositories or for 
+
+      the metadata harvested from those repositories. The enforcement of such 
+
+      additional policies is outside of the scope of the OAI protocol. 
+
+  </div>
+
+</center>
+
+<h1 align="left"><a NAME="Protocol Messages"></a>4. <a name="Protocol Requests and Responses"> 
+
+  Protocol Requests and Responses</a></h1>
+
+<div align="left"> This section lists the protocol requests -- <font face="Courier New, Courier, mono" size="2">verbs 
+
+  --</font> defined in the Open Archives Initiative protocol. The documentation 
+
+  for each protocol request is organized as follows: 
+
+  <ul>
+
+    <li><font color="#000000">Each section header corresponds to the token used 
+
+      to specify the request as the required <font face="Courier New" size="2">verb</font> 
+
+      argument to an <a href="#HTTP Request Format">HTTP protocol request</a>.</font></li>
+
+    <li><font color="#000000">A brief summary of the meaning of the verb and notes 
+
+      on its usage</font></li>
+
+    <li>The list of additional arguments for the request.&nbsp; Arguments are 
+
+      of three types: 
+
+      <ul>
+
+        <li>&nbsp;<i>required, </i>the argument must be included with the request 
+
+          (the <font face="Courier New" size="2">verb</font> argument is always 
+
+          <i>REQUIRED</i>).</li>
+
+        <li><i>optional, </i>the argument may be included with the request.</li>
+
+        <li><i>exclusive, </i>the argument may be included with request, but must 
+
+          be the only argument (except for the <font face="Courier New" size="2">verb</font> 
+
+          argument).</li>
+
+      </ul>
+
+    </li>
+
+    <li>The format of the response defined by means of an <a href="http://www.w3.org/XML/Schema">XML 
+
+      schema</a>. </li>
+
+    <li> Exception conditions for the protocol request.
+         These are in addition to the HTTP 
+         <font face="Courier New, Courier, mono" size="2">Status-Codes</font> 
+         that have a special meaning in the context of the OAI protocol,
+         which are listed under <a href="#Status Codes">Status-Codes</a>.
+   </li>
+
+    <li>One or more example requests and corresponding responses, with explanatory 
+
+      notes if appropriate.</li>
+
+  </ul>
+
+</div>
+
+<div align="left"> 
+
+  <h2>4.1. <a name="GetRecord"></a>GetRecord </h2>
+
+  <h3 align="left"><font color="#000000">Summary and Usage Notes</font></h3>
+
+  <p align="left"><font color="#000000">This verb is used to retrieve an individual 
+
+    record (metadata) from an item in a repository.&nbsp; Required arguments specify 
+
+    the identifier, or key, of the requested record and the format of the metadata 
+
+    that should be included in the record</font></p>
+
+</div>
+
+<h3 align="left">Arguments</h3>
+
+<div align="left"> 
+
+  <ul>
+
+    <li><font face="Courier New" size="2"><b>identifier</b> </font>a <i>REQUIRED</i> 
+
+      argument that specifies the <a href="#Unique Identifier">unique identifier</a>&nbsp; 
+
+      that should be used as a key to extract the <a href="#Record">requested 
+
+      record</a> from an item in the <a href="#Repository">repository</a>.</li>
+
+    <li><font face="Courier New" size="2"><b>metadataPrefix</b> </font>a <i>REQUIRED</i> 
+
+      argument that specifies the <a href="#metadata format identifier">metadata 
+
+      prefix</a> of the format that should be included in the <a href="#Record">metadata 
+
+      part of the returned record</a>.&nbsp; The value of this argument must be 
+
+      a non-space embedded string consisting of alphanumeric and underscore [<font face="Courier New" size="2">_</font>] 
+
+      characters; <font face="Courier New" size="2">[A-Za-z0-9_]</font>.&nbsp; 
+
+      The metadata formats supported by a repository and for a particular record 
+
+      can be retrieved using the <font face="Courier New" size="2"><a href="#ListMetadataFormats">ListMetadataFormats</a></font> 
+
+      request.</li>
+
+  </ul>
+
+</div>
+
+<div align="left"></div>
+
+<h3 align="left">Exception Conditions</h3>
+
+<ul>
+
+  <li><i>Identifier does not exist</i> - The response will not contain a record 
+
+    container. </li>
+
+  <li><i>Metadata format can not be disseminated for the identifier</i> - The 
+
+    record in the response contains a header but no metadata container. </li>
+
+</ul>
+
+<h3 align="left">Response Format</h3>
+
+<div align="left"> 
+
+  <table bgcolor="#bedce6" border="2" width="80%">
+
+    <tbody> 
+
+    <tr> 
+
+      <td width="100%">A XML schema for validating the response is as follows:</td>
+
+    </tr>
+
+    <tr valign="top"> 
+
+      <td width="100%" height="914"> 
+
+        <pre>&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+        xmlns:oai=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord&quot;
+
+        targetNamespace=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord&quot;
+
+        elementFormDefault=&quot;qualified&quot;
+
+        attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+&lt;annotation&gt;
+
+ &lt;documentation&gt;
+
+   Schema to verify validity of responses to GetRecord OAI-protocol request.
+
+   This Schema validated at http://www.w3.org/2001/03/webdata/xsv on 2001-05-07
+
+   with XSV XSV 1.189/1.95 of 2001/05/07 08:38:12
+
+ &lt;/documentation&gt;
+
+&lt;/annotation&gt;
+
+
+
+&lt;element name=&quot;GetRecord&quot; type=&quot;oai:GetRecordType&quot;/&gt;
+
+
+
+&lt;!-- response to GetRecord-request --&gt;
+
+
+
+&lt;complexType name=&quot;GetRecordType&quot;&gt;
+
+ &lt;sequence&gt;
+
+   &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;dateTime&quot;/&gt;
+
+   &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+   &lt;element name=&quot;record&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:recordType&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;!-- define recordType --&gt;
+
+&lt;!-- a record has a header and a metadata part --&gt;
+
+
+
+&lt;complexType name=&quot;recordType&quot;&gt;
+
+ &lt;sequence&gt;
+
+   &lt;element name=&quot;header&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;oai:headerType&quot;/&gt;
+
+   &lt;element name=&quot;metadata&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:metadataType&quot;/&gt;
+
+   <font color="#000000">&lt;element name=&quot;about&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:aboutType&quot;/&gt;</font>
+
+ &lt;/sequence&gt;
+
+    &lt;attribute name=&quot;status&quot; use=&quot;optional&quot; type=&quot;oai:statusType&quot;/&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;!-- define headerType --&gt;
+
+&lt;!-- a header has a unique identifier and a datestamp --&gt;
+
+
+
+&lt;complexType name=&quot;headerType&quot;&gt;
+
+ &lt;sequence&gt;
+
+   &lt;element name=&quot;identifier&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+   &lt;element name=&quot;datestamp&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;date&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;!-- define metadataType --&gt;
+
+&lt;!-- metadata must be expressed in XML that is compliant with another XML  --&gt;
+
+&lt;!-- Schema. metadata must be explicitly qualified in the response --&gt;
+
+
+
+&lt;complexType name=&quot;metadataType&quot;&gt;
+
+ &lt;sequence&gt;
+
+  &lt;any namespace=&quot;##other&quot; processContents=&quot;lax&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+<font color="#000000">&lt;!-- define aboutType --&gt;
+
+&lt;!-- data &quot;about&quot; the record must be expressed in XML --&gt;
+
+&lt;!-- that is compliant with an XML Schema defined by a community --&gt;
+
+
+
+&lt;complexType name=&quot;aboutType&quot;&gt;
+
+ &lt;sequence&gt;
+
+  &lt;any namespace=&quot;##other&quot; processContents=&quot;lax&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;</font>
+
+
+
+ &lt;!-- define statusType --&gt;<br> &lt;!-- a record can have a status of &quot;deleted&quot; . --&gt;</pre>
+
+        <pre>&lt;simpleType name=&quot;statusType&quot;&gt;
+
+  &lt;restriction base=&quot;string&quot;&gt;
+
+   &lt;enumeration value=&quot;deleted&quot;/&gt;
+
+  &lt;/restriction&gt;
+
+&lt;/simpleType&gt;
+
+
+
+
+
+&lt;/schema&gt;
+
+</pre>
+
+        </td>
+
+    </tr>
+
+    <tr> 
+
+      <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd">http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd</a></td>
+
+    </tr>
+
+    </tbody> 
+
+  </table>
+
+  <h3>Examples</h3>
+
+</div>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> Request a record in the Dublin Core metadata format [URL shown 
+
+  without <a href="#Special%20characters">encoding</a> for better readability]. 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=GetRecord&amp;identifier=oai:arXiv:quant-ph/9901001&amp;metadataPrefix=oai_dc</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i> </h4>
+
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+ &lt;GetRecord <br>    xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+    xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_GetRecord &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd&quot;&gt;
+
+  &lt;responseDate&gt;2001-06-10T14:09:57-07:00&lt;/responseDate&gt;
+
+  &lt;requestURL&gt;http://an.oa.org/OAI-script?verb=GetRecord<br>              &amp;amp;identifier=oai%3AarXiv%3Aquant-ph%2F9901001<br>              &amp;amp;metadataPrefix=oai_dc&lt;/requestURL&gt;
+
+  &lt;record&gt;
+
+   &lt;header&gt;
+
+    &lt;identifier&gt;oai:arXiv:quant-ph/9901001&lt;/identifier&gt;
+
+    &lt;datestamp&gt;1999-01-01&lt;/datestamp&gt;
+
+   &lt;/header&gt;
+
+   &lt;metadata&gt;
+
+   &lt;dc xmlns="http://purl.org/dc/elements/1.1/" 
+
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+       xsi:schemaLocation="http://purl.org/dc/elements/1.1/
+
+                           http://www.openarchives.org/OAI/1.1/dc.xsd&quot;&gt;
+
+     &lt;title&gt;Quantum slow motion&lt;/title&gt;
+
+     &lt;creator&gt;Hug, M.&lt;/creator&gt;
+
+     &lt;creator&gt;Milburn, G. J.&lt;/creator&gt;
+
+     &lt;description&gt;We simulate the center of mass motion of cold atoms in a standing, <br>      amplitude modulated, laser field as an example of a system that has a classical 
+
+      mixed phase-space.&lt;/description&gt;
+
+     &lt;date&gt;1999-01-01&lt;/date&gt;
+
+     &lt;type&gt;e-print&lt;/type&gt;
+
+     &lt;identifier&gt;http://arXiv.org/abs/quant-ph/9901001&lt;/identifier&gt;
+
+    &lt;/dc&gt;
+
+   &lt;/metadata&gt;
+
+  &lt;/record&gt;
+
+ &lt;/GetRecord&gt;
+
+</pre>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> Request a record in the Dublin Core metadata format. The requested 
+
+  record, however, can not be returned because the identifier does not exist. 
+
+  Therefore, the response does not contain a record container [URL shown without 
+
+  <a href="#Special%20characters">encoding</a> for better readability]. 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=GetRecord&amp;identifier=oai:arXiv:quant-ph/0201001&amp;metadataPrefix=oai_dc</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i> </h4>
+
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+ &lt;GetRecord <br>    xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+    xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_GetRecord &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+    &nbsp;&nbsp;&nbsp;           http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd&quot;&gt;
+
+  &lt;responseDate&gt;2001-06-10T14:09:57-07:00&lt;/responseDate&gt;
+
+  &lt;requestURL&gt;http://an.oa.org/OAI-script?verb=GetRecord<br>              &amp;amp;identifier=oai%3AarXiv%3Aquant-ph%2F0201001<br>              &amp;amp;metadataPrefix=oai_dc&lt;/requestURL&gt;
+
+ &lt;/GetRecord&gt;
+
+</pre>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> Request a record in the oai_marc metadata format. However, 
+
+  the requested metadata format can not be disseminated for this identifier. Therefore, 
+
+  the response record contains a header but no metadata container [URL shown without 
+
+  <a href="#Special%20characters">encoding</a> for better readability]. 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=GetRecord&amp;identifier=oai:arXiv:quant-ph/9901001&amp;metadataPrefix=oai_marc</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i> </h4>
+
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+ &lt;GetRecord <br>    xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+    xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_GetRecord &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd&quot;&gt;
+
+  &lt;responseDate&gt;2001-06-10T14:09:57-07:00&lt;/responseDate&gt;
+
+  &lt;requestURL&gt;http://an.oa.org/OAI-script?verb=GetRecord<br>              &amp;amp;identifier=oai%3AarXiv%3Aquant-ph%2F9901001<br>              &amp;amp;metadataPrefix=oai_marc&lt;/requestURL&gt;
+
+  &lt;record&gt;
+
+   &lt;header&gt;
+
+    &lt;identifier&gt;oai:arXiv:quant-ph/9901001&lt;/identifier&gt;
+
+    &lt;datestamp&gt;1999-01-01&lt;/datestamp&gt;
+
+   &lt;/header&gt;
+
+  &lt;/record&gt;
+
+ &lt;/GetRecord&gt;
+
+</pre>
+
+<h2>4.2. <a name="Identify"></a>Identify</h2>
+
+<div align="left"> 
+
+  <h3><font color="#000000">Summary and Usage Notes</font></h3>
+
+  <p><font color="#000000">This verb is used to retrieve information about a repository, 
+
+    including administrative, identity, and community-specific information.</font></p>
+
+</div>
+
+<div align="left"> </div>
+
+<h3>Arguments</h3>
+
+<p>None </p>
+
+<h3>Exception Conditions </h3>
+
+<p>None</p>
+
+<h3 align="left">Response Format</h3>
+
+<div align="left"> 
+
+  <table bgcolor="#bedce6" border="2" width="80%">
+
+    <tbody> 
+
+    <tr> 
+
+      <td width="100%">A XML schema for validating the response is as follows:</td>
+
+    </tr>
+
+    <tr valign="top"> 
+
+      <td width="100%" height="592"> 
+
+        <pre>&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+        xmlns:oai=&quot;http://www.openarchives.org/OAI/1.1/OAI_Identify&quot;
+
+        targetNamespace=&quot;http://www.openarchives.org/OAI/1.1/OAI_Identify&quot;
+
+        elementFormDefault=&quot;qualified&quot;
+
+        attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+&lt;annotation&gt;
+
+ &lt;documentation&gt;
+
+   Schema to verify validity of responses to Identify OAI-protocol request.
+
+   This Schema validated at http://www.w3.org/2001/03/webdata/xsv on 2001-05-07
+
+   with XSV XSV 1.189/1.95 of 2001/05/07 08:38:12
+
+ &lt;/documentation&gt;
+
+&lt;/annotation&gt;
+
+
+
+&lt;element name=&quot;Identify&quot; type=&quot;oai:IdentifyType&quot;/&gt;
+
+
+
+&lt;!-- response to Identify-request --&gt;
+
+
+
+&lt;complexType name=&quot;IdentifyType&quot;&gt;
+
+ &lt;sequence&gt;
+
+   &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;dateTime&quot;/&gt;
+
+   &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+   &lt;element name=&quot;repositoryName&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+   &lt;element name=&quot;baseURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+   &lt;element name=&quot;protocolVersion&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+   &lt;element name=&quot;adminEmail&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+   &lt;element name=&quot;description&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; <br>            type=&quot;oai:descriptionType&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;complexType name=&quot;descriptionType&quot;&gt;
+
+ &lt;sequence&gt;
+
+  &lt;any namespace=&quot;##other&quot; processContents=&quot;lax&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;/schema&gt;
+
+
+
+</pre>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/OAI_Identify.xsd">http://www.openarchives.org/OAI/1.1/OAI_Identify.xsd</a></td>
+
+    </tr>
+
+    </tbody> 
+
+  </table>
+
+</div>
+
+<h3 align="left">Examples</h3>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=Identify</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<p>The response to this protocol request includes the following elements that 
+
+  must be provided by every OAI compliant repository:</p>
+
+<ul>
+
+  <li><font face="Courier New, Courier, mono" size="2">repositoryName</font>: 
+
+    a human readable name for the repository, in the example &quot;The University 
+
+    of Spa E-print System&quot;;</li>
+
+  <li><font face="Courier New, Courier, mono" size="2">baseURL</font>: the <font face="Courier New, Courier, mono" size="2"><a href="#HTTP%20Request%20Format">BASE-URL</a></font> 
+
+    of the repository;</li>
+
+  <li><font face="Courier New, Courier, mono" size="2">protocolVersion</font>: 
+
+    the version of the OAI protocol supported by the repository;</li>
+
+  <li><font face="Courier New, Courier, mono" size="2">adminEmail</font>: the 
+
+    e-mail address of the administrator of the repository.</li>
+
+</ul>
+
+<p><font color="#000000">In addition, the response may contain a list of <font face="Courier New, Courier, mono" size="2">description</font> 
+
+  containers, which provide an extensible mechanism for communities to describe 
+
+  their repositories.&nbsp; The <font face="Courier New, Courier, mono" size="2">description</font> 
+
+  container, could -- for instance -- be used to include collection-level metadata 
+
+  in the response to the Identify request. Each <font face="Courier New, Courier, mono" size="2">description</font> 
+
+  container must be accompanied by the URL of an XML schema, which provides the 
+
+  semantics of the descriptive container.&nbsp;&nbsp;The below example of a response 
+
+  to the <font face="Courier New, Courier, mono" size="2">Identify</font> request 
+
+  contains two description containers:</font></p>
+
+<ul>
+
+  <li><font color="#000000">The <font face="Courier New, Courier, mono" size="2">oai-identifier</font> 
+
+    container complies to an XML Schema, which is available at <a href="http://www.openarchives.org/OAI/1.1/oai-identifier.xsd">http://www.openarchives.org/OAI/1.1/oai-identifier.xsd</a>. 
+
+    This schema, shown in <a href="#appendix%202">Appendix 2</a>, is used by repositories 
+
+    that choose to comply with a specific format of unique identifiers for records. 
+
+    The format of that identifier is explained by means of comments in the <a href="http://www.openarchives.org/OAI/1.1/oai-identifier.xsd">oai-identifier.xsd</a> 
+
+    XML Schema. </font></li>
+
+  <li><font color="#000000">The <font face="Courier New, Courier, mono" size="2">eprints</font> 
+
+    container complies to an XML Schema, which is available at <a href="http://www.openarchives.org/OAI/1.1/eprints.xsd">http://www.openarchives.org/OAI/1.1/eprints.xsd</a>. 
+
+    This schema, shown in <a href="#appendix%202">Appendix 2</a>, has been agreed 
+
+    upon by the OAI e-print community, and contains information specific to repositories 
+
+    in that community. </font></li>
+
+</ul>
+
+<div align="left"> 
+
+  <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&nbsp; &lt;Identify <br>     xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_Identify&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+     xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_Identify &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    http://www.openarchives.org/OAI/1.1/OAI_Identify.xsd&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI-script?verb=Identify&lt;/requestURL&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;repositoryName&gt;The University of Spa E-print System&lt;/repositoryName&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;baseURL&gt;http://an.oa.org/OAI-script&lt;/baseURL&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;protocolVersion&gt;1.1&lt;/protocolVersion&gt;
+
+    &lt;adminEmail&gt;mailto:adm&amp;#x0040;spa.ac.be&lt;/adminEmail&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;description&gt;
+
+      &lt;oai-identifier xmlns=&quot;http://www.openarchives.org/OAI/1.1/oai-identifier&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/oai-identifier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;           http://www.openarchives.org/OAI/1.1/oai-identifier.xsd&quot;&gt;
+
+        &lt;scheme&gt;oai&lt;/scheme&gt;
+
+        &lt;repositoryIdentifier&gt;bespa&lt;/repositoryIdentifier&gt;
+
+        &lt;delimiter&gt;:&lt;/delimiter&gt;
+
+        &lt;sampleIdentifier&gt;oai:bespa:medi99-123&lt;/sampleIdentifier&gt;
+
+      &lt;/oai-identifier&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/description&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;description&gt;
+
+      &lt;eprints xmlns=&quot;http://www.openarchives.org/OAI/1.1/eprints&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/eprints &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                 http://www.openarchives.org/OAI/1.1/eprints.xsd&quot;&gt;
+
+        &lt;content&gt;
+
+          &lt;URL&gt;http://an.oa.org/info/content.htm&lt;/URL&gt;
+
+        &lt;/content&gt;
+
+        &lt;metadataPolicy&gt;
+
+          &lt;text&gt;Metadata can be used by commercial and non-commercial service<br>           providers&lt;/text&gt;
+
+          &lt;URL&gt;http://an.oa.org/info/metadata_use.htm&lt;/URL&gt;
+
+        &lt;/metadataPolicy&gt;
+
+        &lt;dataPolicy&gt;
+
+          &lt;text&gt;Full content, i.e. preprints may not be harvested by robots&lt;/text&gt;
+
+        &lt;/dataPolicy&gt;
+
+        &lt;submissionPolicy&gt;
+
+          &lt;URL&gt;http://an.oa.org/info/submission.htm&lt;/URL&gt;
+
+        &lt;/submissionPolicy&gt;
+
+      &lt;/eprints&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/description&gt;
+
+&nbsp; &lt;/Identify&gt;&nbsp;
+
+</pre>
+
+  <h2>4.3. <a name="ListIdentifers"></a>ListIdentifiers</h2>
+
+</div>
+
+<div align="left"> 
+
+  <h3 align="left"><font color="#000000">Summary and Usage Notes</font></h3>
+
+  <p align="left"><font color="#000000">This verb is used to retrieve the identifiers 
+
+    of records that can be harvested from a repository.&nbsp; Optional arguments 
+
+    permit selectivity of the identifiers - based on their membership in a specific 
+
+    Set in the repository or based on their modification, creation, or deletion 
+
+    within a specific date range.</font></p>
+
+</div>
+
+<h3 align="left">Arguments</h3>
+
+<div align="left"> 
+
+  <ul>
+
+    <li><font face="Courier New" size="2"><b>until</b></font> an <i>OPTIONAL</i> 
+
+      argument with a <a href="#Dates">date value</a>, which specifies that only 
+
+      the unique identifiers of records with a datestamp older than or equal to 
+
+      the specified date should be returned. </li>
+
+    <li><font face="Courier New" size="2"><b>from</b></font> an <i>OPTIONAL</i> 
+
+      argument with a <a href="#Dates">date value</a>, which specifies that only 
+
+      the unique identifiers of records with a datestamp that is more recent than 
+
+      or equal to the specified date should be returned.</li>
+
+    <li><font face="Courier New" size="2"><b>set</b></font> an <i>OPTIONAL</i> 
+
+      argument with a <a href="#Set"><font face="Courier New" size="2">setSpec</font> 
+
+      value</a>, which specifies that only the unique identifiers of records from 
+
+      the specified <a href="#Set">Set</a> should be returned.</li>
+
+    <li><font face="Courier New" size="2"><b>resumptionToken</b></font> an <i>EXCLUSIVE 
+
+      </i>argument with a value that is the <a href="#Flow Control">flow control</a> 
+
+      token returned by a previous <font face="Courier New" size="2">ListIdentifiers</font> 
+
+      request that issued a partial response.</li>
+
+  </ul>
+
+</div>
+
+<div align="left"></div>
+
+<h3> Exception Conditions </h3>
+
+<ul>
+
+  <li><i>No records match the request</i> - The response will not contain any 
+
+    identifier elements.</li>
+
+</ul>
+
+<h3>Response Format</h3>
+
+<div align="left"> 
+
+  <table bgcolor="#bedce6" border="2" width="80%">
+
+    <tbody> 
+
+    <tr> 
+
+      <td width="100%">A XML schema for validating the response is as follows:</td>
+
+    </tr>
+
+    <tr valign="top"> 
+
+      <td width="100%" height="579"> 
+
+        <pre>&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+        xmlns:oai=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers&quot;
+
+        targetNamespace=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers&quot;
+
+        elementFormDefault=&quot;qualified&quot;
+
+        attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+&lt;annotation&gt;
+
+ &lt;documentation&gt;
+
+   Schema to verify validity of responses to ListIdentifiers OAI-protocol request.
+
+   This Schema validated at http://www.w3.org/2001/03/webdata/xsv on 2001-05-07
+
+   with XSV XSV 1.189/1.95 of 2001/05/07 08:38:12
+
+ &lt;/documentation&gt;
+
+&lt;/annotation&gt;
+
+
+
+&lt;element name=&quot;ListIdentifiers&quot; type=&quot;oai:ListIdentifiersType&quot;/&gt;
+
+
+
+&lt;!-- response to ListIdentifiers-request --&gt;
+
+&lt;!-- records have an optional &quot;deleted&quot; status --&gt;
+
+&lt;!-- this response may contain an optional resumptionToken --&gt;
+
+
+
+&lt;complexType name=&quot;ListIdentifiersType&quot;&gt;
+
+ &lt;sequence&gt;
+
+   &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;dateTime&quot;/&gt;
+
+   &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+   &lt;element ref=&quot;oai:identifier&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+
+   &lt;element name=&quot;resumptionToken&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;element name=&quot;identifier&quot;&gt;
+
+ &lt;complexType&gt;
+
+  &lt;simpleContent&gt;
+
+   &lt;extension base=&quot;anyURI&quot;&gt;
+
+    &lt;attribute name=&quot;status&quot; use=&quot;optional&quot; type=&quot;oai:statusType&quot;/&gt;
+
+   &lt;/extension&gt;
+
+  &lt;/simpleContent&gt;
+
+ &lt;/complexType&gt;
+
+&lt;/element&gt;
+
+
+
+ &lt;!-- define statusType --&gt;<br> &lt;!-- a record can have a status of &quot;deleted&quot; . --&gt;</pre>
+
+        <pre>&lt;simpleType name=&quot;statusType&quot;&gt;
+
+  &lt;restriction base=&quot;string&quot;&gt;
+
+   &lt;enumeration value=&quot;deleted&quot;/&gt;
+
+  &lt;/restriction&gt;
+
+&lt;/simpleType&gt;</pre>
+
+        <pre>
+
+&lt;/schema&gt;
+
+</pre>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers.xsd">http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers.xsd</a></td>
+
+    </tr>
+
+    </tbody> 
+
+  </table>
+
+</div>
+
+<h3 align="left">Examples</h3>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> List the unique identifiers of records added or modified since 
+
+  January 15, 1998 in the &quot;hep&quot; Set of the &quot;physics&quot; Set [URL 
+
+  shown without <a href="#Special%20characters">encoding</a> for better readability]. 
+
+  <pre>http://an.oa.org/OAI-script?
+
+
+
+       verb=ListIdentifiers&amp;from=1998-01-15&amp;set=physics:hep</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<div align="left"> 
+
+  <p>A list of four identifiers is returned, one of which has a &quot;deleted&quot; 
+
+    status.&nbsp; In addition, a resumption token has been returned, indicating 
+
+    the list of identifiers is <i>incomplete</i> and one or more subsequent requests 
+
+    will need to be issued to complete the list.</p>
+
+  <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&nbsp; &lt;ListIdentifiers <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers.xsd&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI-script?verb=ListIdentifiers<br>                &amp;amp;from=1998-01-15&amp;amp;setSpec=physics%3Ahep&lt;/requestURL&gt;
+
+&nbsp;&nbsp;&nbsp;  &lt;identifier&gt;oai:arXiv:hep-th/9801001&lt;/identifier&gt;
+
+&nbsp;&nbsp;&nbsp;  &lt;identifier&gt;oai:arXiv:hep-th/9801002&lt;/identifier&gt;
+
+&nbsp;&nbsp;&nbsp;  &lt;identifier&gt;oai:arXiv:hep-th/9801005&lt;/identifier&gt;
+
+&nbsp;&nbsp;&nbsp;  &lt;identifier status=&quot;deleted&quot;&gt;oai:arXiv:hep-th/9801010&lt;/identifier&gt;
+
+    &lt;resumptionToken&gt;xxx45abttyz&lt;/resumptionToken&gt;
+
+&nbsp; &lt;/ListIdentifiers&gt;</pre>
+
+</div>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> 
+
+  <p>Issue a subsequent request to the one issued above, with a single resumptionToken 
+
+    argument whose value is that returned in the previous response.</p>
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=ListIdentifiers&amp;resumptionToken=xxx45abttyz</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<div align="left"> 
+
+  <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&nbsp; &lt;ListIdentifiers <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers.xsd&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI- script?verb=ListIdentifiers
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&amp;amp;resumptionToken=xxx45abttyz&lt;/requestURL&gt;
+
+&nbsp;&nbsp;&nbsp;  &lt;identifier&gt;oai:arXiv:hep-th/9801020&lt;/identifier&gt;
+
+&nbsp;&nbsp;&nbsp;  &lt;identifier&gt;oai:arXiv:hep-th/9801060&lt;/identifier&gt;
+
+&nbsp; &lt;/ListIdentifiers&gt;</pre>
+
+</div>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left">List the unique identifiers of records added or modified on 
+
+  January 1, 2001 in the &quot;hep&quot; Set of the &quot;physics&quot; Set. There 
+
+  are no matches for this request, hence, the response does not contain any identifier 
+
+  tags [URL shown without <a href="#Special%20characters">encoding</a> for better 
+
+  readability]. 
+
+  <pre>http://an.oa.org/OAI-script?
+
+
+
+       verb=ListIdentifiers&amp;from=2001-01-01&amp;until=2001-01-01&amp;set=physics:hep</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<div align="left"> 
+
+  <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&nbsp; &lt;ListIdentifiers <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListIdentifiers.xsd&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI-script?verb=ListIdentifiers<br>                &amp;amp;from=2001-01-01&amp;amp;until=2001-01-01<br>                &amp;amp;setSpec=physics%3Ahep&lt;/requestURL&gt;
+
+&nbsp; &lt;/ListIdentifiers&gt;</pre>
+
+</div>
+
+<div align="left"> 
+
+  <h2>4.4. <a name="ListMetadataFormats"></a>ListMetadataFormats</h2>
+
+  <h3 align="left"><font color="#000000">Summary and Usage Notes</font></h3>
+
+  <p align="left"><font color="#000000">This verb is used to retrieve the metadata 
+
+    formats available from a repository.&nbsp; An optional argument restricts 
+
+    the request to the formats available for a specific record.</font></p>
+
+</div>
+
+<h3 align="left">Arguments</h3>
+
+<div align="left"> 
+
+  <ul>
+
+    <li><font face="Courier New" size="2"><b>identifier</b></font> an <i>OPTIONAL</i> 
+
+      argument that specifies the unique identifier for which available metadata 
+
+      formats is being requested.&nbsp; If this argument is omitted, then the 
+
+      response includes all metadata formats supported by this repository.&nbsp; 
+
+      Note that the fact that a metadata format is supported by a repository does 
+
+      <i>not</i> mean that it can be disseminated by all items in that repository.</li>
+
+  </ul>
+
+</div>
+
+<div align="left"></div>
+
+<div align="left"></div>
+
+<h3> Exception Conditions </h3>
+
+<ul>
+
+  <li><i>The identifier does not exist</i> - The response will not contain a metadataFormat 
+
+    container. </li>
+
+</ul>
+
+<h3 align="left">Response Format</h3>
+
+<table bgcolor="#bedce6" border="2" width="80%">
+
+  <tbody> 
+
+  <tr> 
+
+    <td width="100%">A XML schema for validating the response is as follows:</td>
+
+  </tr>
+
+  <tr valign="top"> 
+
+    <td width="100%" height="631"> 
+
+      <pre>&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+  xmlns:oai=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats&quot;
+
+  targetNamespace=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats&quot;
+
+  elementFormDefault=&quot;qualified&quot;
+
+  attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+&lt;annotation&gt;
+
+ &lt;documentation&gt;
+
+   Schema to verify validity of responses to ListMetadataFormats OAI-protocol 
+
+   request.
+
+   This Schema validated at http://www.w3.org/2001/03/webdata/xsv on 2001-05-07
+
+   with XSV XSV 1.189/1.95 of 2001/05/07 08:38:12
+
+ &lt;/documentation&gt;
+
+&lt;/annotation&gt;
+
+
+
+&lt;element name=&quot;ListMetadataFormats&quot; type=&quot;oai:ListMetadataType&quot;/&gt;
+
+
+
+&lt;!-- response to ListMetadataFormats-request --&gt;
+
+
+
+&lt;complexType name=&quot;ListMetadataType&quot;&gt;
+
+ &lt;sequence&gt;
+
+    &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;dateTime&quot;/&gt;
+
+    &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+    &lt;element name=&quot;metadataFormat&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; <br>             type=&quot;oai:metadataFormatType&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;complexType name=&quot;metadataFormatType&quot;&gt;
+
+ &lt;sequence&gt;
+
+   &lt;element name=&quot;metadataPrefix&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; <br>            type=&quot;oai:metadataPrefixType&quot;/&gt;
+
+   &lt;element name=&quot;schema&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+   &lt;element name=&quot;metadataNamespace&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; <br>            type=&quot;anyURI&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+&lt;simpleType name=&quot;metadataPrefixType&quot;&gt;
+
+ &lt;restriction base=&quot;string&quot;&gt;
+
+   &lt;pattern value=&quot;[a-zA-Z0-9_]+&quot;/&gt;
+
+ &lt;/restriction&gt;
+
+&lt;/simpleType&gt;
+
+
+
+&lt;/schema&gt;
+
+
+
+</pre>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd">http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd</a></td>
+
+  </tr>
+
+  </tbody> 
+
+</table>
+
+<h3 align="left">Examples</h3>
+
+<h4 align="left"><i>Request</i></h4>
+
+<p>List the metadata formats that can be disseminated from the record with unique 
+
+  identifier oai:arXiv:hep-th/9901001 [URL shown without <a href="#Special%20characters">encoding</a> 
+
+  for better readability]. </p>
+
+<div align="left"> 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=ListMetadataFormats&amp;identifier=oai:arXiv:hep-th/9901001</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+  &lt;ListMetadataFormats <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt; 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI-script?verb=ListMetadataFormats
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&amp;amp;identifier=oai%3AarXiv%3Ahep-th%2F9901001&lt;/requestURL&gt;
+
+    &lt;metadataFormat&gt;
+
+      &lt;metadataPrefix&gt;oai_rfc1807&lt;/metadataPrefix&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;  &lt;schema&gt;http://www.openarchives.org/OAI/1.1/rfc1807.xsd&lt;/schema&gt;
+
+    &lt;/metadataFormat&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;metadataFormat&gt;
+
+      &lt;metadataPrefix&gt;oai_dc&lt;/metadataPrefix&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;  &lt;schema&gt;http://www.openarchives.org/OAI/1.1/dc.xsd&lt;/schema&gt;
+
+      &lt;metadataNamespace&gt;http://purl.org/dc/elements/1.1/&lt;/metadataNamespace&gt;
+
+    &lt;/metadataFormat&gt;
+
+&lt;/ListMetadataFormats&gt;&nbsp;</pre>
+
+<h4 align="left"><i>Request</i></h4>
+
+<p>List the metadata formats that can be disseminated from the repository http://an.oa.org/OAI-script. 
+
+</p>
+
+<div align="left"> 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=ListMetadataFormats</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+  &lt;ListMetadataFormats <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt; 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI-script?verb=ListMetadataFormats&lt;/requestURL&gt;
+
+    &lt;metadataFormat&gt;
+
+      &lt;metadataPrefix&gt;oai_rfc1807&lt;/metadataPrefix&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;  &lt;schema&gt;http://www.openarchives.org/OAI/1.1/rfc1807.xsd&lt;/schema&gt;
+
+    &lt;/metadataFormat&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;metadataFormat&gt;
+
+      &lt;metadataPrefix&gt;oai_dc&lt;/metadataPrefix&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;  &lt;schema&gt;http://www.openarchives.org/OAI/1.1/dc.xsd&lt;/schema&gt;
+
+      &lt;metadataNamespace&gt;http://purl.org/dc/elements/1.1/&lt;/metadataNamespace&gt;
+
+    &lt;/metadataFormat&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;metadataFormat&gt;
+
+      &lt;metadataPrefix&gt;oai_marc&lt;/metadataPrefix&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;  &lt;schema&gt;http://www.openarchives.org/OAI/1.1/oai_marc.xsd&lt;/schema&gt;
+
+    &lt;/metadataFormat&gt;
+
+&lt;/ListMetadataFormats&gt;&nbsp;</pre>
+
+<h4 align="left"><i>Request</i></h4>
+
+<p>List the metadata formats that can be disseminated from the record with unique 
+
+  identifier oai:arXiv:hep-th/0101001. The identifier, however, does not exist 
+
+  and therefore, the response does not contain a metadataFormat container. [URL 
+
+  shown without <a href="#Special%20characters">encoding</a> for better readability]. 
+
+</p>
+
+<div align="left"> 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=ListMetadataFormats&amp;identifier=oai:arXiv:hep-th/0101001</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+  &lt;ListMetadataFormats <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt; 
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;requestURL&gt;http://an.oa.org/OAI-script?verb=ListMetadataFormats
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&amp;amp;identifier=oai%3AarXiv%3Ahep-th%2F0101001&lt;/requestURL&gt;
+
+&lt;/ListMetadataFormats&gt;&nbsp;</pre>
+
+<div align="left"> 
+
+  <h2>4.5. <a name="ListRecords"></a>ListRecords</h2>
+
+  <h3 align="left"><font color="#000000">Summary and Usage Notes</font></h3>
+
+  <p align="left"><font color="#000000">This verb is used to harvest records from 
+
+    a repository.&nbsp; Optional arguments permit selectivity of the harvesting 
+
+    - based on the membership of records in a specific Set in the repository or 
+
+    based on their modification, creation, or deletion within a specific date 
+
+    range.</font></p>
+
+</div>
+
+<h3 align="left">Arguments</h3>
+
+<div align="left"> 
+
+  <ul>
+
+    <li><font face="Courier New" size="2"><b>until</b></font> an <i>OPTIONAL</i> 
+
+      argument with a <a href="#Dates">date value</a>, which specifies that only 
+
+      records with a datestamp older than or equal to the specified date should 
+
+      be returned.</li>
+
+    <li><font face="Courier New" size="2"><b>from</b></font> an <i>OPTIONAL</i> 
+
+      argument with a <a href="#Dates">date value</a>, which specifies that only 
+
+      records with a datestamp that is more recent than or equal to the specified 
+
+      date should be returned.</li>
+
+    <li><font face="Courier New" size="2"><b>set</b></font> an <i>OPTIONAL</i> 
+
+      argument with a <a href="#Set"><font face="Courier New" size="2">setSpec</font> 
+
+      value</a>, which specifies that only records from the specified <a href="#Set">Set</a> 
+
+      should be returned.</li>
+
+    <li><font face="Courier New" size="2"><b>resumptionToken</b></font> an <i>EXCLUSIVE 
+
+      </i>argument with a value that is the <a href="#Flow Control">flow control</a> 
+
+      token returned by a previous <font face="Courier New" size="2">ListRecords</font> 
+
+      request that issued a partial response.</li>
+
+    <li><font face="Courier New" size="2"><b>metadataPrefix</b> </font>a <i>REQUIRED</i> 
+
+      argument that specifies the <a href="#metadata format identifier">metadata 
+
+      prefix</a> of the format that should be included in the <a href="#Record">metadata 
+
+      part of the returned record</a>s.&nbsp; The value of this argument must 
+
+      be a non-space embedded string consisting of alphanumeric and underscore 
+
+      [<font face="Courier New" size="2">_</font>] characters; <font face="Courier New" size="2">[A-Za-z0-9_]</font>.&nbsp; 
+
+      The metadata formats supported by a repository and for a particular record 
+
+      can be retrieved using the <font face="Courier New" size="2"><a href="#ListMetadataFormats">ListMetadataFormats</a></font> 
+
+      request.</li>
+
+  </ul>
+
+</div>
+
+<div align="left"></div>
+
+<h3 align="left"> Exception Conditions </h3>
+
+<ul>
+
+  <li><i>No records match the request</i> - The response will not contain any 
+
+    record containers.</li>
+
+  <li><i>Requested metadata format can not be disseminated for a matching record</i> 
+
+    - The response record contains a header but no metadata container. </li>
+
+</ul>
+
+<h3 align="left">Response Format</h3>
+
+<div align="left"> 
+
+  <table bgcolor="#bedce6" border="2" width="80%">
+
+    <tbody> 
+
+    <tr> 
+
+      <td width="100%">A XML schema for validating the response is as follows:</td>
+
+    </tr>
+
+    <tr valign="top"> 
+
+      <td width="100%" height="1165"> 
+
+        <pre>&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+         xmlns:oai=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListRecords&quot;
+
+         targetNamespace=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListRecords&quot;
+
+         elementFormDefault=&quot;qualified&quot;
+
+         attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+ &lt;annotation&gt;
+
+  &lt;documentation&gt;
+
+    Schema to verify validity of responses to ListRecords OAI-protocol request.
+
+    This Schema validated at http://www.w3.org/2001/03/webdata/xsv on 2001-05-07
+
+    with XSV XSV 1.189/1.95 of 2001/05/07 08:38:12
+
+  &lt;/documentation&gt;
+
+ &lt;/annotation&gt;
+
+
+
+ &lt;element name=&quot;ListRecords&quot; type=&quot;oai:ListRecordsType&quot;/&gt;
+
+
+
+ &lt;!-- response to ListRecords-request --&gt;
+
+ &lt;!-- this response may contain an optional resumptionToken --&gt;
+
+
+
+ &lt;complexType name=&quot;ListRecordsType&quot;&gt;
+
+  &lt;sequence&gt;
+
+    &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;dateTime&quot;/&gt;
+
+    &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+    &lt;element name=&quot;record&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; <br>             type=&quot;oai:recordType&quot;/&gt;
+
+    &lt;element name=&quot;resumptionToken&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+  &lt;/sequence&gt;
+
+  &lt;/complexType&gt;
+
+
+
+ &lt;!-- define recordType --&gt;
+
+ &lt;!-- a record has a header and a metadata part --&gt;
+
+
+
+ &lt;complexType name=&quot;recordType&quot;&gt;
+
+  &lt;sequence&gt;
+
+    &lt;element name=&quot;header&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;oai:headerType&quot;/&gt;
+
+    &lt;element name=&quot;metadata&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:metadataType&quot;/&gt;
+
+    &lt;element name=&quot;about&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:aboutType&quot;/&gt;
+
+  &lt;/sequence&gt;
+
+  &lt;attribute name=&quot;status&quot; use=&quot;optional&quot; type=&quot;oai:statusType&quot;/&gt;
+
+ &lt;/complexType&gt;
+
+
+
+ &lt;!-- define headerType --&gt;
+
+ &lt;!-- a header has a unique identifier and a datestamp --&gt;
+
+
+
+ &lt;complexType name=&quot;headerType&quot;&gt;
+
+  &lt;sequence&gt;
+
+    &lt;element name=&quot;identifier&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+    &lt;element name=&quot;datestamp&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;date&quot;/&gt;
+
+  &lt;/sequence&gt;
+
+ &lt;/complexType&gt;
+
+
+
+ &lt;!-- define metadataType --&gt;
+
+ &lt;!-- metadata must be expressed in XML that complies with another XML Schema --&gt;
+
+ &lt;!-- metadata must be explicitly qualified in the response --&gt;
+
+
+
+ &lt;complexType name=&quot;metadataType&quot;&gt;
+
+  &lt;sequence&gt;
+
+   &lt;any namespace=&quot;##other&quot; processContents=&quot;lax&quot;/&gt;
+
+  &lt;/sequence&gt;
+
+ &lt;/complexType&gt;
+
+
+
+<font color="#000000">&lt;!-- define aboutType --&gt;
+
+&lt;!-- data &quot;about&quot; the record must be expressed in XML --&gt;
+
+&lt;!-- that is compliant with an XML Schema defined by a community --&gt;
+
+
+
+&lt;complexType name=&quot;aboutType&quot;&gt;
+
+ &lt;sequence&gt;
+
+  &lt;any namespace=&quot;##other&quot; processContents=&quot;lax&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;</font>
+
+
+
+ &lt;!-- define statusType --&gt;<br> &lt;!-- a record can have a status of &quot;deleted&quot; . --&gt;</pre>
+
+        <pre>&lt;simpleType name=&quot;statusType&quot;&gt;
+
+  &lt;restriction base=&quot;string&quot;&gt;
+
+   &lt;enumeration value=&quot;deleted&quot;/&gt;
+
+  &lt;/restriction&gt;
+
+&lt;/simpleType&gt;</pre>
+
+        <pre>
+
+&lt;/schema&gt;</pre>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/OAI_ListRecords.xsd">http://www.openarchives.org/OAI/1.1/OAI_ListRecords.xsd</a></td>
+
+    </tr>
+
+    </tbody> 
+
+  </table>
+
+</div>
+
+<h3 align="left">&nbsp;</h3>
+
+<h3 align="left">Examples</h3>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> List the records in rfc1807 format added or modified since 
+
+  January 15, 1998 in the &quot;hep&quot; set of the &quot;physics&quot; set [URL 
+
+  shown without <a href="#Special%20characters">encoding</a> for better readability]. 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=ListRecords&amp;from=1998-01-15<font face="Courier New" size="2">&amp;</font>set=physics:hep<font face="Courier New" size="2">&amp;</font>metadataPrefix=oai_rfc1807</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<div align="left"> Three records are returned: 
+
+  <ul>
+
+    <li>The first includes the rfc1807 metadata. This record also has an "about" 
+
+      part. </li>
+
+    <li>The second only has a header without the rfc1807 metadata container because 
+
+      the metadata for that record can not be expressed in rfc1807 format. </li>
+
+    <li>The third has a status=&quot;deleted&quot; attribute (and therefore no 
+
+      metadata part).</li>
+
+  </ul>
+
+  <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&nbsp; &lt;ListRecords <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListRecords&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListRecords &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListRecords.xsd&quot;&gt;
+
+    &lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt; 
+
+    &lt;requestURL&gt;http://an.oa.org/OAI-script?verb=ListRecords<br>                &amp;amp;from=1998-01-15&amp;amp;setSpec=physics%3Ahep<br>                &amp;amp;metadataPrefix=oai_rfc1807&lt;/requestURL&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;record&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;header&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;identifier&gt;oai:arXiv:hep-th/9901001&lt;/identifier&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;datestamp&gt;1999-12-25&lt;/datestamp&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/header&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;metadata&gt;
+
+<font color="#000000">       &lt;rfc1807 <br>         xmlns="http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt" 
+
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+         xsi:schemaLocation=<br>             "http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt
+
+              http://www.openarchives.org/OAI/1.1/rfc1807.xsd&quot;&gt;</font><br>          &lt;bib-version&gt;v2&lt;/bib-version&gt;<br>          &lt;id&gt;hep-th/9901001&lt;/id&gt;
+
+          &lt;entry&gt;January 1, 1999&lt;/entry&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   &lt;title&gt;Investigations of Radioactivity&lt;/title&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   &lt;author&gt;Ernest Rutherford&lt;/author&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   &lt;date&gt;March 30, 1999&lt;/date&gt;
+
+        &lt;/rfc1807&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/metadata&gt;
+
+  <font color="#000000">    &lt;about&gt;
+
+       &lt;dc xmlns="http://purl.org/dc/elements/1.1/" 
+
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+         xsi:schemaLocation="http://purl.org/dc/elements/1.1/
+
+                             http://www.openarchives.org/OAI/1.1/dc.xsd&quot;&gt;
+
+        &lt;publisher&gt;Los Alamos arXiv&lt;/publisher&gt;
+
+        &lt;rights&gt;Metadata may be used without restrictions as long as the oai <br>         identifier remains attached to it.&lt;/rights&gt;
+
+       &lt;/dc&gt;
+
+      &lt;/about&gt;</font>
+
+&nbsp;&nbsp;&nbsp; &lt;/record&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;record&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;header&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;identifier&gt;oai:arXiv:hep-th/9901004&lt;/identifier&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;datestamp&gt;1999-12-26&lt;/datestamp&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/header&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/record&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;record status=&quot;deleted&quot;&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;header&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;identifier&gt;oai:arXiv:hep-th/9901007&lt;/identifier&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;datestamp&gt;1999-12-21&lt;/datestamp&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;/header&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/record&gt;
+
+&nbsp; &lt;/ListRecords&gt;
+
+</pre>
+
+  <h2>4.6. <a name="ListSets"></a>ListSets</h2>
+
+  <h3 align="left"><font color="#000000">Summary and Usage Notes</font></h3>
+
+  <p align="left"><font color="#000000">This verb is used to retrieve the set 
+
+    structure in a repository.&nbsp;&nbsp;</font></p>
+
+</div>
+
+<h3 align="left">Arguments</h3>
+
+<ul>
+
+  <li> 
+
+    <div align="left"><font face="Courier New" size="2"><b>resumptionToken</b></font> 
+
+      an <i>EXCLUSIVE </i>argument with a value that is the <a href="#Flow Control">flow 
+
+      control</a> token returned by a previous <font face="Courier New" size="2">ListSets</font> 
+
+      request that issued a partial response. </div>
+
+  </li>
+
+</ul>
+
+<div align="left"></div>
+
+<h3 align="left">Exception Conditions </h3>
+
+<ul>
+
+  <li><i>Repository contains no set hierarchy</i> - The response will not contain 
+
+    any set containers. </li>
+
+</ul>
+
+<h3 align="left">Response Format</h3>
+
+<div align="left"> 
+
+  <table bgcolor="#bedce6" border="2" width="80%">
+
+    <tbody> 
+
+    <tr> 
+
+      <td width="100%">A XML schema for validating the response is as follows:</td>
+
+    </tr>
+
+    <tr valign="top"> 
+
+      <td width="100%" height="702"> 
+
+        <pre>&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+         xmlns:oai=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListSets&quot;
+
+         targetNamespace=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListSets&quot;
+
+         elementFormDefault=&quot;qualified&quot;
+
+         attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+  &lt;annotation&gt;
+
+   &lt;documentation&gt;
+
+    Schema to verify validity of responses to ListSets OAI-protocol request.
+
+    This Schema validated at http://www.w3.org/2001/03/webdata/xsv on 2001-05-07
+
+    with XSV XSV 1.189/1.95 of 2001/05/07 08:38:12
+
+   &lt;/documentation&gt;
+
+  &lt;/annotation&gt;
+
+
+
+ &lt;element name=&quot;ListSets&quot; type=&quot;oai:ListSetsType&quot;/&gt;
+
+
+
+ &lt;!-- this response may contain an optional resumptionToken --&gt;
+
+
+
+ &lt;complexType name=&quot;ListSetsType&quot;&gt;
+
+  &lt;sequence&gt;
+
+    &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;dateTime&quot;/&gt;
+
+    &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;anyURI&quot;/&gt;
+
+    &lt;element name=&quot;set&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;oai:setType&quot;/&gt;
+
+    &lt;element name=&quot;resumptionToken&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+  &lt;/sequence&gt;
+
+ &lt;/complexType&gt;
+
+
+
+ &lt;!-- each set in the list consists of a setSpec and a pretty name --&gt;
+
+
+
+ &lt;complexType name=&quot;setType&quot;&gt;
+
+  &lt;sequence&gt;
+
+    &lt;element name=&quot;setSpec&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;oai:setSpecType&quot;/&gt;
+
+    &lt;element name=&quot;setName&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+  &lt;/sequence&gt;
+
+ &lt;/complexType&gt;
+
+
+
+ &lt;simpleType name=&quot;setSpecType&quot;&gt;
+
+    &lt;restriction base=&quot;string&quot;&gt;
+
+    &lt;pattern value=&quot;([A-Za-z0-9])+(:[A-Za-z0-9]+)*&quot;/&gt;
+
+    &lt;/restriction&gt;
+
+ &lt;/simpleType&gt;
+
+
+
+ &lt;/schema&gt;
+
+
+
+</pre>
+
+      </td>
+
+    </tr>
+
+    <tr> 
+
+      <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/OAI_ListSets.xsd">http://www.openarchives.org/OAI/1.1/OAI_ListSets.xsd</a></td>
+
+    </tr>
+
+    </tbody> 
+
+  </table>
+
+</div>
+
+<h3 align="left">&nbsp;</h3>
+
+<h3 align="left">Examples</h3>
+
+<h4 align="left"><i>Request</i></h4>
+
+<div align="left"> 
+
+  <pre>http://an.oa.org/OAI-script?
+
+       verb=ListSets</pre>
+
+</div>
+
+<h4 align="left"><i>Response</i></h4>
+
+<p>The following response indicates a set hierarchy with two top level sets - 
+
+  <font face="Courier New" size="2">Oceanside</font> and <font face="Courier New" size="2">ValleyView</font> 
+
+  - each with two sets within them.</p>
+
+<div align="left"> 
+
+  <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+  &lt;ListSets <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListSets&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListSets &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListSets.xsd&quot;&gt;
+
+    &lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt; 
+
+    &lt;requestURL&gt;http://an.oa.org/OAI-script?verb=ListSets&lt;/requestURL&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;set&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setSpec&gt;Oceanside&lt;/setSpec&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setName&gt;Oceanside University of Nebraska&lt;/setName&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/set&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;set&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setSpec&gt;Oceanside:CompEnt&lt;/setSpec&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setName&gt;Department of Computational Entomology&lt;/setName&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/set&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;set&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setSpec&gt;Oceanside:MetPhen&lt;/setSpec&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setName&gt;Department of Metaphysical Phenomenology&lt;/setName&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/set&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;set&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setSpec&gt;ValleyView&lt;/setSpec&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setName&gt;Valley View University of Florida&lt;/setName&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/set&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;set&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setSpec&gt;ValleyView:Fren&lt;/setSpec&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setName&gt;Department of Frenetics&lt;/setName&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/set&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;set&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setSpec&gt;ValleyView:Hist&lt;/setSpec&gt;
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;setName&gt;Department of Histrionics&lt;/setName&gt;
+
+&nbsp;&nbsp;&nbsp; &lt;/set&gt;
+
+&lt;/ListSets&gt;
+
+</pre>
+
+  <h4 align="left"><i>Request</i></h4>
+
+  <div align="left"> 
+
+    <pre>http://another.oa.org/OAI-script?
+
+       verb=ListSets</pre>
+
+  </div>
+
+  <h4 align="left"><i>Response</i></h4>
+
+  <p>The response shows that the repository does not have a set hierarchy.</p>
+
+  <div align="left"> 
+
+    <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+  &lt;ListSets <br>      xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_ListSets&quot;<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+      xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/OAI_ListSets &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     http://www.openarchives.org/OAI/1.1/OAI_ListSets.xsd&quot;&gt;
+
+    &lt;responseDate&gt;2001-06-01T19:20:30-04:00&lt;/responseDate&gt; 
+
+    &lt;requestURL&gt;http://another.oa.org/OAI-script?verb=ListSets&lt;/requestURL&gt;
+
+  &lt;/ListSets&gt;
+
+</pre>
+
+  </div>
+
+</div>
+
+<h2 align="left"><a name="appendix 1">Appendix 1: Sample XML schema for metadata 
+
+  formats</a></h2>
+
+<p>Each metadata format that is included in records disseminated by the OAI protocol 
+
+  is identified within the repository by a <i>metadata prefix </i>and across multiple 
+
+  repositories by the URL of a <i>metadata schema</i>. <font color="#000000">The 
+
+  <i>metadata schema</i> is an <a href="http://www.w3.org/XML/Schema">XML schema</a> 
+
+  that may be used as a test of conformance of the metadata included in the record.&nbsp;</font><font color="#000000">XML 
+
+  Schemas for three metadata formats are given below</font>:</p>
+
+<ul>
+
+  <li>An XML Schema for the mandatory unqualified Dublin Core metadata format;</li>
+
+  <li>An XML Schema for the rfc1807 metadata format;</li>
+
+  <li>An XML Schema to represent MARC21 records in an XML format.</li>
+
+</ul>
+
+<table bgcolor="#bedce6" border="2" width="80%">
+
+  <tbody> 
+
+  <tr> 
+
+    <td width="100%"> 
+
+      <h2><a name="dublincore"></a>Dublin Core</h2>
+
+    </td>
+
+  </tr>
+
+  <tr valign="top"> 
+
+    <td width="100%" height="627"> 
+
+      <pre>
+
+&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+         xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot;
+
+         targetNamespace=&quot;http://purl.org/dc/elements/1.1/&quot;
+
+         elementFormDefault=&quot;qualified&quot;
+
+         attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+  &lt;annotation&gt;
+
+   &lt;documentation&gt;
+
+    Schema for Dublin Core metadata format.
+
+    the Open Archives Initiative. 2000. 
+
+    Schema validated at http://www.w3.org/2001/03/webdata/xsv on 05-09-2001
+
+    Dublin Core semantics available at <br>           http://purl.org/DC/documents/rec-dces-19990702.htm
+
+   &lt;/documentation&gt;
+
+  &lt;/annotation&gt;
+
+
+
+&lt;element name=&quot;dc&quot; type=&quot;dc:dublincoreType&quot;/&gt;
+
+
+
+&lt;complexType name=&quot;dublincoreType&quot;&gt;
+
+ &lt;choice minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;&gt;
+
+  &lt;element name=&quot;title&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;creator&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;subject&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;description&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;contributor&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;publisher&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;date&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;type&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;format&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;identifier&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;source&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;language&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;relation&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;coverage&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;rights&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+ &lt;/choice&gt;
+
+&lt;/complexType&gt;
+
+
+
+ &lt;/schema&gt;
+
+</pre>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/dc.xsd">http://www.openarchives.org/OAI/1.1/dc.xsd</a></td>
+
+  </tr>
+
+  </tbody> 
+
+</table>
+
+<h3>Examples</h3>
+
+<pre><dc><dc:title>&lt;dc xmlns="http://purl.org/dc/elements/1.1/" 
+
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+    xsi:schemaLocation="http://purl.org/dc/elements/1.1/
+
+                        http://www.openarchives.org/OAI/1.1/dc.xsd&quot;&gt;
+
+&lt;title&gt;The Cornell Law Quarterly&lt;/title&gt;
+
+&lt;date&gt;1915-1916&lt;/date&gt;
+
+&lt;identifier&gt;http://heinonline.org/HeinOnline/show.pl?<br>            handle=hein.journals/clqv1%26id=1%26size=4&lt;/identifier&gt;
+
+&lt;rights&gt;Available by Subscription. See http://www.wshein.com&lt;/rights&gt;
+
+&lt;/dc&gt;</dc:title>
+
+
+
+&lt;dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" 
+
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+       xsi:schemaLocation="http://purl.org/dc/elements/1.1/
+
+                           http://www.openarchives.org/OAI/1.1/dc.xsd&quot;&gt;
+
+&lt;dc:title&gt;Grassmann's space analysis&lt;/dc:title&gt; 
+
+&lt;dc:creator&gt;Hyde, E. W. (Edward Wyllys)&lt;/dc:creator&gt;
+
+&lt;dc:subject&gt;LCSH:Ausdehnungslehre; LCCN QA205.H99&lt;/dc:subject&gt;
+
+&lt;dc:publisher&gt;J. Wiley &amp;amp; Sons&lt;/dc:publisher&gt;
+
+&lt;dc:date&gt;Created: 1906; Available: 1991&lt;/dc:date&gt;
+
+&lt;dc:type&gt;text&lt;/dc:type&gt;
+
+&lt;dc:identifier&gt;http://resolver.library.cornell.edu/math/1796949&lt;/dc:identifier&gt;
+
+&lt;dc:language&gt;eng&lt;/dc:language&gt;
+
+&lt;dc:rights&gt;Public Domain&lt;/dc:rights&gt;
+
+&lt;/dc:dc&gt;</dc></pre>
+
+<table bgcolor="#bedce6" border="2" width="80%">
+
+  <tbody> 
+
+  <tr> 
+
+    <td width="100%"> 
+
+      <h2><a name="rfc1807"></a>rfc1807</h2>
+
+    </td>
+
+  </tr>
+
+  <tr valign="top"> 
+
+    <td width="100%" height="818"> 
+
+      <pre>
+
+&lt;schema xmlns=&quot;http://www.w3.org/2001/XMLSchema&quot;
+
+   xmlns:rfc1807=&quot;http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt&quot;
+
+   targetNamespace=&quot;http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt&quot;
+
+   elementFormDefault=&quot;qualified&quot;
+
+   attributeFormDefault=&quot;unqualified&quot;&gt;
+
+
+
+  &lt;annotation&gt;
+
+   &lt;documentation&gt;
+
+    Schema for rfc1807 metadata format.
+
+    the Open Archives Initiative. 2000. 
+
+    rfc1807 semantics available at <br>            http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt
+
+    XML transportation format on which this schema is inspired 
+
+        available at http://www.openarchives.org/sfc/sfc_rfc1807.htm
+
+    This Schema was validated with XSV 1.196/1.98 of 2001/06/16 11:56:53
+
+   &lt;/documentation&gt;
+
+  &lt;/annotation&gt;
+
+
+
+&lt;element name=&quot;rfc1807&quot; type=&quot;rfc1807:rfc1807Type&quot;/&gt;
+
+
+
+&lt;complexType name=&quot;rfc1807Type&quot;&gt;
+
+ &lt;sequence&gt;
+
+  &lt;element name=&quot;bib-version&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;id&quot;  minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;entry&quot;  minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;organization&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;title&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;type&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;revision&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;withdraw&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;author&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;corp-author&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;contact&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;date&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;pages&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;copyright&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;handle&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;other_access&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;retrieval&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;keyword&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;cr-category&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;period&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;series&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;monitoring&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;funding&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;contract&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;grant&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;language&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;notes&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+  &lt;element name=&quot;abstract&quot;  minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;string&quot;/&gt;
+
+ &lt;/sequence&gt;
+
+&lt;/complexType&gt;
+
+
+
+ &lt;/schema&gt;
+
+</pre>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/rfc1807.xsd">http://www.openarchives.org/OAI/1.1/rfc1807.xsd</a></td>
+
+  </tr>
+
+  </tbody> 
+
+</table>
+
+<p>&nbsp;</p>
+
+<table bgcolor="#bedce6" border="2" width="80%">
+
+  <tbody> 
+
+  <tr> 
+
+    <td width="100%"> 
+
+      <h2><a name="marc"></a>oai_marc</h2>
+
+    </td>
+
+  </tr>
+
+  <tr valign="top"> 
+
+    <td width="100%" height="1633"> 
+
+<pre>
+&lt;schema xmlns="http://www.w3.org/2001/XMLSchema"
+   targetNamespace="http://www.openarchives.org/OAI/1.1/oai_marc"
+   xmlns:oai_marc="http://www.openarchives.org/OAI/1.1/oai_marc"
+   elementFormDefault="qualified"
+   attributeFormDefault="unqualified"&gt;
+
+   &lt;annotation&gt;
+     &lt;documentation&gt;
+      Schema for MARC metadata format.
+      MARC semantics available at http://www.loc.gov/marc/
+      .....
+      This Schema has been successfully applied for MARC21 records.  
+      It is likely to also work for older versions of USMARC and CANMARC.  
+      Application of this Schema for other MARC formats has not been 
+      tested and may require some adjustments. 
+      ..... 
+      the Open Archives Initiative. 2000. 
+      Herbert Van de Sompel
+      MARC XML transportation format on which this schema is inspired 
+           available at http://www.dlib.vt.edu/projects/OAi/marcxml/marcxml.html
+     This Schema validated at http://www.w3.org/2001/03/webdata/xsv on 05-09-2001.
+     &lt;/documentation&gt;
+    &lt;/annotation&gt;
+
+  &lt;element name="oai_marc"&gt;
+   &lt;complexType&gt;
+     &lt;sequence&gt;
+       &lt;element ref="oai_marc:fixfield" minOccurs="1" maxOccurs="unbounded"/&gt;
+       &lt;element ref="oai_marc:varfield" minOccurs="0" maxOccurs="unbounded"/&gt;
+     &lt;/sequence&gt;
+    &lt;attribute name="status" type="string" use="optional"/&gt;
+    &lt;attribute name="type" type="string" use="required"/&gt;
+    &lt;attribute name="level" type="string" use="required"/&gt;
+    &lt;attribute name="ctlType" type="string" use="optional"/&gt;
+    &lt;attribute name="charEnc" type="string" use="optional"/&gt;
+    &lt;attribute name="encLvl" type="string" use="optional"/&gt;
+    &lt;attribute name="catForm" type="string" use="optional"/&gt;
+    &lt;attribute name="lrRqrd" type="string" use="optional"/&gt;
+   &lt;/complexType&gt;
+  &lt;/element&gt;
+
+  &lt;element name="fixfield"&gt;
+   &lt;complexType&gt;
+     &lt;simpleContent&gt;
+        &lt;extension base="oai_marc:fixfieldType"&gt;
+        &lt;attribute name="id" type="oai_marc:idType" use="required"/&gt;
+        &lt;/extension&gt;
+     &lt;/simpleContent&gt;
+   &lt;/complexType&gt;
+  &lt;/element&gt;
+
+  &lt;simpleType name="fixfieldType"&gt;
+    &lt;restriction base="string"&gt;
+    &lt;!-- fixfield must be enclosed between quotes because spaces 
+         are meaningfull --&gt;
+     &lt;pattern value='[\n\r\t\s]*"[^"]*"[\n\r\t\s]*'/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;element name="varfield"&gt;
+   &lt;complexType&gt;
+     &lt;sequence&gt;
+       &lt;element ref="oai_marc:subfield" minOccurs="1" maxOccurs="unbounded"/&gt;
+     &lt;/sequence&gt;
+    &lt;attribute name="id" type="oai_marc:idType" use="required"/&gt;
+    &lt;attribute name="i1" type="oai_marc:iType" use="required"/&gt;
+    &lt;attribute name="i2" type="oai_marc:iType" use="required"/&gt;
+   &lt;/complexType&gt;
+  &lt;/element&gt;
+
+  &lt;element name="subfield"&gt;
+   &lt;complexType&gt;
+     &lt;simpleContent&gt;
+        &lt;extension base="string"&gt;
+        &lt;attribute name="label" type="oai_marc:subfieldType" use="required"/&gt;
+        &lt;/extension&gt;
+     &lt;/simpleContent&gt;
+   &lt;/complexType&gt;
+  &lt;/element&gt;
+
+  &lt;simpleType name="subfieldType"&gt;
+    &lt;restriction base="string"&gt;
+    &lt;!-- MARC subfield (the leading $ i not used)
+         may be any lowercase alphabetic or numeric character  --&gt;
+     &lt;pattern value="[0-9a-z]"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="idType"&gt;
+    &lt;restriction base="string"&gt;
+    &lt;!-- MARC tags are 1 to 3 digits --&gt;
+     &lt;pattern value="[0-9]{1,3}"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="iType"&gt;
+    &lt;restriction base="string"&gt;
+    &lt;!-- MARC indicator may be any lowercase alphabetic or numeric character
+         or a blank  --&gt;
+     &lt;pattern value="[0-9a-z\s]?"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+
+ &lt;/schema&gt;
+</pre>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/oai_marc.xsd">http://www.openarchives.org/OAI/1.1/oai_marc.xsd</a></td>
+
+  </tr>
+
+  </tbody> 
+
+</table>
+
+<h3>Examples</h3>
+
+<pre>
+
+&lt;oai_marc<br>    status=&quot;n&quot; type=&quot;a&quot; level=&quot;m&quot; encLvl=&quot;7&quot; <br>    catForm=&quot;a&quot; xmlns=&quot;http://www.openarchives.org/OAI/1.1/oai_marc&quot;
+
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+    xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/oai_marc 
+
+                    http://www.openarchives.org/OAI/1.1/oai_marc.xsd&quot;&gt;
+
+&lt;fixfield id=&quot;1&quot;&gt;"   90178038 "&lt;/fixfield&gt;
+
+&lt;fixfield id=&quot;3&quot;&gt;"DLC"&lt;/fixfield&gt;
+
+&lt;fixfield id=&quot;5&quot;&gt;"19900814092959.1"&lt;/fixfield&gt;
+
+&lt;fixfield id=&quot;8&quot;&gt;"900724s1974    po af         000 0 fre  "&lt;/fixfield&gt;
+
+&lt;varfield id=&quot;10&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;90178038&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;varfield id=&quot;40&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;DLC&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;c&quot;&gt;DLC&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;varfield id=&quot;50&quot; i1=&quot;0&quot; i2=&quot;0&quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;MLCL 90/00723 (Q)&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+ &lt;varfield id=&quot;100&quot; i1=&quot;1&quot; i2=&quot;0&quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Berthou, P. Y.&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;q&quot;&gt;(Pierre Yves)&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+ &lt;varfield id=&quot;245&quot; i1=&quot;1&quot; i2=&quot;3&quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Le C&amp;#x00E9;nomanien de l&quot;Estr&amp;#x00E9;madure <br>                     portugaise /&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;c&quot;&gt;par Pierre-Yves Berthou.&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;varfield id=&quot;260&quot; i1=&quot;0&quot; i2=&quot; &quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Lisboa :&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;b&quot;&gt;Minist&amp;#x00E9;rio da Economia, Secretaria de Estado<br>           da Ind&amp;#x00FA;stria, Direc&amp;#x00E7;&amp;#x00E3;o-Geral de Minas e <br>           Servi&amp;#x00E7;os Geol&amp;#x00F3;gicos, Servi&amp;#x00E7;os <br>           Geol&amp;#x00F3;gicos de Portugal,&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;c&quot;&gt;1973 [i.e. 1974]&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;varfield id=&quot;300&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;168 p., 67 leaves of plates :&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;b&quot;&gt;ill. ;&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;c&quot;&gt;33 cm.&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;varfield id=&quot;490&quot; i1=&quot;1&quot; i2=&quot; &quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Mem&amp;#x00F3;ria ;&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;v&quot;&gt;no. 23 (Nova s&amp;#x00E9;r.)&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;varfield id=&quot;653&quot; i1=&quot;0&quot; i2=&quot; &quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Stratigraphic geology;&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Cenomanian deposits;&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Portugal&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;varfield id=&quot;830&quot; i1=&quot; &quot; i2=&quot;0&quot;&gt;
+
+ &lt;subfield label=&quot;a&quot;&gt;Mem&amp;#x00F3;ria (Servi&amp;#x00E7;os Geol&amp;#x00F3;gicos <br>           de Portugal) ;&lt;/subfield&gt;
+
+ &lt;subfield label=&quot;v&quot;&gt;nova s&amp;#x00E9;r. no. 23.&lt;/subfield&gt;
+
+&lt;/varfield&gt;
+
+&lt;/oai_marc&gt;</pre>
+
+An oai_marc formated record embedded in in a reply to a GetRecord protocol request:<br>
+
+<pre>
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+  &lt;GetRecord <br>     xmlns=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord&quot; 
+
+     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+
+     xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/1.1/OAI_GetRecord 
+
+                   http://www.openarchives.org/OAI/1.1/OAI_GetRecord.xsd&quot;&gt;
+
+  &lt;responseDate&gt;2001-01-20T20:32:09-05:00&lt;/responseDate&gt;
+
+  &lt;requestURL&gt;http://memory.loc.gov/cgi-bin/oai1_0?verb=GetRecord<br>      &amp;amp;metadataPrefix=oai_marc<br>      &amp;amp;identifier=oai%3Alcoa1%3Aloc.gmd%2Fg3711p.rr004620&lt;/requestURL&gt;
+
+    &lt;record&gt;
+
+      &lt;header&gt;
+
+        &lt;identifier&gt;oai:lcoa1:loc.gmd/g3711p.rr004620&lt;/identifier&gt;
+
+        &lt;datestamp&gt;2000-01-04&lt;/datestamp&gt;
+
+      &lt;/header&gt;
+
+      &lt;metadata&gt;
+
+      &lt;oai_marc status=&quot;c&quot; type=&quot;e&quot; level=&quot;m&quot; encLvl=&quot;1&quot; catForm=&quot; &quot;
+
+                xmlns=&quot;http://www.openarchives.org/OAI/oai_marc&quot;
+
+                xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+
+                xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/oai_marc
+
+                                    http://www.openarchives.org/OAI/1.1/oai_marc.xsd&quot;&gt;
+
+        &lt;fixfield id=&quot;001&quot;&gt;&quot;   98688713 &quot;&lt;/fixfield&gt;
+
+      &lt;fixfield id=&quot;003&quot;&gt;&quot;DLC&quot;&lt;/fixfield&gt;
+
+      &lt;fixfield id=&quot;005&quot;&gt;&quot;20000104155648.0&quot;&lt;/fixfield&gt;
+
+      &lt;fixfield id=&quot;007&quot;&gt;&quot;cr||||&quot;&lt;/fixfield&gt;
+
+      &lt;fixfield id=&quot;007&quot;&gt;&quot;aj|aanzn&quot;&lt;/fixfield&gt;
+
+      &lt;fixfield id=&quot;008&quot;&gt;&quot;980520s1850    nyu       a     0   eng  &quot;&lt;/fixfield&gt;
+
+      &lt;varfield id=&quot;035&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;9&quot;&gt;(DLC)   98688713&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;035&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;(DLC)5572293&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;010&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;   98688713 &lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;040&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;DLC&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;c&quot;&gt;DLC&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;d&quot;&gt;DLC&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;050&quot; i1=&quot;0&quot; i2=&quot;0&quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;G3711.P3 1850&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;b&quot;&gt;.J4&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;u&quot;&gt;RR 462&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;052&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;3711&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;072&quot; i1=&quot; &quot; i2=&quot;7&quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;P3&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;2&quot;&gt;lcg&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;100&quot; i1=&quot;1&quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Jervis, John B.&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;q&quot;&gt;(John Bloomfield),&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;d&quot;&gt;1795-1885.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;245&quot; i1=&quot;1&quot; i2=&quot;0&quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Skeleton map, showing the position and <br>                   connections of the Michigan Southern Rail Road <br>                   (from Toledo to Chicago) with the several great <br>                   rail road routes to the Atlantic seaboard and <br>                   New York City via the south shore of Lake Erie.<br>                   &lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;260&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;N[ew] Y[ork],&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;c&quot;&gt;1850.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;300&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;map&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;c&quot;&gt;22 x 51 cm.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;507&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Scale ca. 1:3,000,000.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;510&quot; i1=&quot;4&quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;LC Railroad maps,&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;c&quot;&gt;462&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;500&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Description derived from published <br>                  bibliography.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;520&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Outline map of the northeastern <br>            United States showing railroads in operation, <br>            under construction, and under proposal. Chartered <br>            in 1846 and consolidated April 1855 with the Northern <br>            Indiana Railroad under the name Michigan Southern and <br>            Northern Indiana Railroad.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;530&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Available also through the Library <br>            of Congress Web site as a raster image.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;610&quot; i1=&quot;2&quot; i2=&quot;0&quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Michigan Southern Railroad&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;v&quot;&gt;Maps.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;650&quot; i1=&quot; &quot; i2=&quot;0&quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Railroads&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;z&quot;&gt;Northeastern States&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;v&quot;&gt;Maps.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;752&quot; i1=&quot; &quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;United States&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;c&quot;&gt;Northeastern States.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;710&quot; i1=&quot;2&quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Michigan Southern Railroad.&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;852&quot; i1=&quot;0&quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;a&quot;&gt;Library of Congress&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;b&quot;&gt;Geography and Map Division&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;e&quot;&gt;Washington, D.C. 20540-4650 USA&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;n&quot;&gt;dcu&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+      &lt;varfield id=&quot;856&quot; i1=&quot;7&quot; i2=&quot; &quot;&gt;
+
+        &lt;subfield label=&quot;d&quot;&gt;g3711p&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;f&quot;&gt;rr004620&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;g&quot;&gt;urn:hdl:loc.gmd/g3711p.rr004620&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;u&quot;&gt;http://hdl.loc.gov/loc.gmd/g3711p.rr004620&lt;/subfield&gt;
+
+        &lt;subfield label=&quot;2&quot;&gt;http&lt;/subfield&gt;
+
+      &lt;/varfield&gt;
+
+    &lt;/oai_marc&gt;
+
+  &lt;/metadata&gt;
+
+ &lt;/record&gt;
+
+&lt;/GetRecord&gt; 
+
+</pre>
+
+<h2><br>
+
+  <a name="appendix 2"></a>Appendix 2: Sample XML Schemas for the <font face="Courier New, Courier, mono">description</font> 
+
+  part <br>
+
+  of a reply to Identify request</h2>
+
+<p><font color="#000000">The response to an <a href="#Identify">Identify</a> request 
+
+  may contain a list of <font face="Courier New, Courier, mono" size="2">description</font> 
+
+  containers, which provide an extensible mechanism for communities to describe 
+
+  their repositories.&nbsp; Each <font face="Courier New, Courier, mono" size="2">description</font> 
+
+  container must be accompanied by the URL of an XML schema, which provides the 
+
+  semantics of the container.&nbsp;&nbsp; XML Schemas for two examples of <font face="Courier New, Courier, mono" size="2">description</font> 
+
+  containers are given below:</font></p>
+
+<ul>
+
+  <li><font color="#000000">The <font face="Courier New, Courier, mono" size="2">oai-identifier</font> 
+
+    which is used by repositories that choose to comply with a specific format 
+
+    of unique identifiers for records. The format of that identifier is explained 
+
+    by means of comments in the <a href="http://www.openarchives.org/OAI/1.1/oai-identifier.xsd">oai-identifier.xsd</a> 
+
+    XML Schema. </font></li>
+
+  <li><font color="#000000">The <font face="Courier New, Courier, mono" size="2">eprints</font> 
+
+    container which has been agreed upon by the OAI e-print community. The container 
+
+    is used to describe content and policy properties of repositories in the e-print 
+
+    community. </font></li>
+
+</ul>
+
+<table bgcolor="#bedce6" border="2" width="80%">
+
+  <tbody> 
+
+  <tr> 
+
+    <td width="100%"> 
+
+      <h2><a name="oai-identifier"></a><font face="Courier New, Courier, mono">description</font> 
+
+        for repositories that share the OAI format for unique identifiers of records</h2>
+
+    </td>
+
+  </tr>
+
+  <tr valign="top"> 
+
+    <td width="100%" height="929"> 
+
+<pre>
+&lt;schema xmlns="http://www.w3.org/2001/XMLSchema"
+           xmlns:oai-identifier="http://www.openarchives.org/OAI/1.1/oai-identifier"
+           targetNamespace="http://www.openarchives.org/OAI/1.1/oai-identifier"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"&gt;
+
+    &lt;annotation&gt;
+     &lt;documentation&gt;
+      Schema for description section of Identify reply, for repositories 
+         that comply with the oai format for unique identifiers for records.
+      the Open Archives Initiative. 2000. 
+      Validated at http://www.w3.org/2001/03/webdata/xsv on 05-09-2001.
+     &lt;/documentation&gt;
+    &lt;/annotation&gt;
+
+  &lt;element name="oai-identifier" type="oai-identifier:oai-identifierType"/&gt;
+
+  &lt;complexType name="oai-identifierType"&gt;
+   &lt;sequence&gt;
+    &lt;!--    ....   --&gt;
+    &lt;!-- Repositories that comply to the OAI format of unique record --&gt;
+    &lt;!-- identifiers, use unique identifiers that are the concatenation of: --&gt;
+    &lt;!--    * A "scheme" that must be equal to oai --&gt;
+    &lt;!--    * A "repositoryIdentifier" that is a unique identifier for a --&gt;
+    &lt;!-- repository.  Its uniqueness will be tested as part of a --&gt;
+    &lt;!-- registration process.  The repositoryIdentifier is case --&gt;
+    &lt;!-- sensitive and may contain the characters [a-z]|[A-Z]|[0-9] --&gt;
+    &lt;!-- e.g. arXiv, VTETD. 
+    &lt;!--    * A local identifier that is the unique identifier of a record --&gt;
+    &lt;!-- within a repository --&gt;
+    &lt;!--    * These three parts must be concatenated using a "delimiter" --&gt;
+    &lt;!-- which must be a colon.   --&gt;
+    &lt;!--    ....   --&gt;
+    &lt;element name="scheme" minOccurs="1" maxOccurs="1" fixed="oai"/&gt;
+    &lt;element name="repositoryIdentifier" minOccurs="1" maxOccurs="1" 
+             type="oai-identifier:repositoryIdentifierType"/&gt;
+    &lt;element name="delimiter" minOccurs="1" maxOccurs="1" fixed=":"/&gt;
+    &lt;!--    ....   --&gt;
+    &lt;!-- "sampleIdentifier" : A sample identifier from the repository, --&gt;
+    &lt;!-- e.g. oai:arXiv:hep-th/9901001 , oai:VTETD:etd-3345131939761081 --&gt;
+    &lt;!--    ....   --&gt;
+    &lt;element name="sampleIdentifier" minOccurs="1" maxOccurs="1" 
+             type="oai-identifier:IdentifierType"/&gt;
+   &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="repositoryIdentifierType"&gt;
+   &lt;restriction base="string"&gt;
+     &lt;pattern value="[a-zA-Z0-9]+"/&gt;
+   &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="IdentifierType"&gt;
+   &lt;restriction base="string"&gt;
+     &lt;pattern value="oai:[a-zA-Z0-9]+:.*"/&gt;
+   &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+   &lt;/schema&gt;
+</pre>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/oai-identifier.xsd">http://www.openarchives.org/OAI/1.1/oai-identifier.xsd</a></td>
+
+  </tr>
+
+  </tbody> 
+
+</table>
+
+<h3>Examples<br>
+
+</h3>
+
+<pre>
+
+&lt;oai-identifier xmlns=&quot;http://www.openarchives.org/OAI/1.1/oai-identifier&quot<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+     xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/oai-identifier &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    http://www.openarchives.org/OAI/1.1/oai-identifier.xsd&quot;&gt;<br>&lt;scheme&gt;oai&lt;/scheme&gt; 
+
+&lt;repositoryIdentifier&gt;bespa&lt;/repositoryIdentifier&gt;    
+
+&lt;delimiter&gt;:&lt;/delimiter&gt; 
+
+&lt;sampleIdentifier&gt;oai:bespa:medi99-123&lt;/sampleIdentifier&gt;
+
+&lt;/oai-identifier&gt; </pre>
+
+<table bgcolor="#bedce6" border="2" width="80%">
+
+  <tbody> 
+
+  <tr> 
+
+    <td width="100%"> 
+
+      <h2><a name="eprint"></a><font face="Courier New, Courier, mono">description</font> 
+
+        used to describe content and policy properties of repositories in the 
+
+        e-print community</h2>
+
+    </td>
+
+  </tr>
+
+  <tr valign="top"> 
+
+    <td width="100%" height="897"> 
+
+<pre>
+&lt;schema xmlns="http://www.w3.org/2001/XMLSchema"
+           xmlns:eprints="http://www.openarchives.org/OAI/1.1/eprints"
+           targetNamespace="http://www.openarchives.org/OAI/1.1/eprints"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"&gt;
+
+    &lt;annotation&gt;
+     &lt;documentation&gt;
+      Schema for description section of Identify reply, defined by 
+      the e-print community.
+      the Open Archives Initiative. 2000. 
+      Validated at http://www.w3.org/2001/webdata/xsv on 05-09-2001.
+     &lt;/documentation&gt;
+    &lt;/annotation&gt;
+
+  &lt;element name="eprints" type="eprints:eprintsDescriptionType"/&gt;
+
+  &lt;complexType name="eprintsDescriptionType"&gt;
+   &lt;sequence&gt;
+    &lt;!--    ....   --&gt;
+    &lt;!-- "content" : Text and/or a URL linking to text describing the --&gt;
+    &lt;!-- content of the repository.     --&gt;
+    &lt;!-- It would be appropriate to indicate the language(s) --&gt;
+    &lt;!-- of the metadata/data in the repository. --&gt;
+    &lt;!--    ....   --&gt;
+    &lt;element name="content"  minOccurs="0" maxOccurs="1" 
+             type="eprints:TextURLType"/&gt;
+    &lt;!--    ....   --&gt;
+    &lt;!-- "metadataPolicy" : Text and/or a URL linking to text describing --&gt;
+    &lt;!-- policies relating to the use of metadata  --&gt;  
+    &lt;!-- harvested through the OAI interface.  --&gt;  
+    &lt;!--    ....   --&gt;   
+    &lt;element name="metadataPolicy"  minOccurs="1" maxOccurs="1" 
+             type="eprints:TextURLType"/&gt;
+    &lt;!--    ....   --&gt;
+    &lt;!-- "dataPolicy" : Text and/or a URL linking to text describing --&gt;
+    &lt;!-- policies relating to the data  held in the --&gt;
+    &lt;!-- repository.  This may also describe policies --&gt;
+    &lt;!-- regarding downloading data (full-content). --&gt;  
+    &lt;!--    ....   --&gt;  
+    &lt;element name="dataPolicy"  minOccurs="1" maxOccurs="1" 
+             type="eprints:TextURLType"/&gt;
+    &lt;!--    ....   --&gt;
+    &lt;!-- "submissionPolicy" : --&gt;
+    &lt;!-- Text and/or a URL linking to text describing --&gt;
+    &lt;!-- policies relating to the submission of content --&gt;
+    &lt;!-- to the repository (or other accession mechanisms).  --&gt;  
+    &lt;!--    ....   --&gt;  
+    &lt;element name="submissionPolicy"  minOccurs="0" maxOccurs="1" 
+             type="eprints:TextURLType"/&gt;
+    &lt;!--    ....   --&gt;  
+    &lt;!-- "comment" : --&gt;
+    &lt;!-- Text and/or a URL linking to text describing anything --&gt;
+    &lt;!-- else that is not covered by the fields above. --&gt;
+    &lt;!-- It would be appropriate to include additional --&gt;  
+    &lt;!-- contact details (additional to the adminEmail --&gt;
+    &lt;!-- that is part of the response to the Identify request). --&gt;  
+    &lt;!--    ....   --&gt; 
+    &lt;element name="comment"  minOccurs="0" maxOccurs="unbounded" 
+             type="string"/&gt;
+   &lt;/sequence&gt;
+  &lt;/complexType&gt;
+ &lt;complexType name = "TextURLType" &gt; 
+  &lt;choice minOccurs="0" maxOccurs="unbounded"&gt;
+    &lt;element name="URL" minOccurs="0" maxOccurs="unbounded" type="anyURI"/&gt;
+    &lt;element name="text" minOccurs="0" maxOccurs="unbounded" type="string"/&gt;
+  &lt;/choice&gt;
+  &lt;/complexType&gt;
+
+   &lt;/schema&gt;
+</pre>
+
+    </td>
+
+  </tr>
+
+  <tr> 
+
+    <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/1.1/eprints.xsd">http://www.openarchives.org/OAI/1.1/eprints.xsd</a></td>
+
+  </tr>
+
+  </tbody> 
+
+</table>
+
+<h3>Examples</h3>
+
+<pre>&lt;eprints xmlns=&quot;http://www.openarchives.org/OAI/1.1/eprints&quot;
+
+&nbsp;&nbsp;&nbsp;&nbsp;xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+    xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/eprints &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+
+    http://www.openarchives.org/OAI/1.1/eprints.xsd&quot;&gt;<br>  &lt;content&gt;
+
+     &lt;URL&gt;http://arXiv.org/arXiv_content.htm&lt;/URL&gt;
+
+  &lt;/content&gt;
+
+  &lt;metadataPolicy&gt;
+
+     &lt;text&gt;Metadata can be used by commercial and non-commercial <br>           service providers&lt;/text&gt;
+
+     &lt;URL&gt;http://arXiv.org/arXiv_metadata_use.htm&lt;/URL&gt;
+
+  &lt;/metadataPolicy&gt;
+
+  &lt;dataPolicy&gt;
+
+     &lt;text&gt;Full content, i.e. preprints may not be harvested by robots&lt;/text&gt;
+
+  &lt;/dataPolicy&gt;
+
+  &lt;submissionPolicy&gt;
+
+     &lt;URL&gt;http://arXiv.org/arXiv_submission.htm&lt;/URL&gt;
+
+  &lt;/submissionPolicy&gt;
+
+&lt;/eprints&gt;
+
+</pre>
+
+<h2><a name="acknowledgements"></a>Acknowledgements</h2>
+
+<p>Support for the compilation of this document and for other Open Archives Initiative 
+
+  activities comes from the <a href="http://www.diglib.org/dlfhomepage.htm">Digital Library 
+
+  Federation</a> and the <a href="http://www.cni.org">Coalition for Networked 
+
+  Information</a>. Additional support for work on Open Archives Initiatives protocols 
+
+  comes from National Science Foundation Grant No. IIS-9817416 and Defense Advanced 
+
+  Projects Agency Grant No. N66001-98-1-8908.</p>
+
+<p>Many thanks to the <a href="http://www.openarchives.org/meetings/steering/alpha-testing-press-release.htm">alpha 
+
+  testing</a> group and the participants at the <a href="http://www.openarchives.org/meetings/tech-Cornell/cornell-agenda.htm">Cornell 
+
+  technical meeting</a>: &lt;caar@loc.gov&gt; Caroline Arms -- &lt;dih1@cornell.edu&gt; 
+
+  Diane Hillmann -- &lt;dsm@columbia.edu&gt; David Millman -- &lt;dstuve@mit.edu&gt; 
+
+  David Stuve -- &lt;dwoo@loc.gov&gt; Dave Woodward -- &lt;herbertv@cs.cornell.edu&gt; 
+
+  Herbert Van de Sompel -- &lt;hickey@oclc.org&gt; Thom Hickey -- &lt;hussein@vt.edu&gt; 
+
+  Hussein Suleman -- &lt;john.ober@ucop.edu&gt; John Ober -- &lt;jperkins@fox.nstn.ca&gt; 
+
+  John Perkins -- &lt;lagoze@cs.cornell.edu&gt; Carl Lagoze -- &lt;lisap@ukoln.ac.uk&gt; 
+
+  Andy Powell -- &lt;liu_x@cs.odu.edu&gt; Xiaoming Liu -- &lt;lloyd@aztec.lib.utk.edu&gt; 
+
+  Jim Lloyd -- &lt;mln@ils.unc.edu&gt; Michael Nelson -- &lt;mcundiff@loc.gov&gt; 
+
+  Morgan V. Cundiff -- &lt;oren@exlibris-usa.com&gt; Oren Beit-Arie -- &lt;rden@loc.gov&gt; 
+
+  Ray Dennenberg -- &lt;rht96r@ecs.soton.ac.uk&gt; Rob Tansley -- &lt;rjm2@cornell.edu&gt; 
+
+  Rich Marisa -- &lt;rstevenson@accesscable.net&gt; Rob Stevenson -- &lt;sb@ldc.upenn.edu&gt; 
+
+  Steven Bird -- &lt;schwander@pion.lanl.gov&gt; Thorsten Schwander -- &lt;simeon@lanl.gov&gt; 
+
+  Simeon Warner -- &lt;t-cole3@uiuc.edu&gt; Tim Cole -- &lt;T.Krichel@surrey.ac.uk&gt; 
+
+  Thomas Krichel -- &lt;thabing@uiuc.edu&gt; Tom Habing -- &lt;support@eprints.org&gt; 
+
+  Christopher Gutteridge -- &lt;jyoung@oclc.org&gt; Jeff Young -- &lt;stern@cs.dal.ca&gt; 
+
+  Henry Stern.</p>
+
+<p>Very special thanks for playing a distinct enabling role to: &lt;hussein@vt.edu&gt; 
+
+  Hussein Suleman -- &lt;mln@ils.unc.edu&gt; Michael Nelson -- &lt;simeon@lanl.gov&gt; 
+
+  Simeon Warner </p>
+
+<h2>Document History</h2>
+
+<p><b>2001-08-07</b>: 
+Modified "oai_marc.xsd", "eprints.xsd", and "oai-identifier.xsd" to fix some
+whitespace problems and to make some attribute improvements.  The changes are 
+are complements of Hussein Suleman (and any typos are Donna Bergmark's).
+
+<p><b>2001-06-20</b>: 
+
+Released protocol version 1.1.  Changes were made to every .xsd file
+
+as well as to all the examples.  This version is compliant with the May, 2001
+
+W3C XML Schema recommendation.
+
+</p>
+
+<p><b>2001-04-24</b>: Made changes to GetRecord.xsd , ListRecords.xsd and ListIdentifiers.xsd 
+
+  regarding the specification of the &quot;status&quot; attribute that can be 
+
+  used with a record. &quot;status&quot; was specified with use=&quot;fixed&quot; 
+
+  and value=&quot;deleted&quot;, which caused parsers to use &quot;deleted&quot; 
+
+  as a default. The correction specifies &quot;status&quot; as &quot;optional&quot; 
+
+  and restricts it to be of statusType, which can only have one value being &quot;deleted&quot;.</p>
+
+<p><b>2001-04-06</b>: Added occurency specification -- <font color="#000000">minOccurs=&quot;0&quot; 
+
+  maxOccurs=&quot;1&quot;</font> -- to the aboutType in GetRecord.xsd and ListRecords.xsd 
+
+  . </p>
+
+<p><b>2001-02-23</b>: Corrected an error in ListMetadataFormats.xsd. The root 
+
+  element was listed as ListMetdata instead of ListMetadataFormats. </p>
+
+</body></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

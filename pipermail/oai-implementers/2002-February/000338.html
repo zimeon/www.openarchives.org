@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:liu_x%40cs.odu.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000337.html">
+   <LINK REL="Next"  HREF="000339.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news
+   </H1>
+    <B>Xiaoming Liu
+    </B> 
+    <A HREF="mailto:liu_x%40cs.odu.edu"
+       TITLE="FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news">liu_x@cs.odu.edu
+       </A><BR>
+    <I>Thu, 7 Feb 2002 23:59:11 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000337.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+        <LI> Next message: <A HREF="000339.html">FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#338">[ date ]</a>
+              <a href="thread.html#338">[ thread ]</a>
+              <a href="subject.html#338">[ subject ]</a>
+              <a href="author.html#338">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Alan,
+
+I guess there are two aspects of my arguments,(DP) data provider and
+(SP) service provider.
+
+From the side of SP, it could not presume &quot;a request for the past will
+always get the same answer&quot;. So the method suggested by Walter won't work.
+Instead, SP has to use the resumptionToken to get the right anwser.
+
+From the side of DP, they could implement the resumptionToken by its own
+way. If DP can promise &quot;a request for the past will never change&quot;, or
+they don't care missing something, they can use the method I suggest.
+That's the case for CVS-like system (keep each version with different
+release number), or maybe some historical documents.
+
+So my opinion is: SP has to use resumptionToken, DP has its own options
+about how to implement it. 
+
+
+About &quot;whether new records are created with monotomic dates&quot; See
+definition of datestamp in OAMHP:
+&quot;A datestamp is the date of creation, deletion, or latest date of
+modification of an item, the effect of which is a change in the metadata
+of a record disseminated from that item.&quot;
+
+So in a correctly-implemented OAI repository, the new records should be
+created with monotomic dates, in your case of webpage/crawler, the date of
+the metadata is the date of webpage is harvested.
+
+&gt;<i> Or is the idea with OAI that if a record is updated, then the
+</I>&gt;<i> old slot is marked as 'deleted' and a new record added as 'inserted'
+</I>&gt;<i> to keep the same number of slots around?
+</I>
+If one record is changed (but identifier keeps same), the correct way is
+to change the datestamp. However, if you have a version control system and
+change identifier each time, the &quot;deleted&quot;/&quot;inserted&quot; is also a right way.
+
+&gt;<i> The only invariant that I can think of is the date stamp.
+</I>&gt;<i> If date/time stamps (to a high resolution) were used, and the
+</I>&gt;<i> results of ListRecords was in monotomically increasing order
+</I>&gt;<i> of time, then you actually no longer need resumptionToken at all.
+</I>
+By my understanding, OAI2.0 (from Carl&amp;Herbert's email) will support high
+resolution date/time stamps as an option. However, there is no promise
+that results of ListRecords will be in monotomically increasing order of
+time. (It may be unnecessary limitation to some data providers). 
+
+But I agree it will support a pure stateless protocol if all assumption
+are satisfied (high resolution date stamps and results is ordered by
+time).
+
+Regards,
+liu
+
+
+
+
+
+
+
+
+On Fri, 8 Feb 2002, Alan Kent wrote:
+
+&gt;<i> Sorry if this is all old hat to other people, but I find getting involved
+</I>&gt;<i> is the best way to learn and understand. People can always ignore me! :-)
+</I>&gt;<i> 
+</I>&gt;<i> On Thu, Feb 07, 2002 at 09:50:27PM -0500, Xiaoming Liu wrote:
+</I>&gt;<i> &gt; --- Walter Underwood wrote:
+</I>&gt;<i> &gt; &gt; A request for all changes between two dates in the past should always get
+</I>&gt;<i> &gt; &gt; the same answer, so stateless harvesting should work.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; This is a neat way, but I am now sure how well the past is kept in digital
+</I>&gt;<i> &gt; library ;-) Especially
+</I>&gt;<i> &gt; in OAI protocol, whenever a record is changed, its datestamp is changed
+</I>&gt;<i> &gt; too.  So even a request
+</I>&gt;<i> &gt; for past may not get the same answer.
+</I>&gt;<i> 
+</I>&gt;<i> and
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Maybe there is one way to implement a stateless protocol in current OAI:
+</I>&gt;<i> &gt; encode query parameters in ResumptionToken:
+</I>&gt;<i> ...
+</I>&gt;<i> &gt; one example is:
+</I>&gt;<i> &gt; resumptionToken= 1999:2000:math:oai_dc:100
+</I>&gt;<i> 
+</I>&gt;<i> I assume the 100 means start from record 100.
+</I>&gt;<i> 
+</I>&gt;<i> So by your own argument, the contents of previous queries may change
+</I>&gt;<i> between requests. So the server *must* keep a copy of the state of the
+</I>&gt;<i> system when the original query was issued and continue to provide
+</I>&gt;<i> that consistently to the client. If the results are not consistent,
+</I>&gt;<i> data could be lost (overlooked) during a long transfer.
+</I>&gt;<i> 
+</I>&gt;<i> Let me expand and ask a few questions (partly from my ignorance).
+</I>&gt;<i> Is it expected with OAI that new records will come into existance
+</I>&gt;<i> at a previous point in time? Or are all new records always added
+</I>&gt;<i> created with monotomically increasing date/time values? For example,
+</I>&gt;<i> if metadata is harvested from a web site, would the dates of the
+</I>&gt;<i> web pages be used? Or the date the data was harvested be used?
+</I>&gt;<i> If the date of the web page, then when a new site is crawled,
+</I>&gt;<i> new pages can come into existence dated in the past. If the date
+</I>&gt;<i> the metadata was collected from the web page, then dates increase
+</I>&gt;<i> monotomically.
+</I>&gt;<i> 
+</I>&gt;<i> If new records are *not* created with monotomic dates, then OAI falls
+</I>&gt;<i> down doesn't it? Any one who has done a previous crawl may never crawl
+</I>&gt;<i> for that old date range again and so not get the data. So to be safe,
+</I>&gt;<i> dates must be monotomically increasing for metadata modified in the
+</I>&gt;<i> repository.
+</I>&gt;<i> 
+</I>&gt;<i> If changes to the repository are then always given monotomically
+</I>&gt;<i> increasing dates, then history will never be added to. However,
+</I>&gt;<i> history can be lost if an old entry is updated (as it will be given
+</I>&gt;<i> a newer date). So if a cursor scheme is used which says 'give me
+</I>&gt;<i> records starting from 100' is used, then if a record that was in
+</I>&gt;<i> the range 1-99 is updated between requests, then what was record
+</I>&gt;<i> number 100 would slip back to become record number 99. The request
+</I>&gt;<i> starting from 100 would then miss that record.
+</I>&gt;<i> 
+</I>&gt;<i> Or is the idea with OAI that if a record is updated, then the
+</I>&gt;<i> old slot is marked as 'deleted' and a new record added as 'inserted'
+</I>&gt;<i> to keep the same number of slots around?
+</I>&gt;<i> 
+</I>&gt;<i> The normal way this problem is addressed in database systems of
+</I>&gt;<i> course is to use transactions. When the query is used, the full
+</I>&gt;<i> answer is effectively worked out and kept around. Any updates,
+</I>&gt;<i> inserts, or deletes do not affect the query results. The current
+</I>&gt;<i> OAI protocol then uses the resumptionToken to identify the query
+</I>&gt;<i> set. But at some stage, the query may be discarded. If the client
+</I>&gt;<i> has not got all the data yet, then it has to start again from
+</I>&gt;<i> scratch (unless the data is guaranteed to be returned in monotomically
+</I>&gt;<i> increasing date order - which its not at present I think).
+</I>&gt;<i> 
+</I>&gt;<i> Using the identifier of a record to remember the position in a
+</I>&gt;<i> result set is no good either. If that record is updated, it will
+</I>&gt;<i> move in the result set, messing things up again.
+</I>&gt;<i> 
+</I>&gt;<i> The only invariant that I can think of is the date stamp.
+</I>&gt;<i> If date/time stamps (to a high resolution) were used, and the
+</I>&gt;<i> results of ListRecords was in monotomically increasing order
+</I>&gt;<i> of time, then you actually no longer need resumptionToken at all.
+</I>&gt;<i> Instead, a new request can be specified with a precise 'from'
+</I>&gt;<i> value. That would make requests completely stateless. Deletions
+</I>&gt;<i> in history (due to an update) would not be a problem.
+</I>&gt;<i> 
+</I>&gt;<i> Ok, I will be quiet now and let someone with more history behind
+</I>&gt;<i> OAI and all its goals etc speak instead.
+</I>&gt;<i> 
+</I>&gt;<i> Alan
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000337.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+</A></li>
+	<LI> Next message: <A HREF="000339.html">FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#338">[ date ]</a>
+              <a href="thread.html#338">[ thread ]</a>
+              <a href="subject.html#338">[ subject ]</a>
+              <a href="author.html#338">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

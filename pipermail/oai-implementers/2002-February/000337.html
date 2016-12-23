@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ajk%40mds.rmit.edu.au">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000336.html">
+   <LINK REL="Next"  HREF="000338.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news
+   </H1>
+    <B>Alan Kent
+    </B> 
+    <A HREF="mailto:ajk%40mds.rmit.edu.au"
+       TITLE="FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta data Harvesting Version 2 news">ajk@mds.rmit.edu.au
+       </A><BR>
+    <I>Fri, 8 Feb 2002 14:53:56 +1100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000336.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta
+ data Harvesting Version 2 news
+</A></li>
+        <LI> Next message: <A HREF="000338.html">FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#337">[ date ]</a>
+              <a href="thread.html#337">[ thread ]</a>
+              <a href="subject.html#337">[ subject ]</a>
+              <a href="author.html#337">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Sorry if this is all old hat to other people, but I find getting involved
+is the best way to learn and understand. People can always ignore me! :-)
+
+On Thu, Feb 07, 2002 at 09:50:27PM -0500, Xiaoming Liu wrote:
+&gt;<i> --- Walter Underwood wrote:
+</I>&gt;<i> &gt; A request for all changes between two dates in the past should always get
+</I>&gt;<i> &gt; the same answer, so stateless harvesting should work.
+</I>&gt;<i> 
+</I>&gt;<i> This is a neat way, but I am now sure how well the past is kept in digital
+</I>&gt;<i> library ;-) Especially
+</I>&gt;<i> in OAI protocol, whenever a record is changed, its datestamp is changed
+</I>&gt;<i> too.  So even a request
+</I>&gt;<i> for past may not get the same answer.
+</I>
+and
+
+&gt;<i> Maybe there is one way to implement a stateless protocol in current OAI:
+</I>&gt;<i> encode query parameters in ResumptionToken:
+</I>...
+&gt;<i> one example is:
+</I>&gt;<i> resumptionToken= 1999:2000:math:oai_dc:100
+</I>
+I assume the 100 means start from record 100.
+
+So by your own argument, the contents of previous queries may change
+between requests. So the server *must* keep a copy of the state of the
+system when the original query was issued and continue to provide
+that consistently to the client. If the results are not consistent,
+data could be lost (overlooked) during a long transfer.
+
+Let me expand and ask a few questions (partly from my ignorance).
+Is it expected with OAI that new records will come into existance
+at a previous point in time? Or are all new records always added
+created with monotomically increasing date/time values? For example,
+if metadata is harvested from a web site, would the dates of the
+web pages be used? Or the date the data was harvested be used?
+If the date of the web page, then when a new site is crawled,
+new pages can come into existence dated in the past. If the date
+the metadata was collected from the web page, then dates increase
+monotomically.
+
+If new records are *not* created with monotomic dates, then OAI falls
+down doesn't it? Any one who has done a previous crawl may never crawl
+for that old date range again and so not get the data. So to be safe,
+dates must be monotomically increasing for metadata modified in the
+repository.
+
+If changes to the repository are then always given monotomically
+increasing dates, then history will never be added to. However,
+history can be lost if an old entry is updated (as it will be given
+a newer date). So if a cursor scheme is used which says 'give me
+records starting from 100' is used, then if a record that was in
+the range 1-99 is updated between requests, then what was record
+number 100 would slip back to become record number 99. The request
+starting from 100 would then miss that record.
+
+Or is the idea with OAI that if a record is updated, then the
+old slot is marked as 'deleted' and a new record added as 'inserted'
+to keep the same number of slots around?
+
+The normal way this problem is addressed in database systems of
+course is to use transactions. When the query is used, the full
+answer is effectively worked out and kept around. Any updates,
+inserts, or deletes do not affect the query results. The current
+OAI protocol then uses the resumptionToken to identify the query
+set. But at some stage, the query may be discarded. If the client
+has not got all the data yet, then it has to start again from
+scratch (unless the data is guaranteed to be returned in monotomically
+increasing date order - which its not at present I think).
+
+Using the identifier of a record to remember the position in a
+result set is no good either. If that record is updated, it will
+move in the result set, messing things up again.
+
+The only invariant that I can think of is the date stamp.
+If date/time stamps (to a high resolution) were used, and the
+results of ListRecords was in monotomically increasing order
+of time, then you actually no longer need resumptionToken at all.
+Instead, a new request can be specified with a precise 'from'
+value. That would make requests completely stateless. Deletions
+in history (due to an update) would not be a problem.
+
+Ok, I will be quiet now and let someone with more history behind
+OAI and all its goals etc speak instead.
+
+Alan
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000336.html">FW: [OAI-implementers] Open Archives Initiative Protocol for  Meta
+ data Harvesting Version 2 news
+</A></li>
+	<LI> Next message: <A HREF="000338.html">FW: [OAI-implementers] Open Archives Initiative Protocol for
+ Meta data Harvesting Version 2 news
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#337">[ date ]</a>
+              <a href="thread.html#337">[ thread ]</a>
+              <a href="subject.html#337">[ subject ]</a>
+              <a href="author.html#337">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

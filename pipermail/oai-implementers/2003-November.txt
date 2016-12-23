@@ -1,0 +1,1563 @@
+From jyoung@oclc.org  Mon Nov  3 14:24:43 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Mon, 3 Nov 2003 09:24:43 -0500
+Subject: [OAI-implementers] Possible ERRoL features
+Message-ID: <E5431CF93E29F9478878F623E5B9CE9806332552@oa3-server.oa.oclc.org>
+
+A few new ERRoL features occurred to me this morning. I'm curious what this
+group thinks about the possibilities.
+
+Start by assuming that I've changed the ERRoL base from http://purl.org/oai
+to http://errol.oclc.org.
+
+- Imagine a "Core ERRoL" of http://errol.oclc.org/<repositoryIdentifier>.
+This form would act as a gateway to the baseURL for that repository. In
+other words, you could attach OAI parameters to it and it will HTTP redirect
+them to the real repository. While this isn't as efficient as going there
+directly, it has the benefit of being intuitive. If you know the
+repositoryIdentifier, you don't need to track down the baseURL.
+- Imagine being able to get an RSS view of the repository by appending
+".rss" to this form (e.g. http://errol.org.oclc/<repositoryIdentifier>.rss).
+For example, I can imagine that this might be useful if I maintain an OAI
+repository of news releases or research project descriptions, etc. The
+mechanics of how to specify date ranges and sets, though, are fuzzy. Perhaps
+with cookies?
+- Imagine being able to append ".v10", "v11", or "v20" to have the
+repository responses translated from its native OAI version to the specified
+version. For example,
+http://errol.oclc.org/<repositoryIdentifier>.v20?verb=Identify for a
+repository that currently responses with OAI-PMH v11.
+
+What's great about such ERRoL services is that they would be available to
+any repository in the UIUC registry with absolutely no effort on their part.
+
+Thoughts?
+
+Jeff
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From jyoung@oclc.org  Mon Nov  3 19:19:03 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Mon, 3 Nov 2003 14:19:03 -0500
+Subject: [OAI-implementers] Clickable OAI BaseURLs!
+Message-ID: <E5431CF93E29F9478878F623E5B9CE9806332559@oa3-server.oa.oclc.org>
+
+(Warning! Currently, this has only been tested with Internet Explorer 6.0
+with the security settings for "Access data sources across domains" set to
+"enable" or "prompt".)
+Wouldn't it be nice if OAI baseURLs resolved to something more interesting
+than an XML "badVerb" error response (e.g.
+http://scholar.lib.vt.edu/theses/OAI2/)? Well, now they can! Here is an OAI
+repository baseURL to demonstrate:
+http://alcme.oclc.org/xmlregistry/OAIHandler.
+The best part is that any OAI repository can be made to work this way by
+merely including an XSL stylesheet reference in their OAI responses. Users
+of OAICat (including any DSpace installation) can configure their repository
+by adding the following lines to their oaicat.properties file: 
+OAIHandler.styleSheet=http://alcme.oclc.org/xmlregistry/baseURL.xsl
+OAIHandler.renderForOldBrowsers=false
+(Once the errol.oclc.org domain I mentioned in an earlier message has been
+established and I work out a few bugs, this stylesheet will be moved to
+http://errol.oclc.org/xmlregistry.oclc.org/cab/baseURL.xsl. Notice that this
+form of the URL is actually an Extended ERRoL (introduced at
+http://www.openarchives.org/pipermail/oai-implementers/2003-October/001087.h
+tml). This Extended ERRoL can be used to refer to the stylesheet from an
+instance document as though it was a static document, when in fact it is
+being transparently ripped out of an OAI GetRecord response.) 
+Other providers of OAI repository software can provide the same clickable
+baseURL user interface by merely including a reference to this stylesheet in
+their OAI responses. I also recommend that they have their code insert a
+<description><toolkit> element, designed by Hussein Suleman, to their
+Identify responses so that their software branding information will appear
+in place of the OAICat brand in the demo display. Also include the standard
+repository oai_branding elements in the Identify response to have them
+appear in the display as well. (BTW, major work needs to be done to make the
+Identify response frame in particular more attractive. It's on my list.)
+Let me go back to Extended ERRoLs for a minute. Imagine I want to include a
+citation in a paper I'm writing that refers to a document I found in an OAI
+repository. Here is the ERRoL I could use:
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052
+1555132 . If I want to refer to the document itself, I could add the POI
+extension:
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052
+1555132?POI, which would resolve to the first usable dc:identifier in the
+oai_dc record. But again, keep in mind that the
+http://alcme.oclc.org/errol/ERRoLResolver portion will become
+http://errol.oclc.org/ as soon as our systems people create and configure
+the new domain.)
+Looking a little closer at the user interface for this last example, you
+will notice the frame at the bottom left for this item in OSU's OSCAR
+catalog. It was able to do this because of the ISBN it scraped from the
+GetRecord response. If an ISBN isn't found, the list of available ERRoLs
+will be displayed in its place. If you get the OPAC screen, but want to see
+the list of ERRoLs, there is a button for it in the Identify frame. 
+Right now, the display is hardcoded to use the OSU catalog, but I will be
+working to make this configurable to other libraries soon. BTW, the list of
+libraries that will be supported is an OAI repository itself. This feature
+is a minor variation of an earlier project I worked on located here:
+<http://alcme.oclc.org/bookmarks/>. What's also cool about this is that it
+is based on the FRBR work done by OCLC's Chief Scientist Thom Hickey so that
+it will include other ISBNs for the same "work" when it does the search.
+Once this is configurable, you can contact me to have your favorite library
+added to the list. 
+Another feature is the ability for repositories to add service buttons in
+the Identify pane that operate within the interface by including
+<description><service> entries in the Identify response. For example, notice
+the search button in the Identify frame of the display. 
+I mentioned a new feature of ERRoLs this morning so that you can use a
+repository level ERRoL (i.e. an ERRoL containing an explicit repository
+identifier without an item identifier) as a replacement for an OAI baseURL.
+This includes the ability to append OAI-PMH parameters. So, instead of
+baseURL http://alcme.oclc.org/xmlregistry/OAIHandler, I can use
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org instead.
+(Keep reminding yourselves that this URL will be much shorter when the
+errol.oclc.org domain is established.) Not only are these repository level
+ERRoLs shorter than most official baseURLs, but they are also much more
+intuitive and convenient, especially when you want to bring up the clickable
+baseURL user interface introduced here. Also remember that the ERRoL
+alternative to the official baseURL feature will automatically work for any
+repository identifier registered at UIUC.
+Although the user interface is done with nothing more than an XSL
+stylesheet, I request that people contact me to have features added rather
+than copy it and make their own changes for awhile. This whole thing came to
+me in a flash, so I still have lots of ideas for improvements, not to
+mention cleaning up the messy bits from my rush to make this available. 
+I look forward to your comments and suggestions. 
+Enjoy!. 
+Jeff
+
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From jyoung@oclc.org  Mon Nov  3 19:33:08 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Mon, 3 Nov 2003 14:33:08 -0500
+Subject: [OAI-implementers] Clickable OAI BaseURLs!
+Message-ID: <E5431CF93E29F9478878F623E5B9CE980633255A@oa3-server.oa.oclc.org>
+
+Sorry for the formatting. Let me try again:
+
+(Warning! Currently, this has only been tested with Internet Explorer 6.0
+with the security settings for "Access data sources across domains" set to
+"enable" or "prompt".)
+
+Wouldn't it be nice if OAI baseURLs resolved to something more interesting
+than an XML "badVerb" error response (e.g.
+http://scholar.lib.vt.edu/theses/OAI2/)? Well, now they can! Here is an OAI
+repository baseURL to demonstrate:
+http://alcme.oclc.org/xmlregistry/OAIHandler.
+
+The best part is that any OAI repository can be made to work this way by
+merely including an XSL stylesheet reference in their OAI responses. Users
+of OAICat (including any DSpace installation) can configure their repository
+by adding the following lines to their oaicat.properties file: 
+
+OAIHandler.styleSheet=http://alcme.oclc.org/xmlregistry/baseURL.xsl
+OAIHandler.renderForOldBrowsers=false
+
+(Once the errol.oclc.org domain I mentioned in an earlier message has been
+established and I work out a few bugs, this stylesheet will be moved to
+http://errol.oclc.org/xmlregistry.oclc.org/cab/baseURL.xsl. Notice that this
+form of the URL is actually an Extended ERRoL (introduced at
+http://www.openarchives.org/pipermail/oai-implementers/2003-October/001087.h
+tml). This Extended ERRoL can be used to refer to the stylesheet from an
+instance document as though it was a static document, when in fact it is
+being transparently ripped out of an OAI GetRecord response.) 
+
+Other providers of OAI repository software can provide the same clickable
+baseURL user interface by merely including a reference to this stylesheet in
+their OAI responses. I also recommend that they have their code insert a
+<description><toolkit> element, designed by Hussein Suleman, to their
+Identify responses so that their software branding information will appear
+in place of the OAICat brand in the demo display. Also include the standard
+repository oai_branding elements in the Identify response to have them
+appear in the display as well. (BTW, major work needs to be done to make the
+Identify response frame in particular more attractive. It's on my list.)
+
+Let me go back to Extended ERRoLs for a minute. Imagine I want to include a
+citation in a paper I'm writing that refers to a document I found in an OAI
+repository. Here is the ERRoL I could use:
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052
+1555132 . If I want to refer to the document itself, I could add the POI
+extension:
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org/demo/ISBN/052
+1555132?POI, which would resolve to the first usable dc:identifier in the
+oai_dc record. But again, keep in mind that the
+http://alcme.oclc.org/errol/ERRoLResolver portion will become
+http://errol.oclc.org/ as soon as our systems people create and configure
+the new domain.)
+
+Looking a little closer at the user interface for this last example, you
+will notice the frame at the bottom left for this item in OSU's OSCAR
+catalog. It was able to do this because of the ISBN it scraped from the
+GetRecord response. If an ISBN isn't found, the list of available ERRoLs
+will be displayed in its place. If you get the OPAC screen, but want to see
+the list of ERRoLs, there is a button for it in the Identify frame. 
+
+Right now, the display is hardcoded to use the OSU catalog, but I will be
+working to make this configurable to other libraries soon. BTW, the list of
+libraries that will be supported is an OAI repository itself. This feature
+is a minor variation of an earlier project I worked on located here:
+<http://alcme.oclc.org/bookmarks/>. What's also cool about this is that it
+is based on the FRBR work done by OCLC's Chief Scientist Thom Hickey so that
+it will include other ISBNs for the same "work" when it does the search.
+Once this is configurable, you can contact me to have your favorite library
+added to the list. 
+
+Another feature is the ability for repositories to add service buttons in
+the Identify pane that operate within the interface by including
+<description><service> entries in the Identify response. For example, notice
+the search button in the Identify frame of the display. 
+
+I mentioned a new feature of ERRoLs this morning so that you can use a
+repository level ERRoL (i.e. an ERRoL containing an explicit repository
+identifier without an item identifier) as a replacement for an OAI baseURL.
+This includes the ability to append OAI-PMH parameters. So, instead of
+baseURL http://alcme.oclc.org/xmlregistry/OAIHandler, I can use
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org instead.
+(Keep reminding yourselves that this URL will be much shorter when the
+errol.oclc.org domain is established.) Not only are these repository level
+ERRoLs shorter than most official baseURLs, but they are also much more
+intuitive and convenient, especially when you want to bring up the clickable
+baseURL user interface introduced here. Also remember that the ERRoL
+alternative to the official baseURL feature will automatically work for any
+repository identifier registered at UIUC.
+
+Although the user interface is done with nothing more than an XSL
+stylesheet, I request that people contact me to have features added rather
+than copy it and make their own changes for awhile. This whole thing came to
+me in a flash, so I still have lots of ideas for improvements, not to
+mention cleaning up the messy bits from my rush to make this available. 
+
+I look forward to your comments and suggestions. 
+
+Enjoy!. 
+
+Jeff
+
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+From tmwhite@merit.edu  Mon Nov  3 19:49:38 2003
+From: tmwhite@merit.edu (Todd White)
+Date: Mon, 3 Nov 2003 14:49:38 -0500 (EST)
+Subject: [OAI-implementers] character vs entity references
+Message-ID: <Pine.GSO.4.10.10311031440540.20693-100000@outtolunch.merit.edu>
+
+in the OAI-PMH 2.0 document:
+http://www.openarchives.org/OAI/openarchivesprotocol.html
+
+...under "3.2. XML Response Format," it reads:
+
+"Character references, rather than entity references, must be used."
+
+i'm assuming that this means, for example, that the n-tilde (ene) should
+be expressed with  &#241;  instead of  &ntilde;  
+
+is this correct?  is the first the character reference and the latter the
+entity reference?
+
+i've been struggling as of late with the issue of character encodings (the
+verifier always chokes on records like the one we have with an n-tilde
+(ene) in the title).  i'm now assuming that i should just serve these
+records with the numeric entity code (as in &#241; for n-tilde).
+
+can anyone confirm this?
+
+
+Todd M. White 
+Systems Research Programmer
+734.647.8649 (direct) ~~~ http://www.merit.edu/~tmwhite/
+
+Merit Network, Inc.
+4251 Plymouth Road, Suite 2000, Ann Arbor, MI  48105-2785
+734.764.9430 (general) ~~~ 734.647.3745 (fax)
+http://www.merit.edu/
+
+Avoid people who say they know the answer.
+Keep the company of people who are trying to understand the question.
+
+
+From hussein@cs.uct.ac.za  Tue Nov  4 05:56:20 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Tue, 04 Nov 2003 07:56:20 +0200
+Subject: [OAI-implementers] character vs entity references
+In-Reply-To: <Pine.GSO.4.10.10311031440540.20693-100000@outtolunch.merit.edu>
+References: <Pine.GSO.4.10.10311031440540.20693-100000@outtolunch.merit.edu>
+Message-ID: <3FA73F84.3060604@cs.uct.ac.za>
+
+hi Todd
+
+you are correct - a character reference is meant to be the numeric 
+version rather than textual.
+
+and the validation problem you have experienced is precisely why OAI 
+requires the use of numeric references - so that your XML is 
+self-contained and does not import any external entity definition files.
+
+if all you have are Latin-1 entities, it isn't too difficult to convert 
+them to numeric equivalents in a pre-processing stage. some of the 
+templates on the OAI website already have support for this (like the 
+VTOAI Perl package)
+
+ttfn,
+----hussein
+
+
+Todd White wrote:
+
+> in the OAI-PMH 2.0 document:
+> http://www.openarchives.org/OAI/openarchivesprotocol.html
+> 
+> ...under "3.2. XML Response Format," it reads:
+> 
+> "Character references, rather than entity references, must be used."
+> 
+> i'm assuming that this means, for example, that the n-tilde (ene) should
+> be expressed with  &#241;  instead of  &ntilde;  
+> 
+> is this correct?  is the first the character reference and the latter the
+> entity reference?
+> 
+> i've been struggling as of late with the issue of character encodings (the
+> verifier always chokes on records like the one we have with an n-tilde
+> (ene) in the title).  i'm now assuming that i should just serve these
+> records with the numeric entity code (as in &#241; for n-tilde).
+> 
+> can anyone confirm this?
+> 
+> 
+> Todd M. White 
+> Systems Research Programmer
+> 734.647.8649 (direct) ~~~ http://www.merit.edu/~tmwhite/
+> 
+> Merit Network, Inc.
+> 4251 Plymouth Road, Suite 2000, Ann Arbor, MI  48105-2785
+> 734.764.9430 (general) ~~~ 734.647.3745 (fax)
+> http://www.merit.edu/
+> 
+> Avoid people who say they know the answer.
+> Keep the company of people who are trying to understand the question.
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From tmwhite@merit.edu  Tue Nov  4 14:58:55 2003
+From: tmwhite@merit.edu (Todd White)
+Date: Tue, 4 Nov 2003 09:58:55 -0500 (EST)
+Subject: [OAI-implementers] character vs entity references
+In-Reply-To: <3FA73F84.3060604@cs.uct.ac.za>
+Message-ID: <Pine.GSO.4.10.10311040957220.569-100000@outtolunch.merit.edu>
+
+in Perl 5.6.1, can anyone tell me why the following well-documented
+transliteration produces the error that follows?
+
+$string =~ tr/\0-\x{ff}//UC;
+
+
+ERROR:
+Bareword found where operator expected at test.pl line 14, near
+"tr/\0-\x{ff}//UC"
+
+
+
+On Tue, 4 Nov 2003, Hussein Suleman wrote:
+
+> hi Todd
+> 
+> you are correct - a character reference is meant to be the numeric 
+> version rather than textual.
+> 
+> and the validation problem you have experienced is precisely why OAI 
+> requires the use of numeric references - so that your XML is 
+> self-contained and does not import any external entity definition files.
+> 
+> if all you have are Latin-1 entities, it isn't too difficult to convert 
+> them to numeric equivalents in a pre-processing stage. some of the 
+> templates on the OAI website already have support for this (like the 
+> VTOAI Perl package)
+> 
+> ttfn,
+> ----hussein
+> 
+> 
+> Todd White wrote:
+> 
+> > in the OAI-PMH 2.0 document:
+> > http://www.openarchives.org/OAI/openarchivesprotocol.html
+> > 
+> > ...under "3.2. XML Response Format," it reads:
+> > 
+> > "Character references, rather than entity references, must be used."
+> > 
+> > i'm assuming that this means, for example, that the n-tilde (ene) should
+> > be expressed with  &#241;  instead of  &ntilde;  
+> > 
+> > is this correct?  is the first the character reference and the latter the
+> > entity reference?
+> > 
+> > i've been struggling as of late with the issue of character encodings (the
+> > verifier always chokes on records like the one we have with an n-tilde
+> > (ene) in the title).  i'm now assuming that i should just serve these
+> > records with the numeric entity code (as in &#241; for n-tilde).
+> > 
+> > can anyone confirm this?
+> > 
+> > 
+> > Todd M. White 
+> > Systems Research Programmer
+> > 734.647.8649 (direct) ~~~ http://www.merit.edu/~tmwhite/
+> > 
+> > Merit Network, Inc.
+> > 4251 Plymouth Road, Suite 2000, Ann Arbor, MI  48105-2785
+> > 734.764.9430 (general) ~~~ 734.647.3745 (fax)
+> > http://www.merit.edu/
+> > 
+> > Avoid people who say they know the answer.
+> > Keep the company of people who are trying to understand the question.
+> > 
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > 
+> 
+> -- 
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+> 
+
+
+From ehs@pobox.com  Tue Nov  4 16:44:48 2003
+From: ehs@pobox.com (Ed Summers)
+Date: Tue, 4 Nov 2003 10:44:48 -0600
+Subject: [OAI-implementers] character vs entity references
+In-Reply-To: <Pine.GSO.4.10.10311040957220.569-100000@outtolunch.merit.edu>
+References: <3FA73F84.3060604@cs.uct.ac.za> <Pine.GSO.4.10.10311040957220.569-100000@outtolunch.merit.edu>
+Message-ID: <20031104164448.GB15056@ink.inkdroid.org>
+
+On Tue, Nov 04, 2003 at 09:58:55AM -0500, Todd White wrote:
+> $string =~ tr/\0-\x{ff}//UC;
+
+Search for tr/ in the following pages for some fun Perl archaeology. 
+
+    http://www.perldoc.com/perl5.005_03/pod/perlop.html
+    http://www.perldoc.com/perl5.6.0/pod/perlop.html
+    http://www.perldoc.com/perl5.6.1/pod/perlop.html
+
+You can see the UC modifiers were introduced in 5.6.0 and quickly 
+dropped in 5.6.1 (and in versions thereafter). 5.6.0 is a notoriously
+buggy release, I think in part because of it's UTF8 handling. These
+problems have been fixed in versions >= 5.8.0, which is the first
+recommended release of Perl for safely working with UTF8.
+
+Funny, I always thought Perl held backwards compatability sacrosanct...
+not including Perl6 of course :) 
+
+You might be interested in this list for Perl library folks: 
+http://perl4lib.perl.org for discussion of Perl esoterica and more.
+
+//Ed
+
+From tmwhite@merit.edu  Wed Nov  5 13:37:09 2003
+From: tmwhite@merit.edu (Todd White)
+Date: Wed, 5 Nov 2003 08:37:09 -0500 (EST)
+Subject: [OAI-implementers] character vs entity references
+In-Reply-To: <20031104164448.GB15056@ink.inkdroid.org>
+Message-ID: <Pine.GSO.4.10.10311050831060.10052-100000@outtolunch.merit.edu>
+
+since i've been "bugging" the list with my recent questions about
+character encoding, i thought i would share the current solution that i've
+implemented in our OAI repository.  it's one line and i added it to a
+function that i had already implemented for processing all data as it
+passes from database to XML...
+
+ $str =~ s/([^ -~])/'&#' . ord($1) . ';'/eg;
+
+this looks for any characters outside of the range from [space] to [tilde]
+and transforms each to its proper character reference.  for example, if an
+n-tilde is encountered, it is transformed into &#241;
+
+
+thanks for the help many of you provided!
+
+
+On Tue, 4 Nov 2003, Ed Summers wrote:
+
+> On Tue, Nov 04, 2003 at 09:58:55AM -0500, Todd White wrote:
+> > $string =~ tr/\0-\x{ff}//UC;
+> 
+> Search for tr/ in the following pages for some fun Perl archaeology. 
+> 
+>     http://www.perldoc.com/perl5.005_03/pod/perlop.html
+>     http://www.perldoc.com/perl5.6.0/pod/perlop.html
+>     http://www.perldoc.com/perl5.6.1/pod/perlop.html
+> 
+> You can see the UC modifiers were introduced in 5.6.0 and quickly 
+> dropped in 5.6.1 (and in versions thereafter). 5.6.0 is a notoriously
+> buggy release, I think in part because of it's UTF8 handling. These
+> problems have been fixed in versions >= 5.8.0, which is the first
+> recommended release of Perl for safely working with UTF8.
+> 
+> Funny, I always thought Perl held backwards compatability sacrosanct...
+> not including Perl6 of course :) 
+> 
+> You might be interested in this list for Perl library folks: 
+> http://perl4lib.perl.org for discussion of Perl esoterica and more.
+> 
+> //Ed
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+> 
+
+
+From thabing@uiuc.edu  Wed Nov  5 16:16:51 2003
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Wed, 05 Nov 2003 10:16:51 -0600
+Subject: [OAI-implementers] RSS Feed Form the UIUC OAI Registry
+Message-ID: <3FA92273.9060001@uiuc.edu>
+
+Hi all,
+
+I've just added an RDF Site Summary (RSS) feed to the OAI registry at UIUC. 
+  The URL for the RSS feed is http://gita.grainger.uiuc.edu/registry/rss.asp 
+This may be useful for people who are trying to keep track of the latest and 
+greatest OAI providers.  The RSS feed will list the 10 most recently added 
+or modified repositories.  This is something I just threw together without 
+knowing too much about RSS, so if anyone discovers any problems please let 
+me know.
+
+Last night I also ran my gOAIglePop script.  This script programatically 
+does some Google searches, looking for OAI repositories.  If it finds a URL 
+which appears to be an OAI repository it issues an Identify request.  If it 
+gets a valid response, its found a repository.  The results of the script 
+run can be found at http://gita.grainger.uiuc.edu/registry/gOAIgle.xml The 
+latest run found three previously unknown repositories (at least to the 
+registry).  If anyone is interested, the best Google query I've found for 
+finding OAI repositories is 'allinurl:verb=Identify'.  Type this into the 
+Google query textbox and press Search.
+
+Comments are welcome and enjoy...
+
+-- 
+Thomas Habing
+Research Programmer, Digital Library Projects
+University of Illinois at Urbana-Champaign
+155 Grainger Engineering Library Information Center, MC-274
+thabing@uiuc.edu, (217) 244-4425
+http://dli.grainger.uiuc.edu
+
+
+From tdb01r@ecs.soton.ac.uk  Wed Nov  5 17:04:39 2003
+From: tdb01r@ecs.soton.ac.uk (Tim Brody)
+Date: Wed, 5 Nov 2003 17:04:39 -0000
+Subject: [OAI-implementers] character vs entity references
+References: <Pine.GSO.4.10.10311050831060.10052-100000@outtolunch.merit.edu>
+Message-ID: <097e01c3a3be$e60002e0$14414e98@Shrek>
+
+----- Original Message ----- 
+From: "Todd White" <tmwhite@merit.edu>
+
+
+> since i've been "bugging" the list with my recent questions about
+> character encoding, i thought i would share the current solution that i've
+> implemented in our OAI repository.  it's one line and i added it to a
+> function that i had already implemented for processing all data as it
+> passes from database to XML...
+>
+>  $str =~ s/([^ -~])/'&#' . ord($1) . ';'/eg;
+>
+> this looks for any characters outside of the range from [space] to [tilde]
+> and transforms each to its proper character reference.  for example, if an
+> n-tilde is encountered, it is transformed into &#241;
+
+AFAIK a character reference is a reference into the Unicode character set,
+so its invalid whether its in &#xx; form, utf-8, utf16 or whatever.
+
+You should either remove the characters or convert the character to its
+nearest equivalent in Unicode (for control characters there probably isn't
+one).
+
+e.g.
+use XML::Parser;
+while(<>) {
+s/([^ -~])/'&#' . ord($1) . ';'/eg;
+print $_, "\n";
+eval { XML::Parser->new->parse("<root>$_</root>"); };
+print $@ if $@;
+}
+
+Creates errors if you input formfeed (CTRL+L).
+
+All the best,
+Tim.
+
+> On Tue, 4 Nov 2003, Ed Summers wrote:
+>
+> > On Tue, Nov 04, 2003 at 09:58:55AM -0500, Todd White wrote:
+> > > $string =~ tr/\0-\x{ff}//UC;
+> >
+> > Search for tr/ in the following pages for some fun Perl archaeology.
+> >
+> >     http://www.perldoc.com/perl5.005_03/pod/perlop.html
+> >     http://www.perldoc.com/perl5.6.0/pod/perlop.html
+> >     http://www.perldoc.com/perl5.6.1/pod/perlop.html
+> >
+> > You can see the UC modifiers were introduced in 5.6.0 and quickly
+> > dropped in 5.6.1 (and in versions thereafter). 5.6.0 is a notoriously
+> > buggy release, I think in part because of it's UTF8 handling. These
+> > problems have been fixed in versions >= 5.8.0, which is the first
+> > recommended release of Perl for safely working with UTF8.
+> >
+> > Funny, I always thought Perl held backwards compatability sacrosanct...
+> > not including Perl6 of course :)
+> >
+> > You might be interested in this list for Perl library folks:
+> > http://perl4lib.perl.org for discussion of Perl esoterica and more.
+> >
+> > //Ed
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> >
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>
+
+
+From stamer@uni-oldenburg.de  Wed Nov  5 18:09:11 2003
+From: stamer@uni-oldenburg.de (Heinrich Stamerjohanns)
+Date: Wed, 5 Nov 2003 19:09:11 +0100 (CET)
+Subject: [OAI-implementers] character vs entity references
+In-Reply-To: <097e01c3a3be$e60002e0$14414e98@Shrek>
+References: <Pine.GSO.4.10.10311050831060.10052-100000@outtolunch.merit.edu>
+ <097e01c3a3be$e60002e0$14414e98@Shrek>
+Message-ID: <Pine.LNX.4.53.0311051855190.27393@alexandria.physik.uni-oldenburg.de>
+
+On Wed, 5 Nov 2003, Tim Brody wrote:
+
+> AFAIK a character reference is a reference into the Unicode character set,
+> so its invalid whether its in &#xx; form, utf-8, utf16 or whatever.
+>
+I do not know what you exactly mean by that, but "&#241;" is certainly a
+correct character reference. The byte presentation of characters
+above 127 is just different (ISO-8859-1:1 byte, UTF-8:more bytes),
+but the character-reference &#241 represents the same character in
+XML(iso-8859-1) and XML(UTF-8).
+
+> You should either remove the characters or convert the character to its
+> nearest equivalent in Unicode (for control characters there probably isn't
+> one).
+
+I remove invalid characters with this (PHP code with perlregex):
+// just remove invalid control characters
+$pattern ="/[\x-\x8\xb-\xc\xe-\x1f]/";
+$string = preg_replace($pattern,'',$string);
+
+Heinrich
+
+> e.g.
+> use XML::Parser;
+> while(<>) {
+> s/([^ -~])/'&#' . ord($1) . ';'/eg;
+> print $_, "\n";
+> eval { XML::Parser->new->parse("<root>$_</root>"); };
+> print $@ if $@;
+> }
+>
+> Creates errors if you input formfeed (CTRL+L).
+>
+> All the best,
+> Tim.
+>
+> > On Tue, 4 Nov 2003, Ed Summers wrote:
+> >
+> > > On Tue, Nov 04, 2003 at 09:58:55AM -0500, Todd White wrote:
+> > > > $string =~ tr/\0-\x{ff}//UC;
+> > >
+> > > Search for tr/ in the following pages for some fun Perl archaeology.
+> > >
+> > >     http://www.perldoc.com/perl5.005_03/pod/perlop.html
+> > >     http://www.perldoc.com/perl5.6.0/pod/perlop.html
+> > >     http://www.perldoc.com/perl5.6.1/pod/perlop.html
+> > >
+> > > You can see the UC modifiers were introduced in 5.6.0 and quickly
+> > > dropped in 5.6.1 (and in versions thereafter). 5.6.0 is a notoriously
+> > > buggy release, I think in part because of it's UTF8 handling. These
+> > > problems have been fixed in versions >= 5.8.0, which is the first
+> > > recommended release of Perl for safely working with UTF8.
+> > >
+> > > Funny, I always thought Perl held backwards compatability sacrosanct...
+> > > not including Perl6 of course :)
+> > >
+> > > You might be interested in this list for Perl library folks:
+> > > http://perl4lib.perl.org for discussion of Perl esoterica and more.
+> > >
+> > > //Ed
+> > > _______________________________________________
+> > > OAI-implementers mailing list
+> > > List information, archives, preferences and to unsubscribe:
+> > > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > >
+> > >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>
+>
+>
+
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  stamer@uni-oldenburg.de
+  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+
+
+From thabing@uiuc.edu  Wed Nov  5 18:30:52 2003
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Wed, 05 Nov 2003 12:30:52 -0600
+Subject: [OAI-implementers] character vs entity references
+In-Reply-To: <Pine.LNX.4.53.0311051855190.27393@alexandria.physik.uni-oldenburg.de>
+References: <Pine.GSO.4.10.10311050831060.10052-100000@outtolunch.merit.edu> <097e01c3a3be$e60002e0$14414e98@Shrek> <Pine.LNX.4.53.0311051855190.27393@alexandria.physik.uni-oldenburg.de>
+Message-ID: <3FA941DC.2050903@uiuc.edu>
+
+Heinrich Stamerjohanns wrote:
+
+> On Wed, 5 Nov 2003, Tim Brody wrote:
+> 
+> 
+>>AFAIK a character reference is a reference into the Unicode character set,
+>>so its invalid whether its in &#xx; form, utf-8, utf16 or whatever.
+>>
+> 
+> I do not know what you exactly mean by that, but "&#241;" is certainly a
+> correct character reference. The byte presentation of characters
+> above 127 is just different (ISO-8859-1:1 byte, UTF-8:more bytes),
+> but the character-reference &#241 represents the same character in
+> XML(iso-8859-1) and XML(UTF-8).
+> 
+> 
+>>You should either remove the characters or convert the character to its
+>>nearest equivalent in Unicode (for control characters there probably isn't
+>>one).
+> 
+> 
+> I remove invalid characters with this (PHP code with perlregex):
+> // just remove invalid control characters
+> $pattern ="/[\x-\x8\xb-\xc\xe-\x1f]/";
+> $string = preg_replace($pattern,'',$string);
+> 
+> Heinrich
+> 
+> 
+
+You need to be careful of characters in the x7F-x9F range.  In Unicode these 
+are all control characters and are forbidden in XML 1.0.  But in many 
+charsets these points are occupied by printable characters, such as in the 
+Windows:Western charset where, for example, x8A is the S with caron, but in 
+  Unicode this needs to be converted to x160.  If you just took this 
+character and turned it into entity &#x8A; the resulting XML would not be valid.
+
+-- 
+Thomas Habing
+Research Programmer, Digital Library Projects
+University of Illinois at Urbana-Champaign
+155 Grainger Engineering Library Information Center, MC-274
+thabing@uiuc.edu, (217) 244-4425
+http://dli.grainger.uiuc.edu
+
+
+From thabing@uiuc.edu  Fri Nov  7 18:05:47 2003
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Fri, 07 Nov 2003 12:05:47 -0600
+Subject: [OAI-implementers] character vs entity references
+In-Reply-To: <3FA941DC.2050903@uiuc.edu>
+References: <Pine.GSO.4.10.10311050831060.10052-100000@outtolunch.merit.edu> <097e01c3a3be$e60002e0$14414e98@Shrek> <Pine.LNX.4.53.0311051855190.27393@alexandria.physik.uni-oldenburg.de> <3FA941DC.2050903@uiuc.edu>
+Message-ID: <3FABDEFB.9090501@uiuc.edu>
+
+Thomas G. Habing wrote:
+
+
+> 
+> You need to be careful of characters in the x7F-x9F range.  In Unicode 
+> these are all control characters and are forbidden in XML 1.0.  But in 
+> many charsets these points are occupied by printable characters, such as 
+> in the Windows:Western charset where, for example, x8A is the S with 
+> caron, but in  Unicode this needs to be converted to x160.  If you just 
+> took this character and turned it into entity &#x8A; the resulting XML 
+> would not be valid.
+> 
+
+Hi all,
+
+I need to amend this slightly.  Characters in the range x7F-x9F are legal in 
+XML 1.0 and a compliant parser shouldn't complain about them (although I am 
+pretty certain that some earlier XML parsers did complain about characters 
+in this range).  In any case, you still need to be careful with these 
+characters if you are converting from one of the Windows character sets.  A 
+good description of the issue can be found at 
+http://www.w3.org/International/questions/qa-controls.html.  Note that XML 
+1.1 treats control characters somewhat differently than 1.0 in that it 
+allows them but they can only be represented as Numeric Character References.
+
+Regards,
+	Tom
+-- 
+Thomas Habing
+Research Programmer, Digital Library Projects
+University of Illinois at Urbana-Champaign
+155 Grainger Engineering Library Information Center, MC-274
+thabing@uiuc.edu, (217) 244-4425
+http://dli.grainger.uiuc.edu
+
+
+From jyoung@oclc.org  Fri Nov  7 21:20:50 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Fri, 7 Nov 2003 16:20:50 -0500
+Subject: [OAI-implementers] A OAI repository viewer for everyone
+Message-ID: <E5431CF93E29F9478878F623E5B9CE9806332592@oa3-server.oa.oclc.org>
+
+Any OAI-PMH v2.0 repository in the OAI repository in the UIUC OAI registry
+can now be navigated from an HTML interface (support for older repositories
+is coming.)
+
+Select your repository from the list here to try it (but note that some
+repositories may not be responding currently).
+
+http://alcme.oclc.org/errol/
+
+
+If your favorite repository is responding too slowly, try one of the
+following:
+
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org.html
+http://alcme.oclc.org/errol/ERRoLResolver/xtcat.oclc.org.html
+http://alcme.oclc.org/errol/ERRoLResolver/ndltd.oclc.org.html
+
+It needs a lot of work on aesthetics, but the basic functionality is there.
+
+Comments and suggestions are welcome.
+
+Jeff
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From francois@fsconsult.com  Sat Nov  8 12:43:33 2003
+From: francois@fsconsult.com (Fran=?ISO-8859-1?B?5w==?=ois Schiettecatte)
+Date: Sat, 08 Nov 2003 07:43:33 -0500
+Subject: [OAI-implementers] My.OAI searches
+In-Reply-To: <3FA92273.9060001@uiuc.edu>
+Message-ID: <BBD24F25.12E7E%francois@fsconsult.com>
+
+Hi
+
+I have been seeing more and more searches coming into my.OAI (
+http://www.myoai.com ).
+
+The unfortunate thing is that a lot of those searches are coming in
+incorrectly formatted so no results are returned.
+
+The searches look like this: "Petzold A [au]" or "Hastings Cent Rep [TA] AND
+14 [VI] AND 4 [IP]", some kind of variant on PubMed syntax and I would guess
+that they are produced by some sort of automatic query formulator.
+
+I am not sure where these searches are coming from, I would need to dig into
+the logs for that, but I first wanted to put out a message and let that
+person know that I am more than happy to help them produce correct searches.
+
+
+Cheers
+
+François
+
+--
+========================================================================
+François Schiettecatte                               FS Consulting, LLC.
+Phone : (978) 594-5089                  35 Washington Square North, # 2,
+Cell  : (617) 909-2504                                  Salem, MA, 01970
+Email : francois@fsconsult.com           URL : http://www.fsconsult.com/
+========================================================================
+
+
+
+From jyoung@oclc.org  Mon Nov 10 21:00:17 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Mon, 10 Nov 2003 16:00:17 -0500
+Subject: [OAI-implementers] Improved OAI Viewer
+Message-ID: <E5431CF93E29F9478878F623E5B9CE980633259E@oa3-server.oa.oclc.org>
+
+The OAI Viewer service is starting to look more usable. The frames are gone
+and the layout is easier on the eye. 
+
+Access to supported repositories is available from
+http://alcme.oclc.org/errol/.
+
+If you have trouble finding a repository in the list that responds in a
+timely way, try these:
+
+http://alcme.oclc.org/errol/ERRoLResolver/xtcat.oclc.org.html
+http://alcme.oclc.org/errol/ERRoLResolver/ndltd.oclc.org.html
+http://alcme.oclc.org/errol/ERRoLResolver/xmlregistry.oclc.org.html
+
+Or use an Extended ERRoL for any other repository in the UIUC registry with
+a repository identifier assigned:
+
+"http://alcme.oclc.org/errol/ERRoLResolver/" + <repositoryIdentifier> +
+".html"
+
+In theory, OAI Viewer should work with any OAI repository in the UIUC
+registry, but there are various limitations that I'm working to resolve.
+Here is the current list of known problems:
+
+*	It only works for OAI-PMH v2.0 repositories
+*	Many of the repositories in the list are either slow as molasses or
+don't respond at all.
+*	Only repositories on port 80 can be accessed.
+*	OAI Viewer only works properly with Internet Explorer.
+*	I need to add caching because right now every request back to the
+OAI Viewer server issues a complete set of OAI requests to the home
+repository, which is very wasteful.
+
+Here are some tips:
+*	Include an oai-branding description element in your repository's
+Identify respond to have it appear in the display next to the repository
+name (http://www.openarchives.org/OAI/2.0/guidelines-branding.htm).
+*	Don't include an <xml-stylesheet> reference in your OAI responds.
+This is contrary to my earlier suggestions, but now that OAI Viewer is
+freely available to navigate an OAI repository, it is no longer necessary.
+In fact, it is a disadvantage because there are hotlinks in the OAI Viewer
+screen back to the home repository for each of the OAI verbs and it's
+helpful for debugging purposes to see the raw OAI XML when you click on
+these links.
+
+There is a long list of future enhancements on my To-Do list. In particular,
+I want to make it easy for repositories and users to customize the display
+and list of available services in various ways. If you have ideas of your
+own, let me know.
+
+Jeff
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From kraemert@smail.uni-koeln.de  Tue Nov 11 17:58:17 2003
+From: kraemert@smail.uni-koeln.de (=?ISO-8859-1?Q?Thomas_Kr=E4mer?=)
+Date: Tue, 11 Nov 2003 18:58:17 +0100
+Subject: [OAI-implementers] Latent semantic Indexing
+Message-ID: <3FB12339.20900@smail.uni-koeln.de>
+
+Hello all,
+
+now that the topic is clustering methods: has there been any effort in 
+implementing Latent semantic indexing in Lucene? Google only indicates 
+someone else asking this in february.
+Is there an overview of the structure of the index of lucene despite of 
+the javadoc or any other fast access to understanding what happens 
+inside lucene?
+
+regards
+
+thomas
+
+
+
+From deridder@aztec.lib.utk.edu  Thu Nov 13 19:46:33 2003
+From: deridder@aztec.lib.utk.edu (Jody DeRidder)
+Date: Thu, 13 Nov 2003 14:46:33 -0500 (EST)
+Subject: [OAI-implementers] complete file redo in repository
+Message-ID: <3739.160.36.192.134.1068752793.squirrel@aztec.lib.utk.edu>
+
+FYI, for anyone out there harvesting from University of Tennessee
+Libraries
+ ( base url:  http://diglib.lib.utk.edu/cgi/b/broker20/broker20 )
+--- I just reworked all the files to use persistent identifiers for
+the dc:identifier link (and relation link, if used).
+
+Please let me know if you have any difficulties in reharvesting.
+
+  Thanks!
+               --jody
+
+-- 
+  Jody DeRidder
+  IT Administrator II
+  Digital Library Center
+  648A John C. Hodges Library
+  University of Tennessee
+  Knoxville, TN 37996
+
+  Phone: (865) 974-4796
+  Email: deridder@aztec.lib.utk.edu
+
+
+From zubair@cs.odu.edu  Sat Nov 15 23:38:48 2003
+From: zubair@cs.odu.edu (zubair@cs.odu.edu)
+Date: Sat, 15 Nov 2003 18:38:48 -0500
+Subject: [OAI-implementers] OAI Harvester Plug-In for DSpace
+Message-ID: <OFA2B4E260.9DBCDB17-ON85256DDF.00817A5A@cs.odu.edu>
+
+The Digital Library Research Group at Old Dominion University in
+collaboration with the Research Library of the Los Alamos National
+Laboratory is pleased to announce an alpha version of the OAI harvester
+plug-in, which can ingest metadata, as well as full text, from  OAI-PMH 2.0
+compliant data providers to DSpace* with some pre-specified mapping. Once
+harvested, the records can be retrieved using Dspace standard search
+interface. The mapping of OAI_DC metadata to Dspace can be specified using
+a XML template. The plug-in is available at
+http://kepler.cs.odu.edu:8080/kepler/dspace/index.html
+
+Mohammad Zubair, Kurt Maly (Old Dominion University)
+Herbert Van de Sompel, Rick Luce (Los Alamos National Laboratory)
+
+
+*DSpace is a digital library system developed jointly by MIT Libraries and
+Hewlett-Packard HP.
+
+
+
+
+
+
+
+From jyoung@oclc.org  Sun Nov 16 18:58:06 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Sun, 16 Nov 2003 13:58:06 -0500
+Subject: [OAI-implementers] Simple XSTL OAI harvester
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98063325CB@oa3-server.oa.oclc.org>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+It occurred to me on Friday that it would be possible to write an extremely
+simple OAI harvester using XSTL, so I skipped my morning break and wrote one
+that I am now making available as open-source. The result is the
+"xoaiharvester.xsl" stylesheet (attached), which is only 80 lines long
+(excluding the disclaimer). (It only supports OAI-PMH v2.0 repositories for
+now. Let me know if you want to use it with other versions.)
+
+It is driven from a "harvest.pl" PERL script (attached) that is about 25
+lines long (excluding the disclaimer). This PERL script is also responsible
+for managing the from/until dates one needs for incremental harvesting. If
+you don't like PERL, you could rewrite it in any other scripting language
+pretty easily. To run it the way I have it set up, you will need to have
+Java installed and the xalan.jar file in your classpath. If you don't like
+Java or Xalan, you should be able to make minor changes to the PERL script
+to invoke the XSTL transformation in some other way.
+
+To operate it, you need a configuration file for each repository to be
+harvested. Attached is an "xtcat.oclc.org.xml" file to use as an example.
+The "baseURL" and "metadataPrefix" elements are required, but the "set"
+element is optional.
+
+The command to run it could then be placed in a cron job to perform the
+incremental harvest:
+
+perl harvest.py xtcat.oclc.org
+
+The result is a file named "xtcat.oclc.org.YYYY-MM-DD.xml" (contains the
+harvest results) and "xtcat.oclc.org.lastHarvested" (contains the date to
+use for the next incremental harvest). Doing something with the results file
+is left as an exercise for the user. :-)
+
+Now, I'm thinking I could create an OAI repository using XSLT that is almost
+this simple. My boss, Thom Hickey, wrote an OAI repository with only 2 pages
+of (rather dense) Python code. I'm thinking maybe I can beat this and even
+have some white space to spare. :-) I'll post it if I get some spare time to
+try it.
+
+Jeff
+
+ <<xoaiharvester.xsl>>  <<xtcat.oclc.org.xml>>  <<harvest.pl>> 
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: application/octet-stream;
+	name="xoaiharvester.xsl"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="xoaiharvester.xsl"
+
+<?xml version=3D"1.0" encoding=3D"utf-8"?>=0A=
+=0A=
+<!--=0A=
+     Copyright (c) 2000-2003 OCLC Online Computer Library Center,=0A=
+     Inc. and other contributors. All rights reserved. The contents =
+of=0A=
+     this file, as updated from time to time by the OCLC Office of=0A=
+     Research are subject to OCLC Research Public License Version =
+2.0=0A=
+     (the "License"); you may not use this file except in compliance=0A=
+     with the License.  You may obtain a current copy of the License=0A=
+     at http://purl.org/oclc/research/ORPL/. Software distributed=0A=
+     under the License is distributed on an "AS IS" basis, WITHOUT=0A=
+     WARRANTY OF ANY KIND, either express or implied.  See the =
+License=0A=
+     for the specific language governing rights and limitations =
+under=0A=
+     the License.  This software consists of voluntary contributions=0A=
+     made by many individuals on behalf of OCLC Research.  For more=0A=
+     information on OCLC Research, please see=0A=
+     http://www.oclc.org/research/.=0A=
+     =0A=
+     This is the Original Code.=0A=
+     The Initial Developers of the Original Code is Jeffrey Young =
+(mailto:jyoung@oclc.org).=0A=
+     Portions created by OCLC are Copyright (C) 2003.  All Rights =
+Reserved.=0A=
+     (version: 2003 November 14)=0A=
+-->=0A=
+=0A=
+<xsl:stylesheet=0A=
+  xmlns:xsl=3D"http://www.w3.org/1999/XSL/Transform"=0A=
+  =
+xmlns:xoaih=3D"http://errol.oclc.org/xmlregistry.oclc.org/xoai/xoaiharve=
+ster"=0A=
+  version=3D"1.0">=0A=
+=0A=
+  <xsl:output method=3D"xml" indent=3D"yes"/>=0A=
+=0A=
+  <xsl:param name=3D"from" />=0A=
+  <xsl:param name=3D"until" />=0A=
+=0A=
+  <xsl:template match=3D"/xoaih:repository">=0A=
+    <xsl:variable name=3D"setArg">=0A=
+      <xsl:if test=3D"xoaih:set">=0A=
+        <xsl:text>&amp;set=3D</xsl:text>=0A=
+        <xsl:value-of select=3D"xoaih:set" />=0A=
+      </xsl:if>=0A=
+    </xsl:variable>=0A=
+    <xsl:variable name=3D"fromArg">=0A=
+      <xsl:if test=3D"$from">=0A=
+        <xsl:text>&amp;from=3D</xsl:text>=0A=
+        <xsl:value-of select=3D"$from" />=0A=
+      </xsl:if>=0A=
+    </xsl:variable>=0A=
+    <xsl:variable name=3D"untilArg">=0A=
+      <xsl:if test=3D"$until">=0A=
+        <xsl:text>&amp;until=3D</xsl:text>=0A=
+        <xsl:value-of select=3D"$until" />=0A=
+      </xsl:if>=0A=
+    </xsl:variable>=0A=
+    =0A=
+    <xoaih:harvest>=0A=
+      <xsl:apply-templates =
+select=3D"document(concat(xoaih:baseURL,'?verb=3DIdentify'))" />=0A=
+      <xsl:apply-templates=0A=
+        =
+select=3D"document(concat(xoaih:baseURL,'?verb=3DListMetadataFormats'))"=
+ />=0A=
+      <xsl:apply-templates=0A=
+        select=3D"document(concat(xoaih:baseURL,'?verb=3DListSets'))" =
+/>=0A=
+      <xsl:apply-templates=0A=
+        =
+select=3D"document(concat(xoaih:baseURL,'?verb=3DListRecords&amp;metadat=
+aPrefix=3D',xoaih:metadataPrefix,$setArg,$fromArg,$untilArg))" />=0A=
+    </xoaih:harvest>=0A=
+  </xsl:template>=0A=
+  =0A=
+  <!-- Process OAI responses -->=0A=
+  =0A=
+  <xsl:template match=3D"/oai20:OAI-PMH" =
+xmlns:oai20=3D"http://www.openarchives.org/OAI/2.0/">=0A=
+    <xsl:variable name=3D"resumptionToken"=0A=
+      select=3D"oai20:*/oai20:resumptionToken" />=0A=
+    =0A=
+    <xsl:copy-of select=3D"." />=0A=
+=0A=
+    <xsl:apply-templates select=3D"oai20:error" />=0A=
+    =0A=
+    <xsl:if test=3D"$resumptionToken">=0A=
+      <xsl:message>=0A=
+        <xsl:value-of select=3D"$resumptionToken" />=0A=
+      </xsl:message>=0A=
+      <xsl:apply-templates select=3D"document(concat(oai20:request,=0A=
+                                   '?verb=3D',=0A=
+                                   oai20:request/@verb,=0A=
+                                   '&amp;resumptionToken=3D',=0A=
+                                   $resumptionToken))" />=0A=
+    </xsl:if>=0A=
+  </xsl:template>=0A=
+=0A=
+  <!-- report problems -->=0A=
+  =0A=
+  <xsl:template =
+match=3D"oai20:error[not(../oai20:request/@verb=3D'ListSets')]" =
+xmlns:oai20=3D"http://www.openarchives.org/OAI/2.0/">=0A=
+    <xsl:message>=0A=
+      <xsl:value-of select=3D"@code" />=0A=
+      <xsl:text> : </xsl:text>=0A=
+      <xsl:value-of select=3D"." />=0A=
+    </xsl:message>=0A=
+  </xsl:template>=0A=
+    =0A=
+  <!-- strip out stylesheet references -->=0A=
+  =0A=
+  <xsl:template match=3D"processing-instruction('xml-stylesheet')" =
+/>=0A=
+  =0A=
+</xsl:stylesheet>=0A=
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: application/octet-stream;
+	name="xtcat.oclc.org.xml"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="xtcat.oclc.org.xml"
+
+<?xml version=3D"1.0" encoding=3D"UTF-8"?>=0A=
+<xoaih:repository =
+xmlns:xoaih=3D"http://errol.oclc.org/xmlregistry.oclc.org/xoai/xoaiharve=
+ster">=0A=
+  =
+<xoaih:baseURL>http://alcme.oclc.org/xtcat/servlet/OAIHandler</xoaih:bas=
+eURL>=0A=
+  <xoaih:metadataPrefix>oai_etdms</xoaih:metadataPrefix>=0A=
+  <xoaih:set>ETD</xoaih:set>=0A=
+</xoaih:repository>=0A=
+
+------_=_NextPart_000_01C3AC73.91F6DF3A
+Content-Type: application/octet-stream;
+	name="harvest.pl"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="harvest.pl"
+
+#! /usr/bin/perl=0A=
+#     Copyright (c) 2000-2003 OCLC Online Computer Library Center,=0A=
+#     Inc. and other contributors. All rights reserved. The contents =
+of=0A=
+#     this file, as updated from time to time by the OCLC Office of=0A=
+#     Research are subject to OCLC Research Public License Version =
+2.0=0A=
+#     (the "License"); you may not use this file except in =
+compliance=0A=
+#     with the License.  You may obtain a current copy of the =
+License=0A=
+#     at http://purl.org/oclc/research/ORPL/. Software distributed=0A=
+#     under the License is distributed on an "AS IS" basis, WITHOUT=0A=
+#     WARRANTY OF ANY KIND, either express or implied.  See the =
+License=0A=
+#     for the specific language governing rights and limitations =
+under=0A=
+#     the License.  This software consists of voluntary =
+contributions=0A=
+#     made by many individuals on behalf of OCLC Research.  For more=0A=
+#     information on OCLC Research, please see=0A=
+#     http://www.oclc.org/research/.=0A=
+#     =0A=
+#     This is the Original Code.=0A=
+#     The Initial Developers of the Original Code is Jeffrey Young =
+(mailto:jyoung@oclc.org).=0A=
+#     Portions created by OCLC are Copyright (C) 2003.  All Rights =
+Reserved.=0A=
+#     (version: 2003 November 14)=0A=
+  =0A=
+$lastHarvestedFileName =3D $ARGV[0].".lastHarvested";=0A=
+open (LASTHARVESTED, $lastHarvestedFileName);=0A=
+$from =3D <LASTHARVESTED>;=0A=
+chomp $from;=0A=
+print $ARGV[0].": Incremental harvest from ".$from."\n";=0A=
+if (length($from) > 0) {=0A=
+  $from =3D " -PARAM from '".$from."'";=0A=
+}=0A=
+close(LASTHARVESTED);=0A=
+=0A=
+$untilDate =3D `date -u '+%Y-%m-%d'`;=0A=
+chomp $untilDate;=0A=
+$until =3D " -PARAM until '".$untilDate."'";=0A=
+=0A=
+$outFileName =3D $ARGV[0].".".$untilDate.".xml";=0A=
+=0A=
+if (-e $outFileName) {=0A=
+  die("ERROR! Output File Exists. Delete '".$outFileName."' before =
+proceeding.\n");=0A=
+}=0A=
+=0A=
+system("java org.apache.xalan.xslt.Process -IN ".$ARGV[0].".xml -XSL =
+xoaiharvester.xsl -OUT ".$outFileName.$from.$until);=0A=
+=0A=
+open(LASTHARVESTED, ">".$lastHarvestedFileName);=0A=
+print LASTHARVESTED $untilDate;=0A=
+close(LASTHARVESTED);=0A=
+=0A=
+
+------_=_NextPart_000_01C3AC73.91F6DF3A--
+
+From mln@cs.odu.edu  Thu Nov 20 15:21:57 2003
+From: mln@cs.odu.edu (Michael Nelson)
+Date: Thu, 20 Nov 2003 10:21:57 -0500 (EST)
+Subject: [OAI-implementers] RSS Feed Form the UIUC OAI Registry
+In-Reply-To: <3FA92273.9060001@uiuc.edu>
+Message-ID: <Pine.SOL.4.10.10311201017020.28112-100000@cirrus.cs.odu.edu>
+
+On Wed, 5 Nov 2003, Thomas G. Habing wrote:
+
+> Hi all,
+> 
+> I've just added an RDF Site Summary (RSS) feed to the OAI registry at UIUC. 
+>   The URL for the RSS feed is http://gita.grainger.uiuc.edu/registry/rss.asp 
+> This may be useful for people who are trying to keep track of the latest and 
+> greatest OAI providers.  The RSS feed will list the 10 most recently added 
+> or modified repositories.  This is something I just threw together without 
+> knowing too much about RSS, so if anyone discovers any problems please let 
+> me know.
+
+this is very cool...  perhaps this could be incorporated into the OAI-PMH
+website?  a side bar showing the latest repositories would be a nice way
+to insure dynamic content on the web site.
+
+> 
+> Last night I also ran my gOAIglePop script.  This script programatically 
+> does some Google searches, looking for OAI repositories.  If it finds a URL 
+> which appears to be an OAI repository it issues an Identify request.  If it 
+> gets a valid response, its found a repository.  The results of the script 
+> run can be found at http://gita.grainger.uiuc.edu/registry/gOAIgle.xml The 
+> latest run found three previously unknown repositories (at least to the 
+> registry).  If anyone is interested, the best Google query I've found for 
+> finding OAI repositories is 'allinurl:verb=Identify'.  Type this into the 
+> Google query textbox and press Search.
+
+also very cool...  suggestion: perhaps do some normalization of the URLs?
+or at least normalize based on the Identify response?  for example, you
+found at least one of my repos twice:
+
+<baseURL>http://naca.larc.nasa.gov/oai2.0/</baseURL> 
+
+<baseURL>http://naca.larc.nasa.gov/oai2.0/index.cgi</baseURL> 
+
+which are the same repositories and give the same responses in Identify.
+
+regards,
+
+Michael
+
+> 
+> Comments are welcome and enjoy...
+> 
+> -- 
+> Thomas Habing
+> Research Programmer, Digital Library Projects
+> University of Illinois at Urbana-Champaign
+> 155 Grainger Engineering Library Information Center, MC-274
+> thabing@uiuc.edu, (217) 244-4425
+> http://dli.grainger.uiuc.edu
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+
+From thabing@uiuc.edu  Fri Nov 21 16:53:31 2003
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Fri, 21 Nov 2003 10:53:31 -0600
+Subject: [OAI-implementers] RSS Feed Form the UIUC OAI Registry
+In-Reply-To: <Pine.SOL.4.10.10311201017020.28112-100000@cirrus.cs.odu.edu>
+References: <Pine.SOL.4.10.10311201017020.28112-100000@cirrus.cs.odu.edu>
+Message-ID: <3FBE430B.1040909@uiuc.edu>
+
+Michael Nelson wrote:
+
+> On Wed, 5 Nov 2003, Thomas G. Habing wrote:
+> 
+>>Last night I also ran my gOAIglePop script.  This script programatically 
+>>does some Google searches, looking for OAI repositories.  If it finds a URL 
+>>which appears to be an OAI repository it issues an Identify request.  If it 
+>>gets a valid response, its found a repository.  The results of the script 
+>>run can be found at http://gita.grainger.uiuc.edu/registry/gOAIgle.xml The 
+>>latest run found three previously unknown repositories (at least to the 
+>>registry).  If anyone is interested, the best Google query I've found for 
+>>finding OAI repositories is 'allinurl:verb=Identify'.  Type this into the 
+>>Google query textbox and press Search.
+> 
+> 
+> also very cool...  suggestion: perhaps do some normalization of the URLs?
+> or at least normalize based on the Identify response?  for example, you
+> found at least one of my repos twice:
+> 
+> <baseURL>http://naca.larc.nasa.gov/oai2.0/</baseURL> 
+> 
+> <baseURL>http://naca.larc.nasa.gov/oai2.0/index.cgi</baseURL> 
+> 
+> which are the same repositories and give the same responses in Identify.
+> 
+
+This is something I've been struggling with.  I've actually done a fair 
+amount of manual cleanup in my registry to get rid of duplicate repositories 
+that appear with slightly different baseURLs.  Discovering these can 
+actually be kind of tricky because of domain name aliases, redirects, and 
+other reasons.  In some cases I've found three or more different baseURLs 
+for the same repository.
+
+Duplicates seem to arise for various reasons:
+
+   Domain name aliases
+
+   URLs that sometimes use the numeric IP address and sometimes the domain
+   name
+
+   URLs that sometimes explicitly include the port # 80 and sometimes not
+
+   URLs that sometimes explicitly include the script name and other times
+   rely on the default, as the above examples
+
+   HTTP redirects
+
+   Probably other reasons...
+
+The rules that I've used for resolving duplicates include:
+
+If the baseURL returned by the Identify response is the same regardless of 
+the URL originally requested, and that baseURL actually works (on rare 
+occasions they haven't) I use that baseURL.
+
+For many repositories, it seems that the baseURL reported in the Identify 
+response, simple reflects the URL originally used for the request.  In these 
+cases, if I've discovered multiple URLs for the same repository, I will use 
+the baseURL which is shortest.
+
+Anyway, now that I have a good size registry built up, I am being more 
+careful in adding new repositories to prevent duplicates.  I am also working 
+on ideas to better automate the discovery of possible duplicates, such as 
+URL normalization, domain name lookups, or Identify response comparisons.
+
+If anyone has any ideas please share them.
+
+Thanks,
+	Tom
+
+-- 
+Thomas Habing
+Research Programmer, Digital Library Projects
+University of Illinois at Urbana-Champaign
+155 Grainger Engineering Library Information Center, MC-274
+thabing@uiuc.edu, (217) 244-4425
+http://dli.grainger.uiuc.edu
+
+

@@ -1,0 +1,405 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML Schema problem?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:herbertv%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000095.html">
+   <LINK REL="Next"  HREF="000098.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML Schema problem?
+   </H1>
+    <B>herbert van de sompel
+    </B> 
+    <A HREF="mailto:herbertv%40cs.cornell.edu"
+       TITLE="[OAI-implementers] XML Schema problem?">herbertv@cs.cornell.edu
+       </A><BR>
+    <I>Sun, 22 Apr 2001 14:44:26 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000095.html">[OAI-implementers] XML Schema problem?
+</A></li>
+        <LI> Next message: <A HREF="000098.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#96">[ date ]</a>
+              <a href="thread.html#96">[ thread ]</a>
+              <a href="subject.html#96">[ subject ]</a>
+              <a href="author.html#96">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>This is a multi-part message in MIME format.
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+hi Jeff,
+
+Thanks for this.  Your consideration is correct, there is a problem in
+the schema that use the &quot;status&quot; attribute.  That is GetRecord,
+ListRecords and ListIdentifiers.
+
+This is what the September 2000 schema specs say re specifying
+occurencies of attributes.  In the excerpt that I include, reference is
+made to the following declaration in an xsd file:
+
+&lt;xsd:attribute name=&quot;country&quot; type=&quot;xsd:NMTOKEN&quot; use=&quot;fixed&quot;
+value=&quot;US&quot;/&gt;
+
+&quot;
+Attributes may appear once or not at all (the default), and so the
+syntax for specifying occurrences of attributes
+is different than the syntax for elements. In particular, a use
+attribute is used in an attribute declaration to
+indicate whether the attribute is required or optional, and if optional
+whether the attribute's value is fixed or
+whether there is a default. A second attribute, value, provides any
+value that is called for. To illustrate, po.xsd
+contains a declaration for the country attribute, which is declared with
+use and value values of fixed and US
+respectively. This declaration means that the appearance of a country
+attribute is optional, although its value
+must be US if it does appear, and if it does not appear, a schema
+processor will create a country attribute with
+this value. 
+&quot;
+
+This last line indicates that Xerces is doing the right thing, which is
+obviously not what we want to happen.
+
+With Michael Nelson, I have revised the XML Schema that involved a
+status attribute.  The solution was less straightforward than one would
+hope.  There is no simple way to express what we really would like to
+express: the status attribute may occur, and if it occurs its value must
+be &quot;deleted&quot;.  The workaround is to list legitimate values of the status
+attribute and specify a default.  We chose the values to be &quot;deleted&quot;
+and &quot;not deleted&quot;, with &quot;not deleted&quot; as the default.  With this in
+place, one can express in a schema that the status attribute may appear,
+and that its default value (if the attribute does not appear) is &quot;not
+deleted&quot;.  One can also express that there is only one other legitimate
+value for status.  It is &quot;deleted&quot;.  And this one must be specified,
+since it is not the default value.  
+
+
+Using this approach nothing really changes for data providers (nor
+service providers, really).  But I guess Xerces will do the right thing,
+now, add the default value of &quot;not deleted&quot; to all records that do not
+have the status attribute specified.
+
+The way to express the above approach in the schema is different for the
+Sep/Oct 2000 specs that we use and for the most recent XML specs.  but
+that is another story, to be addressed later.  
+
+I attach the edited xsd files.  I will put them in place, unless someone
+disagrees with the approach taken.
+
+many greetings
+
+herbert
+
+
+
+&quot;Jeffrey A. Young&quot; wrote:
+&gt;<i> 
+</I>&gt;<i> Someone noticed that my OAIHarvester isn't working correctly lately. It
+</I>&gt;<i> turns out that the Xerces XML parser is convinced that all the records I
+</I>&gt;<i> harvest are flagged as status=&quot;deleted&quot;. Since this clearly isn't the case,
+</I>&gt;<i> I started stripping the program down until I had a small example program
+</I>&gt;<i> showing this effect. The Java source code is attached. Basically, if I do
+</I>&gt;<i> DocumentBuilderFactory.setValidating(true) and then convert the XML to a DOM
+</I>&gt;<i> Document, it silently &quot;corrects&quot; my records to status=&quot;deleted&quot;. If I dump
+</I>&gt;<i> the Document, all looks fine, but when I actually query the status
+</I>&gt;<i> attribute, it reports back with a value of &quot;deleted&quot;. On the other hand, if
+</I>&gt;<i> I specify setValidating(false), everything works fine. I suspect the problem
+</I>&gt;<i> is that the XML Schema needs to make the status attribute optional. Another
+</I>&gt;<i> possibility is that Xerces is processing the XML Schema incorrectly. I can
+</I>&gt;<i> ignore the problem by always using setValidating(false), but that doesn't
+</I>&gt;<i> seem right. If someone has a better solution, I would appreciate it. Thanks.
+</I>&gt;<i> 
+</I>&gt;<i> Jeff
+</I>&gt;<i> 
+</I>&gt;<i> ---
+</I>&gt;<i> Jeffrey A. Young
+</I>&gt;<i> Senior Consulting Systems Analyst
+</I>&gt;<i> Office of Research, Mail Code 710
+</I>&gt;<i> OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> 6565 Frantz Road
+</I>&gt;<i> Dublin, OH   43017-3395
+</I>&gt;<i> www.oclc.org
+</I>&gt;<i> 
+</I>&gt;<i> Voice:  614-764-4342
+</I>&gt;<i> Fax:            614-764-2344
+</I>&gt;<i> Email:  <A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> 
+</I>&gt;<i>   ------------------------------------------------------------------------
+</I>&gt;<i>                 Name: Test.java
+</I>&gt;<i>    Test.java    Type: unspecified type (application/octet-stream)
+</I>&gt;<i>             Encoding: quoted-printable
+</I>
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+<A HREF="http://www.cs.cornell.edu/people/herbertv/">http://www.cs.cornell.edu/people/herbertv/</A>
+digital life in libraries used to be primitive
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii;
+ name=&quot;OAI_GetRecord-status.xsd&quot;
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename=&quot;OAI_GetRecord-status.xsd&quot;
+
+&lt;schema xmlns=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema"">http://www.w3.org/2000/10/XMLSchema&quot;</A>
+         xmlns:oai=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"">http://www.openarchives.org/OAI/1.0/OAI_GetRecord&quot;</A>
+         targetNamespace=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"">http://www.openarchives.org/OAI/1.0/OAI_GetRecord&quot;</A>
+         elementFormDefault=&quot;qualified&quot;
+         attributeFormDefault=&quot;unqualified&quot;&gt;
+
+ &lt;annotation&gt;
+  &lt;documentation&gt;
+    Schema to verify validity of responses to GetRecord OAI-protocol request.
+    This Schema validated at <A HREF="http://www.w3.org/2000/09/webdata/xsv">http://www.w3.org/2000/09/webdata/xsv</A> on 2001-04-22
+    with XSV 1.176/1.87 of 2001/02/16 16:38:43
+  &lt;/documentation&gt;
+ &lt;/annotation&gt;
+
+ &lt;element name=&quot;GetRecord&quot; type=&quot;oai:GetRecordType&quot;/&gt;
+
+ &lt;!-- response to GetRecord-request --&gt;
+
+ &lt;complexType name=&quot;GetRecordType&quot;&gt;
+  &lt;sequence&gt;
+    &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;timeInstant&quot;/&gt;
+    &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+    &lt;element name=&quot;record&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:recordType&quot;/&gt;
+  &lt;/sequence&gt;
+ &lt;/complexType&gt;
+
+ &lt;!-- define recordType --&gt;
+ &lt;!-- a record has a header and a metadata part --&gt;
+
+ &lt;complexType name=&quot;recordType&quot;&gt;
+  &lt;sequence&gt;
+    &lt;element name=&quot;header&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;oai:headerType&quot;/&gt;
+    &lt;element name=&quot;metadata&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:metadataType&quot;/&gt;
+    &lt;element name=&quot;about&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:aboutType&quot;/&gt;
+  &lt;/sequence&gt;
+    &lt;attribute name=&quot;status&quot; use=&quot;default&quot; value=&quot;not deleted&quot; type=&quot;oai:statusType&quot;/&gt;
+ &lt;/complexType&gt;
+
+ &lt;!-- define headerType --&gt;
+ &lt;!-- a header has a unique identifier and a datestamp --&gt;
+
+ &lt;complexType name=&quot;headerType&quot;&gt;
+  &lt;sequence&gt;
+    &lt;element name=&quot;identifier&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;uriReference&quot;/&gt;
+    &lt;element name=&quot;datestamp&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;date&quot;/&gt;
+  &lt;/sequence&gt;
+ &lt;/complexType&gt;
+
+ &lt;!-- define metadataType --&gt;
+ &lt;!-- metadata must be expressed in XML that is compliant with another XML Schema --&gt;
+ &lt;!-- metadata must be explicitely qualified in the response --&gt;
+
+ &lt;complexType name=&quot;metadataType&quot;&gt;
+  &lt;sequence&gt;
+   &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot;/&gt;
+  &lt;/sequence&gt;
+ &lt;/complexType&gt;
+
+ &lt;!-- define aboutType --&gt;
+ &lt;!-- data &quot;about&quot; the record must be expressed in XML --&gt;
+ &lt;!-- that is compliant with an XML Schema defined by a community --&gt;
+
+ &lt;complexType name=&quot;aboutType&quot;&gt;
+  &lt;sequence&gt;
+   &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+  &lt;/sequence&gt;
+ &lt;/complexType&gt;
+
+ &lt;!-- define statusType --&gt;
+ &lt;!-- a record can have a status of &quot;deleted&quot; or &quot;not deleted&quot;. --&gt;
+
+ &lt;simpleType name=&quot;statusType&quot;&gt;
+   &lt;restriction base=&quot;string&quot;&gt;
+    &lt;enumeration value=&quot;deleted&quot;/&gt;
+    &lt;enumeration value=&quot;not deleted&quot;/&gt;
+   &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+ &lt;/schema&gt;
+
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii;
+ name=&quot;OAI_ListRecords-status.xsd&quot;
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename=&quot;OAI_ListRecords-status.xsd&quot;
+
+&lt;schema xmlns=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema"">http://www.w3.org/2000/10/XMLSchema&quot;</A>
+          xmlns:oai=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"">http://www.openarchives.org/OAI/1.0/OAI_ListRecords&quot;</A>
+          targetNamespace=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"">http://www.openarchives.org/OAI/1.0/OAI_ListRecords&quot;</A>
+          elementFormDefault=&quot;qualified&quot;
+          attributeFormDefault=&quot;unqualified&quot;&gt;
+
+  &lt;annotation&gt;
+   &lt;documentation&gt;
+     Schema to verify validity of responses to ListRecords OAI-protocol request.
+    This Schema validated at <A HREF="http://www.w3.org/2000/09/webdata/xsv">http://www.w3.org/2000/09/webdata/xsv</A> on 2001-04-22
+    with XSV 1.176/1.87 of 2001/02/16 16:38:43
+   &lt;/documentation&gt;
+  &lt;/annotation&gt;
+
+  &lt;element name=&quot;ListRecords&quot; type=&quot;oai:ListRecordsType&quot;/&gt;
+
+  &lt;!-- response to ListRecords-request --&gt;
+  &lt;!-- this response may contain an optional resumptionToken --&gt;
+
+  &lt;complexType name=&quot;ListRecordsType&quot;&gt;
+   &lt;sequence&gt;
+     &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;timeInstant&quot;/&gt;
+     &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+     &lt;element name=&quot;record&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot; type=&quot;oai:recordType&quot;/&gt;
+     &lt;element name=&quot;resumptionToken&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+   &lt;/sequence&gt;
+   &lt;/complexType&gt;
+
+  &lt;!-- define recordType --&gt;
+  &lt;!-- a record has a header and a metadata part --&gt;
+
+  &lt;complexType name=&quot;recordType&quot;&gt;
+   &lt;sequence&gt;
+     &lt;element name=&quot;header&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;oai:headerType&quot;/&gt;
+     &lt;element name=&quot;metadata&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:metadataType&quot;/&gt;
+     &lt;element name=&quot;about&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;oai:aboutType&quot;/&gt;
+   &lt;/sequence&gt;
+    &lt;attribute name=&quot;status&quot; use=&quot;default&quot; value=&quot;not deleted&quot; type=&quot;oai:statusType&quot;/&gt;
+  &lt;/complexType&gt;
+
+  &lt;!-- define headerType --&gt;
+  &lt;!-- a header has a unique identifier and a datestamp --&gt;
+
+  &lt;complexType name=&quot;headerType&quot;&gt;
+   &lt;sequence&gt;
+     &lt;element name=&quot;identifier&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;uriReference&quot;/&gt;
+     &lt;element name=&quot;datestamp&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;date&quot;/&gt;
+   &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;!-- define metadataType --&gt;
+  &lt;!-- metadata must be expressed in XML that complies with another XML Schema --&gt;
+  &lt;!-- metadata must be explicitely qualified in the response --&gt;
+
+  &lt;complexType name=&quot;metadataType&quot;&gt;
+   &lt;sequence&gt;
+    &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot;/&gt;
+   &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+ &lt;!-- define aboutType --&gt;
+ &lt;!-- data &quot;about&quot; the record must be expressed in XML --&gt;
+ &lt;!-- that is compliant with an XML Schema defined by a community --&gt;
+
+ &lt;complexType name=&quot;aboutType&quot;&gt;
+  &lt;sequence&gt;
+   &lt;any namespace=&quot;##any&quot; processContents=&quot;lax&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot;/&gt;
+  &lt;/sequence&gt;
+ &lt;/complexType&gt;
+
+ &lt;!-- define statusType --&gt;
+ &lt;!-- a record can have a status of &quot;deleted&quot; or &quot;not deleted&quot;. --&gt;
+
+ &lt;simpleType name=&quot;statusType&quot;&gt;
+   &lt;restriction base=&quot;string&quot;&gt;
+    &lt;enumeration value=&quot;deleted&quot;/&gt;
+    &lt;enumeration value=&quot;not deleted&quot;/&gt;
+   &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+&lt;/schema&gt;
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii;
+ name=&quot;OAI_ListIdentifiers-status.xsd&quot;
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename=&quot;OAI_ListIdentifiers-status.xsd&quot;
+
+&lt;schema xmlns=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema"">http://www.w3.org/2000/10/XMLSchema&quot;</A>
+         xmlns:oai=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"">http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers&quot;</A>
+         targetNamespace=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"">http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers&quot;</A>
+         elementFormDefault=&quot;qualified&quot;
+         attributeFormDefault=&quot;unqualified&quot;&gt;
+
+ &lt;annotation&gt;
+  &lt;documentation&gt;
+    Schema to verify validity of responses to ListIdentifiers OAI-protocol request.
+    This Schema validated at <A HREF="http://www.w3.org/2000/09/webdata/xsv">http://www.w3.org/2000/09/webdata/xsv</A> on 2001-04-22
+    with XSV 1.176/1.87 of 2001/02/16 16:38:43
+  &lt;/documentation&gt;
+ &lt;/annotation&gt;
+
+ &lt;element name=&quot;ListIdentifiers&quot; type=&quot;oai:ListIdentifiersType&quot;/&gt;
+
+ &lt;!-- response to ListIdentifiers-request --&gt;
+ &lt;!-- records have an optional &quot;deleted&quot; status --&gt;
+ &lt;!-- this response may contain an optional resumptionToken --&gt;
+
+ &lt;complexType name=&quot;ListIdentifiersType&quot;&gt;
+  &lt;sequence&gt;
+    &lt;element name=&quot;responseDate&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;timeInstant&quot;/&gt;
+    &lt;element name=&quot;requestURL&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+    &lt;element ref=&quot;oai:identifier&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+    &lt;element name=&quot;resumptionToken&quot; minOccurs=&quot;0&quot; maxOccurs=&quot;1&quot; type=&quot;string&quot;/&gt;
+  &lt;/sequence&gt;
+ &lt;/complexType&gt;
+
+ &lt;element name=&quot;identifier&quot;&gt;
+  &lt;complexType&gt;
+   &lt;simpleContent&gt;
+    &lt;extension base=&quot;uriReference&quot;&gt;
+     &lt;attribute name=&quot;status&quot; use=&quot;default&quot; value=&quot;not deleted&quot; type=&quot;oai:statusType&quot;/&gt;
+    &lt;/extension&gt;
+   &lt;/simpleContent&gt;
+  &lt;/complexType&gt;
+ &lt;/element&gt;
+
+ &lt;!-- define statusType --&gt;
+ &lt;!-- a record can have a status of &quot;deleted&quot; or &quot;not deleted&quot;. --&gt;
+
+ &lt;simpleType name=&quot;statusType&quot;&gt;
+   &lt;restriction base=&quot;string&quot;&gt;
+    &lt;enumeration value=&quot;deleted&quot;/&gt;
+    &lt;enumeration value=&quot;not deleted&quot;/&gt;
+   &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+ &lt;/schema&gt;
+--------------763AD80798C4E0A8A1B247FF--
+
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000095.html">[OAI-implementers] XML Schema problem?
+</A></li>
+	<LI> Next message: <A HREF="000098.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#96">[ date ]</a>
+              <a href="thread.html#96">[ thread ]</a>
+              <a href="subject.html#96">[ subject ]</a>
+              <a href="author.html#96">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

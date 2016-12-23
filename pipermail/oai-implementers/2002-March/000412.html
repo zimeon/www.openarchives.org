@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Better resumption mechanism - more importa
+ nt than ever!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000411.html">
+   <LINK REL="Next"  HREF="000414.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Better resumption mechanism - more importa
+ nt than ever!
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] Better resumption mechanism - more importa
+ nt than ever!">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Tue, 5 Mar 2002 14:48:43 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000411.html">[OAI-implementers] Better resumption mechanism - more importa
+ nt than ever!
+</A></li>
+        <LI> Next message: <A HREF="000414.html">[OAI-implementers] Better resumption mechanism - more importa
+ nt than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#412">[ date ]</a>
+              <a href="thread.html#412">[ thread ]</a>
+              <a href="subject.html#412">[ subject ]</a>
+              <a href="author.html#412">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, 5 Mar 2002, Xiaoming Liu wrote:
+&gt;<i> On Tue, 5 Mar 2002, Young,Jeff wrote:
+</I>&gt;<i> &gt; I'd be happy to implement stateless resumptionTokens, but unless harvesters
+</I>&gt;<i> &gt; know how to use them for recovery, why bother? How many harvesters today
+</I>&gt;<i> &gt; could manage a recovery using stateless resumptionTokens? How many
+</I>&gt;<i> &gt; harvesters will handle it tomorrow if OAI remains agnostic on the issue?
+</I>&gt;<i> 
+</I>&gt;<i> I guess this is a major issue that harvester should follow a certain
+</I>&gt;<i> policy. In current implementation in Arc, for each failed request, the
+</I>&gt;<i> harvester will try at most three times using the same http request. And it
+</I>&gt;<i> will give up after that. This policy really helps several times, but not
+</I>&gt;<i> too often ;-)
+</I>
+Liu, your policy is the sort of thing I had imagined. However, I'm curious
+about how frequently you find that a sequence of harvests fails. When I
+last did an extensive harvest (last summer) I found that, provided
+repositories had implemented the protocol properly, I rarely had problems
+getting successful responses to complete a List request. Can you give us
+some (approximate) statistics?
+ 
+&gt;<i> Ideally, I guess a harvester could use exponential backoff algorithm to
+</I>&gt;<i> keep trying until the resumptionToken is expired (Considering a
+</I>&gt;<i> time-to-live parameter will be added in 2.0). And if we implment the
+</I>&gt;<i> harvester in a multiple process/thread way, the system should scale well
+</I>&gt;<i> for several resumptionToken errors.
+</I>&gt;<i> 
+</I>&gt;<i> I think something like &quot;implementation guide&quot; or &quot;reference
+</I>&gt;<i> implementation&quot; will help harvester and DP understand each other well
+</I>&gt;<i> beyond the core protocol.
+</I>
+Yes, this should certainly be covered in the implementation guidelines.
+
+Cheers,
+Simeon.
+ 
+
+&gt;<i> regards,
+</I>&gt;<i> liu
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; I'm sure ETDCat needs more stress testing to minimize future failures. The
+</I>&gt;<i> &gt; fact that we've discussed this before, though, indicates a recognition that
+</I>&gt;<i> &gt; problems can happen. I don't blame Alan if he doesn't want to negotiate
+</I>&gt;<i> &gt; special rules for harvesting ETDCat merely because the risk is proportional
+</I>&gt;<i> &gt; to the size of the repository.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Jeff
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; -----Original Message-----
+</I>&gt;<i> &gt; From: Michael L. Nelson [mailto:<A HREF="mailto:mln@ils.unc.edu">mln@ils.unc.edu</A>]
+</I>&gt;<i> &gt; Sent: Tuesday, March 05, 2002 10:03 AM
+</I>&gt;<i> &gt; To: 'Alan Kent'
+</I>&gt;<i> &gt; Cc: OAI Implementors
+</I>&gt;<i> &gt; Subject: Re: [OAI-implementers] Better resumption mechanism - more
+</I>&gt;<i> &gt; important than ever!
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; actually, the way I see it is the protocol should not be complicated with
+</I>&gt;<i> &gt; additional tokens and such to enforce what ETDCat (and similiarly
+</I>&gt;<i> &gt; large-sized DPs) should do:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 1.  partition their collection into sets
+</I>&gt;<i> &gt; 2.  use stateless (or very long lived) resumptionTokens
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; in 2.0, resumptionTokens will have optional attributes, including
+</I>&gt;<i> &gt; &quot;expirationDate&quot;, so this will take the guess work out of knowing how long
+</I>&gt;<i> &gt; a resumptionToken will be valid.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; IMO, introducing an optional restartToken is no different (from an
+</I>&gt;<i> &gt; implementer's point of view) than making the resumptionToken last a long
+</I>&gt;<i> &gt; time.  
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; at some point, you (as a harvester) are simply at the mercy of the
+</I>&gt;<i> &gt; repository.  new features in the protocol won't change that.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; regards,
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Michael
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; On Tue, 5 Mar 2002, 'Alan Kent' wrote:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt; I just got some mail from Jeff at OCLC talking about ETDCat (hope
+</I>&gt;<i> &gt; &gt; you don't mind me quoting some of your mail Jeff). In particular,
+</I>&gt;<i> &gt; &gt; he just told me
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt;     ETDCat contains a lot of records (over 4 million), all of
+</I>&gt;<i> &gt; &gt;     which currently have the exact same datestamp from the initial load.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; He also told me that there were no sets. So basically, its all
+</I>&gt;<i> &gt; &gt; or nothing for this site because OAI has no standard way to resume
+</I>&gt;<i> &gt; &gt; if a transfer fails.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; If this has happened already, I think its likely to occur again.
+</I>&gt;<i> &gt; &gt; (That is, one very large database all with the same time stamp.)
+</I>&gt;<i> &gt; &gt; So any comments about having a single large collection like this
+</I>&gt;<i> &gt; &gt; is beside the point. The point is OAI does not handle it well.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; So I would like to resurrect the discussion again if people don't
+</I>&gt;<i> &gt; &gt; mind on how to do support restarts. My understanding of the general
+</I>&gt;<i> &gt; &gt; feeling so far is
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; (1) Mandating support is not going to be acceptable
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; (2) Mandating format of resumption tokens is not going to be acceptable
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; (3) Mandating resumption tokens be long lifed (eg: can try again the
+</I>&gt;<i> &gt; &gt;     following day) is not acceptable
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; (4) In fact, mandating that resumption tokens be unique (allowing
+</I>&gt;<i> &gt; &gt;     a token to be reused twice in quick succession to get the same
+</I>&gt;<i> &gt; &gt;     data) is not acceptable
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; So any proposal needs to be optionally supported.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Question time:
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Does anyone else think that this is a major hole in OAI? I personally
+</I>&gt;<i> &gt; &gt; do. After trying to crawl sites, things go wrong. The larger the site,
+</I>&gt;<i> &gt; &gt; the greater the probability that something will go wrong. The larger
+</I>&gt;<i> &gt; &gt; the site, the greater the pain of starting all over again. I do not
+</I>&gt;<i> &gt; &gt; think it is practical for anyone to harvest ETDCat if is really got
+</I>&gt;<i> &gt; &gt; 4,000,000 records. Any fault, and start downloading that 4gb again!
+</I>&gt;<i> &gt; &gt; So I feel strongly on this one. In fact, I think this is the most
+</I>&gt;<i> &gt; &gt; major problem OAI has.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Do people think its better to reuse resumption tokens for this purpose,
+</I>&gt;<i> &gt; &gt; or introduce a different sort of token? ETDCat for example I think
+</I>&gt;<i> &gt; &gt; allocates a session id in resumption tokens, meaning they cannot
+</I>&gt;<i> &gt; &gt; be reused when the session times out in the server (similar semantics
+</I>&gt;<i> &gt; &gt; anyway). This is a reasonable implementation decision to make.
+</I>&gt;<i> &gt; &gt; So maybe its better for servers to return an additional token,
+</I>&gt;<i> &gt; &gt; which is a &lt;restartToken&gt; which means a client can instead of
+</I>&gt;<i> &gt; &gt; specifying from= and to= again, specify restartToken= instead where
+</I>&gt;<i> &gt; &gt; the server then automatically works out whatever other parameters
+</I>&gt;<i> &gt; &gt; it needs, creates a new session etc internally. The new 'session'
+</I>&gt;<i> &gt; &gt; (ListXXX verb) then can use resumptionTokens to manage that new
+</I>&gt;<i> &gt; &gt; transfer.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; The idea is for a &lt;restartToken&gt; to be long lifed. It may be less
+</I>&gt;<i> &gt; &gt; efficient to use than a resumptionToken, but its only purpose is
+</I>&gt;<i> &gt; &gt; if the client fails the download. If a server does not support
+</I>&gt;<i> &gt; &gt; restartToken, it simply never returns one. Large collections *should*
+</I>&gt;<i> &gt; &gt; support restartTokens.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; For my harvester, I can then remember (to disk) the restartToken for
+</I>&gt;<i> &gt; &gt; every packet I get back, allowing me to recover much more easily
+</I>&gt;<i> &gt; &gt; if anything crashes. If restartToken's are too hard for someone
+</I>&gt;<i> &gt; &gt; to implement, then they don't. If you have a large data collection
+</I>&gt;<i> &gt; &gt; on the other hand, to reduce network load, I think its probably worth
+</I>&gt;<i> &gt; &gt; the extra effort of supporting restartTokens.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Any comments? Better suggesions?
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Alan
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; ---
+</I>&gt;<i> &gt; Michael L. Nelson
+</I>&gt;<i> &gt; NASA Langley Research Center		<A HREF="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>
+</I>&gt;<i> &gt; MS 158, Hampton, VA 23681		<A HREF="http://www.ils.unc.edu/~mln/">http://www.ils.unc.edu/~mln/</A>
+</I>&gt;<i> &gt; +1 757 864 8511				+1 757 864 8342 (f)
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000411.html">[OAI-implementers] Better resumption mechanism - more importa
+ nt than ever!
+</A></li>
+	<LI> Next message: <A HREF="000414.html">[OAI-implementers] Better resumption mechanism - more importa
+ nt than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#412">[ date ]</a>
+              <a href="thread.html#412">[ thread ]</a>
+              <a href="subject.html#412">[ subject ]</a>
+              <a href="author.html#412">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

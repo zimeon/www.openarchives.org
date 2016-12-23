@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Lists/Flow-control/Emptiness
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:mln%40ruby.ils.unc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000586.html">
+   <LINK REL="Next"  HREF="000591.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Lists/Flow-control/Emptiness
+   </H1>
+    <B>Michael L. Nelson
+    </B> 
+    <A HREF="mailto:mln%40ruby.ils.unc.edu"
+       TITLE="[OAI-implementers] Lists/Flow-control/Emptiness">mln@ruby.ils.unc.edu
+       </A><BR>
+    <I>Thu, 11 Jul 2002 14:44:54 -0400 (EDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000586.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+        <LI> Next message: <A HREF="000591.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#587">[ date ]</a>
+              <a href="thread.html#587">[ thread ]</a>
+              <a href="subject.html#587">[ subject ]</a>
+              <a href="author.html#587">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Thu, 11 Jul 2002, Tim Brody wrote:
+
+&gt;<i> Dear all,
+</I>&gt;<i> 
+</I>&gt;<i> 1) empty resumption token in complete list
+</I>&gt;<i> 
+</I>&gt;<i> Where a result set is returned without flow control (e.g. a small list), can
+</I>&gt;<i> an empty resumption token be appended to this list, even if it is
+</I>&gt;<i> &quot;complete&quot;?
+</I>
+I guess its not explicitly stated in the protocol as &quot;must not&quot;... 
+
+But resumptionTokens are for incomplete lists, and including an empty
+resumptionToken would seem likely to confuse harvesters.  Or maybe it
+wouldn't confuse them, but at a miminum it is superfluous (below).
+
+&gt;<i> (The logic to cope with determining the difference between the completing
+</I>&gt;<i> list and a complete list is not trivial)
+</I>&gt;<i> 
+</I>
+check for the existence of a resumptionToken in the CGI vars.  if the
+harvester passed in a resumptionToken, then it is the final incomplete
+list.  if not, it is a complete list all by itself.
+
+&gt;<i> 2) no-records+resumption token
+</I>&gt;<i> 
+</I>&gt;<i> An empty list won't validate, e.g. ListRecords without any records.
+</I>&gt;<i> 
+</I>&gt;<i> It is possible that flow control may result in an incomplete list that does
+</I>&gt;<i> not contain any records, e.g.:
+</I>&gt;<i> Harvester requests (until=2002-03-04)
+</I>&gt;<i> Performs flow control, gets to last page-1
+</I>&gt;<i> Records on last page move out of result set
+</I>&gt;<i> Harvester requests final token, for which no records can be returned
+</I>&gt;<i> 
+</I>&gt;<i> An empty token by itself will not validate, and &quot;noRecordsMatch&quot; means that
+</I>&gt;<i> no records could be returned for the query, not for the resumption token.
+</I>&gt;<i> 
+</I>&gt;<i> Change schema or return noRecordsMatch?
+</I>&gt;<i> 
+</I>
+this would seem to be covered in section 3.5.1:
+
+[...] In cases where there are substantial changes to the repository, it
+may be appropriate for a repository to return a badResumptionToken error,
+signaling that the harvester should restart the list request sequence.
+
+
+if you have a resumptionToken *and* no records match, then something ugly
+did happen:  either the harvester is trying to &quot;forge&quot; the
+resumptionTokens, or the repository had (potentially significant) changes.
+
+I think returning both noRecordsMatch and badResumptionToken would be the
+safe way to handle it.  
+
+regards,
+
+Michael
+
+&gt;<i> Regards,
+</I>&gt;<i> Tim
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+---
+Michael L. Nelson
+NASA Langley Research Center		<A HREF="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>
+MS 158, Hampton, VA 23681		<A HREF="http://www.ils.unc.edu/~mln/">http://www.ils.unc.edu/~mln/</A>
++1 757 864 8511				+1 757 864 8342 (f)
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000586.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+	<LI> Next message: <A HREF="000591.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#587">[ date ]</a>
+              <a href="thread.html#587">[ thread ]</a>
+              <a href="subject.html#587">[ subject ]</a>
+              <a href="author.html#587">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

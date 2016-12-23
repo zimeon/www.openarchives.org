@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Qualified Dublin Core 
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=200408120235.i7C2Zoxw018008%40piglet.dstc.edu.au">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001263.html">
+   <LINK REL="Next"  HREF="001264.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Qualified Dublin Core </H1>
+    <B>Timothy W. Cole</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=200408120235.i7C2Zoxw018008%40piglet.dstc.edu.au"
+       TITLE="[OAI-implementers] Qualified Dublin Core ">t-cole3 at uiuc.edu
+       </A><BR>
+    <I>Thu Aug 12 13:24:38 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001263.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+        <LI>Next message: <A HREF="001264.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1265">[ date ]</a>
+              <a href="thread.html#1265">[ thread ]</a>
+              <a href="subject.html#1265">[ subject ]</a>
+              <a href="author.html#1265">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Comments embedded below 
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A> 
+</I>&gt;<i> [mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>] On Behalf 
+</I>&gt;<i> Of Stephen Crawley
+</I>&gt;<i> Sent: Wednesday, August 11, 2004 9:36 PM
+</I>&gt;<i> Subject: Re: [OAI-implementers] Qualified Dublin Core 
+</I>&gt;<i> 
+</I>&gt;<i> Folks,
+</I>&gt;<i> 
+</I>&gt;<i> A canonical container XSD for qualified DC would be useful, 
+</I>&gt;<i> but it doesn't really solve the problem, IMO.
+</I>&gt;<i> 
+</I>&gt;<i> Why?  Because many (most) DC-based metadata collections use 
+</I>&gt;<i> elements and/ or refinements that are not in DCQ.  These can 
+</I>&gt;<i> be extensions mandated by some other standard (e.g. AGLS, 
+</I>&gt;<i> EdNA, etc) or site-specific extensions. So, while oai schemas 
+</I>&gt;<i> for exchanging DCQ, AGLS, EdNA, etc would be useful, the 
+</I>&gt;<i> larger problem is how to exchange metadata with an arbitrary 
+</I>&gt;<i> metadata schema ... without defining yet another XML schema 
+</I>&gt;<i> to transport the records.
+</I>&gt;<i> 
+</I>&gt;<i> The solution (as we see it) is to use XSD that is 
+</I>&gt;<i> *insensitive* to the metadata's schema.  
+</I>
+I'm not sure what is meant here. Seem to be implying a way that I can send
+OAI harvesters metadata consisting entirely of elements that have no
+community-standard semantic labels, which seems counter-intuitive. Even if
+some of my metadata elements make sense only to my local application, don't
+I want to label at least those other elements in my record that do
+correspond to community-standard semantics with the namespace and element
+names of that standard semantic schema(s)?  
+
+&gt;<i> In the simple model, 
+</I>&gt;<i> the OAI repository assembles XML records containing whatever 
+</I>&gt;<i> elements it is prepared to publish. The OAI client would then 
+</I>&gt;<i> sort through the supplied elements, throwing away any that it 
+</I>&gt;<i> doesn't want / understand, and massaging others as required.
+</I>&gt;<i> Then the client validates the filtered records against its 
+</I>&gt;<i> own metadata schema before it decides what to do with them.
+</I>
+I agree with Jeff to this extent, if none of the metadata elements in a
+harvested metadata record are labeled with an element name I know prefixed
+by a metadata schema namespace I know, I'll have to throw all the elements
+away, and the record will therefore be worthless to me.
+
+&gt;<i> The problem of elements meaning different things in different 
+</I>&gt;<i> schemas is a bit tricky.  
+</I>
+Yes, an element called &lt;spatial&gt; might mean one thing in metadata schema A
+and something quite different in metadata schema B. As a harvester, if I
+encounter an element &lt;spatial&gt; that is not tied to the dcterms schema and
+namespace (or some other namespace I know) I would always discard it rather
+than assume it means the same thing as &lt;dcterms:spatial&gt;. It's not a safe
+assumption that just because something is labeled &lt;spatial&gt; in a local
+schema it means the same thing as &lt;spatial&gt; in dcterms. That's why XML
+namespaces are so handy. The data provider can explicitly and unambiguously
+tie an element in his or her record to one specific, community-standard
+metadata semantic set.
+
+&gt;<i> However, you can get some traction 
+</I>&gt;<i> if each record's metadata schema identifier is included in the record.
+</I>&gt;<i>
+</I> 
+But XML and XML Schema Language already have standard, well-defined
+mechanisms (namespaces and the ability to import or include other XSDs
+within you XSD) that make it easy to identify the semantic set with which
+any given element in a metadata instance is associated. Why not just use
+those XML standard approaches?
+
+A problem can occur when semantics overlap such that &lt;spatial&gt; does mean the
+same in both schema A and schema B. The most common way around this is to
+repeat the element (e.g., include both &lt;A:spatial&gt; and &lt;B:spatial&gt;), which
+though perhaps not elegant works just fine. 
+
+In some other instances of overlaps between schemas, the XML schema language
+substitutionGroup attribute can also be used to good effect -- though it
+requires a slightly more sophisticated algorithm on the part of the
+harvester to recognize.
+
+&gt;<i> For info: I've attached the XSD schema that DSTC's MetaSuite 
+</I>&gt;<i> system uses for passing metadata records between Broker 
+</I>&gt;<i> instances over OAI.  The XSD is not suitable for general use 
+</I>&gt;<i> because it contains a lot of MetaSuite specific admin fields. 
+</I>&gt;<i>  However, it illustrates the approach. The key bits of the 
+</I>&gt;<i> XML schema are the &quot;schema&quot; attribute and the &quot;element&quot;
+</I>&gt;<i> element.  The latter represents the element's prefix + name + 
+</I>&gt;<i> refinement as the &quot;id&quot; attribute.
+</I>&gt;<i> 
+</I>
+Well the schema you attached failed XML well-formedness (apparent typos on
+lines 64, 102, and 110, also appear to have left out the attribute name
+[i.e., &quot;value&quot;] on lines 110, 111, and 117). There also appears to be a
+glitch (at least according to XSV) with complexType definition of
+REG:RecordType. So, I'm not sure I exactly understand what you're trying to
+do with your schema. But from looking at it and from what you said about in
+your note, it seems to me like just another way to do much the same thing
+that can be done in a more XML standard way by importing/including other
+schemas and namespaces of interest in your local XSD and labeling the
+elements in your metadata record instances accordingly. 
+
+
+&gt;<i> If anyone is interested in developing an OAI spec for 
+</I>&gt;<i> schema-independent metadata interchange, please drop me a line.
+</I>&gt;<i> 
+</I>
+I'm not sure of the benefit of the approach represented by your schema. You
+provide some additional attributes that might be of interest for other
+purposes, but for determining whether an element labeled &lt;spatial&gt; in your
+metadata record means the same thing as &lt;dcterms:spatial&gt;, I'd rather rely
+on conventional XML namespace methods.
+
+Tim Cole
+University of Illinois at UC 
+
+
+
+&gt;<i> -- Steve
+</I>&gt;<i> 
+</I>&gt;<i> +----------------------------------+--------------------------
+</I>&gt;<i> ----------
+</I>&gt;<i> +----------------------------------+----
+</I>&gt;<i> | Stephen Crawley                  | MetaSuite Project Leader
+</I>&gt;<i> | Level 7, GP South Building (78)  | Distributed Systems 
+</I>&gt;<i> Technology CRC
+</I>&gt;<i> | Staff House Road                 | Tel   : +61 7 3365 4310
+</I>&gt;<i> | The University of Queensland     | Fax   : +61 7 3365 4311
+</I>&gt;<i> | Queensland 4072                  | Email : <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">crawley at dstc.edu.au</A>
+</I>&gt;<i> | Australia                        | WWW   : <A HREF="http://www.dstc.edu.au">http://www.dstc.edu.au</A>
+</I>&gt;<i> |                                  | DSTC is the Australian W3C Office
+</I>&gt;<i> +----------------------------------+--------------------------
+</I>&gt;<i> ----------
+</I>&gt;<i> +----------------------------------+----
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001263.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+	<LI>Next message: <A HREF="001264.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1265">[ date ]</a>
+              <a href="thread.html#1265">[ thread ]</a>
+              <a href="subject.html#1265">[ subject ]</a>
+              <a href="author.html#1265">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

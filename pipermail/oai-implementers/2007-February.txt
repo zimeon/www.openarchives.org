@@ -1,0 +1,277 @@
+From ann.apps at manchester.ac.uk  Fri Feb  2 07:00:31 2007
+From: ann.apps at manchester.ac.uk (Ann Apps)
+Date: Fri Feb  2 07:00:50 2007
+Subject: [OAI-implementers] Flow Control chunk size
+Message-ID: <20070202120031312.00000003604@annapps>
+
+Hi All,
+
+The OAI-PMH spec section 3.5 Flow Control details how to respond to list requests in installments with a resumptionToken. The reason for this partitioning is that lists may be long from a large database. A couple of questions:
+
+1. Are there any guidelines on best practice for what to choose as a chunk size? I guess this question is really asking what size of data package is it reasonable to send over HTTP. 
+
+I currently have a chunk size of 25, some records in a specific XML metadata format being quite long. Someone recently asked me why we supply records 25 at a time, and I do not really have an answer.
+
+2. Is it permissible to have a different chunk size for ListIdentifiers and ListRecords? The former will be a much shorter response than the latter. Also can one have a different chunk size for ListRecords in different metadata formats?
+
+>From the spec this looks to be OK - all the details are contained in the resumptionToken and its XML attributes. But I don't want to implement something that is invalid.
+
+Thanks for any advice.
+Best wishes,
+	Ann
+
+-------------------------------------------------
+Ann Apps. IT Specialist (Research & Development), MIMAS,
+   The University of Manchester, Oxford Road, Manchester, M13 9PL, UK 
+Tel: +44 (0) 161 275 6039  Fax: +44 (0) 161 275 6040
+Email: ann.apps@manchester.ac.uk WWW: http://epub.mimas.ac.uk/ann.html
+--------------------------------------------------
+
+
+From ckoscher at crossref.org  Fri Feb  2 08:34:18 2007
+From: ckoscher at crossref.org (Chuck Koscher)
+Date: Fri Feb  2 08:34:51 2007
+Subject: [OAI-implementers] Flow Control chunk size
+In-Reply-To: <20070202120031312.00000003604@annapps>
+Message-ID: <auto-000006499843@crossref.org>
+
+
+We use a chunk size of 200 which produces a 40K response to a ListIdentifier
+request and a 380K response to a ListRecords request. I think a primary
+concern is to maintain acceptable response times when serving up the
+records.
+
+Chuck
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Ann Apps
+Sent: Friday, February 02, 2007 7:01 AM
+To: oai-implementers@openarchives.org
+Subject: [OAI-implementers] Flow Control chunk size
+
+Hi All,
+
+The OAI-PMH spec section 3.5 Flow Control details how to respond to list
+requests in installments with a resumptionToken. The reason for this
+partitioning is that lists may be long from a large database. A couple of
+questions:
+
+1. Are there any guidelines on best practice for what to choose as a chunk
+size? I guess this question is really asking what size of data package is it
+reasonable to send over HTTP. 
+
+I currently have a chunk size of 25, some records in a specific XML metadata
+format being quite long. Someone recently asked me why we supply records 25
+at a time, and I do not really have an answer.
+
+2. Is it permissible to have a different chunk size for ListIdentifiers and
+ListRecords? The former will be a much shorter response than the latter.
+Also can one have a different chunk size for ListRecords in different
+metadata formats?
+
+>From the spec this looks to be OK - all the details are contained in the
+resumptionToken and its XML attributes. But I don't want to implement
+something that is invalid.
+
+Thanks for any advice.
+Best wishes,
+	Ann
+
+-------------------------------------------------
+Ann Apps. IT Specialist (Research & Development), MIMAS,
+   The University of Manchester, Oxford Road, Manchester, M13 9PL, UK 
+Tel: +44 (0) 161 275 6039  Fax: +44 (0) 161 275 6040
+Email: ann.apps@manchester.ac.uk WWW: http://epub.mimas.ac.uk/ann.html
+--------------------------------------------------
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+
+
+From simeon at cs.cornell.edu  Fri Feb  2 08:48:58 2007
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Fri Feb  2 08:49:06 2007
+Subject: [OAI-implementers] Flow Control chunk size
+In-Reply-To: <20070202120031312.00000003604@annapps>
+References: <20070202120031312.00000003604@annapps>
+Message-ID: <Pine.LNX.4.64.0702020843470.12778@dhcp103-124.cs.cornell.edu>
+
+
+Hi Ann,
+
+On Fri, 2 Feb 2007, Ann Apps wrote:
+> 1. Are there any guidelines on best practice for what to choose as a 
+> chunk size? I guess this question is really asking what size of data 
+> package is it reasonable to send over HTTP.
+
+In the DLF sponsored OAI best practices work 
+(http://oai-best.comm.nsdl.org/cgi-bin/wiki.pl?ResumptionTokens) we 
+decided something around 1MB per response was best. This is big enough to 
+be reasonably efficient for large transfers (reducing overhead of many 
+small requests that may not use a persistent connection) and not too 
+large for XML parsers.
+
+> 2. Is it permissible to have a different chunk size for ListIdentifiers 
+> and ListRecords? The former will be a much shorter response than the 
+> latter. Also can one have a different chunk size for ListRecords in 
+> different metadata formats?
+
+This is certainly permissible, commonly done and indeed recommended by
+the 1MB response size suggestion.
+
+Cheers,
+Simeon
+
+From atanu.garai at gmail.com  Sat Feb 10 06:33:36 2007
+From: atanu.garai at gmail.com (Atanu Garai)
+Date: Sat Feb 10 06:33:44 2007
+Subject: [OAI-implementers] Question regarding OAI-compliant (multiple)
+	journal archiving system
+Message-ID: <000001c74d07$4e54f950$3801a8c0@ATANU>
+
+Dear Colleagues:
+Greetings from New Delhi, India.
+Before I elaborate I would like to take a moment to introduce myself, as
+asked by the moderator. I am Atanu Garai, living in New Delhi and currently
+working for Globethics.Net, a Swiss NGO based in Geneva as Online Networking
+Specialist. We are developing a digital library for archiving some open
+access journals, and few commercial ones along with other documents e.g.
+books, theses etc, with a robust user access rights management. In this
+regard, we are looking for your experiences of using different platform that
+meet these functionalities and the possibilities of further development on
+the existing platforms. 
+Thank you a lot for your suggestions, instances, stories, links, contacts
+etc.
+Warm regards
+Atanu
+ 
+--
+Atanu Garai
+Online Networking Specialist
+Globethics.net
+International Secretariat
+150, route de Ferney
+CH-1211 Geneva 2
+Switzerland
+Tel.: +41 22 791 62 49/67
+Fax: +41 22 710 23 86
+Email: secretariat(at)globethics.net
+Web: www.globethics.net
+M 91.98996.22884
+E atanu.garai@gmail.com
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20070210/c0bbb13d/attachment.htm
+From rahulmahanta at gmail.com  Sat Feb 10 13:29:10 2007
+From: rahulmahanta at gmail.com (rahul Mahanta)
+Date: Sun Feb 11 08:31:35 2007
+Subject: [OAI-implementers] Re: OAI-implementers Digest, Vol 29, Issue 2
+In-Reply-To: <45cdfa54.1dd08634.55f8.04e6SMTPIN_ADDED@mx.google.com>
+References: <45cdfa54.1dd08634.55f8.04e6SMTPIN_ADDED@mx.google.com>
+Message-ID: <b71a94af0702101029h7a73b60r218d40f09ea7bbb3@mail.gmail.com>
+
+hello
+
+for last 7 years i have been doing a documentation of 18 regional
+daily newspapers from northeast india, indexed topic wise. it is a
+monthly compilation. from january 2006 onwards we have softcopy of the
+journal.
+please read the attached document to get a better idea about the work.
+well is it of any interest to you
+regards
+rahul mahanta
+
+On 2/10/07, oai-implementers-request@openarchives.org
+<oai-implementers-request@openarchives.org> wrote:
+> Send OAI-implementers mailing list submissions to
+>        oai-implementers@openarchives.org
+>
+> To subscribe or unsubscribe via the World Wide Web, visit
+>        http://www.openarchives.org/mailman/listinfo/oai-implementers
+> or, via email, send a message with subject or body 'help' to
+>        oai-implementers-request@openarchives.org
+>
+> You can reach the person managing the list at
+>        oai-implementers-owner@openarchives.org
+>
+> When replying, please edit your Subject line so it is more specific
+> than "Re: Contents of OAI-implementers digest..."
+>
+>
+> Today's Topics:
+>
+>   1. Question regarding OAI-compliant (multiple)       journal archiving
+>      system (Atanu Garai)
+>
+>
+> ----------------------------------------------------------------------
+>
+> Message: 1
+> Date: Sat, 10 Feb 2007 17:03:36 +0530
+> From: Atanu Garai <atanu.garai@gmail.com>
+> Subject: [OAI-implementers] Question regarding OAI-compliant
+>        (multiple)      journal archiving system
+> To: <oai-implementers@openarchives.org>
+> Message-ID: <000001c74d07$4e54f950$3801a8c0@ATANU>
+> Content-Type: text/plain; charset="us-ascii"
+>
+> Dear Colleagues:
+> Greetings from New Delhi, India.
+> Before I elaborate I would like to take a moment to introduce myself, as
+> asked by the moderator. I am Atanu Garai, living in New Delhi and currently
+> working for Globethics.Net, a Swiss NGO based in Geneva as Online Networking
+> Specialist. We are developing a digital library for archiving some open
+> access journals, and few commercial ones along with other documents e.g.
+> books, theses etc, with a robust user access rights management. In this
+> regard, we are looking for your experiences of using different platform that
+> meet these functionalities and the possibilities of further development on
+> the existing platforms.
+> Thank you a lot for your suggestions, instances, stories, links, contacts
+> etc.
+> Warm regards
+> Atanu
+>
+> --
+> Atanu Garai
+> Online Networking Specialist
+> Globethics.net
+> International Secretariat
+> 150, route de Ferney
+> CH-1211 Geneva 2
+> Switzerland
+> Tel.: +41 22 791 62 49/67
+> Fax: +41 22 710 23 86
+> Email: secretariat(at)globethics.net
+> Web: www.globethics.net
+> M 91.98996.22884
+> E atanu.garai@gmail.com
+>
+> -------------- next part --------------
+> An HTML attachment was scrubbed...
+> URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20070210/c0bbb13d/attachment-0001.htm
+>
+> ------------------------------
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+> End of OAI-implementers Digest, Vol 29, Issue 2
+> ***********************************************
+>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Profile_NE_india_Clippings.doc
+Type: application/msword
+Size: 40448 bytes
+Desc: not available
+Url : http://www.openarchives.org/pipermail/oai-implementers/attachments/20070210/1a0d36b0/Profile_NE_india_Clippings-0001.doc

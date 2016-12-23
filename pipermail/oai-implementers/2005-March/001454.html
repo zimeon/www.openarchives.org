@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] on the OAI-PMH data model
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20on%20the%20OAI-PMH%20data%20model&In-Reply-To=200503181652.j2IGqBR4001730%40smtphost.cis.strath.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001453.html">
+   <LINK REL="Next"  HREF="001455.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] on the OAI-PMH data model</H1>
+    <B>Michael Nelson</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20on%20the%20OAI-PMH%20data%20model&In-Reply-To=200503181652.j2IGqBR4001730%40smtphost.cis.strath.ac.uk"
+       TITLE="[OAI-implementers] on the OAI-PMH data model">mln at cs.odu.edu
+       </A><BR>
+    <I>Fri Mar 18 12:41:25 EST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001453.html">[OAI-implementers] on the OAI-PMH data model
+</A></li>
+        <LI>Next message: <A HREF="001455.html">[OAI-implementers] on the OAI-PMH data model
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1454">[ date ]</a>
+              <a href="thread.html#1454">[ thread ]</a>
+              <a href="subject.html#1454">[ subject ]</a>
+              <a href="author.html#1454">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Fri, 18 Mar 2005, Fabio Simeoni wrote:
+&gt;<i>
+</I>&gt;<i> I wonder now if DP could be as good-willed as you are and yet avoid the
+</I>&gt;<i> bookkeeping you are doing by:
+</I>&gt;<i> (i) avoid updating the item/master-record datestamp when a format mapping
+</I>&gt;<i> changes, and
+</I>&gt;<i> (ii) use out-of-band techniques to tell harvester which are interested in
+</I>&gt;<i> the mapping change that, as a result of that change, they should do a
+</I>&gt;<i> historical re-harvest.
+</I>
+I don't understand why oob techniques would be required.  If a repo
+exposes metadata formats:
+
+	- xyz (native)
+	- abc (dynamically generated from xyz)
+
+it is easy for the repo to associate a datestamp with the mapping itself
+(&quot;from&quot; shown):
+
+foreach $record (@records) {
+  if ($request-&gt;format eq &quot;abc&quot;) {
+    if ( ($request-&gt;datestamp &lt; $record-&gt;datestamp) ||
+         ($request-&gt;datestamp &lt; $map_to_abc-&gt;datestamp) ) {
+           push(@result, $record);
+    }
+  }
+  if ($request-&gt;format eq &quot;xyz&quot;) {
+    if ($request-&gt;datestamp &lt; $record-&gt;datestamp) {
+      push(@result, $record);
+    }
+  }
+}
+
+a new mapping of xyz-&gt;abc will not impact xyz harvesters, and keeping the
+datestamp with the mapping function doesn't represent a hardship for the
+repo.
+
+regards,
+
+Michael
+
+&gt;<i>
+</I>&gt;<i> All the other harvester would still be spared from doing costly and yet
+</I>&gt;<i> irrelevant historical harvests. Of course, this requires DPs to know who's
+</I>&gt;<i> harvesting them and for what.
+</I>&gt;<i>
+</I>&gt;<i> Any comments appreciated.
+</I>&gt;<i>
+</I>&gt;<i> regards,
+</I>&gt;<i>
+</I>&gt;<i> fabio
+</I>&gt;<i>
+</I>
+----
+Michael L. Nelson <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">mln at cs.odu.edu</A> <A HREF="http://www.cs.odu.edu/~mln/">http://www.cs.odu.edu/~mln/</A>
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001453.html">[OAI-implementers] on the OAI-PMH data model
+</A></li>
+	<LI>Next message: <A HREF="001455.html">[OAI-implementers] on the OAI-PMH data model
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1454">[ date ]</a>
+              <a href="thread.html#1454">[ thread ]</a>
+              <a href="subject.html#1454">[ subject ]</a>
+              <a href="author.html#1454">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

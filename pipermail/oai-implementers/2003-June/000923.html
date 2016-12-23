@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] A 'one-page' harvester in Python
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:hickey%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000922.html">
+   <LINK REL="Next"  HREF="000924.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] A 'one-page' harvester in Python
+   </H1>
+    <B>Hickey,Thom
+    </B> 
+    <A HREF="mailto:hickey%40oclc.org"
+       TITLE="[OAI-implementers] A 'one-page' harvester in Python">hickey@oclc.org
+       </A><BR>
+    <I>Fri, 6 Jun 2003 16:56:04 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000922.html">[OAI-implementers] Schema Validation
+</A></li>
+        <LI> Next message: <A HREF="000924.html">[OAI-implementers] Re: OAI validation question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#923">[ date ]</a>
+              <a href="thread.html#923">[ thread ]</a>
+              <a href="subject.html#923">[ subject ]</a>
+              <a href="author.html#923">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C32C6E.0B0B1C34
+Content-Type: text/plain;
+	charset=&quot;iso-8859-1&quot;
+
+I've attached a one page (or at least it was one page until I put our legal
+text into it!) Python script that will pull records from a repository and
+dump them to a file.  In spite of its length it:
+
+  o Handles resumption tokens
+  o Notices OAI errors
+  o Supports compression
+  o Respects 503 Retry-After's
+
+It doesn't know much about XML, though, so the file created is just a
+collection of the downloaded XML responses, and the only metadata format it
+asks for is oai_dc, even though it does ask the repository for the metadata
+formats supported.  Sets are ignored, but would be fairly easy to add.
+
+I tested it using Python 2.2.2 under Windows 2000 against several
+repositories.
+
+It is invoked by:
+  python harverst.py [repository-address outputfile]
+e.g.:
+  python harvest.py alcme.oclc.org/ndltd/servlet/OAIHandler ndltd.out
+
+If you just run the script without parameters it defaults the NDLTD
+repository (around 39,000 digital thesis and dissertation records).
+
+Anyway, I thought it was interesting to see how much could be done in less
+than 60 lines.
+
+--Th
+
+
+------_=_NextPart_000_01C32C6E.0B0B1C34
+Content-Type: application/octet-stream;
+	name=&quot;harvest.py&quot;
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename=&quot;harvest.py&quot;
+
+import sys, urllib2, zlib, time, re=0A=
+## Copyright (c) 2000-2003 OCLC Online Computer Library Center, Inc. =
+and other=0A=
+## contributors.  All rights reserved.  The contents of this file, as =
+updated=0A=
+## from time to time by the OCLC Office of Research are subject to =
+OCLC=0A=
+## Research Public License Version 2.0 (the &quot;License&quot;); you may not use =
+this=0A=
+## file except in compliance with the License.  You may obtain a =
+current copy=0A=
+## of the License at <A HREF="http://purl.oclc.org/oclc/research/ORPL/.">http://purl.oclc.org/oclc/research/ORPL/.</A>  =
+Software=0A=
+## distributed under the License is distributed on an &quot;AS IS&quot; basis, =
+WITHOUT=0A=
+## WARRANTY OF ANY KIND, either express or implied.  See the License =
+for the=0A=
+## specific language governing rights and limitations under the =
+License.  This=0A=
+## software consists of voluntary contributions made by many =
+individuals on=0A=
+## behalf of OCLC Research.  For more information on OCLC Research, =
+please see=0A=
+## <A HREF="http://www.oclc.org/research/.">http://www.oclc.org/research/.</A>  This is the Original Code.  The =
+Initial=0A=
+## Developer of the Original Code is Thomas Hickey =
+(mailto:<A HREF="mailto:hickey@oclc.org">hickey@oclc.org</A>).=0A=
+## Portions created by OCLC are Copyright (C) 2003.  All Rights =
+Reserved.=0A=
+=0A=
+def getResumptionToken(data):=0A=
+    mo =3D re.search('&lt;resumptionToken[^&gt;]*&gt;(.*)&lt;/resumptionToken&gt;', =
+data)=0A=
+    if mo: return mo.group(1)=0A=
+def getFile(serverString, command, verbose=3D1):=0A=
+    remoteAddr =3D serverString+'?verb=3D%s'%command=0A=
+    if verbose: print &quot;getFile '%s'&quot;%remoteAddr=0A=
+    headers =3D {'User-Agent': 'OAIHarvester/2.0',=0A=
+               'Accept': 'text/html',=0A=
+               'Accept-Encoding': 'compress, deflate'}=0A=
+    try:=0A=
+        req =3D urllib2.Request(remoteAddr, None, headers)=0A=
+        remoteFile =3D urllib2.urlopen(req)=0A=
+        remoteData =3D remoteFile.read()=0A=
+        remoteFile.close()=0A=
+    except urllib2.HTTPError, exValue:=0A=
+        if exValue.code=3D=3D503:=0A=
+            retryWait =3D int(exValue.hdrs.get(&quot;Retry-After&quot;, &quot;-1&quot;))=0A=
+            if retryWait&lt;0: return None=0A=
+            print 'Waiting %d seconds'%retryWait=0A=
+            time.sleep(retryWait)=0A=
+            return getFile(serverString, command, 0)=0A=
+        print exValue=0A=
+        return None=0A=
+    try:=0A=
+        remoteData =3D zlib.decompressobj().decompress(remoteData)=0A=
+    except:=0A=
+        pass=0A=
+    mo =3D re.search('&lt;error *code=3D\&quot;([^&quot;]*)&quot;&gt;(.*)&lt;/error&gt;', =
+remoteData)=0A=
+    if mo:=0A=
+        print &gt;&gt;sys.stderr,&quot;OAIERROR: code=3D%s '%s'&quot;%(mo.group(1), =
+mo.group(2))=0A=
+        sys.exit(1)=0A=
+    return remoteData=0A=
+def writeWithLF(ofile, data):=0A=
+    if not data: return=0A=
+    ofile.write(data)=0A=
+    if data[-1]!=3D'\n': ofile.write('\n')=0A=
+def writeRecords(outFile, serverString, mdformat, sDate=3DNone, =
+eDate=3DNone):=0A=
+    if not sDate and not eDate:=0A=
+        verb=3D'ListRecords&amp;metadataPrefix=3D%s'%(mdformat)=0A=
+    else:=0A=
+        =
+verb=3D'ListRecords&amp;metadataPrefix=3D%s&amp;from=3D%s&amp;until=3D%s'%(mdformat,=
+ sDate, eDate)=0A=
+    data =3D getFile(serverString, verb)=0A=
+    while data:=0A=
+        writeWithLF(outFile, data)=0A=
+        reTok =3D getResumptionToken(data)=0A=
+        if not reTok: break=0A=
+        data =3D getFile(serverString, =
+&quot;ListRecords&amp;resumptionToken=3D%s&quot;%reTok)=0A=
+if __name__=3D=3D&quot;__main__&quot;:=0A=
+    try:    serverName, outName =3D sys.argv[1:]=0A=
+    except: serverName, outName =3D =
+'alcme.oclc.org/ndltd/servlet/OAIHandler', 'harvest.out'=0A=
+    serverString =3D '<A HREF="http://%s'%serverName=0A=">http://%s'%serverName=0A=</A>
+    print &quot;Writing to file %s from archive at %s&quot;%(outName, =
+serverName)=0A=
+    outFile =3D file(outName, 'wb')=0A=
+    writeWithLF(outFile, getFile(serverString, 'Identify'))=0A=
+    writeWithLF(outFile, getFile(serverString, =
+'ListMetadataFormats'))=0A=
+    writeRecords(outFile, serverString, 'oai_dc')=0A=
+
+------_=_NextPart_000_01C32C6E.0B0B1C34--
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000922.html">[OAI-implementers] Schema Validation
+</A></li>
+	<LI> Next message: <A HREF="000924.html">[OAI-implementers] Re: OAI validation question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#923">[ date ]</a>
+              <a href="thread.html#923">[ thread ]</a>
+              <a href="subject.html#923">[ subject ]</a>
+              <a href="author.html#923">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

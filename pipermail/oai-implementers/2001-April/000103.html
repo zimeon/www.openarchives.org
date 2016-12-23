@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML Schemas and Xerces again
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:herbertv%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000102.html">
+   <LINK REL="Next"  HREF="000104.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML Schemas and Xerces again
+   </H1>
+    <B>herbert van de sompel
+    </B> 
+    <A HREF="mailto:herbertv%40cs.cornell.edu"
+       TITLE="[OAI-implementers] XML Schemas and Xerces again">herbertv@cs.cornell.edu
+       </A><BR>
+    <I>Wed, 25 Apr 2001 09:46:52 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000102.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+        <LI> Next message: <A HREF="000104.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#103">[ date ]</a>
+              <a href="thread.html#103">[ thread ]</a>
+              <a href="subject.html#103">[ subject ]</a>
+              <a href="author.html#103">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi Jeff,
+
+you are well on your way to becoming the master schema-debugger!
+
+Since I share your impression that the schema are correct for the issues
+you list (while Xerces generates an error), I think we may be witnessing
+the following:
+
+* there doesn't seem to be a validator out there that we can really
+fully trust.  for instance, there are several issues that XSV does not
+attempt to validate (the regular expression facet, for instance, as far
+as I can tell). also, other validators seem to be generating errors when
+nothing seems to be wrong, really.  it happened when we were validating
+the schema before releasing the protocol, using XML Spy.  just like
+Xerces generates an error for uriReference in relation to the
+&quot;identifier&quot;, XML Spy generated an error for requestURL.  as a result,
+we changed the type of requestURL from uriReference to string.  clearly,
+the requestURL as we use it in the OAI protocol seems to be a valid URI!
+
+* there may be a Schema version issue at play.  remember we are using
+the specs that corresponds with the <A HREF="http://www.w3.org/2000/10/XMLSchema">http://www.w3.org/2000/10/XMLSchema</A>
+namespace, which corresponds with the XSV validator at
+<A HREF="http://www.w3.org/2000/09/webdata/xsv">http://www.w3.org/2000/09/webdata/xsv</A> .  as you know there is a more
+recent XML Schema version that has reached the status of &quot;proposed
+recommendation&quot; (not yet &quot;recommendation&quot;) with namespace
+<A HREF="http://www.w3.org/2001/XMLSchema">http://www.w3.org/2001/XMLSchema</A> and XSV validator at
+<A HREF="http://www.w3.org/2001/03/webdata/xsv">http://www.w3.org/2001/03/webdata/xsv</A> .  the validator for the recent
+specs will definitely not validate schema that are written to be
+compliant with the older spec.  as I mentioned before, we will have to
+make a decission re what to do with our OAI Schema. we are currently
+still investigating the issues involved.
+
+many greetings
+
+herbert
+
+&quot;Young,Jeff&quot; wrote:
+&gt;<i> 
+</I>&gt;<i> I'm happy to say that the status=deleted problem appears to be resolved.
+</I>&gt;<i> Unfortunately, I now seem to have a different (unrelated) problem. Someone
+</I>&gt;<i> reported to me that Xerces 1.3.1 is reporting an XML schema error where
+</I>&gt;<i> 1.3.0 didn't. It seems that I had failed to call setErrorHandler() which is
+</I>&gt;<i> key to reporting any validation errors. Xerces 1.3.0 let this slide where
+</I>&gt;<i> 1.3.1 complains about it. Now that I've corrected this oversight, I'm now
+</I>&gt;<i> seeing some parser errors related to the XML schema. I've attached another
+</I>&gt;<i> small demo application that shows the effects. To add to the confusion,
+</I>&gt;<i> 1.3.0 reports a different error than does 1.3.1.
+</I>&gt;<i> 
+</I>&gt;<i> Using Xerces 1.3.0, the demo application produces:
+</I>&gt;<i> 
+</I>&gt;<i> error
+</I>&gt;<i> org.xml.sax.SAXParseException: Datatype error: In element 'identifier' :
+</I>&gt;<i> Value 'oai:etdcat:ocm02999966' is a Malformed URI .
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1068)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.checkContent(XMLValidator.j
+</I>&gt;<i> ava:3609)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+</I>&gt;<i> .java:1133)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+</I>&gt;<i> LDocumentScanner.java:1201)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+</I>&gt;<i> java:381)
+</I>&gt;<i>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:12
+</I>&gt;<i> 3)
+</I>&gt;<i>         at Test.main(Test.java:34)
+</I>&gt;<i> 
+</I>&gt;<i> Using Xerces 1.3.1, the demo produces:
+</I>&gt;<i> 
+</I>&gt;<i> error
+</I>&gt;<i> org.xml.sax.SAXParseException: The content of element type &quot;metadata&quot; must
+</I>&gt;<i> match &quot;##any:uri=<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords".">http://www.openarchives.org/OAI/1.0/OAI_ListRecords&quot;.</A>
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1067)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.reportRecoverableXMLError(X
+</I>&gt;<i> MLValidator.java:1689)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+</I>&gt;<i> .java:1353)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+</I>&gt;<i> LDocumentScanner.java:1205)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+</I>&gt;<i> java:381)
+</I>&gt;<i>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:17
+</I>&gt;<i> 2)
+</I>&gt;<i>         at Test.main(Test.java:34)
+</I>&gt;<i> 
+</I>&gt;<i> As far as I can tell, the schema look fine. My assumption, at this point, is
+</I>&gt;<i> that Xerces is at fault and my only recourse is turn off validation. I must
+</I>&gt;<i> also admit the possibility that my program is flawed in some way. On the
+</I>&gt;<i> slim chance that I've found the 2nd and 3rd XML schema errors within the
+</I>&gt;<i> span of a week, though, I thought I'd pass along my findings.
+</I>&gt;<i> 
+</I>&gt;<i>  &lt;&lt;Test.java&gt;&gt;
+</I>&gt;<i> Cheers,
+</I>&gt;<i> 
+</I>&gt;<i> Jeff
+</I>&gt;<i> 
+</I>&gt;<i> ---
+</I>&gt;<i> Jeffrey A. Young
+</I>&gt;<i> Senior Consulting Systems Analyst
+</I>&gt;<i> Office of Research, Mail Code 710
+</I>&gt;<i> OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> 6565 Frantz Road
+</I>&gt;<i> Dublin, OH   43017-3395
+</I>&gt;<i> www.oclc.org
+</I>&gt;<i> 
+</I>&gt;<i> Voice:  614-764-4342
+</I>&gt;<i> Voice:  800-848-5878, ext. 4342
+</I>&gt;<i> Fax:    614-718-7477
+</I>&gt;<i> Email:  <A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> 
+</I>&gt;<i>   ------------------------------------------------------------------------
+</I>&gt;<i>                 Name: Test.java
+</I>&gt;<i>    Test.java    Type: unspecified type (application/octet-stream)
+</I>&gt;<i>             Encoding: quoted-printable
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000102.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+	<LI> Next message: <A HREF="000104.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#103">[ date ]</a>
+              <a href="thread.html#103">[ thread ]</a>
+              <a href="subject.html#103">[ subject ]</a>
+              <a href="author.html#103">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

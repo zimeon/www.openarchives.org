@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] converting filenames of metadata records
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jweather%40ucar.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001069.html">
+   <LINK REL="Next"  HREF="001070.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] converting filenames of metadata records
+   </H1>
+    <B>John Weatherley
+    </B> 
+    <A HREF="mailto:jweather%40ucar.edu"
+       TITLE="[OAI-implementers] converting filenames of metadata records">jweather@ucar.edu
+       </A><BR>
+    <I>Wed, 22 Oct 2003 11:03:11 -0600 (MDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001069.html">[OAI-implementers] converting filenames of metadata records
+</A></li>
+        <LI> Next message: <A HREF="001070.html">[OAI-implementers] Sets in and subjects in OAI-PMH
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1073">[ date ]</a>
+              <a href="thread.html#1073">[ thread ]</a>
+              <a href="subject.html#1073">[ subject ]</a>
+              <a href="author.html#1073">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Thomas,
+
+for now it is not possible to tell the DLESE OAI software to leave the
+colons in file names unencoded rather than converting them to %3A. The
+software does this because Windows file systems don't accept colons (and
+some other chars) as valid characters, and the software is designed to be
+cross-platform compatible. 
+
+A number of people have reported having this problem, however, so I may
+change the way file names are encoded in future releases of the software
+to make them easier to work with (suggestions anyone?).
+
+That being said, I have had success opening and reading files that are
+encoded this way using the dom4j XML APIs (available at
+<A HREF="http://www.dom4j.org/">http://www.dom4j.org/</A>). Sample code:
+
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
+
+...
+
+File dir = new File(&quot;/home/jweather/ ... /dlese.org/oai/provider/avc/nsdl_dc&quot;);
+File [] files = dir.listFiles();
+
+Document document;
+
+for(int i = 0; i &lt; files.length; i++){
+   document = reader.read(files[i]);
+   
+   // Process the doc...
+
+}
+
+
+Another possibility in your code below: in the builder.build(...)  
+method, try passing in a java.io.InputStream, java.io.Reader or
+java.net.URL instead of the java.io.File and see if that works.
+
+ - john
+
+
+
+On Wed, 22 Oct 2003, Thomas Krämer wrote:
+
+&gt;<i> Hello
+</I>&gt;<i> 
+</I>&gt;<i> i am developping a middleware, that uses metadata harvested with the 
+</I>&gt;<i> DLESE OAI software.
+</I>&gt;<i> 
+</I>&gt;<i> thus, there is a directory with hundreds of metadata records, that are 
+</I>&gt;<i> not sorted nor can queries be formulated in order to retrieve the 
+</I>&gt;<i> relevant among them.
+</I>&gt;<i> 
+</I>&gt;<i> Q1:Am i right assuming that repositories DO NOT offer any search 
+</I>&gt;<i> interfaces, but provide their entire metadata and nothing more?
+</I>&gt;<i> 
+</I>&gt;<i> Q2:Am i right assuming that the DLESE OAI software has the apache lucene 
+</I>&gt;<i> search api integrated, but is not yet working?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> however, i am currently trying to use the apache lucene search api to 
+</I>&gt;<i> index these records and make them searchable.
+</I>&gt;<i> 
+</I>&gt;<i> certain problem appears, when i try to read a record :
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>      SAXBuilder builder = new SAXBuilder();
+</I>&gt;<i>      try {
+</I>&gt;<i>        Document doc = builder.build(recordfile.getAbsoluteFile());
+</I>&gt;<i>        Element root = doc.getRootElement();
+</I>&gt;<i>        listChildren(root, 0);
+</I>&gt;<i>      }
+</I>&gt;<i> 
+</I>&gt;<i> i always get an io.FileNotFoundException, as the oai-pmh changes the 
+</I>&gt;<i> host separator  &quot; : &quot; into &quot; %3A &quot;
+</I>&gt;<i> the pathname indicated at debugging is the correct one (using the &quot;%3A&quot; 
+</I>&gt;<i> , such as the record files on my system)
+</I>&gt;<i> 
+</I>&gt;<i> but the exception tells me :
+</I>&gt;<i> 
+</I>&gt;<i> java.io.FileNotFoundException: 
+</I>&gt;<i> /home/tom/mwd/metadata/7374617475733D696E7072657373/oai_dc/oai:sammelpunkt.philo.at:103.xml 
+</I>&gt;<i> (No such file or directory)
+</I>&gt;<i> 
+</I>&gt;<i> i am working on a linux system.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Q3:Is it possible to tell the DLESE OAI Software to save the records on 
+</I>&gt;<i> the local system using &quot;:&quot; instead of the hex representation, or, to 
+</I>&gt;<i> wrap the records filename in a way that
+</I>&gt;<i> admits the java native classes to open the records?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Thanks a lot for any hint
+</I>&gt;<i> 
+</I>&gt;<i> Thomas
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+--
+John Weatherley
+Software Engineer
+DLESE Program Center
+University Corporation for Atmospheric Research (UCAR)
+Box 3000
+Boulder, CO 80307-3000
+<A HREF="mailto:jweather@ucar.edu">jweather@ucar.edu</A> (e-mail)   
+  
+(303) 497-2680 (tel)
+(303) 497-8336 (fax)
+  
+<A HREF="http://www.dlese.org">http://www.dlese.org</A>
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001069.html">[OAI-implementers] converting filenames of metadata records
+</A></li>
+	<LI> Next message: <A HREF="001070.html">[OAI-implementers] Sets in and subjects in OAI-PMH
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1073">[ date ]</a>
+              <a href="thread.html#1073">[ thread ]</a>
+              <a href="subject.html#1073">[ subject ]</a>
+              <a href="author.html#1073">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Better resumption mechanism - more important than ever!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ajk%40mds.rmit.edu.au">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000418.html">
+   <LINK REL="Next"  HREF="000421.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Better resumption mechanism - more important than ever!
+   </H1>
+    <B>Alan Kent
+    </B> 
+    <A HREF="mailto:ajk%40mds.rmit.edu.au"
+       TITLE="[OAI-implementers] Better resumption mechanism - more important than ever!">ajk@mds.rmit.edu.au
+       </A><BR>
+    <I>Wed, 6 Mar 2002 18:11:38 +1100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000418.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+        <LI> Next message: <A HREF="000421.html">[OAI-implementers] many records, same datestamp [was: Better resumption
+ mechanism - more important than ever!]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#420">[ date ]</a>
+              <a href="thread.html#420">[ thread ]</a>
+              <a href="subject.html#420">[ subject ]</a>
+              <a href="author.html#420">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Mar 05, 2002 at 10:42:26PM -0500, Michael L. Nelson wrote:
+&gt;<i> &gt;Does OAI 2.0 say that resumptionToken's must be unique within
+</I>&gt;<i> &gt;a download? And that reusing an old resumptionToken must be
+</I>&gt;<i> &gt;supported (or rejected with an error)? If not guaranteed by
+</I>&gt;<i> &gt;the spec, then I would not want to write a harvester relying
+</I>&gt;<i> &gt;on it. I would rather spend the effort and get the spec right
+</I>&gt;<i> &gt;rather than having to come to agreements with individual data
+</I>&gt;<i> &gt;providers.
+</I>&gt;<i> 
+</I>&gt;<i> I don't think the spec currently requires that a repository reject expired
+</I>&gt;<i> resumptionTokens, but a harvester would be wise not to use them if they
+</I>&gt;<i> are expired.  its like drinking milk a day or two after the expiration
+</I>&gt;<i> date:  its *probably* ok, but you gotta be pretty thirsty to do it.
+</I>
+This is not quite what I meant. Its more if my resumption token is
+just a result set name and the DP remembers where the transfer is
+up to, the reusing the same token would get the next N records.
+The current spec allows this.
+
+I think OAI 2.0 should allow a DP to advertise (via Identify?) that
+it resumptionToken's can be reused (are idempotent) to retry.
+That would satisfy me.
+
+&gt;<i> &gt; There is a difference, but is the difference worth the complexity
+</I>&gt;<i> &gt; to the protocol? That is a different question.
+</I>&gt;<i> 
+</I>&gt;<i> I'll rephrase my answer:  the repository can implement it so there is no
+</I>&gt;<i> difference.
+</I>
+I agree that a DP can implement (idempotent resumption tokens), but how
+does a harvester know that the DP has implemented it? Either OAI 2.0
+must mandate it (possibly overly restrictive for smaller repositories),
+or DP's must be able advertise it in a standard way, such as in the
+Identify response.
+
+So not much needs to be done, but something does need to be done.
+The 1.1 spec at present is not enough.
+
+&gt;<i> this is an artifact of your implementation... write the result set out to
+</I>&gt;<i> disk and set the expirationDate to a few days.  add a reasonable response
+</I>&gt;<i> caching algorithm, and you could end up with a huge performance
+</I>&gt;<i> win.  Depending on the DP accession rate, harvesting patterns, etc., your
+</I>&gt;<i> mileage could vary, but I suspect it would be very good.
+</I>
+I would never write the result set out to disk. For a very large
+result set (eg: 10,000,000 records), I would have to fetch all the
+records (lots of disk accesses) get their OAI-id's, then start
+transferring. Then how long to keep the temporary file around for?
+How many people might be doing transfers at the same time?
+(A Z39.50 result set is not a client side data structure, but
+a server side data structure by the way.)
+
+But Liu had a good solution - just store both what I called resumptionToken
+and restartToken in the resumptionToken. Ie: the result set name and
+query. If the result set has timed out, use the query part and build
+it up again. Its up to me to get it correct. I personally would
+have problems with cursors and list sizes (I would not support them
+because if I redid the query, the result set size may change and
+so both the size and cursor would be invalidated). But I can munge
+my own DP implementation stuff in there to do something pretty similar
+(my own internal concept of a 'cursor').
+
+&gt;<i> 2.0 will already have more machine processable information in the Identify
+</I>&gt;<i> response.  I'm not sure there is a good way around it, and since that
+</I>&gt;<i> door is already open, if you want to provide hints about how your
+</I>&gt;<i> resumptionTokens are used/implemented, that's surely ok.
+</I>
+Ok, then I think advertise a little more about idempotency of
+resumptionToken's and everything is fine. Implementors for large
+repositories should try to have long time-to-live for resumption
+tokens, but no protocol change is required.
+
+&gt;<i> but if their resumptionTokens had a long life, and were idempotent within
+</I>&gt;<i> that lifetime you would not have to start from scratch.  2.0 will allow
+</I>&gt;<i> the specification of the former, and we should probably discuss the latter
+</I>&gt;<i> some more.
+</I>
+Agreed. The simplest solution is (as above) to allow a server to advertise
+its resumptionToken's are idempotent.
+
+&gt;<i> you better build your system after all this!  ;-)
+</I>
+*-)
+
+One problem is I dont have any data to export - only data that other
+people have made available. The other problem relates to number of
+hours in the day. I still want to put my harvested collection up
+for public access to if I can scrounge up the disk space.
+
+&gt;<i> seriously, you bring up a lot of good points.  a lot of this exchange
+</I>&gt;<i> should probably be reflected in the implementation guide that will
+</I>&gt;<i> accompany the protocol doc.
+</I>
+I think the conclusions, such as 'advertise idempontency, and make resumption
+tokens long lifed to handle where a harvester hits a problem and waits
+for a humam to try and keep going' are worth documenting, not the rest.
+There are always the mail archives.
+
+Alan
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000418.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+	<LI> Next message: <A HREF="000421.html">[OAI-implementers] many records, same datestamp [was: Better resumption
+ mechanism - more important than ever!]
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#420">[ date ]</a>
+              <a href="thread.html#420">[ thread ]</a>
+              <a href="subject.html#420">[ subject ]</a>
+              <a href="author.html#420">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

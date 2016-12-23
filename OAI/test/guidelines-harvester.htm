@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>OAI-PMH Implementation Guidelines - Guidelines for Harvester Implementers</title>
+<style type="text/css" id="internalStyle">>
+  body { color: black; background: white; }
+  code,pre { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+  em { color: red; }
+  table { background: #CCCCCC; }
+  th { font-weight: bold; font-size: 120%; }
+  table.header { background: white; }
+  td.docsubtitle { font-weight: bold; font-size: 150%; }
+</style>
+<meta content="Open Archives Initiative - Protocol for Metadata Harvesting - Guidelines for Harvester Implementers" name="DC.title" />
+<meta content="Lagoze, Carl" name="DC.creator" />
+<meta content="Van de Sompel, Herbert" name="DC.creator" />
+<meta content="Nelson, Michael" name="DC.creator" />
+<meta content="Warner, Simeon" name="DC.creator" />
+<meta content="2005/01/19T19:27:00Z" name="DC.date" />
+</head>
+<body>
+<table class="header" summary="Logo and heading" border="0" width="100%">
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%" class="docsubtitle">
+Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting
+</td>
+</tr>
+<tr>
+<td align="center">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" height="70" width="100"/></a>
+</td>
+<td align="left" width="87%">
+  <h1>Guidelines for Harvester Implementers</h1>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%" height="38">
+  <b>Protocol Version 2.0 of 2002-06-14<br />
+  Document Version 2005/01/19T19:27:00Z<br />
+  http://www.openarchives.org/OAI/2.0/guidelines-harvester.htm<!--DRAFTNOTE--></b></td>
+</tr>
+</table>
+
+<p><b>Editors</b></p>
+<p>
+<a href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</a>  
+(<a href="http://www.openarchives.org/organization/index.html">OAI Executive</a>;
+<a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a>) 
+<br />
+<a href="mailto:herbertv@lanl.gov">Herbert Van de Sompel</a>
+(<a href="http://www.openarchives.org/organization/index.html">OAI Executive</a>;
+<a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research Library</a>)
+<br />
+<a href="mailto:mln@cs.odu.edu">Michael Nelson</a>
+(<a href="http://www.cs.odu.edu/">Old Dominion University - Computer Science</a>)
+<br />
+<a href="mailto:simeon@cs.cornell.edu">Simeon Warner</a> 
+(<a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a>)
+</p>
+
+<p><b>
+This document is one part of the 
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h4>Table of Contents</h4>
+<p>
+<a href="#Introduction">1. Introduction</a><br />
+<a href="#RunningAHarvester">2. Running Harvesting Software</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#AgentInfo">2.1 Agent and Contact information</a><br />
+<a href="#Datestamps">3. Datestamps and Granularity</a><br />
+<a href="#Sets">4. Sets</a><br />
+<a href="#FlowControl">5. Flow Control, Load Balancing and Redirection</a><br />
+<a href="#resumptionToken">6. Incomplete Lists and <code>resumptionToken</code></a><br />
+&nbsp;&nbsp;&nbsp;<a href="#resumptionTokenInURL">6.1 Encoding <code>resumptionToken</code> Arguments in URLs</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#resumptionTokenErrorRecovery">6.2 Error Recovery for List Requests</a><br />
+<a href="#ResponseCompression">7. Response Compression</a><br />
+<a href="#HarvestingEverything">8. Harvesting all the Metadata from a Repository</a><br />
+<a href="#acknowledgements">Acknowledgements</a><br />
+<a href="#DocumentHistory">Document History</a></p>
+
+<h2><a name="Introduction">1. Introduction</a></h2>
+
+<p>This document provides guidelines for harvester implementers and maintainers. 
+The OAI-PMH is designed to provide a low barrier to implementation for
+repositories and this means that in places burden has placed on harvesters 
+in order to simplify repository implementation. For example, harvesters 
+must support both day and second datestamp granularities because 
+repositories may use either.</p>
+
+
+<h2><a name="RunningAHarvester">2. Running Harvesting Software</a></h2>
+
+<p>OAI-PMH harvesters are robotic agents and care should be taken to avoid
+creating an accidental denial-of-service attack against repositories.
+Implementers and operators unfamiliar with running web robots 
+should consult 
+<a href="http://www.robotstxt.org/wc/robots.html">The Web Robots Pages</a>
+for background.
+The testing of new harvesting software or a new installation should include 
+checks to ensure that unexpected replies or error conditions do not lead to
+rapid-fire retry attempts. Harvesting software should be written to
+terminate (pending manual intervention) if it receives 
+<a href="http://www.ietf.org/rfc/rfc2616">HTTP</a> status code
+403 or other unexpected replies.</p>
+
+<p>Since OAI-PMH interfaces to repositories are created specifically to be 
+accessed by automatic harvesting software, it is not customary to use
+the <code>/robots.txt</code> standard to permit or forbid harvesting.
+It is not expected that harvesters will consult this file.</p> 
+
+<h3><a name="AgentInfo">2.1 Agent and Contact information</a></h3>
+
+<p>OAI-PMH harvesters should follow the standard practices for HTTP
+robotic agents. In particular, they should supply HTTP
+<code>User-Agent</code> and <code>From</code> headers.
+The <code>User-Agent</code> header field should contain 
+information about the user agent originating the request, 
+it is described in section 14.43 of the 
+<a href="http://www.ietf.org/rfc/rfc2616">HTTP specification</a>.
+The <code>From</code> header field should contain an Internet
+e-mail address for the human user who controls the harvested, it
+is is described in section 14.22 of the
+<a href="http://www.ietf.org/rfc/rfc2616">HTTP specification</a>.
+The email address in the <code>From</code> header will provide
+a point of contact if there is some problem created by the
+harvester.</p>
+
+<h2><a name="Datestamps">3. Datestamps and Granularity</a></h2>
+
+<p>Each record in a repository has a 
+<a href="openarchivesprotocol.htm#Datestamp">datestamp</a> which is
+included in the <code>header</code> blocks of <code>GetRecord</code>, 
+<code>ListIdentifiers</code>, <code>ListRecords</code> responses.
+Datestamps are specific to records, they may not be the same for all
+records (metadata formats) disseminated from a particular item.</p>
+
+<p>Repositories may express datestamps in either day or seconds 
+granularity and they must declare the finest granularity supported 
+in the <code>&lt;granularity&gt;</code> element of the 
+<code>Identify</code> response.</p>
+
+<p>Harvesters wishing to harvest only with day or coarser granularity may 
+do so without considering the <code>&lt;granularity&gt;</code> response 
+as all repositories must support <code>from</code> and <code>until</code> 
+parameters of the form <code>YYYY-MM-DD</code>, <code>YYYY-MM</code>, 
+and <code>YYYY</code>. Note that day boundaries occur at midnight 
+(00:00h) UTC and that, regardless of the granularity of the 
+<code>from</code> and <code>until</code> parameters, the 
+<code>datestamp</code> values returned will be in the native 
+(finest) granularity that the repository supports.</p>
+
+<p>Harvesters wishing to harvest with finer than day granularity must
+examine the <code>&lt;granularity&gt;</code> element in the 
+<code>Identify</code> response. Repositories will issue
+a <code>badGranularity</code> error if <code>from</code> and 
+<code>until</code> parameters are issued with finer granularity than
+is supported.</p>
+
+<p>Items in a repository may change or be added during a harvest, or after 
+a harvest within the same <code>datestamp</code> (i.e. the same day 
+if the <code>datestamp</code> is <code>YYYY-MM-DD</code>). This means
+that to incrementally harvest from a repository, a harvester should
+overlap successive incremental harvests by one <code>datestamp</code> 
+increment (i.e. one day if the granularity is <code>YYYY-MM-DD</code>).
+Furthermore, since it is repository implementation dependent whether 
+changes that occur during the harvest will be reflected in the 
+response, the <code>from</code> argument of the next incremental harvest 
+should be based on the the <code>responseDate</code> returned in the
+first partial-list response of a sequence. When harvesting from
+repositories which use a <code>datestamp</code> granularity of one
+second, it is advisable to overlap by a small additional amount 
+to account for any discrepancy between the reported 
+<code>responseDate</code> and the time at the repository when any 
+search necessary to answer the request was performed.</p>
+
+<h2><a name="Sets">4. Sets</a></h2>
+
+<p>Harvesters may choose to ignore any sets that a repository exposes by not 
+specifying a <code>set</code> parameter for any list requests, and by ignoring
+the <code>&lt;setSpec&gt;</code> elements in any records returned.</p>
+
+<p>To determine whether a repository implements sets or which sets it does 
+implement, a harvester should issue a <code>ListSets</code> request. 
+The error reply <code>noSetHierarchy</code> will indicate that sets are 
+not supported. Otherwise the list of sets implemented will be returned.</p>
+
+<p>Note that colons (<code>:</code>) in the <code>setSpec</code> values 
+indicate hierarchy. Harvesting from a set which has sub-sets will cause 
+the repository to return metadata from all items in the set specified 
+and also recursively return metadata from all items in sub-sets of the 
+set specified. For example, if a repository returns the 
+<code>SetSpec</code> entry <code>aaa:bbb</code> for <code>item1</code> 
+then harvesting the set <code>aaa</code> will return metadata from
+<code>item1</code> in the response
+(see <a href="openarchivesprotocol.htm#Set">OAI-PMH: 2.7 Set</a>).</p>
+
+<h2><a name="FlowControl">5. Flow Control, Load Balancing and Redirection</a></h2>
+
+<p>It is essential that harvesting software respect flow control responses 
+from repositories. Not doing so may turn a harvest attempt into a 
+denial-of-service attack on the repository.</p>
+
+<p>Repositories which issue <code>503 Service Unavailable</code> 
+<a href="http://www.ietf.org/rfc/rfc2616.txt">HTTP</a> replies as
+a means of flow control should include a <code>Retry-After</code> HTTP header
+to indicate how long a harvester should wait before issuing the request again.
+Harvesters that encounter a <code>503</code> reply without a 
+<code>Retry-After</code> header should not automatically retry without
+considerable delay (minutes) or, preferably, manual intervention. Harvesters 
+must not be written to retry indefinitely.</p>
+
+<p>Either as part of a load balancing strategy or for other reasons, a
+repository may issue <code>302 Found</code> HTTP replies to redirect
+the harvester to another URL indicated in a <code>Location</code>
+HTTP header. Harvesters that encounter a <code>302</code> reply 
+without a <code>Location</code> header should not automatically retry
+the request.</p>
+
+<h2><a name="resumptionToken">6. Incomplete Lists and <code>resumptionToken</code></a></h2>
+
+<p>Harvesters must be prepared to receive incomplete list responses to
+<code>ListIdentifiers</code>, <code>ListRecords</code>, and
+<code>ListSets</code> requests. An incomplete list response is
+indicated by the presence of a <code>resumptionToken</code> element
+in the response. 
+The next incomplete list request is made using 
+the content of the <code>resumptionToken</code> element as the
+value of the exclusive <code>resumptionToken</code> argument. 
+The last incomplete list response is indicated by a 
+<code>resumptionToken</code> element with no content. An example 
+sequence of requests and responses is shown below.</p>
+
+<table summary="Example sequence of incomlete-list requests and responses" border="2" width="50%" bgcolor="#CCCCCC">
+<tr><td>
+Original list request:
+<pre>  http://an.oai.org/script?
+    verb=ListIdentifiers&amp;from=2001-01-01&amp;until=2001-01-03
+</pre>
+First incomplete list response:
+<pre>&lt;L ...&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  ...
+  &lt;resumptionToken completeListSize="20" 
+    cursor="0"&gt;2001-01-02:2001-01-03:0&lt;/resumptionToken&gt;
+&lt;/ListIdentifiers&gt;
+</pre>
+Request for second incomplete list:
+<pre>  http://an.oai.org/script?
+    verb=ListIdentifiers&amp;resumptionToken=2001-01-02%3A2001-01-03%3A0
+</pre>
+Second incomplete list response:
+<pre>&lt;ListIdentfiers...&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  ...
+  &lt;resumptionToken completeListSize="20"
+    cursor="9"&gt;2001-01-03:2001-01-03:0&lt;/resumptionToken&gt;
+&lt;/ListIdentifiers&gt;
+</pre>
+Request for third incomplete list:
+<pre>  http://an.oai.org/script?
+    verb=ListIdentifiers&amp;resumptionToken=2001-01-03%3A2001-01-03%3A0
+</pre>
+Third incomplete list response, the empty <code>resumptionToken</code> 
+indicates that this request and response completes the list request 
+sequence:
+<pre>&lt;ListIdentfiers...&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  &lt;header&gt;...&lt;/header&gt;
+  ...
+  &lt;resumptionToken completeListSize="20" 
+    cursor="18"&gt;&lt;/resumptionToken&gt;
+&lt;/ListIdentifiers&gt;
+</pre>
+The complete list may now be created by concatenating the contents of
+all the incomplete lists.
+</td></tr>
+</table>
+
+<h3><a name="resumptionTokenInURL">6.1 Encoding <code>resumptionToken</code> Arguments in URLs</a></h3>
+
+<p>When harvesters make a follow-on request using a 
+<code>resumptionToken</code> value from the previous request, the value 
+must be correctly encoded for both HTTP GET and POST requests. 
+Reserved characters and the correct escape sequences are listed in 
+<a href="openarchivesprotocol.htm#SpecialCharacters">OAI-PMH: 3.1.1.3 Encoding of special characters in keyword arguments of OAI-PMH requests</a>.</p>
+
+<h3><a name="resumptionTokenErrorRecovery">6.2 Error Recovery for List Requests</a></h3>
+
+<p>If there is a network error or other condition that results in the
+loss of an incomplete list response, a harvester may re-issue the
+most recent <code>resumptionToken</code> to continue the list request
+sequence. The requirement for idempotency of the most recent incomplete list 
+request means that the set of responses to the list request sequence 
+will still constitute the correct complete list response.</p>
+
+<p>If a harvester receives a <code>badResumptionToken</code> error during
+a sequence of incomplete list requests then it must assume that the
+<code>resumptionToken</code> has either expired or is invalid in
+some other way. There is no way to resume the list request sequence 
+in this case; the harvester must start the list request again.</p>
+
+<p>If a harvester receives some other error then there is an unrecoverable
+problem with the list request sequence; the harvester must start the  
+list request again.</p>
+
+<h2><a name="ResponseCompression">7. Response Compression</a></h2>
+
+<p>If a repository supports compression it should announce this by including
+<code>compression</code> elements in the <code>Identify</code> response. 
+Harvesters that wish to use compression may look for the compression 
+element in order to determine what compression to request. The following 
+is an example excerpt from an <code>Identify</code>:</p>
+
+<table summary="Example compression elements in Identify response" border="2" width="50%" bgcolor="#CCCCCC">
+<tr><td>
+<pre>&lt;Identify ...&gt;
+  ...
+  &lt;compression&gt;gzip&lt;/compression&gt;
+  &lt;compression&gt;compress&lt;/compression&gt;
+  ...
+&lt;/Identify&gt;
+</pre>
+</td></tr>
+</table>
+<p>
+which says that this repository supports <code>gzip</code> and <code>compress</code>
+encodings in addition to the mandatory <code>identity</code> encoding. 
+</p>
+<p>
+If a harvester receiving this response supports <code>gzip</code> compression then
+it might issue subsequent requests with one of the following HTTP headers:
+</p>
+<table summary="Example Accept-Encoding headers" border="2" width="50%" bgcolor="#CCCCCC">
+<tr><td>
+<pre>Accept-Encoding: gzip, identity
+
+Accept-Encoding: gzip;q=1.0, identity;q=0.5
+</pre>
+</td></tr>
+</table>
+
+<p>Note that <code>identity</code> must be included in the list. The first form simply 
+says that both types of response are acceptable, the second form says that <code>gzip</code>
+encoding is preferred (higher <code>q</code> value). The second form is recommended.
+(see 
+<a href="ftp://ftp.isi.edu/in-notes/rfc2616.txt">HTTP: RFC 2616</a> section "14.3 Accept-Encoding", and
+<a href="openarchivesprotocol.htm#ResponseCompression">OAI-PMH: 3.1.3 Response Compression</a>.)</p>
+
+
+<h2><a name="HarvestingEverything">8. Harvesting all the Metadata from a Repository</a></h2>
+
+<p>Proxies, aggregators and other such agents may wish to harvest a complete
+copy of a repository including set structure and all metadata formats.
+One strategy for doing this would be:</p>
+
+<ul>
+<li>Issue an <code>Identify</code> request to find the finest datestamp
+ granularity supported.</li>
+<li>Issue a <code>ListMetadataFormats</code> request to obtain a list
+ of all <code>metadataPrefixes</code> supported.</li>
+<li>Harvest using <code>ListRecords</code> requests for each 
+ <code>metadataPrefix</code> supported. Knowledge of the datestamp
+ granularity allows for less overlap if granularities finer than
+ a day are supported.</li>
+<li>Set structure can be inferred from the <code>setSpec</code> elements
+ in the <code>header</code> blocks of each record returned (consistency
+ checks are possible).</li>
+<li>Items may be reconstructed from the constituent records. Local 
+ datestamps must be assigned to harvested items.</li>
+<li>Provenance and other information in <code>&lt;about&gt;</code> blocks 
+ may be re-assembled at the item level if it is the same for all
+ metadata formats harvested. However, this information may be 
+ supplied differently for different metadata formats and may thus
+ need to be store separately for each metadata format.</li>
+</ul>
+
+<h2><a name="acknowledgements"></a>Acknowledgements</h2>
+
+<p>Support for the development of the OAI-PMH and for other Open Archives 
+Initiative activities comes from the 
+<a href="http://www.diglib.org/">Digital Library Federation</a>, the 
+<a href="http://www.cni.org/">Coalition for Networked Information</a>, and 
+from the National Science Foundation through Grant No. IIS-9817416. Individuals 
+who have played a significant role in the development of OAI-PMH version 2.0 are 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged 
+in the protocol document</a>.</p>
+
+
+<h2><a name="DocumentHistory">Document History</a></h2>
+<p>
+<b>2005-01-19</b>: HTML fixes and added Table of Contents.<br />
+<b>2002-05-13</b>: Changed to reflect day/second granularities in protocol.<br /> 
+<b>2002-03-31</b>: Release of initial version of OAI-PMH v2.0 guidelines documents.
+</p>
+
+<!--LocalWords: incrementally unrecoverable encodings  -->
+</body>
+</html>

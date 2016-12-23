@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Better resumption mechanism - more important than ever!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ajk%40mds.rmit.edu.au">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000417.html">
+   <LINK REL="Next"  HREF="000418.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Better resumption mechanism - more important than ever!
+   </H1>
+    <B>'Alan Kent'
+    </B> 
+    <A HREF="mailto:ajk%40mds.rmit.edu.au"
+       TITLE="[OAI-implementers] Better resumption mechanism - more important than ever!">ajk@mds.rmit.edu.au
+       </A><BR>
+    <I>Wed, 6 Mar 2002 17:44:12 +1100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000417.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+        <LI> Next message: <A HREF="000418.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#419">[ date ]</a>
+              <a href="thread.html#419">[ thread ]</a>
+              <a href="subject.html#419">[ subject ]</a>
+              <a href="author.html#419">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Mar 05, 2002 at 09:53:54PM -0500, Xiaoming Liu wrote:
+&gt;<i> 1) Could the resumptionToken (in your case restartToken) be re-used? 
+</I>&gt;<i> 
+</I>&gt;<i> I agree the retry algorithem is theoretically unsafe in current protocol,
+</I>&gt;<i> thanks. However, the same question also exists in &quot;restartToken&quot; and 
+</I>&gt;<i> must be addressed before we talk about question 2. If they can not be
+</I>&gt;<i> re-used, the harvester has to start from scratch. It looks like the OAI
+</I>&gt;<i> 1.1 doesn't give clear answer to this question. Hopefully it
+</I>&gt;<i> could be answsered in 2.0
+</I>
+*If* restartToken was introduced, it would be idempotent-ish. Its whole
+purpose would be to allow it to be reissued and old results come back.
+I would define it as &quot;returning all of the records not returned so
+far in the current transfer, possibly including other records that
+have already been transferred&quot;.
+
+&gt;<i> 2) If it is legal to re-use, should we introduce a restartToken concept?
+</I>&gt;<i> 
+</I>&gt;<i> My personal opinion is restartToken will bring too much complexity, and
+</I>&gt;<i> it's not necessary.
+</I>
+I agree the concensus is to stick to resumptionToken's. That's fine.
+Just pushing restartToken to see what problems/issues arrise.
+
+I would therefore instead propose that there be a standard way in
+the Identify response to say 'resumptionToken's are idempotent'
+and also 'resumptionToken's can be rerequested' in case of network
+failure. DP implementors *should* also try to make them long lifed
+(days to weeks) for large repositories.
+
+&gt;<i> In your case, I could imagine it can be done by current OAI 
+</I>&gt;<i> resumptionToken: assume the proposed tokens in your suggestion are called
+</I>&gt;<i> alan_restartToken and  alan_resumptionToken respectively. 
+</I>&gt;<i> 
+</I>&gt;<i> oai_resumptionToken=alan_restartToken + alan_resumptionToken
+</I>&gt;<i> 
+</I>&gt;<i> So data provider (DP) can always parse the oai_resumptionToken, in most
+</I>&gt;<i> case, the session is valid and DP just uses alan_resumptionToken; if
+</I>&gt;<i> anything goes wrong, DP need redo the query, DP have the freedom to use
+</I>&gt;<i> the alan_restartToken. The harvester should not know what happens behind
+</I>&gt;<i> the scene. At this scenario, the time-to-live could be month, year ;-)
+</I>
+That works. I can use it with my Z39.50 result set/query. If the
+result set is still around, reuse it. If it has timed out, redo the
+query. I would not be able to return the number of records (when
+redoing the query, the number might change), but overall things
+would work.
+
+Alan
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000417.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+	<LI> Next message: <A HREF="000418.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#419">[ date ]</a>
+              <a href="thread.html#419">[ thread ]</a>
+              <a href="subject.html#419">[ subject ]</a>
+              <a href="author.html#419">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

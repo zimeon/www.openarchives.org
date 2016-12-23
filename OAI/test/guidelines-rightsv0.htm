@@ -1,0 +1,507 @@
+
+<html>
+<head>
+  <title>OAI-PMH Guidelines Rights</title>
+  <style type="text/css">
+    body { color: black; background: white; }
+    code { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+    em { color: black; background: #FF6666; }
+  </style>
+<META content="Open Archives Initiative - Protocol for Metadata Harvesting - v.2.0" name=DC.title>
+<META content="Lagoze, Carl" name=DC.creator>
+<META content="Van de Sompel, Herbert" name=DC.creator>
+<META content="Nelson, Michael" name=DC.creator>
+<META content="Warner, Simeon" name=DC.creator>
+<META content=2002-06-01 name=DC.date>
+</head>
+<body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<table summary="Logo and heading" border="0" width="100%">
+<tr>
+<td ALIGN="CENTER" ROWSPAN="2">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" BORDER="0" height="70" width="100" align="BOTTOM" /></a>
+</td>
+<td ALIGN="LEFT" WIDTH="87%">
+<h2>Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting</h2>
+<h1>Conveying rights expressions in the OAI-PMH framework</h1>
+</td>
+</tr>
+<tr>
+    <td ALIGN="LEFT" WIDTH="87%" height="46"> 
+      <p><b> Protocol Version 2.0 of 2002-06-14<br />
+        Document Version 2004/05/27T16:43:00Z</b><br />
+      <b>http://www.openarchives.org/OAI/2.0/guidelines-rights.htm</b></p>
+      <p><font size="+2" color="red">DRAFT VERSION</font></p> 
+      </td>
+</tr>
+</table>
+
+<P><B>Editors</B></P>
+<P> <U>The OAI Executive:</U> <BR />
+  <A href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</A> &lt;<A href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt; 
+  -- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A> 
+  <BR />
+  <a href="mailto:herbertv@cs.cornell.edu">Herbert Van de Sompel</a> &lt;<a href="mailto:herbertv@lanl.gov">herbertv@lanl.gov</a>&gt; 
+  -- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+  Library </a></P>
+<P>
+<U>From the OAI Technical Committee:</U>
+<BR />
+<A href="mailto:m.l.nelson@larc.nasa.gov">Michael Nelson</A> 
+&lt;<A href="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>&gt; 
+-- <A href="http://www.larc.nasa.gov/">NASA - Langley Research Center</A>
+<BR />
+<A href="mailto:simeon@cs.cornell.edu">Simeon Warner</A> 
+&lt;<A href="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</A>&gt; 
+-- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A>
+</P>
+
+<p><b>
+This document is one part of the 
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h2>1. <a name="Introduction and Scope"> Introduction and Scope</a></h2>
+<p align="left"><font face="Times New Roman">The 
+<a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">Open Archives Initiative 
+Protocol for Metadata Harvesting</a> (OAI-PMH) provides a mechanism for data 
+providers to expose XML-formatted data for harvesting over the web.&nbsp; The protocol is 
+most frequently used by content repositories to expose XML-formatted metadata 
+that describes repository contents.&nbsp; This metadata can then be consumed by services (e.g., search) that 
+process (e.g. index) that metadata for users.&nbsp; However, a number of 
+alternative usage 
+scenarios for OAI-PMH are possible and have been implemented.&nbsp; These 
+include implementation by <a href="http://www.openarchives.org/OAI/2.0/guidelines-aggregator.htm">aggregators</a>
+that collect 
+metadata from other sources (frequently via OAI-PMH), exposure of other forms of 
+metadata (not content oriented) such as usage logs, and access to 
+content itself that is expressed in XML.&nbsp;  </font></p>
+<p align="left"><font face="Times New Roman">Regardless of the usage scenario 
+for OAI-PMH, either exposure of traditional metadata or full content, data providers often want to associate <i>rights expressions</i> with 
+the exposed (meta)data.&nbsp; In their simplest forms these rights expressions
+are statements in XML format that specify how the data may be used including how it 
+may be shared, modified, and used as the basis for derivative products (e.g., 
+enhanced metadata).&nbsp; These simple rights statements are one instance in a suite of 
+rights management and access control techniques including restricting harvesting 
+to authorized parties, controlling the eventual use of harvested (meta)data 
+through technical means, and specifying and controlling the use of content 
+referenced by the harvested metadata.&nbsp;</font></p>
+<p align="left"><font face="Times New Roman">This specification&nbsp; is limited 
+in scope to the first case: it provides the syntax for packaging within the 
+OAI-PMH&nbsp; responses rights statements, formatted in XML, that 
+apply to the (meta)data harvested via the OAI-PMH.&nbsp;  The specification 
+makes use of existing information containers within OAI-PMH, thus making no 
+changes to the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html"> core protocol</a> and maintaining compatibility with all existing 
+OAI-PMH implementations.</font></p>
+<p align="left"><font face="Times New Roman">The mechanisms described in this 
+specification are not tied to any particular rights expression language.&nbsp; 
+Examples throughout this document make use of <a href="http://creativecommons.org/"> Creative Commons</a> license 
+statements, but the use of this specific language is for illustrative purposes 
+only.&nbsp; The only restriction imposed by the specified technique is the use 
+of XML as the syntax for expressing conditions of use.</font></p>
+
+<p align="left">In this document the key words &quot;<b>must</b>&quot;, &quot;<b>must
+not</b>&quot;, &quot;<b> required</b>&quot;, &quot;<b>shall</b>&quot;, &quot;<b>shall
+not</b>&quot;, &quot;<b>should</b>&quot;, &quot;<b> should not</b>&quot;, &quot;<b>recommended</b>&quot;,
+&quot;<b>may</b>&quot;, and &quot;<b>optional</b> &quot; in <b>bold face</b> are
+to be interpreted as described in <a href="http://www.ietf.org/rfc/rfc2119.txt">RFC
+2119</a> . An implementation is not conformant if it fails to satisfy one or
+more of the &quot;<b>must</b>&quot; or &quot;<b>required</b>&quot; level
+requirements for the protocols it implements.</p>
+
+<h2>
+<a name="2. Granularity of Rights Statements">2. Granularity of rights
+statements</a></h2>
+<p class="MsoNormal">The OAI-PMH data model includes a number of entities, some
+of which aggregate other entities.<span style="mso-spacerun:yes">&nbsp; </span>These
+entities are listed below, with the aggregating entities in bold-face, and
+illustrated in the figure below:<o:p>
+</o:p>
+</p>
+<ul style="margin-top:0in" type="disc">
+  <li class="MsoNormal" style="mso-list:l0 level1 lfo1;tab-stops:list .5in"><b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Repository</i></b> 
+  - A network accessible server that processes OAI-PMH requests and thereby
+    makes metadata harvestable. <o:p>
+    </o:p>
+  </li>
+  <li class="MsoNormal" style="mso-list:l0 level1 lfo1;tab-stops:list .5in"><i style="mso-bidi-font-style:normal">Resource
+    </i><span style="mso-bidi-font-style:normal">-</span> The object that metadata is ?about?.<span style="mso-spacerun:yes">&nbsp;
+    </span>In some cases, repositories have <i style="mso-bidi-font-style:normal">Resources</i>
+    (and associated metadata) as their constituents.<span style="mso-spacerun:yes">&nbsp;
+    </span>In others, such as metadata aggregators, the <i style="mso-bidi-font-style:normal">Resource</i>
+    is separate from the <b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:
+     normal">Repository.</i></b><o:p>
+    </o:p>
+  </li>
+  <li class="MsoNormal" style="mso-list:l0 level1 lfo1;tab-stops:list .5in"><b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Item</i></b><i style="mso-bidi-font-style:normal">
+    </i>- An abstract object that represents the collection of metadata
+    &quot;about a <i style="mso-bidi-font-style:
+     normal">Resource</i><span style="mso-bidi-font-style:
+     normal">&quot;</span> that can harvested from a <b style="mso-bidi-font-weight:
+     normal"><i style="mso-bidi-font-style:normal">Repository </i></b>via the
+    OAI-PMH.<o:p>
+    </o:p>
+  </li>
+  <li class="MsoNormal" style="mso-list:l0 level1 lfo1;tab-stops:list .5in"><i style="mso-bidi-font-style:normal">Record
+    </i>- XML-encoded metadata in a specific format returned via an OAI-PMH
+    harvesting request.<b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal"><o:p>
+    </o:p>
+    </i></b></li>
+  <li class="MsoNormal" style="mso-list:l0 level1 lfo1;tab-stops:list .5in"><b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Set</i></b><i style="mso-bidi-font-style:normal">
+    </i><span style="mso-bidi-font-style:normal">-</span> A grouping of <b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Items</i></b><i style="mso-bidi-font-style:normal">
+    </i>for the purpose of selective harvesting.<span style="mso-spacerun:yes">&nbsp;
+    </span><b style="mso-bidi-font-weight:
+     normal"><i style="mso-bidi-font-style:normal">Set</i></b> membership for <b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Items</i></b><i style="mso-bidi-font-style:normal">
+    </i>is not required - an <b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Item</i></b><i style="mso-bidi-font-style:normal">
+    </i>may be in no <b style="mso-bidi-font-weight:
+     normal"><i style="mso-bidi-font-style:normal">Sets</i></b> - and
+    non-exclusive - an <b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Item</i></b><i style="mso-bidi-font-style:
+     normal"> </i>may be in more than one <b style="mso-bidi-font-weight:normal"><i style="mso-bidi-font-style:normal">Set</i></b>.<o:p>
+    </o:p>
+  </li>
+</ul>
+<p>
+<img src="guidelines-rights-fig1.jpg" align="center" hspace="12" v:shapes="_x0000_s1029" width="504" height="602"></p>
+<p>This document specifies the mechanisms by which rights statements can be
+associated with two of these entities:</p>
+<ul>
+  <li><i>Record </i>- Metadata returned from the OAI-PMH <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords"><code>ListRecords</code></a>
+    and <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords"><code>GetRecords</code></a>
+    requests is packaged as a <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Record">Record</a>.&nbsp;
+    Each record may contain one or more <code>&lt;about&gt;</code> containers
+    that provide information about the <code>&lt;metadata&gt;</code> part of the
+    record.&nbsp; This document describes a schema for a <code>&lt;rights&gt;</code>
+    package within an <code>&lt;about&gt;</code> container that associates a
+    rights statement with the information in the <code>&lt;metadata&gt;</code>
+    part of the record.&nbsp; This rights statement may be specified in-line
+    within a <code>&lt;rights&gt;</code> package or by-reference via a URL to an
+    external rights statement.</li>
+  <li><i>Repository </i>- The response to the OAI-PMH <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify"><code>Identify</code></a>
+    request contains information about the repository.&nbsp; The response may
+    contain one or more <code>&lt;description&gt;</code> containers, that
+    provide an extensible mechanism for communities to describe their
+    repositories.&nbsp;This document describes a schema for a <code>&lt;rights&gt;</code>
+    package within a <code>&lt;description&gt;</code> container that lists <i>all</i>
+    the possible rights statements for records disseminated by the repository.
+    If an implementation returns this <code>&lt;rights&gt;</code> package within
+    its response to the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify"><code>Identify</code></a>
+    request, <i>all </i><code>&lt;rights&gt;</code> packages within <code>&lt;about&gt;</code>
+    containers in records (returned from the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords"><code>ListRecords</code></a>
+    and <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords"><code>GetRecords</code></a>
+    requests) <b>must </b>reference via a URL one of the <code>&lt;rights&gt;</code>
+    packages returned from the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify"><code>Identify</code></a>
+    request.</li>
+</ul>
+<p>Details on each of these mechanisms are described in the following sections.</p>
+<h2><a name="3. XML schema to package a rights statement in the &quot;about&quot; part of a record">3.
+XML schema to package a rights statement in the &quot;about&quot; part of a
+record</a></h2>
+<p>.The schema shown below provides the format for encapsulating a single <code>&lt;rights&gt;</code>
+statement within an <code>&lt;about&gt;</code> container associated with a
+record returned from a <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords"><code>ListRecords</code></a>
+and <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords"><code>GetRecords</code></a>
+request.&nbsp; The schema provides two mutually exclusive alternatives for
+specifying the rights statement: </p>
+<ul>
+  <li><i>in-line</i>: The rights statement <b>may</b> be contained in XML syntax
+    within the <code>&lt;rights&gt;</code> element.&nbsp; The elements of the
+    rights statement <b>must </b>be defined in a namespace distinct from the OAI
+    elements and <b>may </b>be subject to validation to external schema.&nbsp;
+    Otherwise, the nature of the rights statement is undefined by this schema.</li>
+  <li><i>by-reference</i>: The rights statement may be referenced via a URL
+    contained with the <code>&lt;rights&gt;</code> element.&nbsp; There are no
+    restrictions on the nature of the resource referenced by this URL.</li>
+</ul>
+<p>In both cases, the rights statement (either explicit or referenced) applies
+to the contents of the <code>&lt;metadata&gt;</code> element of the record
+(rather than to any resource referenced by the contents of the <code>&lt;metadata&gt;</code>
+element).</p>
+  <table summary="XML schema for branding" BORDER=2 WIDTH="80%" BGCOLOR="#CCCCCC" >
+    <tr> 
+      <td> 
+        <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;xs:schema targetNamespace=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Record">http://www.openarchives.org/OAI/2.0/Rights/Record</a>&quot; 
+    xmlns=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Record">http://www.openarchives.org/OAI/2.0/Rights/Record</a>&quot; 
+    xmlns:xs=&quot;<a href="http://www.w3.org/2001/XMLSchema">http://www.w3.org/2001/XMLSchema</a>&quot; 
+    elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;
+  &lt;xs:element name=&quot;rights&quot; type=&quot;rightsStatementType&quot;/&gt;
+  &lt;xs:complexType name=&quot;rightsStatementType&quot;&gt;
+    &lt;xs:choice&gt;
+      &lt;xs:element name=&quot;rightsReference&quot;&gt;
+        &lt;xs:complexType&gt;
+          &lt;xs:attribute name=&quot;ref&quot; type=&quot;xs:anyURI&quot; use=&quot;required&quot;/&gt;
+        &lt;/xs:complexType&gt;
+      &lt;/xs:element&gt;
+      &lt;xs:element name=&quot;rightsDefinition&quot;&gt;
+        &lt;xs:complexType&gt;
+          &lt;xs:sequence&gt;
+            &lt;xs:any namespace=&quot;##other&quot;/&gt;
+          &lt;/xs:sequence&gt;
+        &lt;/xs:complexType&gt;
+      &lt;/xs:element&gt;
+    &lt;/xs:choice&gt;
+  &lt;/xs:complexType&gt;
+&lt;/xs:schema&gt;
+</pre>
+      </td>
+    </tr>
+    <tr> 
+      <td>This Schema is available at <a href="http://www.openarchives.org/OAI/2.0/RecordRightsPackage.xsd">http://www.openarchives.org/OAI/2.0/RecordRightsPackage.xsd</a></td>
+    </tr>
+  </table>
+<p>The following example shows the use of this <code>&lt;rights&gt;</code>
+container to package an in-line rights statement.&nbsp; The rights statement
+listed in this example is the RDF/XML for the <a href="http://www.creativecommons.org">Creative
+Commons</a> license that can be displayed in human-readable form at <a href="http://creativecommons.org/licenses/by/2.0/">http://creativecommons.org/licenses/by/2.0/</a>.&nbsp;&nbsp;</p>
+  <table summary="XML schema for branding" BORDER=2 WIDTH="80%" BGCOLOR="#CCCCCC" >
+    <tr> 
+      <td> 
+        <pre>&lt;about&gt;
+  &lt;rights xmlns=&quot;http://www.openarchives.org/OAI/2.0/Rights/Record&quot;  
+    xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; 
+    xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/Rights/Record
+      http://www.openarchives.org/OAI/2.0/RecordRightsPackage.xsd&quot;&gt;
+    &lt;rightsDefinition&gt;
+        &lt;rdf:RDF xmlns=&quot;<a href="http://web.resource.org/cc/">http://web.resource.org/cc/</a>&quot; 
+           xmlns:dc=&quot;<a href="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</a>&quot; 
+           xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;&gt;
+          &lt;Work rdf:about=&quot;&quot;&gt;
+            &lt;dc:type rdf:resource=&quot;http://purl.org/dc/dcmitype/Text&quot;/&gt;
+            &lt;license rdf:resource=&quot;http://creativecommons.org/licenses/by/2.0/&quot;/&gt;
+          &lt;/Work&gt;
+          &lt;License rdf:about=&quot;http://creativecommons.org/licenses/by/2.0/&quot;&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/Reproduction&quot;/&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/Distribution&quot;/&gt;
+            &lt;requires rdf:resource=&quot;http://web.resource.org/cc/Notice&quot;/&gt;
+            &lt;requires rdf:resource=&quot;http://web.resource.org/cc/Attribution&quot;/&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/DerivativeWorks&quot;/&gt;
+          &lt;/License&gt;
+        &lt;/rdf:RDF&gt;
+      &lt;/rightsDefinition&gt;
+  &lt;/rights&gt;
+&lt;/about&gt;</pre>
+      </td>
+    </tr>
+    <tr> 
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+<p>The following example shows the use of this <code>&lt;rights&gt;</code>
+container to package a by-reference rights statement.&nbsp;&nbsp;</p>
+  <table summary="XML schema for branding" BORDER=2 WIDTH="80%" BGCOLOR="#CCCCCC" >
+    <tr> 
+      <td> 
+        <pre>&lt;about&gt;
+  &lt;rights xmlns=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Record">http://www.openarchives.org/OAI/2.0/Rights/Record</a>&quot;  
+    xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; 
+    xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/Rights/Record
+      http://www.openarchives.org/OAI/2.0/RecordRightsPackage.xsd&quot;&gt;
+    &lt;rightsReference ref=&quot;http://creativecommons.org/licenses/by/2.0/&quot;/&gt;
+  &lt;/rights&gt;
+&lt;/about&gt;</pre>
+      </td>
+    </tr>
+    <tr> 
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+    <h2><a name="4. XML schema to package rights statements in the &quot;description&quot; part of an Identify response">4.
+    XML schema to package rights statements in the &quot;description&quot; part
+    of an Identify response</a></h2>
+<p>Implementations <b>may </b>include a <code>&lt;rights&gt;</code> package
+within the <code>&lt;description&gt;</code> element returned as part of an <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify">Identify</a>
+response.&nbsp; The restrictions on the use of this <b>optional </b>package are
+as follows:</p>
+<ul>
+  <li>The <code>&lt;rights&gt;</code> package <b>must </b>include <i>all </i>rights
+    statements applicable to records disseminated by the repository.&nbsp; The
+    schema provides for this by allowing one or more <code>&lt;rightsStatement&gt;</code>
+    tags, each of which <b>must </b>have a unique ID and <b>must </b>contain a
+    rights statement either:
+    <ul>
+      <li>&nbsp;<i>in-line</i>: The rights statement may be contained in XML
+        syntax within the &lt;rights&gt; element.&nbsp; The elements of the
+        rights statement <b>must </b>be defined in a namespace distinct from the
+        OAI elements and <b>may </b>be subject to validation to external
+        schema.&nbsp; Otherwise, the nature of the rights statement is undefined
+        by this schema.</li>
+      <li><i>by-reference</i>: The rights statement may be referenced via a URL
+        contained with the <code>&lt;rights&gt;</code> element.&nbsp; There are
+        no restrictions on the nature of the resource referenced by this URL.</li>
+    </ul>
+  </li>
+  <li>Because the <code>&lt;rights&gt;</code> package
+within the <code>&lt;description&gt;</code> element <b>must </b>include <i>all
+  </i>rights statements applicable to records disseminated by the repository, 
+  the presence of <i>only one </i>rights statement in the<code> &lt;rights&gt;</code> 
+  package has special meaning.&nbsp; A client harvesting from such repository <b>
+  should </b>assume that all records disseminated by the repository are either:<ul>
+  <li>covered by this single rights statement, or</li>
+  <li>not covered by any rights statement.</li>
+</ul>
+  </li>
+  <li><i>All </i>records disseminated by the repository that <a href="#3. XML schema to package a rights statement in the &quot;about&quot; part of a record">specify
+    a &lt;rights&gt; package in the &lt;about&gt; part of the record</a> <b>must
+    </b>be of the <i>by-reference </i>form and the URL <b>must</b> reference one
+    of the <code>&lt;rightsStatement&gt;</code> tags in the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify">Identify</a>
+    response returned by the respective repository.&nbsp; Thus, this URL must be
+    formatted as <code>baseURL?verb=Identify#rightsStatementID</code>, where:
+    <ul>
+      <li><code>baseURL?verb=Identify</code> is an OAI-PMH Identify request to
+        the repository that disseminated the record containing the URL
+        reference.</li>
+      <li><code>rightsStatementID</code> is the unique ID of the &lt;rightsStatement&gt;
+        in the &lt;description&gt; part of the Identify response, where the ID
+        is specified in the <code>rightsStatementID</code> attribute of the <code>&lt;rightsStatement&gt;</code>
+        tag.</li>
+    </ul>
+  </li>
+</ul>
+<p><font color="#FF6666"><i>(Carl: Discussion point here.&nbsp; I think major 
+bullet two above probably should be talked about.&nbsp; I think we might have 
+intended that the presence of a single &lt;description&gt; rights statement means that 
+all records are covered by this statement.&nbsp; However, to do that we must say 
+that &quot;if a &lt;rights&gt; package is present in&nbsp; the &lt;description&gt; container then 
+all records must have a &lt;rights&gt; package that does a by-ref to that repository 
+rights&quot;.&nbsp; Do we mean that?&nbsp; Right now as written that is not enforced 
+and then we end up with the two sub-bullets in major bullet two above) </i>
+</font></p>
+<p>The schema for this <b>optional </b><code>&lt;rights&gt;</code> package is:</p>
+  <table summary="XML schema for branding" BORDER=2 WIDTH="80%" BGCOLOR="#CCCCCC" >
+    <tr> 
+      <td> 
+        <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;xs:schema targetNamespace=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Repository">http://www.openarchives.org/OAI/2.0/Rights/Repository</a>&quot; 
+    xmlns=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Repository">http://www.openarchives.org/OAI/2.0/Rights/Repository</a>&quot; 
+    xmlns:recRights=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Record">http://www.openarchives.org/OAI/2.0/Rights/Record</a>&quot; 
+    xmlns:xs=&quot;<a href="http://www.w3.org/2001/XMLSchema">http://www.w3.org/2001/XMLSchema</a>&quot; 
+    xmlns:xlink=&quot;<a href="http://www.w3.org/1999/xlink">http://www.w3.org/1999/xlink</a>&quot; 
+    elementFormDefault=&quot;qualified&quot; attributeFormDefault=&quot;unqualified&quot;&gt;
+  &lt;xs:import namespace=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Record">http://www.openarchives.org/OAI/2.0/Rights/Record</a>&quot; 
+    schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/RecordRightsPackage.xsd&quot;/&gt;
+  &lt;xs:element name=&quot;rights&quot;&gt;
+    &lt;xs:complexType&gt;
+      &lt;xs:sequence&gt;
+        &lt;xs:element name=&quot;rightsStatement&quot; type=&quot;rightsStatementType&quot; maxOccurs=&quot;unbounded&quot;/&gt;
+      &lt;/xs:sequence&gt;
+    &lt;/xs:complexType&gt;
+  &lt;/xs:element&gt;
+  &lt;xs:complexType name=&quot;rightsStatementType&quot;&gt;
+    &lt;xs:complexContent&gt;
+      &lt;xs:extension base=&quot;recRights:rightsStatementType&quot;&gt;
+        &lt;xs:attribute name=&quot;rightsStatementID&quot; type=&quot;xs:ID&quot; use=&quot;required&quot;/&gt;
+      &lt;/xs:extension&gt;
+    &lt;/xs:complexContent&gt;
+  &lt;/xs:complexType&gt;
+&lt;/xs:schema&gt;
+</pre>
+      </td>
+    </tr>
+    <tr> 
+      <td>This Schema is available at <a href="http://www.openarchives.org/OAI/2.0/DescriptionRightsPackage.xsd">http://www.openarchives.org/OAI/2.0/DescriptionRightsPackage.xsd</a></td>
+    </tr>
+  </table>
+<p>The following example shows the use of this <code>&lt;rights&gt;</code>
+container within a <code>&lt;description&gt;</code> element.</p>
+  <table summary="XML schema for branding" BORDER=2 WIDTH="80%" BGCOLOR="#CCCCCC" >
+    <tr> 
+      <td> 
+        <pre>&lt;Description&gt;
+  &lt;rights xmlnsi=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Repository">http://www.openarchives.org/OAI/2.0/Rights/Repository</a>&quot; 
+    xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; 
+    xmlns:recRights=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Record">http://www.openarchives.org/OAI/2.0/Rights/Record</a>&quot;  
+    xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/Rights/Repository 
+      http://www.openarchives.org/OAI/2.0/DescriptionRightsPackage.xsd&quot;&gt;
+    &lt;rightsStatement rightsStatementID=&quot;all&quot;&gt;
+      &lt;recRights:rightsDefinition&gt;
+        &lt;rdf:RDF xmlns=&quot;<a href="http://web.resource.org/cc/">http://web.resource.org/cc/</a>&quot; 
+          xmlns:dc=&quot;<a href="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</a>&quot; 
+          xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;&gt;
+          &lt;Work rdf:about=&quot;&quot;&gt;
+            &lt;dc:type rdf:resource=&quot;http://purl.org/dc/dcmitype/Text&quot;/&gt;
+            &lt;license rdf:resource=&quot;http://creativecommons.org/licenses/by/2.0/&quot;/&gt;
+          &lt;/Work&gt;
+          &lt;License rdf:about=&quot;http://creativecommons.org/licenses/by/2.0/&quot;&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/Reproduction&quot;/&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/Distribution&quot;/&gt;
+            &lt;requires rdf:resource=&quot;http://web.resource.org/cc/Notice&quot;/&gt;
+            &lt;requires rdf:resource=&quot;http://web.resource.org/cc/Attribution&quot;/&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/DerivativeWorks&quot;/&gt;
+          &lt;/License&gt;
+        &lt;/rdf:RDF&gt;
+      &lt;/recRights:rightsDefinition&gt;
+    &lt;/rightsStatement&gt;
+    &lt;rightsStatement rightsStatementID=&quot;noncommercial&quot;&gt;
+      &lt;recRights:rightsDefinition&gt;
+        &lt;rdf:RDF xmlns=&quot;<a href="http://web.resource.org/cc/">http://web.resource.org/cc/</a>&quot; 
+          xmlns:dc=&quot;<a href="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</a>&quot; 
+          xmlns:rdf=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;&gt;
+          &lt;Work rdf:about=&quot;&quot;&gt;
+            &lt;dc:type rdf:resource=&quot;http://purl.org/dc/dcmitype/Text&quot;/&gt;
+            &lt;license rdf:resource=&quot;http://creativecommons.org/licenses/by-nc/2.0/&quot;/&gt;
+          &lt;/Work&gt;
+          &lt;License rdf:about=&quot;http://creativecommons.org/licenses/by-nc/2.0/&quot;&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/Reproduction&quot;/&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/Distribution&quot;/&gt;
+            &lt;requires rdf:resource=&quot;http://web.resource.org/cc/Notice&quot;/&gt;
+            &lt;requires rdf:resource=&quot;http://web.resource.org/cc/Attribution&quot;/&gt;
+            &lt;prohibits rdf:resource=&quot;http://web.resource.org/cc/CommercialUse&quot;/&gt;
+            &lt;permits rdf:resource=&quot;http://web.resource.org/cc/DerivativeWorks&quot;/&gt;
+          &lt;/License&gt;
+        &lt;/rdf:RDF&gt;
+      &lt;/recRights:rightsDefinition&gt;
+    &lt;/rightsStatement&gt;
+    &lt;rightsStatement rightsStatementID=&quot;nomods&quot;&gt;
+      &lt;recRights:rightsReference ref=&quot;http://creativecommons.org/licenses/by-nd/2.0/&quot;/&gt;
+    &lt;/rightsStatement&gt;
+  &lt;/rights&gt;
+&lt;/Description&gt;</pre>
+      </td>
+    </tr>
+    <tr> 
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+<p>The following example demonstrates the form of an <code>&lt;about&gt;</code>
+container associated with a record disseminated by a repository that returns the
+<code>&lt;description&gt;</code> container shown above.&nbsp; The example
+assumes a baseURL for this repository of <code>http://an.oa.org</code>.&nbsp;</p>
+  <table summary="XML schema for branding" BORDER=2 WIDTH="80%" BGCOLOR="#CCCCCC" >
+    <tr> 
+      <td> 
+        <pre>&lt;about&gt;
+  &lt;rights xmlns=&quot;<a href="http://www.openarchives.org/OAI/2.0/Rights/Record">http://www.openarchives.org/OAI/2.0/Rights/Record</a>&quot;  
+    xmlns:xsi=&quot;<a href="http://www.w3.org/2001/XMLSchema-instance">http://www.w3.org/2001/XMLSchema-instance</a>&quot; 
+    xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/Rights/Record
+  http://www.openarchives.org/OAI/2.0/RecordRightsPackage.xsd&quot;&gt;
+    &lt;rightsReference ref=&quot;http://an.oa.org?verb=Identify#noncommerical&quot;/&gt;
+  &lt;/rights&gt;
+&lt;/about&gt;</pre>
+      </td>
+    </tr>
+    <tr> 
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+<p>This &lt;about&gt; container references the <code>&lt;rightsStatement&gt;</code>
+labeled &quot;noncommercial&quot; in the <code>&lt;Description&gt;</code>
+container of the <code>Identify</code> response from the repository, and
+associates that rights statement with the contents of the <code>&lt;metadata&gt;</code>
+element of the record in which the <code>&lt;about&gt;</code> container is
+packaged.</p>
+    <h2><a name="acknowledgements"></a>Acknowledgements</h2>
+    <p> Support for the development of the OAI-PMH and for other Open Archives 
+      Initiative activities comes from the <A href="http://www.diglib.org/">Digital 
+      Library Federation</A>, the <A href="http://www.cni.org/">Coalition for 
+      Networked Information</A>, and from the National Science Foundation through 
+      Grant No. IIS-9817416. Individuals who have played a significant role in 
+      the development of OAI-PMH version 2.0 are <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged 
+      in the protocol document</a>. </p>
+    <h2><a name="DocumentHistory">Document History</a></h2>
+<p><b>2004-05-27</b>: First draft of this document.. </p>
+    <!--START-FOOTER-->
+</body>
+</html>

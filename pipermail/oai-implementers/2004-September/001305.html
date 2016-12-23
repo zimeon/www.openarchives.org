@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] resumptionToken Implementation
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20resumptionToken%20Implementation&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001304.html">
+   <LINK REL="Next"  HREF="001306.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] resumptionToken Implementation</H1>
+    <B>Tansley, Robert</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20resumptionToken%20Implementation&In-Reply-To="
+       TITLE="[OAI-implementers] resumptionToken Implementation">robert.tansley at hp.com
+       </A><BR>
+    <I>Tue Sep 28 18:03:23 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001304.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+        <LI>Next message: <A HREF="001306.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1305">[ date ]</a>
+              <a href="thread.html#1305">[ thread ]</a>
+              <a href="subject.html#1305">[ subject ]</a>
+              <a href="author.html#1305">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>&gt;<i> Sample case:
+</I>&gt;<i> 
+</I>&gt;<i> Harvester issues a query. DP sends back 100 out of 10,000 results. 
+</I>&gt;<i> Harvester then begins to request the consecutive chunks. 
+</I>&gt;<i> Given that the 
+</I>&gt;<i> total data set is 10,000, this will probably take a while. Before the 
+</I>&gt;<i> entire result set is transfered, the DP updates it's repository which 
+</I>&gt;<i> shuffle the order in which the results are returned. Objects 
+</I>&gt;<i> that were 
+</I>&gt;<i> transferred previously are now kicked back to a later 
+</I>&gt;<i> position so it is 
+</I>&gt;<i> included in a chunk later requested by the harvester.
+</I>&gt;<i> 
+</I>&gt;<i> Does the DP now invalidate the resumptionToken or does it assume the 
+</I>&gt;<i> Harvester will de-dupe objects on it's side?
+</I>&gt;<i> 
+</I>&gt;<i> What about the new objects that have been added and are in chunks of 
+</I>&gt;<i> the resultset already transferred? Is it assumed that they will be 
+</I>&gt;<i> caught the next time around given that the modifydate SHOULD be later 
+</I>&gt;<i> than the last harvest date? Or is it the harvester's 
+</I>&gt;<i> responsibility to 
+</I>&gt;<i> straighten this all out?
+</I>
+DSpace uses the 'stateless' approach - see <A HREF="http://dspace.org/technology/system-docs/application.html#oai">http://dspace.org/technology/system-docs/application.html#oai</A> and scroll down a bit.  The sorting is done by (internal database) ID so de-dupping shouldn't be an issue for the harvester.  However your corner case may just cause a problem, or weird side-effect.
+
+Say you're harvesting date range X-Y.  When you first issue the request, a certain set of items have a 'last modified' date within that range, so DSpace returns a load, and a resumption token.  If some items are then modified so that their 'last modified' date is outside the date range X-Y, they'll drop off that list, so suddenly item Z that was result number 101 of those items is now result number 99, and the next harvest request will miss it, since DSpace will think that Z was already served up in the first request.
+
+DSpace would probably work OK in the scenario you've mentioned if the date range specified is X-(present) or no date range; results are sorted by ID so the order wouldn't change, new items would appear at the end of the list and updated items wouldn't have 'moved'.
+
+Deleted items might be a bit yucky though...
+
+Maybe you could to 'freeze' a result set when a harvest comes in, but that may not scale up when your repository is huge and the number of harvests is large (caching dozens of 100,000-long result sets?)
+
+Solutions on a postcard to...
+
+ Robert Tansley / Digital Media Systems Programme / HP Labs
+  <A HREF="http://www.hpl.hp.com/personal/Robert_Tansley/">http://www.hpl.hp.com/personal/Robert_Tansley/</A>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001304.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+	<LI>Next message: <A HREF="001306.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1305">[ date ]</a>
+              <a href="thread.html#1305">[ thread ]</a>
+              <a href="subject.html#1305">[ subject ]</a>
+              <a href="author.html#1305">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%20for%0A%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To=561B608813F3E7448D792A51EF2AB03E058EC38D%40EXCLUSTER.fiz-karlsruhe.de">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001950.html">
+   <LINK REL="Next"  HREF="001941.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache</H1>
+    <B>Joel Stewart</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%20for%0A%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To=561B608813F3E7448D792A51EF2AB03E058EC38D%40EXCLUSTER.fiz-karlsruhe.de"
+       TITLE="[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache">joel at stewbeans.com
+       </A><BR>
+    <I>Tue Jun  2 10:19:42 EDT 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001950.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+        <LI>Next message: <A HREF="001941.html">[OAI-implementers] Issue regarding OAI-PMH protocol requirements
+	for meta data part of an OAI-PMH record
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1945">[ date ]</a>
+              <a href="thread.html#1945">[ thread ]</a>
+              <a href="subject.html#1945">[ subject ]</a>
+              <a href="author.html#1945">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Hi,
+
+I am very new to OAI, so I am limited help, and more looking to learn myself.
+
+The burden might be on the harvester.  The Implementation Guidelines for harvesters appears to address this in section 3, stating that harvesters should overlap requests.  And it would seem a good implementation should base the &quot;From&quot; in subsequent requests based on previous harvesting timestamps found in the records themselves - not their own arbitrarily chosen &quot;until&quot; value.
+
+The later problem you mention seems to be a problem that is solved by mirrors / load balancing.  With a mirror, you essentially have 2 copies of the site, and use a 302 HTTP codes to stop requests to the site you are updating and redirect to the other copy.   With a load balancer this site switching can be done invisibly to the harvester.
+
+
+
+
+
+
+
+&gt;<i> Date: Tue, 2 Jun 2009 13:37:01 +0200
+</I>&gt;<i> From: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">Rozita.Fridman at FIZ-Karlsruhe.DE</A>
+</I>&gt;<i> To: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at openarchives.org</A>
+</I>&gt;<i> Subject: [OAI-implementers] issues with OAI-PMH specifications for	OAI-Provider implementations using a cache
+</I>&gt;<i> 
+</I>&gt;<i> Hello all,
+</I>&gt;<i> 
+</I>&gt;<i> we developed an OAI-Provider for Escidoc repositories.
+</I>&gt;<i> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+</I>&gt;<i> cache to reduce a response time. Escidoc repositories intend to contain
+</I>&gt;<i> multiple millions of objects. The Escidoc-Core framework only requires
+</I>&gt;<i> that objects metadata stored in a Escidoc repository are well formed
+</I>&gt;<i> xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+</I>&gt;<i> is essential to ensure validness of metadata in OAI-PMH response and an
+</I>&gt;<i> acceptable response time. 
+</I>&gt;<i> 
+</I>&gt;<i> But the current OAI-PMH protocol specification doesn't account for some
+</I>&gt;<i> issues, caused by the employment of a cache.
+</I>&gt;<i>  
+</I>&gt;<i> The main problem is a time lag between a harvester request and a last
+</I>&gt;<i> cache update:
+</I>&gt;<i> A harvester asks the OAI-Provider for all records that have changed
+</I>&gt;<i> between T0 and T2 in the underlying repository. The last cache update
+</I>&gt;<i> was at T1.The harvester gets records that have changed between T0 and
+</I>&gt;<i> T1, but assumes that it got all changes between T0 and T2. Therefore in
+</I>&gt;<i> the next request it asks for records that have changed between T2 and T3
+</I>&gt;<i> and is missing all changes between T1 and T2. If cache update interval
+</I>&gt;<i> is long and the next cache update takes place after T3, the harvester is
+</I>&gt;<i> also missing all changes between T2 and T3 and so on.
+</I>&gt;<i>    
+</I>&gt;<i> One proposal would be to put a date stamp of the last cache update into
+</I>&gt;<i> the OAI-PMH response, in order to inform a harvester about possibly
+</I>&gt;<i> missed records. 
+</I>&gt;<i> 
+</I>&gt;<i> Does anybody face the same problem? What do you think about it? Maybe
+</I>&gt;<i> there are better solutions for this problem?
+</I>&gt;<i> 
+</I>&gt;<i> The other issue is that depending on the OAI-Provider implementation a
+</I>&gt;<i> cache may be in an inconsistent state while a cache update process is
+</I>&gt;<i> running. Are there means in the OAI-PMH protocol to respond to harvester
+</I>&gt;<i> requests during a cache update? A possible solution would be to respond
+</I>&gt;<i> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+</I>&gt;<i> specification), but the problem is to specify Retry-After period. A
+</I>&gt;<i> duration of the cache update is not constant, it depends on the changes
+</I>&gt;<i> in the repository.
+</I>&gt;<i> 
+</I>&gt;<i> Thanks a lot,
+</I>&gt;<i> Rozita
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+_________________________________________________________________
+Insert movie times and more without leaving Hotmail&#174;. 
+<A HREF="http://windowslive.com/Tutorial/Hotmail/QuickAdd?ocid=TXT_TAGLM_WL_HM_Tutorial_QuickAdd_062009">http://windowslive.com/Tutorial/Hotmail/QuickAdd?ocid=TXT_TAGLM_WL_HM_Tutorial_QuickAdd_062009</A>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <A HREF="http://www.openarchives.org/pipermail/oai-implementers/attachments/20090602/cd0ac57f/attachment-0001.htm">http://www.openarchives.org/pipermail/oai-implementers/attachments/20090602/cd0ac57f/attachment-0001.htm</A>
+</PRE>
+
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001950.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+	<LI>Next message: <A HREF="001941.html">[OAI-implementers] Issue regarding OAI-PMH protocol requirements
+	for meta data part of an OAI-PMH record
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1945">[ date ]</a>
+              <a href="thread.html#1945">[ thread ]</a>
+              <a href="subject.html#1945">[ subject ]</a>
+              <a href="author.html#1945">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

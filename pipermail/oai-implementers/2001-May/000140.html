@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] new records in combination with a resumptionToken
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:henry%40stern.ca">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000139.html">
+   <LINK REL="Next"  HREF="000142.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] new records in combination with a resumptionToken
+   </H1>
+    <B>Henry Stern
+    </B> 
+    <A HREF="mailto:henry%40stern.ca"
+       TITLE="[OAI-implementers] new records in combination with a resumptionToken">henry@stern.ca
+       </A><BR>
+    <I>Thu, 24 May 2001 09:11:44 -0300</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000139.html">[OAI-implementers] new records in combination with a
+ resumptionToken
+</A></li>
+        <LI> Next message: <A HREF="000142.html">[OAI-implementers] harvesting strategy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#140">[ date ]</a>
+              <a href="thread.html#140">[ thread ]</a>
+              <a href="subject.html#140">[ subject ]</a>
+              <a href="author.html#140">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In the new version of the CIMI repository, we use temporary tables managed
+by a Java program.  Only the keys for the metadata are stored in the
+temporary table.  Every request involving a resumptionToken results in a
+LEFT JOIN on the temporary table and the metadata table with a limit and
+offset.  You can tell which records have been deleted because their metadata
+is null (because of the left join).
+
+Some sample SQL:
+CREATE TABLE temporarya83lkdsfj AS SELECT some_key FROM metadata_table WHERE
+modification_time &gt; '2000-05-24';
+SELECT metadata_table.metadata_field FROM temporarya83lkdsf LEFT JOIN
+metadata_table ON temporarya83lkdsf.some_key = metadata_table.some_key LIMIT
+100, 100;
+
+It should be noted that the temporary table has no keys or indices, nor was
+the distinct keyword used.  It quadruples the time of the query and has no
+benefit for the left join, which obviously runs in linear time.
+
+The main advantage to this method is that the query only needs to be run
+once.  Joining a subset of a table to another table based on its primary key
+is pretty quick.
+
+The disadvantage to this method is that if a massive amount of hits come in
+at once, MySQL chokes up.  The CPU won't be working at full speed nor will
+the disk so it might be some sort of internal deadlocking issue.  It does,
+eventually, clear up.
+
+What were some other solutions?
+
+Henry
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="mailto:oai-implementers-admin@oaisrv.nsdl.cornell.edu">oai-implementers-admin@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> [mailto:<A HREF="mailto:oai-implementers-admin@oaisrv.nsdl.cornell.edu">oai-implementers-admin@oaisrv.nsdl.cornell.edu</A>]On Behalf Of
+</I>&gt;<i> Hussein Suleman
+</I>&gt;<i> Sent: May 23, 2001 9:33 PM
+</I>&gt;<i> To: Jozef Kruger
+</I>&gt;<i> Cc: OAI-impl (E-mail)
+</I>&gt;<i> Subject: Re: [OAI-implementers] new records in combination with a
+</I>&gt;<i> resumptionToken
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> hi
+</I>&gt;<i>
+</I>&gt;<i> this is an interesting problem so im going to share some of our
+</I>&gt;<i> discussions here at virginia tech that are relevant to this problem ...
+</I>&gt;<i>
+</I>&gt;<i> of course there is no general solution since i think the OAI quite
+</I>&gt;<i> deftly avoided handling too much complication in the protocol ... that
+</I>&gt;<i> said, there are two very interesting &quot;solutions&quot;, one of which is
+</I>&gt;<i> probably relevant to you:
+</I>&gt;<i>
+</I>&gt;<i> firstly, i recall a while back someone (cant remember who) related how
+</I>&gt;<i> they implemented the protocol by making a temporary table to support
+</I>&gt;<i> resumptions ... this would probably solve your problem but would require
+</I>&gt;<i> a bit more work ...
+</I>&gt;<i>
+</I>&gt;<i> the alternative is to consider how service providers work (at least this
+</I>&gt;<i> is how we thought it through when building our first experimental
+</I>&gt;<i> harvester):
+</I>&gt;<i>
+</I>&gt;<i> a) since you can always add records at any time during the day and the
+</I>&gt;<i> granularity of harvesting is a day, you cannot trust data you got on the
+</I>&gt;<i> same day.
+</I>&gt;<i>
+</I>&gt;<i> b) since dates are local to different timezones, if the data provider is
+</I>&gt;<i> west of the service provider, asking for everything up until yesterday
+</I>&gt;<i> is not &quot;interoperationally stable&quot; since it could still be yesterday at
+</I>&gt;<i> the data provider.
+</I>&gt;<i>
+</I>&gt;<i> now there are multiple solutions to this and we tried implementing some:
+</I>&gt;<i> a) dont get anything newer than 2 days old
+</I>&gt;<i> b) always ask for a 2 day overlap ending on the current date
+</I>&gt;<i> c) use a 1-day overlap and operate in the timezone of the data provider
+</I>&gt;<i> (extract an initial responseDate from the data provider and then
+</I>&gt;<i> increment locally)
+</I>&gt;<i>
+</I>&gt;<i> as far as we can figure, any service provider that wants to avoid
+</I>&gt;<i> missing data entries has to do something like this ... since new data is
+</I>&gt;<i> not &quot;stable&quot; for harvesting it is not trusted and/or not harvested
+</I>&gt;<i> immediately and your problem of database updates pretty much disappears
+</I>&gt;<i> as long as harvesting is by date (which i trust it almost always is)
+</I>&gt;<i>
+</I>&gt;<i> ok, i know this is probably way too much detail for this question :) but
+</I>&gt;<i> i just wanted to share these thoughts to see if they aligned with the
+</I>&gt;<i> harvesting approaches used by other people building service provider
+</I>&gt;<i> interfaces ...
+</I>&gt;<i>
+</I>&gt;<i> any further comments will be appreciated ...
+</I>&gt;<i>
+</I>&gt;<i> ttfn
+</I>&gt;<i> ----hussein
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> ========================================================================
+</I>&gt;<i> hussein suleman -- <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> -- vtcs -- <A HREF="http://purl.org/net/hussein">http://purl.org/net/hussein</A>
+</I>&gt;<i> ========================================================================
+</I>&gt;<i>
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000139.html">[OAI-implementers] new records in combination with a
+ resumptionToken
+</A></li>
+	<LI> Next message: <A HREF="000142.html">[OAI-implementers] harvesting strategy
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#140">[ date ]</a>
+              <a href="thread.html#140">[ thread ]</a>
+              <a href="subject.html#140">[ subject ]</a>
+              <a href="author.html#140">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

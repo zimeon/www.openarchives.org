@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] protocol comments, OAI 2.0
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000294.html">
+   <LINK REL="Next"  HREF="000296.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] protocol comments, OAI 2.0
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] protocol comments, OAI 2.0">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Wed, 30 Jan 2002 14:08:26 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000294.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+        <LI> Next message: <A HREF="000296.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#295">[ date ]</a>
+              <a href="thread.html#295">[ thread ]</a>
+              <a href="subject.html#295">[ subject ]</a>
+              <a href="author.html#295">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Walter,
+
+Thanks for your comments. 
+
+On Fri, 25 Jan 2002, Walter Underwood wrote:
+&gt;<i> Themes: use SOAP, make it stateless, make it simpler.
+</I>&gt;<i> 
+</I>&gt;<i> SOAP is being implemented everywhere. Even AppleScript can make SOAP
+</I>&gt;<i> calls. The last time I saw this many vendors use one standard was
+</I>&gt;<i> Ethernet. So replace the custom XML protocol with SOAP.
+</I>
+The technical committee agreed that the protocol should be more decoupled
+from HTTP but we didn't feel that SOAP is the correct option at the
+moment. It is likely that some people will experiment with OAI v2 over
+SOAP.
+ 
+&gt;<i> A stateless protocol can be cached outside of the server,
+</I>&gt;<i> so that is a very valuable thing to do. The current spec
+</I>&gt;<i> has a defensive tone about load. That should not be necessary.
+</I>&gt;<i> A few modifications will make the protocols stateless and
+</I>&gt;<i> cache-friendly.
+</I>&gt;<i> 
+</I>&gt;<i> ListIdentifiers and ListRecords are stateful now. They should be
+</I>&gt;<i> replaced with a &quot;paged list&quot; model, where the client requests a
+</I>&gt;<i> starting element number and a number of results. This is an exact
+</I>&gt;<i> match for the normal web results interface. It is also the
+</I>&gt;<i> approach used in the LDAP virtual list control.
+</I>
+Load is a concern for some implementers. For example, arXiv (the
+repository I work with) would not want to give clients the opportunity to
+ask for all 185,000 metadata records in one response.
+ 
+&gt;<i> ListIdentifiers/Records also needs to be very clear about the
+</I>&gt;<i> contents of successive calls for different parts of the
+</I>&gt;<i> list. Consider a rapidly changing repository, like a newswire.
+</I>&gt;<i> The results for the list may change between calls. The list
+</I>&gt;<i> is not part of some transaction, where the contents don't change
+</I>&gt;<i> for the duration of the session. If a client really needs a
+</I>&gt;<i> consistant list, it can ask for the whole thing. Each request
+</I>&gt;<i> for a portion of the list is independent and can be cached.
+</I>
+OAI is implicitly not focused on rapidly changing repositories and this
+has influenced the design of v1.1 and continues to influence the design of
+v2. Creating a low barrier to adoption is considered very important and
+the use of an opaque resumptionToken gives implementers great flexibility.
+For example, for arXiv the only state involved in a set of list requests
+is in the resumptionToken (nothing is stored on the repository). In other
+implementations the result set is cached. Allowing implementers this
+flexibility reduces the barrier to adoption by repositories.
+ 
+&gt;<i> Datestamps are problematic in protocols, and should not be
+</I>&gt;<i> used. Computers insist that you choose some time for that
+</I>&gt;<i> day. Is it noon? One minute after midnight? How do you compare
+</I>&gt;<i> that to a time on the same day? So don't allow datestamps in
+</I>&gt;<i> protocols. Always use timestamps to the second, in UTC. Don't
+</I>&gt;<i> allow time zones or less precision.
+</I>
+There has been broad agreement to move to UTC for all date/timestamps.
+However, there is support for allowing different granularities (with well
+defined precision extension semantics) to reflect the underlying
+granularity of some repositories.
+
+&gt;<i> Of course, the metadata may contain date-only times.
+</I>&gt;<i> 
+</I>&gt;<i> Since deleted record items are not reliable, they are not all
+</I>&gt;<i> that useful. After the robot is burned the first time, the
+</I>&gt;<i> implementors will switch to polling the entire repository.
+</I>&gt;<i> They are sort of useful as hints, but I can see serious
+</I>&gt;<i> problems in some uses. In the newswire example, it is common
+</I>&gt;<i> to have a limited time right to the news articles, perhaps
+</I>&gt;<i> two weeks. So a reliable list of deleted items would grow
+</I>&gt;<i> without bound. Not good.
+</I>
+Clearly such a repository would maintain records of deleted items only for
+a fixed time. That would still be useful provided the harvesting interval
+is much smaller than the expiry time. Without deleted records, one is
+forced to poll in all cases.
+
+&gt;<i> Robots can use something like the HTTP if-modified-since request.
+</I>&gt;<i> This would be a parameter for GetRecord. If the record has
+</I>&gt;<i> been modified since the timestamp, return it. Otherwise, return
+</I>&gt;<i> the info that it has not been modified. Implementors should try
+</I>&gt;<i> and make this request fast.
+</I>
+ListRecords provides a better way to say if-modified-since for any set or
+the whole repository. I think that in many implementations the cost of
+implementing a not-modified response to if-modified-since would be 
+only marginally less than returning the metadata.
+ 
+&gt;<i> I have not looked at the interaction between SOAP and HTTP caches.
+</I>&gt;<i> It is possibled that they can be cached. If so, take some extra care.
+</I>&gt;<i> A GET can be satisfied by a cache, but a POST cannot. Properly
+</I>&gt;<i> setting the HTTP headers on responses means that a server can rely
+</I>&gt;<i> on an external HTTP cache rather than managing an internal cache.
+</I>&gt;<i> This is a big win.
+</I>&gt;<i> 
+</I>&gt;<i> The &quot;Set&quot; concept is optional and I don't see much motivation for it.
+</I>&gt;<i> I don't see a request which allows multiple sets, so there is no
+</I>&gt;<i> reason to have both sets and repositories. Except for listing them
+</I>&gt;<i> (ListSets), which is a limited sort of directory service.
+</I>
+It is not possible to get away from the concept of repositories (usually
+different servers run by different people). Some people want to use sets
+and they can; others can ignore them and there is no overhead in that
+case. One historical example is that arXiv is partitioned into four sets
+(cs, math, physics, nlin) and the NCSTRL digital library wanted to harvest
+only the cs set. The Dienst equivalent of OAI-PMH's sets facilitated this.  
+Note that the use of sets is not limited to subject partitioning.
+
+&gt;<i> In SOAP-land, directory service is the job of UDDI, and it should
+</I>&gt;<i> not be re-implemented differently in a protocol. So remove Sets.
+</I>&gt;<i> A single SOAP server can still be registered for multiple repositories,
+</I>&gt;<i> or corpora, or collections, or whatever they are called.
+</I>
+Sets provide for a simple, arbitrarily defined partitioning of a
+repository. There is interest in defining community specific set
+organizations to aid in aggregation within certain communities. This
+doesn't seem to be the same as the purpose of UDDI (which could still
+prove a sensible model for global registration of OAI services).
+
+&gt;<i> I have a few minor nits, like there is no reason to outlaw XML
+</I>&gt;<i> features which are required in all parsers, like UTF-16 or decimal
+</I>&gt;<i> entities. But switching to SOAP makes lexical issues moot.
+</I>&gt;<i> 
+</I>&gt;<i> Overall, the protocol is good. Using URIs, Dublin Core, HTTP/XML,
+</I>&gt;<i> all those things are exactly right. The spec is clear and readable.
+</I>&gt;<i> And I'm delighted that it doesn't use RDF.
+</I>
+Feelings about RDF seem so frequently to be almost religious! 
+
+Cheers,
+Simeon.
+
+[My comments are influenced by the discussions of the OAI technical
+committee but I am speaking only for myself]
+
+ 
+&gt;<i> wunder
+</I>&gt;<i> --
+</I>&gt;<i> Walter R. Underwood
+</I>&gt;<i> Senior Staff Engineer
+</I>&gt;<i> Inktomi Enterprise Search
+</I>&gt;<i> <A HREF="http://search.inktomi.com/">http://search.inktomi.com/</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000294.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+	<LI> Next message: <A HREF="000296.html">[OAI-implementers] protocol comments, OAI 2.0
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#295">[ date ]</a>
+              <a href="thread.html#295">[ thread ]</a>
+              <a href="subject.html#295">[ subject ]</a>
+              <a href="author.html#295">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: [OAI-PMH] an error in a regular expression
+ describing an OAI Identifier
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Re%3A%20%5BOAI-PMH%5D%20an%20error%20in%20a%20regular%20expression%0A%20describing%20an%20OAI%20Identifier&In-Reply-To=46529FA8.1000507%40man.poznan.pl">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001718.html">
+   <LINK REL="Next"  HREF="001722.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: [OAI-PMH] an error in a regular expression
+ describing an OAI Identifier</H1>
+    <B>Simeon Warner</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Re%3A%20%5BOAI-PMH%5D%20an%20error%20in%20a%20regular%20expression%0A%20describing%20an%20OAI%20Identifier&In-Reply-To=46529FA8.1000507%40man.poznan.pl"
+       TITLE="[OAI-implementers] Re: [OAI-PMH] an error in a regular expression
+ describing an OAI Identifier">simeon at cs.cornell.edu
+       </A><BR>
+    <I>Tue May 22 17:21:10 EDT 2007</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001718.html">[OAI-implementers] OAI and Z39.50 or SRU
+</A></li>
+        <LI>Next message: <A HREF="001722.html">[OAI-implementers] [Ica-l] Refistration still open: ETD2007 - June
+	13-16, Sweden
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1719">[ date ]</a>
+              <a href="thread.html#1719">[ thread ]</a>
+              <a href="subject.html#1719">[ subject ]</a>
+              <a href="author.html#1719">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Hi All,
+
+Agnieszka Lewandowska has pointed out an error in the patterns matching 
+domain names in the oai-identifier.xsd schema (message excerpt below, the 
+current schema doesn't permit single letter subdomain names). Such names 
+should be permitted (see: <A HREF="http://www.ietf.org/rfc/rfc1035.txt">http://www.ietf.org/rfc/rfc1035.txt</A>) so I 
+propose the following updates:
+
+in definition of repositoryIdentifierType:
+
+&lt;       &lt;pattern value=&quot;[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+&quot;/&gt;
+---
+&gt;<i>       &lt;pattern value=&quot;[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+&quot;/&gt;
+</I>
+and in definition of sampleIdentifierType:
+
+&lt;       &lt;pattern value=&quot;oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+:[a-zA-Z0-9\-_\.!~\*&amp;apos;\(\);/\?:@&amp;amp;=\+$,%]+&quot;/&gt;
+--
+&gt;<i>       &lt;pattern value=&quot;oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+:[a-zA-Z0-9\-_\.!~\*&amp;apos;\(\);/\?:@&amp;amp;=\+$,%]+&quot;/&gt;
+</I>
+I have put the updated schema online at
+   <A HREF="http://openarchives.org/OAI/2.0/oai-identifier.xsd.2007-05-22">http://openarchives.org/OAI/2.0/oai-identifier.xsd.2007-05-22</A>
+and there is a test instance at
+   <A HREF="http://openarchives.org/OAI/2.0/oai-identifier-test4.xml">http://openarchives.org/OAI/2.0/oai-identifier-test4.xml</A>
+
+This change should not invalidate any currently valid instance. Unless 
+someone points out an error I will update the live schema version in a 
+week or two.
+
+Cheers,
+Simeon
+
+
+
+(For the really pedantic, the schema pattern is too broad in that it 
+permits a subdomain name ending in a hyphen (e.g &quot;a-.com&quot;) which is not 
+valid according to RFC1035. Correcting this would make the patterns more 
+complicated and and I think it probably isn't worth it to change to 
+something like
+&lt;pattern value=&quot;[a-zA-Z]([a-zA-Z0-9]|[a-zA-Z0-9\-]+[a-zA-Z0-9])?(\.[a-zA-Z]([a-zA-Z0-9]|[a-zA-Z0-9\-]+[a-zA-Z0-9])?)+&quot;&gt; 
+However, we could do this is people see value in it.)
+
+
+On Tue, 22 May 2007, Agnieszka Lewandowska wrote:
+&gt;<i> In one of documents describing the format of the OAI Identifier might be 
+</I>&gt;<i> an error. The regular expression
+</I>&gt;<i> 	&quot;oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+:[a-zA-Z0-9\-_\.!~\*&amp;apos;\(\);/\?:@&amp;amp;=\+$,%]+&quot;
+</I>&gt;<i>
+</I>&gt;<i> from a file under URI:
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">http://www.openarchives.org/OAI/2.0/oai-identifier.xsd</A>
+</I>&gt;<i>
+</I>&gt;<i> do not validate a proper URL address: 'ebipol.p.lodz.pl' (the part with
+</I>&gt;<i> '.p' is causing an error). Furthermore a regular expression from a site
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm">http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm</A>
+</I>&gt;<i>
+</I>&gt;<i> (especially point 2.1) enables URL 'ebibpol.p.lodz.pl'. After a little
+</I>&gt;<i> change in the regular expression:
+</I>&gt;<i>
+</I>&gt;<i> &quot;oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+:[a-zA-Z0-9\-_\.!~\*&amp;apos;\(\);/\?:@&amp;amp;=\+$,%]+&quot;
+</I>&gt;<i>
+</I>&gt;<i> it works.
+</I>
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001718.html">[OAI-implementers] OAI and Z39.50 or SRU
+</A></li>
+	<LI>Next message: <A HREF="001722.html">[OAI-implementers] [Ica-l] Refistration still open: ETD2007 - June
+	13-16, Sweden
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1719">[ date ]</a>
+              <a href="thread.html#1719">[ thread ]</a>
+              <a href="subject.html#1719">[ subject ]</a>
+              <a href="author.html#1719">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,114 @@
+<schema targetNamespace="http://www.openarchives.org/OAI/2.0/"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:oai="http://www.openarchives.org/OAI/2.0/"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified">
+  
+  <annotation>
+    <documentation>This schema restricts the contents a number of elements in
+    the OAI-PMH v2.0 schema for use with the static repository schema: 
+    http://www.openarchives.org/OAI/2.0/static-repository.xsd
+    All elements remain in the namespace http://www.openarchives.org/OAI/2.0/ 
+    used by OAI-PMH v2.0 and element instances accepted by these restricted 
+    definitions would be valid according to the main schema:
+    http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd
+    Simeon Warner (Cornell University), 2004-02-12.
+
+    Release: 2004-04-23
+    $Date: 2004/05/11 14:40:07 $
+    </documentation>
+  </annotation> 
+
+  <redefine schemaLocation="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+   
+  <complexType name="ListRecordsType">
+    <annotation>
+      <documentation>ListRecords block restricted so that it must not include a 
+      resumptionToken element.</documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="oai:ListRecordsType">
+        <sequence>
+          <element name="record" type="oai:recordType" maxOccurs="unbounded"/>
+        </sequence>
+      </restriction>
+    </complexContent>
+  </complexType>
+
+  <complexType name="IdentifyType">
+    <annotation>
+      <documentation>Identify block restricted so that it must not include a 
+      compression element. Some element types also restricted.</documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="oai:IdentifyType">
+        <sequence>
+          <element name="repositoryName" type="string"/>
+          <element name="baseURL" type="anyURI"/>
+          <element name="protocolVersion" type="oai:protocolVersionType"/>
+          <element name="adminEmail" type="oai:emailType" maxOccurs="unbounded"/>
+          <element name="earliestDatestamp" type="oai:UTCdatetimeType"/>
+          <element name="deletedRecord" type="oai:deletedRecordType"/>
+          <element name="granularity" type="oai:granularityType"/>
+          <element name="description" type="oai:descriptionType"
+                   minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </restriction>
+    </complexContent>
+  </complexType>
+
+  <complexType name="recordType">
+    <annotation>
+      <documentation>All records must have header and metadata. As deleted
+      records are not supported it is not permissible to have header 
+      only.</documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="oai:recordType">
+        <sequence>
+          <element name="header" type="oai:headerType"/>
+          <element name="metadata" type="oai:metadataType"/>
+          <element name="about" type="oai:aboutType" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+      </restriction>
+    </complexContent>
+  </complexType>
+
+  <complexType name="headerType">
+    <annotation>
+      <documentation>The header element must not contain any setSpec elements 
+      or a status attribute.</documentation>
+    </annotation>
+    <complexContent>
+      <restriction base="oai:headerType">
+        <sequence>
+          <element name="identifier" type="oai:identifierType"/>
+          <element name="datestamp" type="oai:UTCdatetimeType"/>
+        </sequence>
+        <attribute name="status" type="oai:statusType" use="prohibited"/>
+      </restriction>
+    </complexContent>
+  </complexType>
+
+  <simpleType name="granularityType">
+    <annotation>
+      <documentation>The only granularity permitted is YYYY-MM-DD.</documentation>
+    </annotation>
+    <restriction base="oai:granularityType">
+      <enumeration value="YYYY-MM-DD"/>
+    </restriction>
+  </simpleType>
+
+  <simpleType name="deletedRecordType">
+    <annotation>
+      <documentation>As deleted records are not supported, the deletedRecord 
+      element may only have the value 'no'.</documentation>
+    </annotation>
+    <restriction base="oai:deletedRecordType">
+       <enumeration value="no"/>
+    </restriction>
+  </simpleType>
+
+  </redefine>
+</schema>

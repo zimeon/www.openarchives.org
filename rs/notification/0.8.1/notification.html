@@ -1,0 +1,941 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>ResourceSync Framework Specification - Notification</title>
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+<link rel="stylesheet" href="css/resourcesync.css" type="text/css"/>
+</head>
+
+<body>
+<div id="float-warning">
+  DO NOT USE, SEE <a href="http://www.openarchives.org/rs/">CURRENT ResourceSync SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logo and ReSync title">
+    <tbody><tr>
+      <td><img alt="NISO logo" src="img/niso_logo.png"/></td>
+      <td><img alt="OAI logo" src="img/OA100.gif" width="100" height="70"/></td>
+      <td class="OREtext">Open Archives Initiative<br/>ResourceSync Framework Specification</td>
+      <td><img alt="ReSync logo" src="img/resync_logo.jpg"/></td>
+    </tr></tbody>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ResourceSync Framework Specification - Notification - Alpha Draft</h2>
+  <h3 class="subTitle">2 January 2014</h3>
+</div><!--div-titleBlock-->
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/notification/0.8.1/notification">http://www.openarchives.org/rs/notification/0.8.1/notification</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/notification">http://www.openarchives.org/rs/notification</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/notification/0.8/notification">http://www.openarchives.org/rs/notification/0.8/notification</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors:</dt>
+    <dd>Martin Klein, Robert Sanderson, Herbert Van de Sompel - Los Alamos National Laboratory</dd>
+    <dd>Simeon Warner - Cornell University</dd>
+    <dd>Graham Klyne - University of Oxford</dd>
+    <dd>Bernhard Haslhofer - University of Vienna</dd>
+    <dd>Michael Nelson - Old Dominion University</dd>
+    <dd>Carl Lagoze - University of Michigan</dd>
+</dl>
+
+
+<div class="abstract">
+<h2><a name="abstract"></a>Abstract</h2>
+<p>
+The ResourceSync <a href="/rs/resourcesync">core specification</a> introduces a pull-based 
+synchronization framework for the web that consists of various capabilities that a Source can implement to allow 
+Destinations to remain synchronized with its evolving resources.
+This ResourceSync notification specification describes two additional, push-based, capabilities that a Source can support. Both 
+are aimed at reducing synchronization latency and entail a Source sending notifications to subscribing Destinations. 
+</p>
+<p>
+This specification is one of several documents comprising the <a href="/rs/">ResourceSync Framework Specifications</a>.
+</p>
+</div>
+    
+<div class="abstract">
+<h2><a name="status"></a>Status of this Document</h2>
+<p style="color:red">
+This specification is an alpha draft released for public comment. The current choice for the transport protocol 
+for notifications is PubSubHubbub. Other protocols, specifically WebSockets, are also under investigation. 
+Feedback is most welcome on the 
+<a href="https://groups.google.com/d/forum/resourcesync">ResourceSync Google Group</a>.
+</p>
+</div>
+
+<div class="toc">
+<h2><a name="contents"></a>Table of Contents</h2>
+<p class="toc">
+
+1. <a href="#Introduction">Introduction</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#MotivExamples">Motivating Examples</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#NotConv">Notational Conventions</a><br/>
+2. <a href="#NotificationChannels">Notification Types and Channels</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#NotChangeTypes">Notification Change Types</a><br/>
+3. <a href="#ChangeNoti">Change Notification</a><br/>
+4. <a href="#FrameworkNoti">Framework Notification</a><br/>
+5. <a href="#Transport">Transport Protocol: PubSubHubbub</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;5.1 <a href="#Source2Hub">Source Submits Notifications to Hub</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;5.2 <a href="#Destination2Hub">Destination Subscribes to Hub to Receive Notifications</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;5.3 <a href="#Hub2Destination">Dub Delivers Notifications to Destination</a><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;5.4 <a href="#Destination4Hub">Destination Unsubscribes from Hub</a><br/>
+6. <a href="#AdvNotChan">Advertising Notification Channels: PubSubHubbub</a><br/>
+7. <a href="#References">References</a><br/>
+</p>
+
+<h3><a name="appendices"></a>Appendices</h3>
+<p class="toc">
+A. <a href="#acknowledgments">Acknowledgements</a><br/>
+B. <a href="#Changelog">Change Log</a></p>
+</div>
+
+<div class="body">
+<h2>1. <a name="Introduction">Introduction</a></h2>
+<p>
+This specification describes notification capabilities defined for the 
+<a href="/rs/">ResourceSync framework</a>.
+The push-based notification capabilities are aimed at decreasing the synchronization latency between a Source and a Destination that is inherent in 
+the pull-based capabilities defined in the ResourceSync <a href="/rs/resourcesync">core specification</a>.
+Two notification capabilities are specified and both entail a Source sending notifications to subscribing Destinations. 
+The <a href="#ChangeNoti">Change Notification</a> capability consists of a Source sending notifications 
+about changes to its resources. The <a href="#FrameworkNoti">Framework Notification</a> capability consists of a Source sending out notifications 
+about changes to its implementation of the ResourceSync framework, for example the publication of a new Resource List 
+or the updating of a Change List.
+</p>
+
+<h3>1.1. <a name="MotivExamples"></a>Motivating Examples</h3>
+
+<p>
+Applications based on Linked Data integrate resources from various datasets, with resources likely changing at a different pace. 
+The BBC Linked Data applications that integrate data from, among others, Last.FM, DBpedia, MusicBrainz, and GeoNames serve as examples. 
+The accuracy of services based on such an integrated resource collection depends on the contributing resources being up-to-date.
+The update frequency of LiveDBPedia resources, for example, has been observed to average around two changes per second.
+This provides a significant synchronization challenge that the <a href="#ChangeNoti">Change Notification</a> capability 
+aims to address. 
+</p>
+
+<p>While the pull-based capabilities specified in the ResourceSync <a href="/rs/resourcesync">core specification</a> 
+allow Destinations to remain informed about the evolving state of a Source's resources, they do leave the question open as to when 
+a Destination should check whether, for example, a Source has published a new Resource List or has updated a Change List. 
+A pragmatic solution is for Destinations to recurrently poll a Source at a frequency that is based on experience with the pace of prior 
+updates. The <a href="#FrameworkNoti">Framework Notification</a> capability is about informing Destinations about changes to a 
+Source's ResourceSync environment, thereby providing an explicit trigger to poll a Source, and in doing so  
+removing uncertainty and optimizing the synchronization process. The efficiency gain of this approach is particularly 
+significant in the case of a Source with infrequent changes where Destinations nonetheless require low latency updates.</p>
+
+<h3>1.2. <a name="NotConv">Definitions and Namespace Prefix Bindings</a></h3>
+
+<p>This specification uses the terms "resource", "representation", "request",
+"response", "content negotiation", "client", and "server" as
+described in [<a href="#ref-webarch">Architecture of the World Wide Web</a>].</p>
+
+<p>Throughout this document, the following namespace prefix bindings
+are used:</p>
+
+<a name="tab_1_1"></a>
+<table class="namespace-table" summary="namespaces used in this document">
+ <tbody><tr class="top">
+  <th class="left">Prefix</th><th class="center">Namespace URI</th><th class="right">Description</th>
+ </tr>
+  <tr class="odd">
+  <td class="left"><i>none</i></td><td class="center"><code>http://www.sitemaps.org/schemas/sitemap/0.9</code></td>
+  <td class="right">Sitemap XML elements defined in the <a href="#ref-sitemaps">Sitemap protocol</a></td>
+ </tr>
+ <tr class="even">
+    <td class="left"><code>rs</code></td><td class="center"><code>http://www.openarchives.org/rs/terms/</code></td>
+  <td class="right">Namespace for elements and attributes introduced in this specification</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 1.1: Namespace prefix bindings used in this document</p>
+
+
+<h2>2. <a name="NotificationChannels"></a>Notification Types and Channels</h2>
+<p>
+Notifications are applied at two distinct levels in the ResourceSync framework:
+<ol>
+ <li><b>Change Notifications</b> are sent to inform Destinations about resource change events, for example, when a Source's resource that is subject to synchronization was created, 
+updated, or deleted. Details are provided in <a href="#ChangeNoti">Section 3</a>.
+ </li>
+ <li><b>Framework Notifications</b> are sent to inform Destinations about changes to capabilities of the ResourceSync framework, for example, if a Source's Change List or Capability List 
+was created, updated, or deleted. Details are provided in <a href="#FrameworkNoti">Section 4</a>.
+ </li>
+</ol>
+As is the case with all capabilities in the ResourceSync framework, the Change Notification and Framework Notification capabilities 
+are independent and can be implemented in a modular manner.
+</p>
+<p>
+Notifications are sent from Source to Destination using a push technology. Change 
+Notifications and Framework Notifications are sent on different notification channels. 
+The payload for these notifications are described in <a href="#ChangeNoti">Section 3</a> and 
+<a href="#FrameworkNoti">Section 4</a>, respectively. The transport protocol used to send notifications is 
+discussed in <a href="#Transport">Section 5</a>. 
+</p>
+
+<p>
+<a href="#fig_notification-single">Figure 1</a> displays the <a href="/rs/resourcesync#Structure">structure of the ResourceSync framework</a> 
+for a Source that has a single <a href="/rs/resourcesync#Terminology">set of resources</a>, showing  
+the 
+<a href="/rs/resourcesync#SourceDesc">Source Description</a> and 
+the <a href="/rs/resourcesync#CapabilityList">Capability List</a> at the top. 
+The Capability List advertises four distinct capabilities: a 
+<a href="/rs/resourcesync#DescResources">Resource List</a>, a 
+<a href="/rs/resourcesync#DesChanges">Change List</a>, a 
+<a href="/rs/resourcesync#PackResources">Resource Dump</a>, and a 
+<a href="/rs/resourcesync#PackChanges">Change Dump</a>.
+The figure also shows a Framework Notification channel (red hexagon) and a Change Notification channel (yellow hexagon) and indicates the 
+levels of the framework they apply to:
+<ul>
+<li>The Change Notification channel (yellow hexagon) is used to send information about resource changes for a specific set of resources.
+Changes to these resources are communicated as change notifications via the 
+Change Notification channel.</li>
+<li>The Framework Notification channel (red hexagon)  is used to send information about changes in the various capability documents 
+(e.g. Resource List, Change List, etc.), as well as in the Capability List and the Source Description.
+Changes to all these documents are communicated as framework notifications via the 
+Framework Notification channel.</li>
+<li><a href="#fig_notification-single">Figure 1</a> also shows that framework notifications are not sent for 
+changes at the level of an index document. For example, if new Resource Lists are created that reside under a Resource List Index 
+then the framework notification is only sent about the creation of one of the Resource Lists and not about the creation of the 
+encompassing Resource List Index. It is the Source's responsibility to ensure that the Resource List Index points to all new component
+Resource Lists at the time of the notification.
+Also, a framework notification sent about a change to a document that resides under an index must contain a link with the relation type 
+<code>index</code> pointing at that index. This allows Destinations to navigate towards the index and detect further changes there. 
+For example, the framework notification about the creation of a new Resource List must contain an <code>index</code> link pointing at the
+Resource List Index.</li>
+</ul>
+</p>
+
+<div class="image">
+<a name="fig_notification-single"></a>
+<img alt="A Framework- and a Change Notification channel" src="img/notification_level_single_cap.png"/>
+<p class="caption">Figure 1: A Framework- and a Change Notification channel in the ResourceSync framework structure</p>
+</div>
+
+<p>
+The ResourceSync framework allows a Source to offer multiple <a href="/rs/resourcesync#Terminology">sets of resources</a> 
+in which case the Source Description points to
+multiple Capability Lists, one for each set of resources. 
+This scenario has the following implications for the notification capabilities: 
+<ul>
+ <li>
+A dedicated Change Notification channel must be provided for each distinct set of resources for which Change Notification is supported.
+A notification about a change to a resource is sent via the Change Notification channel that is associated with the set of resources under which the resource resides. 
+If a resource resides under multiple sets of resources, a notification is sent on each of the Change Notification channels associated with those sets of resources.
+</li>
+ <li>
+A dedicated Framework Notification channel must be provided for each distinct set of resources for which Framework Notification is supported. 
+This means that each set of resources has 
+its own Framework Notification channel through which notifications about changes to capability documents 
+and the Capability List associated with the set of resources are sent. 
+However, notifications about changes to the Source Description (e.g., if a new Capability List was created) are sent via all Framework Notification 
+channels. This way a Source can make sure that Destinations remain informed about changes to the overall organization of the Source's ResourceSync implementation 
+regardless of the Framework Notification channel they subscribe to. 
+</li>
+</ul>
+
+<a href="#fig_notification-multi">Figure 2</a> depicts a scenario where a Source offers multiple sets of resources and its Source 
+Description therefore points to multiple Capability Lists, one for each set of resources, in this case <code>Capability List 1</code>
+and <code>Capability List 2</code>.
+<a href="#fig_notification-multi">Figure 2</a> shows that each set of resources has a designated Change Notification and 
+Framework Notification channel.
+<code>Change Notification channel 1</code>, for example, is used to send change notifications about changes to resources that are part 
+of the set of resources covered by <code>Capability List 1</code>.
+In contrast, <code>Framework Notification channel 2</code> is used to send notifications about changes to the capability documents advertised by
+<code>Capability List 2</code> and about changes to <code>Capability List 2</code> itself. 
+Notifications about changes to the Source Description are sent via <code>Framework Notification channel 1</code> and 
+<code>Framework Notification channel 2</code>.
+</p>
+
+<div class="image">
+<a name="fig_notification-multi"></a>
+<img alt="Framework and Change Notification channels for multiple Capability Lists" src="img/notification_level_multi_cap.png"/>
+<p class="caption">Figure 2: Framework and Change Notification channels for multiple sets of resources</p>
+</div>
+
+
+<h3>2.1. <a name="NotChangeTypes">Notification Change Types</a></h3>
+<p>
+The following table provides an overview of the possible change types that Change Notifications 
+and Framework Notifications inform about within the ResourceSync framework.
+</p>
+
+<a name="tab_2_1"></a>
+<table class="capability-table" summary="Change Types Overview">
+ <tbody><tr class="top">
+  <th>Capability</th><th colspan="3">Change Type</th>
+ </tr>
+ <tr class="top">
+  <th>&nbsp;</th><th>Create</th><th>Update</th><th>Delete</th>
+ </tr>
+ <tr class="odd">
+  <td class="scap" colspan="4">Change Notification</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;Individual Resource</td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="odd">
+  <td class="scap" colspan="4">Framework Notification</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;Resource List</td><td class="sync">X</td><td class="sync">X</td><td class="audit"></td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;Resource Dump</td><td class="sync">X</td><td class="sync"></td><td class="audit"></td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;Change List</td><td class="sync">X</td><td class="sync">X</td><td class="audit"></td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;Change Dump</td><td class="sync">X</td><td class="sync">X</td><td class="audit"></td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;Capability List</td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;Source Description</td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 2.1: Notification Change Types</p>
+
+<p>
+Note that the creation and deletion of Change Notification channels and Framework Notification 
+channels is reflected in updated Capability Lists (see <a href="#AdvNotChan">Section 6</a>). 
+This specification does not define a separate notification about notification channels.
+</p>
+
+<h2>3. <a name="ChangeNoti">Change Notification</a></h2>
+<p>
+A change notification is sent on the appropriate Change Notification channel, as described in <a href="#NotificationChannels">Section 2</a>, 
+if a Source wishes to notify a Destination that one or more of its resources subject to
+synchronization have changed. By subscribing to a Change Notification channel, a Destination can reduce synchronization latency and avoid 
+periodically polling the Source's Change Lists to determine whether resource changes have occurred.
+</p>
+
+<p>
+The format of a change notification is very similar to the Change List format introduced in 
+<a href="/rs/resourcesync#DesChanges">Section 10 of the core specification</a>
+except that it contains entries only for those changes that have occurred since the previous change notification 
+was sent on the channel.
+It is based on the <code>&lt;urlset&gt;</code> document format introduced by the Sitemap protocol.
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+<li>The optional <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code>, that, if included, must have a 
+<code>capability</code> attribute that has a value of <code>changelist-notification</code>. It also has the optional 
+<code>from</code> and the optional <code>until</code> attributes that, if used, must both be provided. 
+The <code>from</code> attribute indicates that the change notification includes all changes that occurred to the set of resources at the Source 
+since the datetime expressed as the value of the attribute. The  <code>until</code> attribute indicates that the change notification 
+includes all changes that occurred to the set of resources at the Source up until the datetime expressed as the value of the attribute.
+</li>
+ <li>The optional <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>up</code>.</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> for each resource change. This element does not have attributes, but uses
+child elements to convey information about the changed resource. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the changed resource.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in 
+<a href="/rs/resourcesync#DocumentFormats">Section 5 of the core specification</a>.
+All entries in a change notification must be provided in forward chronological order: the least recently changed 
+resource must be listed at the beginning of the change notification payload, while the most recently changed resource must be 
+listed at the end.</li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element must have the attribute <code>change</code> to convey the nature of the change.
+Its value can be <code>created</code>, <code>updated</code>, or <code>deleted</code>.
+It can further have attributes <code>hash</code>, <code>length</code>, and <code>type</code>, as described in <a href="/rs/resourcesync#DocumentFormats">Section 5 of the core specification</a>.</li>
+  <li>Optional <code>&lt;rs:ln&gt;</code> child elements link to related resources as described in 
+<a href="/rs/resourcesync#DocumentFormats">Section 5</a> and 
+<a href="/rs/resourcesync#LinkRelRes">Section 12 of the core specification</a>.</li>
+ </ul>
+ </li>
+</ul>
+
+<p>
+Change notifications do not use the <code>&lt;sitemapindex&gt;</code> document format 
+introduced by the Sitemap protocol. In the event that there are a very large number 
+of simultaneous changes at a Source, the notifications must be split into a sequence
+of change notifications using <code>&lt;urlset&gt;</code> documents.
+</p>
+
+<p>
+<a href="#ex_3_1">Example 3.1</a> shows the payload of a change notification containing the description of changes to two resources.
+</p>
+<a name="ex_3_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T13:03:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T13:23:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e 
+             sha-256:854f61290e2e197a11bc91063afce22e43f8ccc655237050ace766adc68dc784&quot;
+             length=&quot;14599&quot;
+             type=&quot;application/pdf&quot;/&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 3.1: The payload of a change notification</p>
+
+
+<h2>4. <a name="FrameworkNoti">Framework Notification</a></h2>
+<p>
+A framework notification is sent on the appropriate Framework Notification channel, as described in <a href="#NotificationChannels">Section 2</a>, 
+if a Source wishes to notify a Destination about changes to Resource Lists, Change Lists, Resource Dumps, Change Dumps, Capability Lists, and Source Descriptions.
+By subscribing to a Framework Notification channel, Destinations can refrain from periodically pulling these documents to determine whether they changed.
+</p>
+<p>
+The format of a framework notification is very similar to the Change List format introduced in 
+<a href="/rs/resourcesync#DesChanges">Section 10 of the core specification</a>.
+It is based on the <code>&lt;urlset&gt;</code> document format introduced by the Sitemap protocol.
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+<li>An optional <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code>, that, if included, must have a 
+<code>capability</code> attribute that has a value of <code>framework-notification</code>. 
+</li>
+ <li>An optional <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> with the relation type
+<code>up</code>.</li>
+<ul>
+<li>If the change notification pertains to a capability document such as a Resource List, the target of the link is the Capability List.</li> 
+<li>If the change notification pertains to a Capability List, the target of the link is the Source Description.</li>
+</ul>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per framework notification. 
+This element does not have attributes, but uses child elements to convey information about the change to the framework. 
+The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the changed capability document, Capability List or Source Description.</li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element that must have two attributes. The first is the <code>change</code> attribute, used  
+to convey the nature of the change. Possible values are <code>created</code>, <code>updated</code>, or <code>deleted</code> and their use is as shown in 
+<a href="#tab_2_1">Table 2.1</a>.
+The second attribute is <code>capability</code>, used to indicate the component of the framework that has undergone the change.
+Possible values are <code>changelist</code>, <code>resourcelist</code>, <code>changedump</code>, <code>resourcedump</code>, 
+<code>capabilitylist</code>, and <code>description</code>. For notifications about changes to archival capabilities, 
+the values for the <code>capability</code> attribute defined in the <a href="/rs/archives">Archive specification</a> are used.
+Additional values may be defined in other specifications for additional capabilities.</li>
+ <li>A mandatory <code>&lt;rs:ln&gt;</code> child element with the relation type <code>index</code> that points to an index document in case the document
+that has undergone a change resides under one.</li>
+ </ul>
+ </li>
+</ul>
+<p>
+Framework notifications do not use the <code>&lt;sitemapindex&gt;</code> document format 
+introduced by the Sitemap protocol.
+</p>
+<p>
+<a href="#ex_4_1">Example 4.1</a> shows the payload of a framework notification informing the Destination about the
+availability of a new Resource List.
+</p>
+<a name="ex_4_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourceset1/resourcelist.xml&lt;/loc&gt;
+      &lt;rs:md change=&quot;created&quot;
+             capability=&quot;resourcelist&quot;/&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.1: The payload of a framework notification that informs about the availability of a new Resource List</p>
+
+<p>
+As shown in <a href="#fig_notification-single">Figure 1</a> and <a href="#fig_notification-multi">Figure 2</a>, 
+framework notifications are never sent at the index level. 
+If the Source sends a framework notification about the change to a document (e.g., a Resource List) 
+that resides under an index, it must provide a <code>&lt;rs:ln&gt;</code> child element to the 
+<code>&lt;url&gt;</code> element in which that change is communicated. The relation type of that link must be 
+<code>index</code>, and the target of the link must be the index (e.g., the Resource 
+List Index) that the changed document resides under.
+</p>
+<p>
+It is likely that framework notifications only contain information about a single change to the framework.
+However, multiple such changes can be aggregated into a single framework notification. 
+<a href="#ex_4_2">Example 4.2</a> shows the payload of a framework notification informing the Destination about 
+a new Resource List, a new Resource Dump, and about an updated Change List. The Resource List 
+resides under an index and hence the corresponding <code>&lt;url&gt;</code> element has a <code>&lt;rs:ln&gt;</code> child 
+element with the relation type <code>index</code>. Note that the framework notification only contains one entry for
+one new Resource List that resides under an index even though the index likely points to other new Resource Lists.
+</p>
+
+<a name="ex_4_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcelist.xml&lt;/loc&gt;
+      &lt;rs:md change=&quot;created&quot;
+             capability=&quot;resourcelist&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel="index"</span>
+             href="http://example.com/dataset1/resourcelist-index.xml"/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcedump.xml&lt;/loc&gt;
+      &lt;rs:md change=&quot;created&quot;
+             capability=&quot;resourcedump&quot;/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/changelist.xml&lt;/loc&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             capability=&quot;changelist&quot;/&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.2: A framework notification informing about multiple framework changes</p>
+
+
+
+<h2>5. <a name="Transport">Transport Protocol: PubSubHubbub</a></h2>
+
+<p>In order to bootstrap the notification capabilities of the ResourceSync framework, a single 
+transport protocol is chosen: PubSubHubbub [<a href="#ref-pubsubhubbub">PubSubHubbub</a>]. PubSubHubbub is a simple, 
+HTTP-based publish/subscribe protocol that is expected to perform well for framework notifications and for use cases 
+that do not require change notifications to be sent at a very high frequency. Another transport protocol, WebSockets 
+<a href="#ref-rfc6455">RFC 6455</a> will be explored and may be added in the future.</p>
+
+<p><a href="#tab_5_1">Table 5.1</a> maps terminology used in ResourceSync and PubSubHubbub. In order to implement 
+the publish/subscribe paradigm, PubSubHubbub introduces a <code>hub</code> that acts as a conduit between Source and Destination. 
+A hub can be operated by the Source itself or by a third party. It is uniquely identified by the <code>hub URI</code>.
+PubSubHubbub's <code>topic</code> corresponds with the notion of channel used in this specification. 
+A topic is uniquely identified by its <code>topic URI</code>. Hence, 
+per set of resources, the Source has a dedicated topic (and hence topic URI) 
+for its change notifications and framework notifications, respectively.</p>
+
+<a name="tab_5_1"></a>
+<table class="term-table" summary="terminology used in this document">
+ <tbody><tr class="top">
+  <th>ResourceSync</th><th>PubSubHubbub</th>
+ </tr>
+  <tr class="odd">
+  <td class="left">Source</td>
+  <td class="right">Publisher</td>
+ </tr>
+ <tr class="even">
+  <td class="left">Destination</td>
+  <td class="right">Subscriber</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">Channel</td>
+  <td class="right">Topic</td>
+ </tr>
+  <tr class="even">
+  <td class="left">Notification</td>
+  <td class="right">Notification</td>
+ </tr>
+ <tr class="odd">
+  <td class="left"></td>
+  <td class="right">Hub</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 5.1: Mapping of terminologies between ResourceSync and PubSubHubbub</p>
+
+<p>The remainder of this section describes the use of PubSubHubbub in ResourceSync. It only provides 
+the information about the PubSubHubbub protocol that is essential to gain an adequate understanding of the 
+overall mechanism. Details about the PubSubHubbub protocol are available in the specification [<a href="#ref-pubsubhubbub">PubSubHubbub</a>].
+<a href="#fig_pubsubhubbub">Figure 3</a> shows an overview of HTTP interactions between Source, Hub, and Destination. They will be detailed 
+in the remainder of this section.
+</p>
+
+<div class="image">
+<a name="fig_pubsubhubbub"></a>
+<img alt="Framework and Change Notification channels for multiple Capability Lists" src="img/pubsubhubbub.png"/>
+<p class="caption">Figure 3: HTTP interactions between Source, Hub, and Destination</p>
+</div>
+
+<h3>5.1. <a name="Source2Hub">Source Submits Notifications to Hub</a></h3>
+
+<p>The PubSubHubbub protocol provides no specific guidelines regarding the way in which a Source should communicate 
+notifications to a hub. The mechanism for ResourceSync notifications is as follows:</p>
+
+<ul>
+<li>For each set of resources, the Source has a dedicated topic URI
+for its change notifications and framework notifications, respectively. 
+The response to an HTTP HEAD/GET request issued against a topic URI 
+must have an HTTP "204 no content" response code and an HTTP Link header with the following links:
+ <ul>
+ <li>A mandatory link with the <code>self</code> relation type 
+ that provides the topic URI for the submitted notification 
+ as the value of the <code>href</code> attribute.</li>
+ <li>A mandatory link with the <code>hub</code> relation type 
+ that provides the hub URI as the value of the <code>href</code> attribute.</li>
+ <li>A mandatory link with the <code>resourcesync</code> relation type 
+ that provides the URI of the Capability List for the set of resources covered by the topic URI (channel)
+ as the value of the <code>href</code> attribute.</li>
+ </ul>
+This is shown as "Hub verifies topic URI" in <a href="#fig_pubsubhubbub">Figure 3</a>.
+</li>
+<li>A Source submits the payload for a change notification or framework notification to a hub. 
+The notification payload is provided as the body of an HTTP POST issued against the hub URI. 
+This HTTP POST must have an HTTP <code>Content-Type</code> header with a value of <code>application/xml</code> and 
+an HTTP Link header with the following links:
+ <ul>
+ <li>A mandatory link with the <code>self</code> relation type 
+ that provides the topic URI for the submitted notification 
+ as the value of the <code>href</code> attribute.</li>
+ <li>A mandatory link with the <code>hub</code> relation type 
+ that provides the hub URI as the value of the <code>href</code> attribute.</li>
+ <li>A mandatory link with the <code>resourcesync</code> relation type 
+ that provides the URI of the Capability List for the set of resources covered by the topic URI (channel)
+ as the value of the <code>href</code> attribute.</li>
+ </ul>
+This is shown as the right pointing arrow of "Source notifies Hub" in <a href="#fig_pubsubhubbub">Figure 3</a>.
+</li>
+<li>The hub, if operated by a third party, may want to verify whether the HTTP POST was submitted by a legitimate 
+ResourceSync Source. This is the case if all the following hold:
+ <ul>
+ <li>The payload of the HTTP POST is a valid <code>&lt;urlset&gt;</code> document.</li>
+ <li>The HTTP POST contains an HTTP Link header with the aformentioned links.</li>
+ <li>The response to an HTTP HEAD/GET issued against the topic URI contains an HTTP Link header with the aformentioned links.</li>
+ <li>The response to an HTTP GET issued against the URI of the link with the <code>resourcesync</code> relation type 
+ has a HTTP 2XX status code and the response body is a Capability List, i.e. a valid 
+ <code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> document.</li>
+ </ul>
+<li>The hub responds to the submission of the payload for a change notification or framework notification as follows:</li>
+ <ul>
+ <li>The response must have HTTP "200 OK" status code if the submission was successful.</li>
+ <li>The response must have a HTTP 3XX, 4XX or 5XX status code if the submission was not successful.</li>
+ </ul>
+This is shown as the left pointing arrow of "Source notifies Hub" in <a href="#fig_pubsubhubbub">Figure 3</a>.
+</li>
+</ul>
+
+<p><a href="#ex_5_1">Example 5.1</a> shows the HTTP POST issued by the Source against its hub to submit the 
+change notification payload of <a href="#ex_3_1">Example 3.1</a>. For brevity, the payload is not shown 
+in its entirety. The third party hub URI is <code>http://hub.example.org/pubsubhubbub/</code> 
+and the Source's topic URI (channel) for change notifications pertaining to dataset1 is 
+<code>http://example.com/dataset1/change/</code>.</p>
+
+<a name="ex_5_1"></a>
+<div class="exampleInner">
+<pre>
+POST /pubsubhubbub/ HTTP/1.1
+Host: http://hub.example.org
+Content-Type: application/xml
+Link: &lt;http://example.com/dataset1/change/&gt; ; rel="self",
+ &lt;http://hub.example.org/pubsubhubbub/&gt; ; rel="hub", 
+ &lt;http://www.example.com/dataset1/capabilitylist.xml&gt; ; rel="resourcesync"
+Content-Length: 849
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset ...
+</pre>
+</div>
+<p class="caption">Example 5.1: The HTTP POST used by a Source to submit a change notification payload to its hub</p>
+
+<h3>5.2. <a name="Destination2Hub">Destination Subscribes to Hub to Receive Notifications</a></h3>
+
+<p>A Destination subscribes to a Source's topic using the process described in the section 
+"Subscribing and Unsubscribing" of <a href="#ref-pubsubhubbub">PubSubHubbub</a>. 
+The process consists of mandatory subscription request and subscription verification phases:</p>
+<ul>
+<li>In the subscription request phase, shown as "subscription" in <a href="#fig_pubsubhubbub">Figure 3</a>, 
+the Destination indicates it wants to subscribe to notifications 
+pertaining to a Source's topic URI (channel). In order to do so, a Destination 
+provides a form as the body of an HTTP POST issued against the hub URI.
+This HTTP POST must have an HTTP <code>Content-Type</code> header with a value of <code>application/x-www-form-urlencoded</code> and 
+the form contains the following information:
+<ul>
+<li>The mandatory <code>hub.callback</code> parameter that has as value the Destination's callback URI, that is 
+the URI to which the hub should submit the notifications pertaining to the Source's topic URI.</li>
+<li>The mandatory <code>hub.mode</code> parameter that has as value <code>subscribe</code>.</li>
+<li>The mandatory <code>hub.topic</code> parameter that has as value the Source's topic URI 
+that the Destination wants to subscribe to.</li>
+<li>The optional <code>hub.lease_seconds</code> parameter that has as value the number of seconds 
+that the Destination desires the subscription to remain active. A Destination that provides a value needs to be aware 
+that it may or may not be honored by the hub.</li>
+</ul>
+The hub must respond to a subscription request with an HTTP "202 Accepted" response code 
+as an indication that the request was received and will be verified.
+</li>
+<li>In the subscription verification phase, shown as "verification" in <a href="#fig_pubsubhubbub">Figure 3</a>,
+the hub verifies whether the Destination genuinely intended to subscribe, 
+and whether the Destination has control over the callback URI it provided.
+In order to do so, the hub issues an HTTP GET against the Destination's callback URI with the following 
+query string arguments appended to it:
+<ul>
+<li>The mandatory <code>hub.mode</code> parameter that has as value <code>subscribe</code>.</li>
+<li>The mandatory <code>hub.topic</code> parameter that has as value the topic URI given in the subscription request.</li>
+<li>The mandatory <code>hub.challenge</code> parameter that has as value a hub-generated random string.</li>
+<li>The mandatory <code>hub.lease_seconds</code> parameter that has as value the 
+number of seconds that the hub will keep the subscription active. This actual 
+subscription period may differ arbitrarily from what the Destination requested. 
+It is recommended that the duration of a subscription granted should not be 
+less than 300 seconds (5 minutes) and should not be more than 2678400 seconds 
+(1 month). Although these suggested limits are somewhat arbitrary, the lower limit is 
+intended to prevent overload by frequent subscription renewals, whereas the 
+upper limit is chosen to ensure that non-cancelled subscriptions expire within a 
+foreseeable period. In order to maintain a continuous subscription, a Destination 
+must take note of the granted subscription period, and it must issue a new 
+subscription request before the indicated period expires if it wants to keep 
+receiving notifications.
+</li>
+</ul>
+The subscriber confirms its intention to subscribe by sending a response that has an HTTP 2XX status code 
+and that has the value of the <code>hub.challenge</code> as its body. Any other response indicates that 
+there was no intent to subscribe. .
+</li>
+</ul>
+
+<p><a href="#ex_5_2">Example 5.2</a> shows the HTTP POST issued by a Destination against the hub URI 
+<code>http://hub.example.org/pubsubhubbub/</code> requesting a subscription to the Source's 
+topic URI (channel) <code>http://example.com/dataset1/change/</code> 
+as a means to receive change notifications pertaining to dataset1 at its callback URI 
+<code>http://destination.example.net/callback/</code>.</p>
+
+<a name="ex_5_2"></a>
+<div class="exampleInner">
+<pre>
+POST /pubsubhubbub/ HTTP/1.1
+Host: http://hub.example.org
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 141
+
+hub.mode=subscribe&amp;hub.topic=http%3A%2F%2FAexample.com%2Fdataset1%2Fchange%2F
+&amp;hub.callback=http%3A%2F%2Fdestination.example.net%2Fcallback%2F&amp;hub.lease_seconds=3600
+</pre>
+</div>
+<p class="caption">Example 5.2: A Destination's request to a hub to subscribe to a Source's notification channel</p>
+
+<p><a href="#ex_5_3">Example 5.3</a> shows the HTTP GET issued by the hub against the Destination's 
+callback URI to verify that it was the Destination's intent to subscribe. </p>
+
+<a name="ex_5_3"></a>
+<div class="exampleInner">
+<pre>
+GET /callback/?hub.mode=subscribe&amp;hub.topic=http%3A%2F%2FAexample.com%2Fdataset1%2Fchange%2F
+&amp;hub.challenge=c0cc4630-5116-11e3-8f96-0800200c9a66&amp;hub.lease_seconds=2400 HTTP/1.1
+Host: http://destination.example.net
+Connection: Close
+</pre>
+</div>
+<p class="caption">Example 5.3: A hub's request to verify a Destination's intent to subscribe</p>
+
+<p><a href="#ex_5_4">Example 5.4</a> shows the response by a Destination to the 
+hub's subscription verification request of <a href="#ex_5_3">Example 5.3</a>. 
+It indicates that the Destination wants the subscription.</p>
+
+<a name="ex_5_4"></a>
+<div class="exampleInner">
+<pre>
+HTTP/1.1 200 OK
+Date: Tue, 19 Nov 2013 12:42::13 GMT
+Content-Type: text/plain; charset=UTF-8
+Content-Length: 36
+Connection: Close
+
+c0cc4630-5116-11e3-8f96-0800200c9a66
+</pre>
+</div>
+<p class="caption">Example 5.4: A hub's request to verify a Destination's intent to subscribe</p>
+
+<h3>5.3. <a name="Hub2Destination">Hub Delivers Notifications to Destination</a></h3>
+
+<p>When the hub receives a change notification or framework notification from the Source, 
+it passes it on to the subscribing Destination(s). The process, shown as "Hub notifies Destination" in <a href="#fig_pubsubhubbub">Figure 3 </a>, is as follows:</p>
+
+<ul>
+<li>The hub provides the notification payload received from the Source as the body of an 
+HTTP POST issued against the Destination's callback URI. 
+This HTTP POST must have an HTTP <code>Content-Type</code> header with a value of <code>application/xml</code> and 
+an HTTP Link header with the following links:
+<ul>
+<li>A mandatory link with the <code>self</code> relation type 
+that provides the topic URI (channel) for the notification 
+as the value of the <code>href</code> attribute.</li>
+<li>A mandatory link with the <code>hub</code> relation type 
+that provides the hub URI as the value of the <code>href</code> attribute.</li>
+<li>A mandatory link with the <code>resourcesync</code> relation type 
+that provides the URI of the Capability List for the set of resources covered by the topic URI (channel)
+as the value of the <code>href</code> attribute.</li>
+</ul>
+</li>
+<li>The successful response from the subscriber's callback URI must be have an HTTP 2XX code. 
+The hub must consider all other subscriber response codes as failures.</li>
+</ul>
+
+<p><a href="#ex_5_5">Example 5.5</a> shows the HTTP POST that the hub issues 
+against the Destination's callback URI to relay the
+notification it received from the Source in <a href="#ex_5_1">Example 5.1</a>. 
+For brevity, the payload is not shown in its entirety. </p>
+
+<a name="ex_5_5"></a>
+<div class="exampleInner">
+<pre>
+POST /callback/ HTTP/1.1
+Host: http://destination.example.net
+Content-Type: application/xml
+Link: &lt;http://example.com/dataset1/change/&gt; ; rel="self",
+ &lt;http://hub.example.org/pubsubhubbub/&gt; ; rel="hub", 
+ &lt;http://www.example.com/dataset1/capabilitylist.xml&gt; ; rel="resourcesync"
+Content-Length: 849
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset ...
+</pre>
+</div>
+<p class="caption">Example 5.5: The HTTP POST used by a hub to submit a Source's change notification payload to a Destination</p>
+
+<h3>5.4. <a name="Destination4Hub">Destination Unsubscribes from Hub</a></h3>
+
+<p>The mechanism by which a Destination unsubscribes from a Source's topic URI is as 
+described in <a href="#Source2Hub">Section 5.1</a> but uses <code>unsubscribe</code> as the value of 
+<code>hub.mode</code> instead of <code>subscribe</code>.</p>
+
+<h2>6. <a name="AdvNotChan">Advertising Notification Channels: PubSubHubbub</a></h2>
+<p>
+Notification capabilities are advertised via Capability Lists, as is the case with 
+the capabilities defined in the <a href="/rs/resourcesync">core ResourceSync specification</a>. 
+As both the Change Notification channel and the Framework Notification channel are dedicated to a particular set
+of resources, they are advertised in the Capability List that corresponds with the set of resources.
+</p>
+
+<p>
+<a href="#fig_notification_disco">Figure 3</a> displays a Change Notification channel and a Framework Notification channel advertised 
+in a Capability List. 
+The figure shows a structure with only one Capability List that advertises its designated notification channels. Other Capability Lists,
+each of which pertain to a different set of resources, would advertise their respective notification channels. The displayed Capability 
+List could, in addition to the notification channels, advertise other capabilities such as a Resource List or a Change List as introduced 
+in the <a href="/rs/resourcesync">core specification</a>, 
+and also advertise archive capabilities as introduced in the 
+<a href="/rs/archives">archiving specification</a>.
+</p>
+
+<div class="image">
+<a name="fig_notification_disco"></a>
+<img alt="Framework and Change Notification channel discovery" src="img/notification_discovery.png"/>
+<p class="caption">Figure 3: Framework and Change Notification channel discovery</p>
+</div>
+
+<p>
+<a href="#ex_6_1">Example 6.1</a> shows the Capability List from 
+<a href="/rs/resourcesync#ex_7_1">Example 7.1 of the core specification</a> with discovery links for a
+Change Notification channel and a Framework Notification channel added.
+The PubSubHubbub topic URI is provided in the <code>&lt;loc&gt;</code> element, whereas the 
+hub URI is provided using a <code>&lt;rs:ln&gt;</code> child element of <code>&lt;loc&gt;</code>. 
+That <code>&lt;rs:ln&gt;</code> must have <code>hub</code> as the value of the <code>rel</code> attribute 
+and the hub URI as the value of the <code>href</code> attribute. 
+Note the introduction of 
+the <code>change-notification</code> and <code>framework-notification</code> values for the <code>capability</code> attribute to 
+indicate the Change Notification and Framework Notification capabilities, respectively.
+</p>
+<a name="ex_6_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+   &lt;rs:ln rel=&quot;describedby&quot;
+          href=&quot;http://example.com/info_about_set1_of_resources.xml&quot;/&gt;
+   &lt;rs:ln rel=&quot;up&quot;
+          href=&quot;http://example.com/source_description.xml&quot;/&gt;
+   &lt;rs:md capability=&quot;capabilitylist&quot;/&gt;
+   &lt;url&gt;
+       &lt;loc&gt;http://example.com/dataset1/resourcelist.xml&lt;/loc&gt;
+       &lt;rs:md capability="resourcelist"/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+       &lt;loc&gt;http://example.com/dataset1/resourcedump.xml&lt;/loc&gt;
+       &lt;rs:md capability="resourcedump"/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+       &lt;loc&gt;http://example.com/dataset1/changelist.xml&lt;/loc&gt;
+       &lt;rs:md capability="changelist"/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+       &lt;loc&gt;http://example.com/dataset1/changedump.xml&lt;/loc&gt;
+       &lt;rs:md capability="changedump"/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/change/&lt;/loc&gt;
+      &lt;rs:ln rel=&quot;hub&quot; href=&quot;http://hub.example.org/pubsubhubbub/&quot;/&gt;
+      &lt;rs:md capability=&quot;change-notification&quot;/&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/framework/&lt;/loc&gt;
+      &lt;rs:ln rel=&quot;hub&quot; href=&quot;http://hub.example.org/pubsubhubbub/&quot;/&gt;
+      &lt;rs:md capability=&quot;framework-notification&quot;/&gt;
+   &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 6.1: A Capability List with entries to discover PubSubHubbub notification channels</p>
+
+<h2>7. <a name="References">References</a></h2>
+
+<dl>
+<dt>[<a name="ref-pubsubhubbub">PubSubHubbub</a>]</dt>
+<dd>IETF <cite><a href="https://pubsubhubbub.googlecode.com/git/pubsubhubbub-core-0.4.html">PubSubHubbub Core</a></cite>,
+Fitzpatrick, B., Slatkin, B., Atkins, M., Genestoux, J., June 2013</dd>
+<dt>[<a name="ref-rfc6455">RFC 6455</a>]</dt>
+<dd>IETF <cite><a href="http://tools.ietf.org/html/rfc6455">RFC 6455: The WebSocket Protocol</a></cite>,
+I. Fette, A. Melnikov, December 2011.</dd>
+</dl>
+
+<h2><a name="acknowledgments"></a>A. Acknowledgements</h2>
+
+<p>This specification is the collaborative work of 
+<a href="http://niso.org/">NISO</a> and the 
+<a href="http://www.openarchives.org/">Open Archives Initiative</a>. 
+Funding for ResourceSync is provided by the 
+<a href="http://www.sloan.org/">Alfred P. Sloan Foundation</a>. 
+UK participation is supported by 
+<a href="http://www.jisc.ac.uk/">Jisc</a>.</p>
+
+<p>
+The names of individual contributors will be listed here when the final specification is released.
+</p>
+
+<div class="Changelog">
+<h2><a name="Changelog">B. Change Log</a></h2>
+<table class="Changelog" summary="Change log">
+<tbody>
+<tr>
+ <th>Date</th>
+ <th>Editor</th>
+ <th>Description</th>
+</tr>
+<tr>
+ <td>2014-01-02</td>
+ <td>graham, herbert, simeon</td>
+ <td>notification subscription lease changes</td>
+</tr>
+<tr>
+ <td>2013-12-18</td>
+ <td>herbert, martin, rob, simeon</td>
+ <td>version 0.8.1, using PubSubHubbub</td>
+</tr>
+<tr>
+ <td>2013-11-12</td>
+ <td>martin, herbert, rob, simeon</td>
+ <td>version 0.8, using WebSockets</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div> <!--class="body"-->
+    
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="img/cc-by-sa-3.0-88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+</body>
+</html>

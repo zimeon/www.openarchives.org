@@ -1,0 +1,204 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] new records in combination with a resumpti
+ onToken
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000141.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] new records in combination with a resumpti
+ onToken
+   </H1>
+    <B>Young,Jeff
+    </B> 
+    <A HREF="mailto:jyoung%40oclc.org"
+       TITLE="[OAI-implementers] new records in combination with a resumpti
+ onToken">jyoung@oclc.org
+       </A><BR>
+    <I>Tue, 29 May 2001 09:54:19 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000141.html">[OAI-implementers] new records in combination with a resumptionToken
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#144">[ date ]</a>
+              <a href="thread.html#144">[ thread ]</a>
+              <a href="subject.html#144">[ subject ]</a>
+              <a href="author.html#144">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I suppose I should admit to the solution I took with our OAIHarvester and
+OAICat software. Each time the OAIHarvester is run, it naturally uses the
+'until' date from its last run as the 'from' date on the new run. If the OAI
+server takes these dates literally, it's likely that duplicate records will
+be served, as has been discussed. To get around this, I decided to have
+OAICat subtract one from the 'until' date. The upside is, I don't serve any
+duplicate records. The downside, of course, is that the server is up to a
+day behind on the repository's contents. I'm probably being too strict about
+duplicate records. Is there a best practices suggestion on this?
+
+Liu, I'd also note that there is a possibility that a record could be
+changed twice in one day; once before you harvest and once afterward. You
+mention that the harvester could discard duplicate records by comparing the
+datestamps, but that won't work in this case. Instead, you would have to
+compare the entire record to insure all changes are accounted for. Simply
+updating the local copy regardless of duplication, as you note, is perhaps
+best.
+
+Regards,
+Jeff
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Xiaoming Liu [mailto:<A HREF="mailto:liu_x@cs.odu.edu">liu_x@cs.odu.edu</A>]
+</I>&gt;<i> Sent: Friday, May 25, 2001 4:16 PM
+</I>&gt;<i> To: Hussein Suleman
+</I>&gt;<i> Cc: Jozef Kruger; OAI-impl (E-mail)
+</I>&gt;<i> Subject: Re: [OAI-implementers] new records in combination with a
+</I>&gt;<i> resumptionToken
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Hi, Hussein and Jozef,
+</I>&gt;<i> 
+</I>&gt;<i> First, in the arc service provider, we actually used the method you
+</I>&gt;<i> mentioned below.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; b) always ask for a 2 day overlap ending on the current date
+</I>&gt;<i> 
+</I>&gt;<i> Except that the &quot;2 day&quot; is cutomizable.
+</I>&gt;<i> 
+</I>&gt;<i> Secondly, about Jozef's question, I thought duplicate records also
+</I>&gt;<i> happen in other scenarios of OAI request.
+</I>&gt;<i> (a) same record belongs to different sets, and harvester 
+</I>&gt;<i> harvests by set.
+</I>&gt;<i> (b) Record is changed since last harvest. So datestamp is 
+</I>&gt;<i> changed but ID
+</I>&gt;<i> is intact.
+</I>&gt;<i> 
+</I>&gt;<i> Harvester has to deal with duplicate records anyway, it could simply
+</I>&gt;<i> update local copy, or check datestamp first, then do update 
+</I>&gt;<i> if necessary,
+</I>&gt;<i> depending on the overhead of reindex.
+</I>&gt;<i> 
+</I>&gt;<i> So I believe it's not necessary to explictly avoid the 
+</I>&gt;<i> scenario in your
+</I>&gt;<i> application.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> regards,
+</I>&gt;<i> liu
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> On Wed, 23 May 2001, Hussein Suleman wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt; ntent-transfer-encoding: 7bit
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; hi
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; this is an interesting problem so im going to share some of our
+</I>&gt;<i> &gt; discussions here at virginia tech that are relevant to this 
+</I>&gt;<i> problem ...
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; of course there is no general solution since i think the OAI quite
+</I>&gt;<i> &gt; deftly avoided handling too much complication in the 
+</I>&gt;<i> protocol ... that
+</I>&gt;<i> &gt; said, there are two very interesting &quot;solutions&quot;, one of which is
+</I>&gt;<i> &gt; probably relevant to you:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; firstly, i recall a while back someone (cant remember who) 
+</I>&gt;<i> related how
+</I>&gt;<i> &gt; they implemented the protocol by making a temporary table to support
+</I>&gt;<i> &gt; resumptions ... this would probably solve your problem but 
+</I>&gt;<i> would require
+</I>&gt;<i> &gt; a bit more work ...
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; the alternative is to consider how service providers work 
+</I>&gt;<i> (at least this
+</I>&gt;<i> &gt; is how we thought it through when building our first experimental
+</I>&gt;<i> &gt; harvester):
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; a) since you can always add records at any time during the 
+</I>&gt;<i> day and the
+</I>&gt;<i> &gt; granularity of harvesting is a day, you cannot trust data 
+</I>&gt;<i> you got on the
+</I>&gt;<i> &gt; same day.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; b) since dates are local to different timezones, if the 
+</I>&gt;<i> data provider is
+</I>&gt;<i> &gt; west of the service provider, asking for everything up 
+</I>&gt;<i> until yesterday
+</I>&gt;<i> &gt; is not &quot;interoperationally stable&quot; since it could still be 
+</I>&gt;<i> yesterday at
+</I>&gt;<i> &gt; the data provider.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; now there are multiple solutions to this and we tried 
+</I>&gt;<i> implementing some:
+</I>&gt;<i> &gt; a) dont get anything newer than 2 days old
+</I>&gt;<i> &gt; b) always ask for a 2 day overlap ending on the current date
+</I>&gt;<i> &gt; c) use a 1-day overlap and operate in the timezone of the 
+</I>&gt;<i> data provider
+</I>&gt;<i> &gt; (extract an initial responseDate from the data provider and then
+</I>&gt;<i> &gt; increment locally)
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; as far as we can figure, any service provider that wants to avoid
+</I>&gt;<i> &gt; missing data entries has to do something like this ... 
+</I>&gt;<i> since new data is
+</I>&gt;<i> &gt; not &quot;stable&quot; for harvesting it is not trusted and/or not harvested
+</I>&gt;<i> &gt; immediately and your problem of database updates pretty 
+</I>&gt;<i> much disappears
+</I>&gt;<i> &gt; as long as harvesting is by date (which i trust it almost always is)
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; ok, i know this is probably way too much detail for this 
+</I>&gt;<i> question :) but
+</I>&gt;<i> &gt; i just wanted to share these thoughts to see if they 
+</I>&gt;<i> aligned with the
+</I>&gt;<i> &gt; harvesting approaches used by other people building service provider
+</I>&gt;<i> &gt; interfaces ...
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; any further comments will be appreciated ...
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; ttfn
+</I>&gt;<i> &gt; ----hussein
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; -- 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> ==============================================================
+</I>&gt;<i> ==========
+</I>&gt;<i> &gt; hussein suleman -- <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> -- vtcs -- 
+</I>&gt;<i> <A HREF="http://purl.org/net/hussein">http://purl.org/net/hussein</A>
+</I>&gt;<i> &gt; =========================================
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000141.html">[OAI-implementers] new records in combination with a resumptionToken
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#144">[ date ]</a>
+              <a href="thread.html#144">[ thread ]</a>
+              <a href="subject.html#144">[ subject ]</a>
+              <a href="author.html#144">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

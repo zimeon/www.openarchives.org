@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] List of tools used to harvest OAI metadata
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20List%20of%20tools%20used%20to%20harvest%20OAI%20metadata&In-Reply-To=C6948D71.28103%25khage%40umich.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001981.html">
+   <LINK REL="Next"  HREF="001983.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] List of tools used to harvest OAI metadata</H1>
+    <B>Jasper Op de Coul</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20List%20of%20tools%20used%20to%20harvest%20OAI%20metadata&In-Reply-To=C6948D71.28103%25khage%40umich.edu"
+       TITLE="[OAI-implementers] List of tools used to harvest OAI metadata">jasper at infrae.com
+       </A><BR>
+    <I>Thu Aug 13 05:29:34 EDT 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001981.html">[OAI-implementers] List of tools used to harvest OAI metadata
+</A></li>
+        <LI>Next message: <A HREF="001983.html">[OAI-implementers] List of tools used to harvest OAI metadata
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1982">[ date ]</a>
+              <a href="thread.html#1982">[ thread ]</a>
+              <a href="subject.html#1982">[ subject ]</a>
+              <a href="author.html#1982">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi All,
+
+Since this thread still seems alive, let me post some of the OAI 
+software we've developed.
+
+There's pyoai, which provides a client and server implementation in 
+python. It's been developed in 2003 and quite mature.
+
+<A HREF="http://pypi.python.org/pypi/pyoai/">http://pypi.python.org/pypi/pyoai/</A>
+
+A simple oai client can be written as follows:
+
+=========
+
+from oaipmh.client import Client
+from oaipmh.metadata import MetadataRegistry
+from lxml import etree
+
+URL = '<A HREF="http://&lt;some">http://&lt;some</A> oai feed&gt;'
+
+registry = MetadataRegistry()
+
+class Reader(object):
+     def __call__(self, element):
+         return etree.tostring(element, pretty_print=True, encoding='UTF8')
+
+registry.registerReader('oai_dc', Reader())
+
+client = Client(URL, registry)
+
+for count, record in enumerate(client.listRecords(metadataPrefix='oai_dc')):
+     header = record[0]
+     metadata = record[1] or ''
+     print '%4d: harvested %s, %s bytes' % (count,
+                                            header.identifier(),
+                                            len(metadata))
+
+====
+
+There's also MOAI, which is a server platform that also can harvest oai 
+data. It's also based on pyoai, but overkill if you're just looking for 
+a simple client.
+
+<A HREF="http://moai.infrae.com">http://moai.infrae.com</A>
+
+Kind Regards,
+Jasper
+
+Hagedorn, Kat wrote:
+&gt;<i> All,
+</I>&gt;<i> 
+</I>&gt;<i> This may be a stupid question, but does anyone know of a list of tools used
+</I>&gt;<i> to harvest OAI metadata? I know of ours
+</I>&gt;<i> &lt;<A HREF="http://sourceforge.net/projects/umoaitoolkit/">http://sourceforge.net/projects/umoaitoolkit/</A>&gt;, naturally, but I wasn't
+</I>&gt;<i> able to come up with others by perusing the obvious web sites. Even if
+</I>&gt;<i> there's no list, I'd be interested in individual suggestions.
+</I>&gt;<i> 
+</I>&gt;<i> Thanks,
+</I>&gt;<i>  -Kat
+</I>&gt;<i> 
+</I>&gt;<i> -------------------
+</I>&gt;<i> Kat Hagedorn 
+</I>&gt;<i> OAIster/Metadata Harvesting Librarian
+</I>&gt;<i> Digital Library Production Service
+</I>&gt;<i> University of Michigan
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://www.oaister.org/">http://www.oaister.org/</A>
+</I>&gt;<i> <A HREF="http://www.dlxs.org/">http://www.dlxs.org/</A>
+</I>&gt;<i> email: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">khage at umich.edu</A>
+</I>&gt;<i> phone: 734-615-7618
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+-- 
+Jasper Op de Coul -- Infrae
+t +31 10 243 7051 -- <A HREF="http://infrae.com">http://infrae.com</A>
+Hoevestraat 10 3033GC Rotterdam -- The Netherlands
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001981.html">[OAI-implementers] List of tools used to harvest OAI metadata
+</A></li>
+	<LI>Next message: <A HREF="001983.html">[OAI-implementers] List of tools used to harvest OAI metadata
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1982">[ date ]</a>
+              <a href="thread.html#1982">[ thread ]</a>
+              <a href="subject.html#1982">[ subject ]</a>
+              <a href="author.html#1982">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

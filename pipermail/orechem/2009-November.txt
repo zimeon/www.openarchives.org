@@ -1,0 +1,1744 @@
+From ojd20 at cam.ac.uk  Wed Nov  4 12:03:04 2009
+From: ojd20 at cam.ac.uk (Jim Downing)
+Date: Wed Nov  4 12:03:56 2009
+Subject: [Orechem] Ontology comments
+Message-ID: <2ab1b110911040903g78931805wd791926b227f2319@mail.gmail.com>
+
+Hi Carl, all,
+
+We've been looking through the ontology and had a few comments.
+Apologies if these have been asked and dealt with before now, I'm only
+just getting up to speed with the ontological modeling.
+
+* The "referencesExperiment" and "referencesMolecularEntity"
+predicates seem misplaced. If these are references, shouldn't they be
+subPropertyOf references, rather than aggregates? We probably need
+both - we might want to link to an entry on PubChem for a molecule and
+/ or to a data file that is part of the enhanced publication.
+
+* Should / could we use chemaxiomChemDomain:MolecularEntity as the
+range of the molecular entity properties?
+
+* There's something screwy going on with the dcterms in protege - they
+seem to be sub-classes of themselves - any idea what's going on?
+
+* The hasDataRepresentation/hasFigure, hasTable, hasDataSet seems
+either too detailed or too brief - if tables, why not sections,
+appendices etc, which will be also be useful for our analysis?
+
+In my mind this is related to the issue of whether we include
+"aboutness" semantics - I think we need to if we want to represent a
+full provenance chain for the distributed process (which would be very
+cool to do). I'd imagined something like: -
+
+psu:publication1 orechem:hasComponent psu:narrative1.ps .
+psu:narrative1.ps orechem:hasComponent soton:experimentalSection1 .
+soton:experimentalSection1 orechem:about cam:moleculeX .
+cam:moleculeX a chemaxiom:MolecularEntity ; orechem:referenceMolecule
+crystaleye:actae/foo/bar/234 .
+iu:gauin1 a chemaxiom:ComputationalInput; orechem:derivedFrom cam:moleculeX .
+iu:gauout1 orechem:derivedFrom iu:gauin1.
+
+To do this I get the impression we need to use classes from chemaxiom,
+and to define some more of our own.
+
+* In a sense we are generating multiple, incrementally enhanced
+manifestations of the same work. Bibo doesn't seem to have the power
+to describe the FRBR notions of Work, Manifestation and Representation
+as separate, related abstractions. Do we need to?
+
+More tomorrow after more analysis!
+
+Best regards,
+jim
+
+From mpierce at cs.indiana.edu  Wed Nov  4 21:46:37 2009
+From: mpierce at cs.indiana.edu (Marlon Pierce)
+Date: Wed Nov  4 21:47:13 2009
+Subject: [Orechem] Ontology comments
+In-Reply-To: <2ab1b110911040903g78931805wd791926b227f2319@mail.gmail.com>
+References: <2ab1b110911040903g78931805wd791926b227f2319@mail.gmail.com>
+Message-ID: <4AF23C8D.2060305@cs.indiana.edu>
+
+I am wondering about the service framework for moving these documents 
+around.  We suggested an Atom Publishing Protocol-based system might 
+work, but I'm concerned that there isn't a good implementation.  We 
+maybe could use something like Apache Sling or maybe better MS Azure's 
+Blob Service to put, get, and describe in RESTful ways.  The advantage 
+to Sling however is that we could probably modify it to support OAuth 
+more easily than Azure services.
+
+
+And where is the triple store? 
+
+
+
+Marlon
+
+
+Jim Downing wrote:
+> Hi Carl, all,
+>
+> We've been looking through the ontology and had a few comments.
+> Apologies if these have been asked and dealt with before now, I'm only
+> just getting up to speed with the ontological modeling.
+>
+> * The "referencesExperiment" and "referencesMolecularEntity"
+> predicates seem misplaced. If these are references, shouldn't they be
+> subPropertyOf references, rather than aggregates? We probably need
+> both - we might want to link to an entry on PubChem for a molecule and
+> / or to a data file that is part of the enhanced publication.
+>
+> * Should / could we use chemaxiomChemDomain:MolecularEntity as the
+> range of the molecular entity properties?
+>
+> * There's something screwy going on with the dcterms in protege - they
+> seem to be sub-classes of themselves - any idea what's going on?
+>
+> * The hasDataRepresentation/hasFigure, hasTable, hasDataSet seems
+> either too detailed or too brief - if tables, why not sections,
+> appendices etc, which will be also be useful for our analysis?
+>
+> In my mind this is related to the issue of whether we include
+> "aboutness" semantics - I think we need to if we want to represent a
+> full provenance chain for the distributed process (which would be very
+> cool to do). I'd imagined something like: -
+>
+> psu:publication1 orechem:hasComponent psu:narrative1.ps .
+> psu:narrative1.ps orechem:hasComponent soton:experimentalSection1 .
+> soton:experimentalSection1 orechem:about cam:moleculeX .
+> cam:moleculeX a chemaxiom:MolecularEntity ; orechem:referenceMolecule
+> crystaleye:actae/foo/bar/234 .
+> iu:gauin1 a chemaxiom:ComputationalInput; orechem:derivedFrom cam:moleculeX .
+> iu:gauout1 orechem:derivedFrom iu:gauin1.
+>
+> To do this I get the impression we need to use classes from chemaxiom,
+> and to define some more of our own.
+>
+> * In a sense we are generating multiple, incrementally enhanced
+> manifestations of the same work. Bibo doesn't seem to have the power
+> to describe the FRBR notions of Work, Manifestation and Representation
+> as separate, related abstractions. Do we need to?
+>
+> More tomorrow after more analysis!
+>
+> Best regards,
+> jim
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>   
+
+From pm286 at cam.ac.uk  Thu Nov  5 08:25:58 2009
+From: pm286 at cam.ac.uk (Peter Murray-Rust)
+Date: Thu Nov  5 08:26:32 2009
+Subject: [Orechem] Ontology comments
+In-Reply-To: <2ab1b110911040903g78931805wd791926b227f2319@mail.gmail.com>
+References: <2ab1b110911040903g78931805wd791926b227f2319@mail.gmail.com>
+Message-ID: <67fd68330911050525u2fd3dc22j3f134e551c8721d2@mail.gmail.com>
+
+Greetings,
+Am in Australia - can keep in touch. Jim and I are continuing to work in
+this area...
+
+P.
+
+
+
+On Wed, Nov 4, 2009 at 5:03 PM, Jim Downing <ojd20@cam.ac.uk> wrote:
+
+> Hi Carl, all,
+>
+> We've been looking through the ontology and had a few comments.
+> Apologies if these have been asked and dealt with before now, I'm only
+> just getting up to speed with the ontological modeling.
+>
+> * The "referencesExperiment" and "referencesMolecularEntity"
+> predicates seem misplaced. If these are references, shouldn't they be
+> subPropertyOf references, rather than aggregates? We probably need
+> both - we might want to link to an entry on PubChem for a molecule and
+> / or to a data file that is part of the enhanced publication.
+>
+> * Should / could we use chemaxiomChemDomain:MolecularEntity as the
+> range of the molecular entity properties?
+>
+> * There's something screwy going on with the dcterms in protege - they
+> seem to be sub-classes of themselves - any idea what's going on?
+>
+> * The hasDataRepresentation/hasFigure, hasTable, hasDataSet seems
+> either too detailed or too brief - if tables, why not sections,
+> appendices etc, which will be also be useful for our analysis?
+>
+> In my mind this is related to the issue of whether we include
+> "aboutness" semantics - I think we need to if we want to represent a
+> full provenance chain for the distributed process (which would be very
+> cool to do). I'd imagined something like: -
+>
+> psu:publication1 orechem:hasComponent psu:narrative1.ps .
+> psu:narrative1.ps orechem:hasComponent soton:experimentalSection1 .
+> soton:experimentalSection1 orechem:about cam:moleculeX .
+> cam:moleculeX a chemaxiom:MolecularEntity ; orechem:referenceMolecule
+> crystaleye:actae/foo/bar/234 .
+> iu:gauin1 a chemaxiom:ComputationalInput; orechem:derivedFrom cam:moleculeX
+> .
+> iu:gauout1 orechem:derivedFrom iu:gauin1.
+>
+> To do this I get the impression we need to use classes from chemaxiom,
+> and to define some more of our own.
+>
+> * In a sense we are generating multiple, incrementally enhanced
+> manifestations of the same work. Bibo doesn't seem to have the power
+> to describe the FRBR notions of Work, Manifestation and Representation
+> as separate, related abstractions. Do we need to?
+>
+> More tomorrow after more analysis!
+>
+> Best regards,
+> jim
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>
+
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091105/9c9ad214/attachment.htm
+From clagoze at gmail.com  Fri Nov  6 09:13:54 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Fri Nov  6 09:14:34 2009
+Subject: [Orechem] Ontology comments
+In-Reply-To: <2ab1b110911040903g78931805wd791926b227f2319@mail.gmail.com>
+References: <2ab1b110911040903g78931805wd791926b227f2319@mail.gmail.com>
+Message-ID: <B4C7BB0E-5400-41EE-B67C-A0D056ECBEDF@gmail.com>
+
+Jim,
+
+Thanks for looking at things and the questions.  Responses below.
+On Nov 4, 2009, at 12:03 PM, Jim Downing wrote:
+
+> Hi Carl, all,
+>
+> We've been looking through the ontology and had a few comments.
+> Apologies if these have been asked and dealt with before now, I'm only
+> just getting up to speed with the ontological modeling.
+>
+> * The "referencesExperiment" and "referencesMolecularEntity"
+> predicates seem misplaced. If these are references, shouldn't they be
+> subPropertyOf references, rather than aggregates? We probably need
+> both - we might want to link to an entry on PubChem for a molecule and
+> / or to a data file that is part of the enhanced publication.
+
+I see your point here.  It probably should be both.  I do want it to  
+be a sub-class of 'aggregates' because the two entities should be part  
+of the compound document.
+
+>
+> * Should / could we use chemaxiomChemDomain:MolecularEntity as the
+> range of the molecular entity properties?
+
+Yes, I was thinking of that myself.  I was hoping for guidance from  
+you guys on this area.
+
+>
+> * There's something screwy going on with the dcterms in protege - they
+> seem to be sub-classes of themselves - any idea what's going on?
+
+Frankly, none of these %$##@!! RDF/tools work as you want them to.   
+They seem to have problems when you move from orthodox owl to messy  
+owl and rdf like I have.  dcterms is messy rdf unfortunately.
+
+>
+> * The hasDataRepresentation/hasFigure, hasTable, hasDataSet seems
+> either too detailed or too brief - if tables, why not sections,
+> appendices etc, which will be also be useful for our analysis?
+
+Note that these are subclasses of hasComponent that is a subclass of  
+ore:aggregates.  I wanted to make the components of the compound doc.  
+but semantically distinct aas "things within".   There may be better  
+ways I recognize.
+
+>
+> In my mind this is related to the issue of whether we include
+> "aboutness" semantics - I think we need to if we want to represent a
+> full provenance chain for the distributed process (which would be very
+> cool to do). I'd imagined something like: -
+>
+> psu:publication1 orechem:hasComponent psu:narrative1.ps .
+> psu:narrative1.ps orechem:hasComponent soton:experimentalSection1 .
+> soton:experimentalSection1 orechem:about cam:moleculeX .
+> cam:moleculeX a chemaxiom:MolecularEntity ; orechem:referenceMolecule
+> crystaleye:actae/foo/bar/234 .
+> iu:gauin1 a chemaxiom:ComputationalInput; orechem:derivedFrom  
+> cam:moleculeX .
+> iu:gauout1 orechem:derivedFrom iu:gauin1.
+>
+> To do this I get the impression we need to use classes from chemaxiom,
+> and to define some more of our own.
+>
+> * In a sense we are generating multiple, incrementally enhanced
+> manifestations of the same work. Bibo doesn't seem to have the power
+> to describe the FRBR notions of Work, Manifestation and Representation
+> as separate, related abstractions. Do we need to?
+
+Note sure of wisdom of going to this level of complexity yet.  We can  
+go there in the future and migrate to it as long as we do something  
+machine readable and unambiguous now.  Other people have covered the  
+FRBR stuff including CIDOC/CRM and my own abc stuff.
+
+BTW, bibo 1.3 just came out but haven't had time to look at it.
+>
+> More tomorrow after more analysis!
+
+
+Later.
+>
+> Best regards,
+> jim
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+
+
+From clagoze at gmail.com  Fri Nov  6 12:02:45 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Fri Nov  6 12:02:53 2009
+Subject: [Orechem] call in number - no one is on!!!
+Message-ID: <CC072D91-DF14-4BBA-8131-4D648068C916@gmail.com>
+
+> When: Friday, November 06, 2009 9:00 AM-10:00 AM (UTC-08:00) Pacific  
+> Time (US & Canada).
+> Where: Call in information = US: 888-320-3585 / UK:  
+> +44-118-909-3000 ; Conf ID = 56138906
+>
+> Note: The GMT offset above does not reflect daylight saving time  
+> adjustments.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091106/0d474f69/attachment.htm
+From m.i.borkum at soton.ac.uk  Fri Nov  6 12:03:49 2009
+From: m.i.borkum at soton.ac.uk (Mark Borkum)
+Date: Fri Nov  6 12:03:57 2009
+Subject: [Orechem] call in number - no one is on!!!
+In-Reply-To: <CC072D91-DF14-4BBA-8131-4D648068C916@gmail.com>
+References: <CC072D91-DF14-4BBA-8131-4D648068C916@gmail.com>
+Message-ID: <4AF456F5.9070300@soton.ac.uk>
+
+I'm listening to music...
+Retrying!
+
+Carl Lagoze wrote:
+>> When: Friday, November 06, 2009 9:00 AM-10:00 AM (UTC-08:00) Pacific 
+>> Time (US & Canada).
+>> Where: Call in information = US: 888-320-3585 / UK: +44-118-909-3000 
+>> ; Conf ID = 56138906
+>>  
+>> Note: The GMT offset above does not reflect daylight saving time 
+>> adjustments.
+
+
+-- 
+Mark Borkum
+Postgraduate Researcher
+School of Chemistry
+University of Southampton
+University Road
+Southampton, SO17 1BJ
+United Kingdom
+
++44 (0)2380 594676 (office)
+m.i.borkum@soton.ac.uk
+
+
+
+
+From Lee.Dirks at microsoft.com  Fri Nov  6 12:40:17 2009
+From: Lee.Dirks at microsoft.com (Lee Dirks)
+Date: Fri Nov  6 12:40:58 2009
+Subject: [Orechem] oreChem planning - pre-UK mtg coordination call
+Message-ID: <3D62D8B423BE8A4697CB7F059FDCACB3166E9AD7@TK5EX14MBXC129.redmond.corp.microsoft.com>
+
+When: Friday, November 20, 2009 9:00 AM-10:00 AM (UTC-08:00) Pacific Time (US & Canada).
+Where: Call in information = US: 888-320-3585 / UK: +44-118-909-3000 ; Conf ID = 56138906
+
+Note: The GMT offset above does not reflect daylight saving time adjustments.
+
+*~*~*~*~*~*~*~*~*~*
+
+Conf-Call Information:
++1-425-706-3500 (US)
++1-888-320-3585 (Toll-free)
++44-118-909-3000 (UK)
+Conference ID = 56138906
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091106/9984e15a/attachment.htm
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: text/calendar
+Size: 1992 bytes
+Desc: not available
+Url : http://www.openarchives.org/pipermail/orechem/attachments/20091106/9984e15a/attachment.bin
+From clagoze at gmail.com  Fri Nov  6 13:03:21 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Fri Nov  6 13:03:28 2009
+Subject: [Orechem] Action items from November 6 conference call
+Message-ID: <0B698E16-FFFE-4048-A43C-07F5EFE01190@gmail.com>
+
+Our discussion on our teleconference on November 6 lead to the  
+following:
+
+1. The framework described in my original wiki posting is workable as  
+a first step prototype. We will iron out the details when we meet face- 
+to-face.
+
+2. The Southhampton and Cambridge teams will jointly work out how to  
+plug in the chemAxiom ontology and hang it off the ontology that I  
+defined.
+
+3. I will correct the atom feed example fixing the problem that Jim  
+Downing pointed out with one of the entries having RDF triples that  
+are not wrapped in a proper tag.
+
+4. I will describe how to use RFC 5005 in a document early next week.
+
+5. Penn State folks will send to me early next week a list of  
+additional items that they need encoded in the vocabulary. I will turn  
+that around with enhancement of the ontology early next week
+
+6. We will have a follow-up phone call at noon Eastern time on Friday,  
+November 20 to review our progress (i.e. by that point we all should  
+have tried to implement this) and talk about how to make the next step  
+so we have an actual workflow going by the December 5, sixth meeting.
+
+In the meantime, let's make sure to get all questions we have out  
+there on the mail list and in the wiki so we can share information and  
+enhance the experiment as quickly as possible.
+
+Thanks again, Carl
+
+From clagoze at gmail.com  Fri Nov  6 13:12:39 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Fri Nov  6 13:13:08 2009
+Subject: [Orechem] orechem-article-atom-feed.xml
+Message-ID: <3D4F914B-027C-4517-B3D5-F0CEEE7840BF@gmail.com>
+
+I have fixed the example on the wiki
+
+From pm286 at cam.ac.uk  Fri Nov  6 17:16:41 2009
+From: pm286 at cam.ac.uk (Peter Murray-Rust)
+Date: Fri Nov  6 17:17:15 2009
+Subject: [Orechem] oreChem planning - pre-UK mtg coordination call
+In-Reply-To: <3D62D8B423BE8A4697CB7F059FDCACB3166E9AD7@TK5EX14MBXC129.redmond.corp.microsoft.com>
+References: <3D62D8B423BE8A4697CB7F059FDCACB3166E9AD7@TK5EX14MBXC129.redmond.corp.microsoft.com>
+Message-ID: <67fd68330911061416y2edede39sb6594e931cc64705@mail.gmail.com>
+
+I'll still be in Australia so probably won't make it...
+P.
+
+
+On Fri, Nov 6, 2009 at 5:40 PM, Lee Dirks <Lee.Dirks@microsoft.com> wrote:
+
+>  When: Friday, November 20, 2009 9:00 AM-10:00 AM (UTC-08:00) Pacific Time
+> (US & Canada).
+> Where: Call in information = US: 888-320-3585 / UK: +44-118-909-3000 ; Conf
+> ID = 56138906
+>
+> Note: The GMT offset above does not reflect daylight saving time
+> adjustments.
+>
+> *~*~*~*~*~*~*~*~*~*
+>
+> *Conf-Call Information**:*
+> +1-425-706-3500 (US)
+> +1-888-320-3585 (Toll-free)
+> +44-118-909-3000 (UK)
+> *Conference ID* = 56138906
+>
+>
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>
+>
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091106/1597caad/attachment.htm
+From clagoze at gmail.com  Tue Nov 10 13:53:28 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Tue Nov 10 13:54:05 2009
+Subject: [Orechem] December meeting
+Message-ID: <DA201A65-53EE-4677-9D90-DDA2C4C62391@gmail.com>
+
+I have gotten a couple of questions about the meeting in December. We are definitely confirmed for December 5 and sixth in the UK. Jeremy Frey has been working to figure out logistic issues so we can hold the meeting in Southampton. I will get to you as soon as possible when I know more information.
+From clagoze at gmail.com  Thu Nov 12 12:42:53 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Thu Nov 12 12:43:06 2009
+Subject: [Orechem] Update of document ontology
+Message-ID: <6DC55078-B3C8-4ED4-A7B2-4C7D6BBC8E6B@gmail.com>
+
+Colleagues,
+
+In response to some more information from the Penn State folks I have updated the document ontology. If you go to http://services.nsdl.org/trac/oreChem/wiki/DocumentOntology and look at the attachments you will notice four new uploads that I made today. They are, in logical order:
+
+- orechem.owl - a new vocabulary definition file for the oreChem namespace. I have generated this with Proteg? so it should be more comprehensible.
+- orechem_ontology.png -  A visualization of the oreChem namespace vocabulary generated by the W3C RDF visualizer
+-orechem-article-atom.xml - a OAI ORE  atom encoding of an article document using the vocabulary of the oreChem namespace and other vocabularies
+- orechem-article-atom.rdf - an RDF XML file that encodes the triples generated from the preceeding atom file by the OAI ORE grddl  rules
+- orechem_article.png -  a visualization of the proceeding RDF XML file.
+
+By and large this does not differ much from the material that I put up a couple of weeks ago and which some of us discussed last Friday. The changes can be summarized as follows:
+
+- the atom link/alternate tag now points to the originally crawled PDF file.
+
+- the aggregated resources now includes both a link to the locally Penn State stored version of the PDF file and extracted text file that they have generated
+
+- metadata about the crawl that located this document has been included.
+
+You can run a diff between these files and their previous iterations to see full details. Please let me know as soon as possible if you have any questions about these changes. Na Li, from Penn State, I believe I have fulfilled all of your requests but look carefully to see if I have.
+
+Carl
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091112/4f3b3b69/attachment.htm
+From clagoze at gmail.com  Thu Nov 12 13:55:53 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Thu Nov 12 13:56:33 2009
+Subject: [Orechem] Need actual count for Dec. 5/6 meeting
+Message-ID: <B4B6FDE0-7392-4BE1-A865-AF54B46D08F3@gmail.com>
+
+Hi all:
+
+Please fill out the doodle at http://www.doodle.com/xi6c5mqnwcaayum7 so we can get a true count for the attendance at the scheduled meeting in Southampton.  We need this  by the beginning of next week for the hotel at http://southamptonhotels.jurysinns.com/
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091112/af23ba5a/attachment.htm
+From mpierce at cs.indiana.edu  Fri Nov 13 15:51:31 2009
+From: mpierce at cs.indiana.edu (Marlon Pierce)
+Date: Fri Nov 13 15:52:06 2009
+Subject: [Orechem] Atom feeds, triple store
+Message-ID: <4AFDC6D3.8060400@cs.indiana.edu>
+
+Hi all--
+
+Sashikiran has Virtuoso installed and tested with Carl's sample 
+Atom->GRDDL->RDF.  If anyone has a prototype oreChem atom feed up and 
+running, we'd like to try it out.
+
+
+Thanks--
+
+
+Marlon
+
+
+
+From clagoze at gmail.com  Mon Nov 16 11:17:43 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Mon Nov 16 11:18:21 2009
+Subject: [Orechem] Atom feeds, triple store
+In-Reply-To: <4AFDC6D3.8060400@cs.indiana.edu>
+References: <4AFDC6D3.8060400@cs.indiana.edu>
+Message-ID: <2EA09405-2906-43D3-8602-E9CAC818B347@gmail.com>
+
+Yes, this would be great if someone had some data to feed to Indiana to test this.
+On Nov 13, 2009, at 3:51 PM, Marlon Pierce wrote:
+
+> Hi all--
+> 
+> Sashikiran has Virtuoso installed and tested with Carl's sample Atom->GRDDL->RDF.  If anyone has a prototype oreChem atom feed up and running, we'd like to try it out.
+> 
+> 
+> Thanks--
+> 
+> 
+> Marlon
+> 
+> 
+> 
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+
+
+From clagoze at gmail.com  Tue Nov 17 15:09:04 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Tue Nov 17 15:09:42 2009
+Subject: [Orechem] Our tenuous Dec. 5/6 meeting in the UK -- PLEASE READ!!
+Message-ID: <EC6CB795-0289-4B0E-9058-0CF5096E3EE0@gmail.com>
+
+(Pardon the long note, but please read to end)
+
+Hi all,
+
+I know you most be getting sick of my endless messages, but pity the poor nominal "project manager".
+
+My vision of an end-of-first year all-project meeting on December 5/6 seems to getting dimmer.  The roster so far is as follows:
+
+Cambridge 
+	- Jim Downing (yes)
+	- Peter Murray Rust  (no answer)
+
+Cornell
+	- Carl Lagoze (yes, of course)
+	- Theresa Velden (no)
+
+Indiana
+	- Marlon Pierce (yes)
+	- Geoffrey Fox (no)
+
+Penn State
+	- Lee Giles (no)
+	- Prasenjit Mitra (no)
+	- Na Li (no)
+	- Karl Mueller (maybe but reluctant)
+
+Southampton
+	- Simon Coles (yes)
+	- Jeremy Frey (maybe)
+	- Mark Borkum (yes)
+
+Microsoft
+	- Lee Dirks (no)
+	- Alex Wade (unknown)
+
+I had considered this an important meeting for a number of reasons:
+
+- We have been working together now for a year and we need to review progress
+- We are in the midst of a substantive interoperability experiment that will 1) require a number of iterations to get right 2) hopefully set a firm foundation for our second  year of work
+- We need to plan our second year and come to agreement on what final project goals we want to work towards.
+
+I know we are all weary of travel, especially over the holiday period. And all of us have lots else to do.  But I do consider meetings essential for progress  and it is only fair to locate the next meeting in the UK.  Our alternatives are then:
+
+- Cancel the meeting and proceed by teleconference
+- Go ahead with the meeting and hope we can make maximal progress with a combination of f2f people and skyped in people.
+- Try to find another date - I don't have a lot of hope for this given the approaching holiday period.  I myself would have a hard time fitting it on another time through January.  
+
+I NEED YOUR HELP ON THIS ASAP!!! The Southampton folks need to finalize logistics and those planning to travel need to make plans.  Please offer your thoughts so we can make a decision NO LATER THAN FRIDAY!
+
+Carl
+From giles at ist.psu.edu  Tue Nov 17 15:21:22 2009
+From: giles at ist.psu.edu (Lee Giles)
+Date: Tue Nov 17 15:22:04 2009
+Subject: [Orechem] Our tenuous Dec. 5/6 meeting in the UK -- PLEASE READ!!
+In-Reply-To: <EC6CB795-0289-4B0E-9058-0CF5096E3EE0@gmail.com>
+References: <EC6CB795-0289-4B0E-9058-0CF5096E3EE0@gmail.com>
+Message-ID: <4B0305C2.9000901@ist.psu.edu>
+
+I had intended on coming, but I teach every Monday and couldn't
+get back in time. However, I can teleconference in for some
+of the meeting.
+
+Lee
+
+==
+
+Carl Lagoze wrote:
+> (Pardon the long note, but please read to end)
+>
+> Hi all,
+>
+> I know you most be getting sick of my endless messages, but pity the poor nominal "project manager".
+>
+> My vision of an end-of-first year all-project meeting on December 5/6 seems to getting dimmer.  The roster so far is as follows:
+>
+> Cambridge 
+> 	- Jim Downing (yes)
+> 	- Peter Murray Rust  (no answer)
+>
+> Cornell
+> 	- Carl Lagoze (yes, of course)
+> 	- Theresa Velden (no)
+>
+> Indiana
+> 	- Marlon Pierce (yes)
+> 	- Geoffrey Fox (no)
+>
+> Penn State
+> 	- Lee Giles (no)
+> 	- Prasenjit Mitra (no)
+> 	- Na Li (no)
+> 	- Karl Mueller (maybe but reluctant)
+>
+> Southampton
+> 	- Simon Coles (yes)
+> 	- Jeremy Frey (maybe)
+> 	- Mark Borkum (yes)
+>
+> Microsoft
+> 	- Lee Dirks (no)
+> 	- Alex Wade (unknown)
+>
+> I had considered this an important meeting for a number of reasons:
+>
+> - We have been working together now for a year and we need to review progress
+> - We are in the midst of a substantive interoperability experiment that will 1) require a number of iterations to get right 2) hopefully set a firm foundation for our second  year of work
+> - We need to plan our second year and come to agreement on what final project goals we want to work towards.
+>
+> I know we are all weary of travel, especially over the holiday period. And all of us have lots else to do.  But I do consider meetings essential for progress  and it is only fair to locate the next meeting in the UK.  Our alternatives are then:
+>
+> - Cancel the meeting and proceed by teleconference
+> - Go ahead with the meeting and hope we can make maximal progress with a combination of f2f people and skyped in people.
+> - Try to find another date - I don't have a lot of hope for this given the approaching holiday period.  I myself would have a hard time fitting it on another time through January.  
+>
+> I NEED YOUR HELP ON THIS ASAP!!! The Southampton folks need to finalize logistics and those planning to travel need to make plans.  Please offer your thoughts so we can make a decision NO LATER THAN FRIDAY!
+>
+> Carl
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>   
+
+From mpierce at cs.indiana.edu  Tue Nov 17 15:30:31 2009
+From: mpierce at cs.indiana.edu (Marlon Pierce)
+Date: Tue Nov 17 15:31:10 2009
+Subject: [Orechem] Our tenuous Dec. 5/6 meeting in the UK -- PLEASE READ!!
+In-Reply-To: <EC6CB795-0289-4B0E-9058-0CF5096E3EE0@gmail.com>
+References: <EC6CB795-0289-4B0E-9058-0CF5096E3EE0@gmail.com>
+Message-ID: <4B0307E7.8000705@cs.indiana.edu>
+
+I favor giving teleconference/skype/polycom a try.  We also have access 
+to a site license for Adobe Breeze--we can use this for shared desktops.
+
+
+Marlon
+
+
+Carl Lagoze wrote:
+> (Pardon the long note, but please read to end)
+>
+> Hi all,
+>
+> I know you most be getting sick of my endless messages, but pity the poor nominal "project manager".
+>
+> My vision of an end-of-first year all-project meeting on December 5/6 seems to getting dimmer.  The roster so far is as follows:
+>
+> Cambridge 
+> 	- Jim Downing (yes)
+> 	- Peter Murray Rust  (no answer)
+>
+> Cornell
+> 	- Carl Lagoze (yes, of course)
+> 	- Theresa Velden (no)
+>
+> Indiana
+> 	- Marlon Pierce (yes)
+> 	- Geoffrey Fox (no)
+>
+> Penn State
+> 	- Lee Giles (no)
+> 	- Prasenjit Mitra (no)
+> 	- Na Li (no)
+> 	- Karl Mueller (maybe but reluctant)
+>
+> Southampton
+> 	- Simon Coles (yes)
+> 	- Jeremy Frey (maybe)
+> 	- Mark Borkum (yes)
+>
+> Microsoft
+> 	- Lee Dirks (no)
+> 	- Alex Wade (unknown)
+>
+> I had considered this an important meeting for a number of reasons:
+>
+> - We have been working together now for a year and we need to review progress
+> - We are in the midst of a substantive interoperability experiment that will 1) require a number of iterations to get right 2) hopefully set a firm foundation for our second  year of work
+> - We need to plan our second year and come to agreement on what final project goals we want to work towards.
+>
+> I know we are all weary of travel, especially over the holiday period. And all of us have lots else to do.  But I do consider meetings essential for progress  and it is only fair to locate the next meeting in the UK.  Our alternatives are then:
+>
+> - Cancel the meeting and proceed by teleconference
+> - Go ahead with the meeting and hope we can make maximal progress with a combination of f2f people and skyped in people.
+> - Try to find another date - I don't have a lot of hope for this given the approaching holiday period.  I myself would have a hard time fitting it on another time through January.  
+>
+> I NEED YOUR HELP ON THIS ASAP!!! The Southampton folks need to finalize logistics and those planning to travel need to make plans.  Please offer your thoughts so we can make a decision NO LATER THAN FRIDAY!
+>
+> Carl
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>   
+
+From Alex.Wade at microsoft.com  Tue Nov 17 17:15:16 2009
+From: Alex.Wade at microsoft.com (Alex Wade)
+Date: Tue Nov 17 17:15:51 2009
+Subject: [Orechem] Our tenuous Dec. 5/6 meeting in the UK -- PLEASE READ!!
+In-Reply-To: <EC6CB795-0289-4B0E-9058-0CF5096E3EE0@gmail.com>
+References: <EC6CB795-0289-4B0E-9058-0CF5096E3EE0@gmail.com>
+Message-ID: <95F3C3425433804DA30B0F0D0907FE3B04A9248F@TK5EX14MBXC135.redmond.corp.microsoft.com>
+
+Telcon works for me as well.   ---Alex
+
+-----Original Message-----
+From: orechem-bounces@openarchives.org [mailto:orechem-bounces@openarchives.org] On Behalf Of Carl Lagoze
+Sent: Tuesday, November 17, 2009 12:09 PM
+To: orechem@openarchives.org
+Subject: [Orechem] Our tenuous Dec. 5/6 meeting in the UK -- PLEASE READ!!
+
+(Pardon the long note, but please read to end)
+
+Hi all,
+
+I know you most be getting sick of my endless messages, but pity the poor nominal "project manager".
+
+My vision of an end-of-first year all-project meeting on December 5/6 seems to getting dimmer.  The roster so far is as follows:
+
+Cambridge 
+	- Jim Downing (yes)
+	- Peter Murray Rust  (no answer)
+
+Cornell
+	- Carl Lagoze (yes, of course)
+	- Theresa Velden (no)
+
+Indiana
+	- Marlon Pierce (yes)
+	- Geoffrey Fox (no)
+
+Penn State
+	- Lee Giles (no)
+	- Prasenjit Mitra (no)
+	- Na Li (no)
+	- Karl Mueller (maybe but reluctant)
+
+Southampton
+	- Simon Coles (yes)
+	- Jeremy Frey (maybe)
+	- Mark Borkum (yes)
+
+Microsoft
+	- Lee Dirks (no)
+	- Alex Wade (unknown)
+
+I had considered this an important meeting for a number of reasons:
+
+- We have been working together now for a year and we need to review progress
+- We are in the midst of a substantive interoperability experiment that will 1) require a number of iterations to get right 2) hopefully set a firm foundation for our second  year of work
+- We need to plan our second year and come to agreement on what final project goals we want to work towards.
+
+I know we are all weary of travel, especially over the holiday period. And all of us have lots else to do.  But I do consider meetings essential for progress  and it is only fair to locate the next meeting in the UK.  Our alternatives are then:
+
+- Cancel the meeting and proceed by teleconference
+- Go ahead with the meeting and hope we can make maximal progress with a combination of f2f people and skyped in people.
+- Try to find another date - I don't have a lot of hope for this given the approaching holiday period.  I myself would have a hard time fitting it on another time through January.  
+
+I NEED YOUR HELP ON THIS ASAP!!! The Southampton folks need to finalize logistics and those planning to travel need to make plans.  Please offer your thoughts so we can make a decision NO LATER THAN FRIDAY!
+
+Carl
+_______________________________________________
+Orechem mailing list
+Orechem@openarchives.org
+http://www.openarchives.org/mailman/listinfo/orechem
+
+
+From clagoze at gmail.com  Thu Nov 19 11:21:35 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Thu Nov 19 11:22:11 2009
+Subject: [Orechem] Decision on December meeting
+Message-ID: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com>
+
+Dear colleagues,
+
+My apologies again for all the mails about this but I hope you understand the logistic overhead of getting these things set up. It is now obvious that not everyone can come for a face-to-face meeting in Southampton at the beginning of December. I certainly understand the reasons for this. Our colleagues in the UK have decided however that a more limited work meeting can be very productive. Therefore, I am planning to go to Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and Peter) to move forward on some of the interoperability - ontology and protocol - work that we have underway at this time. Of course, anyone else who would like to come as welcome.
+
+We have decided that trying to mix this face-to-face meeting with a virtual presence via telecom or Skype by other members of the team would not be optimally productive. It may make sense however for us to have a one hour teleconference at the end of our day on Saturday in the UK, which would be midday in the eastern United States, to report on what we've been working on at that point and discuss any open questions. For those of you not planning to attend the face-to-face meeting please let me know if this is something you'd be interested in joining in.
+
+In any case, I think we should have an all group teleconference before the holidays, sometime in the middle of December. I will let you know as more details develop.
+
+Thanks, Carl
+From ojd20 at cam.ac.uk  Thu Nov 19 11:59:45 2009
+From: ojd20 at cam.ac.uk (Jim Downing)
+Date: Thu Nov 19 12:00:38 2009
+Subject: [Orechem] Decision on December meeting
+In-Reply-To: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com>
+References: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com>
+Message-ID: <2ab1b110911190859ke89ca6dncdc2eb2fcea1671f@mail.gmail.com>
+
+2009/11/19 Carl Lagoze <clagoze@gmail.com>:
+> Dear colleagues,
+>
+> My apologies again for all the mails about this but I hope you understand the logistic overhead of getting these things set up. It is now obvious that not everyone can come for a face-to-face meeting in Southampton at the beginning of December. I certainly understand the reasons for this. Our colleagues in the UK have decided however that a more limited work meeting can be very productive. Therefore, I am planning to go to Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and Peter) to move forward on some of the interoperability - ontology and protocol - work that we have underway at this time. Of course, anyone else who would like to come as welcome.
+
+Did you possibly mean "and Jim" rather than "in June"?
+
+jim
+
+From clagoze at gmail.com  Thu Nov 19 12:09:50 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Thu Nov 19 12:12:28 2009
+Subject: [Orechem] Decision on December meeting
+In-Reply-To: <2ab1b110911190859ke89ca6dncdc2eb2fcea1671f@mail.gmail.com>
+References: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com>
+	<2ab1b110911190859ke89ca6dncdc2eb2fcea1671f@mail.gmail.com>
+Message-ID: <1F694673-1424-4166-B4FC-C3448A50D8FE@gmail.com>
+
+Joys of voice recognition!!!  sorry
+On Nov 19, 2009, at 11:59 AM, Jim Downing wrote:
+
+> 2009/11/19 Carl Lagoze <clagoze@gmail.com>:
+>> Dear colleagues,
+>> 
+>> My apologies again for all the mails about this but I hope you understand the logistic overhead of getting these things set up. It is now obvious that not everyone can come for a face-to-face meeting in Southampton at the beginning of December. I certainly understand the reasons for this. Our colleagues in the UK have decided however that a more limited work meeting can be very productive. Therefore, I am planning to go to Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and Peter) to move forward on some of the interoperability - ontology and protocol - work that we have underway at this time. Of course, anyone else who would like to come as welcome.
+> 
+> Did you possibly mean "and Jim" rather than "in June"?
+> 
+> jim
+
+
+From pm286 at cam.ac.uk  Thu Nov 19 17:58:32 2009
+From: pm286 at cam.ac.uk (Peter Murray-Rust)
+Date: Thu Nov 19 17:59:06 2009
+Subject: [Orechem] Decision on December meeting
+In-Reply-To: <1F694673-1424-4166-B4FC-C3448A50D8FE@gmail.com>
+References: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com>
+	<2ab1b110911190859ke89ca6dncdc2eb2fcea1671f@mail.gmail.com>
+	<1F694673-1424-4166-B4FC-C3448A50D8FE@gmail.com>
+Message-ID: <67fd68330911191458yef4df04i6138ac4e6a407887@mail.gmail.com>
+
+I should be free in the inclusive interval between Dec 2 and the start of
+All-hands at Oxford. In principle I am happy to come to Soton.
+
+P.
+
+
+On Thu, Nov 19, 2009 at 5:09 PM, Carl Lagoze <clagoze@gmail.com> wrote:
+
+> Joys of voice recognition!!!  sorry
+> On Nov 19, 2009, at 11:59 AM, Jim Downing wrote:
+>
+> > 2009/11/19 Carl Lagoze <clagoze@gmail.com>:
+> >> Dear colleagues,
+> >>
+> >> My apologies again for all the mails about this but I hope you
+> understand the logistic overhead of getting these things set up. It is now
+> obvious that not everyone can come for a face-to-face meeting in Southampton
+> at the beginning of December. I certainly understand the reasons for this.
+> Our colleagues in the UK have decided however that a more limited work
+> meeting can be very productive. Therefore, I am planning to go to
+> Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and
+> Peter) to move forward on some of the interoperability - ontology and
+> protocol - work that we have underway at this time. Of course, anyone else
+> who would like to come as welcome.
+> >
+> > Did you possibly mean "and Jim" rather than "in June"?
+> >
+> > jim
+>
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>
+
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091119/cc021171/attachment.htm
+From clagoze at gmail.com  Fri Nov 20 09:23:11 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Fri Nov 20 09:23:48 2009
+Subject: [Orechem] Decision on December meeting
+In-Reply-To: <67fd68330911191458yef4df04i6138ac4e6a407887@mail.gmail.com>
+References: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com> 
+	<2ab1b110911190859ke89ca6dncdc2eb2fcea1671f@mail.gmail.com> 
+	<1F694673-1424-4166-B4FC-C3448A50D8FE@gmail.com>
+	<67fd68330911191458yef4df04i6138ac4e6a407887@mail.gmail.com>
+Message-ID: <-6660888759823202906@unknownmsgid>
+
+That's great Peter. I think you can add to a very productive meeting
+
+Sent from my iPhone
+
+On Nov 19, 2009, at 5:58 PM, Peter Murray-Rust <pm286@cam.ac.uk> wrote:
+
+I should be free in the inclusive interval between Dec 2 and the start of
+All-hands at Oxford. In principle I am happy to come to Soton.
+
+P.
+
+
+On Thu, Nov 19, 2009 at 5:09 PM, Carl Lagoze <clagoze@gmail.com> wrote:
+
+> Joys of voice recognition!!!  sorry
+> On Nov 19, 2009, at 11:59 AM, Jim Downing wrote:
+>
+> > 2009/11/19 Carl Lagoze <clagoze@gmail.com>:
+> >> Dear colleagues,
+> >>
+> >> My apologies again for all the mails about this but I hope you
+> understand the logistic overhead of getting these things set up. It is now
+> obvious that not everyone can come for a face-to-face meeting in Southampton
+> at the beginning of December. I certainly understand the reasons for this.
+> Our colleagues in the UK have decided however that a more limited work
+> meeting can be very productive. Therefore, I am planning to go to
+> Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and
+> Peter) to move forward on some of the interoperability - ontology and
+> protocol - work that we have underway at this time. Of course, anyone else
+> who would like to come as welcome.
+> >
+> > Did you possibly mean "and Jim" rather than "in June"?
+> >
+> > jim
+>
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>
+
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091120/1bc193ad/attachment.htm
+From Lee.Dirks at microsoft.com  Fri Nov 20 11:11:55 2009
+From: Lee.Dirks at microsoft.com (Lee Dirks)
+Date: Fri Nov 20 11:12:34 2009
+Subject: [Orechem] Canceled: oreChem planning - pre-UK mtg coordination call
+Message-ID: <3D62D8B423BE8A4697CB7F059FDCACB316712FD6@TK5EX14MBXC129.redmond.corp.microsoft.com>
+
+Conf-Call Information:
++1-425-706-3500 (US)
++1-888-320-3585 (Toll-free)
++44-118-909-3000 (UK)
+Conference ID = 56138906
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: text/calendar
+Size: 1784 bytes
+Desc: not available
+Url : http://www.openarchives.org/pipermail/orechem/attachments/20091120/8824aa02/attachment.bin
+From Lee.Dirks at microsoft.com  Fri Nov 20 11:15:03 2009
+From: Lee.Dirks at microsoft.com (Lee Dirks)
+Date: Fri Nov 20 11:15:37 2009
+Subject: [Orechem] Decision on December meeting
+Message-ID: <3D62D8B423BE8A4697CB7F059FDCACB316713013@TK5EX14MBXC129.redmond.corp.microsoft.com>
+
+All,
+Carl and I decided to cancel today's planned meeting and reschedule another (smaller) one for those attending the UK meeting. Look for a new Doodle request from Carl...
+-jld
+
+Sent from my HTC Tilt? 2, a Windows? phone from AT&T
+
+________________________________
+From: Carl Lagoze <clagoze@gmail.com>
+Sent: Friday, November 20, 2009 6:24
+To: Peter Murray-Rust <pm286@cam.ac.uk>
+Cc: orechem@openarchives.org <orechem@openarchives.org>
+Subject: Re: [Orechem] Decision on December meeting
+
+That's great Peter. I think you can add to a very productive meeting
+
+Sent from my iPhone
+
+On Nov 19, 2009, at 5:58 PM, Peter Murray-Rust <pm286@cam.ac.uk<mailto:pm286@cam.ac.uk>> wrote:
+
+I should be free in the inclusive interval between Dec 2 and the start of All-hands at Oxford. In principle I am happy to come to Soton.
+
+P.
+
+
+On Thu, Nov 19, 2009 at 5:09 PM, Carl Lagoze <<mailto:clagoze@gmail.com>clagoze@gmail.com<mailto:clagoze@gmail.com>> wrote:
+Joys of voice recognition!!!  sorry
+On Nov 19, 2009, at 11:59 AM, Jim Downing wrote:
+
+> 2009/11/19 Carl Lagoze <<mailto:clagoze@gmail.com>clagoze@gmail.com<mailto:clagoze@gmail.com>>:
+>> Dear colleagues,
+>>
+>> My apologies again for all the mails about this but I hope you understand the logistic overhead of getting these things set up. It is now obvious that not everyone can come for a face-to-face meeting in Southampton at the beginning of December. I certainly understand the reasons for this. Our colleagues in the UK have decided however that a more limited work meeting can be very productive. Therefore, I am planning to go to Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and Peter) to move forward on some of the interoperability - ontology and protocol - work that we have underway at this time. Of course, anyone else who would like to come as welcome.
+>
+> Did you possibly mean "and Jim" rather than "in June"?
+>
+> jim
+
+
+_______________________________________________
+Orechem mailing list
+<mailto:Orechem@openarchives.org>Orechem@openarchives.org<mailto:Orechem@openarchives.org>
+<http://www.openarchives.org/mailman/listinfo/orechem>http://www.openarchives.org/mailman/listinfo/orechem
+
+
+
+--
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091120/c9327d0f/attachment-0001.htm
+From ned24 at cam.ac.uk  Fri Nov 20 11:31:03 2009
+From: ned24 at cam.ac.uk (Nick Day)
+Date: Fri Nov 20 11:31:07 2009
+Subject: [Orechem] Example CrystalEye feed
+Message-ID: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+
+Hi,
+
+Jim and I have created an example Atom archive feed at:
+
+http://wwmm.ch.cam.ac.uk/crystaleye/feed/orechem/feed.xml
+
+where each entry describes a molecular moiety from an issue of Acta
+Crystallographica Section C.  Any comments are most welcome.
+
+cheers,
+Nick
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091120/d2cda8a7/attachment.htm
+From ojd20 at cam.ac.uk  Fri Nov 20 11:58:46 2009
+From: ojd20 at cam.ac.uk (Jim Downing)
+Date: Fri Nov 20 11:59:38 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+Message-ID: <2ab1b110911200858g7afd0398m4e7056f701f128b9@mail.gmail.com>
+
+The link@rel='alternate' links contain the DOI URLs, which probably
+isn't what you intended.
+
+Cheers,
+jim
+
+2009/11/20 Nick Day <ned24@cam.ac.uk>:
+> Hi,
+>
+> Jim and I have created an example Atom archive feed at:
+>
+> http://wwmm.ch.cam.ac.uk/crystaleye/feed/orechem/feed.xml
+>
+> where each entry describes a molecular moiety from an issue of Acta
+> Crystallographica Section C.? Any comments are most welcome.
+>
+> cheers,
+> Nick
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>
+>
+
+From clagoze at gmail.com  Fri Nov 20 12:06:26 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Fri Nov 20 12:06:46 2009
+Subject: [Orechem] Today's call
+Message-ID: <1E394A57-BC36-49AC-94AA-15F1D43C2229@gmail.com>
+
+Sorry all - today's call is cancelled. I am in Baltimore at a DataNet meeting.  I have had to cancel our phone meeting.  I'll get back early next week about plans to prepare for the Dec. 5/6 meeting. If you have any questions in the meantime about experiment progress please let me know by email.
+From pm286 at cam.ac.uk  Fri Nov 20 17:20:03 2009
+From: pm286 at cam.ac.uk (Peter Murray-Rust)
+Date: Fri Nov 20 17:20:42 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+Message-ID: <67fd68330911201420m65273949q329d18ebd7c254cf@mail.gmail.com>
+
+Well done Nick,
+
+On Fri, Nov 20, 2009 at 4:31 PM, Nick Day <ned24@cam.ac.uk> wrote:
+
+> Hi,
+>
+> Jim and I have created an example Atom archive feed at:
+>
+> http://wwmm.ch.cam.ac.uk/crystaleye/feed/orechem/feed.xml
+>
+> where each entry describes a molecular moiety from an issue of Acta
+> Crystallographica Section C.  Any comments are most welcome.
+>
+> The feed per se resolves in my browsers by default to the Acta Cryst page,
+not to the moiety, though the moiety is also referenced in the feed. You
+might want to add a word or two of explanation of the various URIs in the
+feed.
+
+Is this in a state where IU can start ingesting molecules?
+
+P.
+
+
+
+> cheers,
+> Nick
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>
+>
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091120/c2e40666/attachment.htm
+From pm286 at cam.ac.uk  Fri Nov 20 19:07:24 2009
+From: pm286 at cam.ac.uk (Peter Murray-Rust)
+Date: Fri Nov 20 19:07:57 2009
+Subject: [Orechem] Decision on December meeting
+In-Reply-To: <-6660888759823202906@unknownmsgid>
+References: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com>
+	<2ab1b110911190859ke89ca6dncdc2eb2fcea1671f@mail.gmail.com>
+	<1F694673-1424-4166-B4FC-C3448A50D8FE@gmail.com>
+	<67fd68330911191458yef4df04i6138ac4e6a407887@mail.gmail.com>
+	<-6660888759823202906@unknownmsgid>
+Message-ID: <67fd68330911201607p4e930b24m7d3b77db3b5558eb@mail.gmail.com>
+
+Do we have firm dates for going to Soton? Because there are others I would
+like to see there and I see whether they are available on the edges of the
+visit.
+
+P.
+
+
+On Sat, Nov 21, 2009 at 1:23 AM, Carl Lagoze <clagoze@gmail.com> wrote:
+
+> That's great Peter. I think you can add to a very productive meeting
+>
+> Sent from my iPhone
+>
+> On Nov 19, 2009, at 5:58 PM, Peter Murray-Rust <pm286@cam.ac.uk> wrote:
+>
+> I should be free in the inclusive interval between Dec 2 and the start of
+> All-hands at Oxford. In principle I am happy to come to Soton.
+>
+> P.
+>
+>
+> On Thu, Nov 19, 2009 at 5:09 PM, Carl Lagoze < <clagoze@gmail.com>
+> clagoze@gmail.com> wrote:
+>
+>> Joys of voice recognition!!!  sorry
+>> On Nov 19, 2009, at 11:59 AM, Jim Downing wrote:
+>>
+>> > 2009/11/19 Carl Lagoze < <clagoze@gmail.com>clagoze@gmail.com>:
+>> >> Dear colleagues,
+>> >>
+>> >> My apologies again for all the mails about this but I hope you
+>> understand the logistic overhead of getting these things set up. It is now
+>> obvious that not everyone can come for a face-to-face meeting in Southampton
+>> at the beginning of December. I certainly understand the reasons for this.
+>> Our colleagues in the UK have decided however that a more limited work
+>> meeting can be very productive. Therefore, I am planning to go to
+>> Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and
+>> Peter) to move forward on some of the interoperability - ontology and
+>> protocol - work that we have underway at this time. Of course, anyone else
+>> who would like to come as welcome.
+>> >
+>> > Did you possibly mean "and Jim" rather than "in June"?
+>> >
+>> > jim
+>>
+>>
+>> _______________________________________________
+>> Orechem mailing list
+>>  <Orechem@openarchives.org>Orechem@openarchives.org
+>>  <http://www.openarchives.org/mailman/listinfo/orechem>
+>> http://www.openarchives.org/mailman/listinfo/orechem
+>>
+>
+>
+>
+> --
+> Peter Murray-Rust
+> Reader in Molecular Informatics
+> Unilever Centre, Dep. Of Chemistry
+> University of Cambridge
+> CB2 1EW, UK
+> +44-1223-763069
+>
+>
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091121/eda9fce7/attachment.htm
+From clagoze at gmail.com  Fri Nov 20 21:29:18 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Fri Nov 20 21:29:58 2009
+Subject: [Orechem] Decision on December meeting
+In-Reply-To: <67fd68330911201607p4e930b24m7d3b77db3b5558eb@mail.gmail.com>
+References: <7945A8DE-DD4F-4F6D-A8E4-8C195E23B8E4@gmail.com> 
+	<2ab1b110911190859ke89ca6dncdc2eb2fcea1671f@mail.gmail.com> 
+	<1F694673-1424-4166-B4FC-C3448A50D8FE@gmail.com>
+	<67fd68330911191458yef4df04i6138ac4e6a407887@mail.gmail.com> 
+	<-6660888759823202906@unknownmsgid>
+	<67fd68330911201607p4e930b24m7d3b77db3b5558eb@mail.gmail.com>
+Message-ID: <-7575196291511661294@unknownmsgid>
+
+Peter.  We are meeting all day Saturday and Sunday December 5/6.
+
+Sent from my iPhone
+
+On Nov 20, 2009, at 7:07 PM, Peter Murray-Rust <pm286@cam.ac.uk> wrote:
+
+Do we have firm dates for going to Soton? Because there are others I would
+like to see there and I see whether they are available on the edges of the
+visit.
+
+P.
+
+
+On Sat, Nov 21, 2009 at 1:23 AM, Carl Lagoze <clagoze@gmail.com> wrote:
+
+> That's great Peter. I think you can add to a very productive meeting
+>
+> Sent from my iPhone
+>
+> On Nov 19, 2009, at 5:58 PM, Peter Murray-Rust <pm286@cam.ac.uk> wrote:
+>
+> I should be free in the inclusive interval between Dec 2 and the start of
+> All-hands at Oxford. In principle I am happy to come to Soton.
+>
+> P.
+>
+>
+> On Thu, Nov 19, 2009 at 5:09 PM, Carl Lagoze < <clagoze@gmail.com>
+> clagoze@gmail.com> wrote:
+>
+>> Joys of voice recognition!!!  sorry
+>> On Nov 19, 2009, at 11:59 AM, Jim Downing wrote:
+>>
+>> > 2009/11/19 Carl Lagoze < <clagoze@gmail.com>clagoze@gmail.com>:
+>> >> Dear colleagues,
+>> >>
+>> >> My apologies again for all the mails about this but I hope you
+>> understand the logistic overhead of getting these things set up. It is now
+>> obvious that not everyone can come for a face-to-face meeting in Southampton
+>> at the beginning of December. I certainly understand the reasons for this.
+>> Our colleagues in the UK have decided however that a more limited work
+>> meeting can be very productive. Therefore, I am planning to go to
+>> Southampton to work with Simon, Jeremy, Mark, in June (and possibly Alex and
+>> Peter) to move forward on some of the interoperability - ontology and
+>> protocol - work that we have underway at this time. Of course, anyone else
+>> who would like to come as welcome.
+>> >
+>> > Did you possibly mean "and Jim" rather than "in June"?
+>> >
+>> > jim
+>>
+>>
+>> _______________________________________________
+>> Orechem mailing list
+>>  <Orechem@openarchives.org>Orechem@openarchives.org
+>>  <http://www.openarchives.org/mailman/listinfo/orechem>
+>> http://www.openarchives.org/mailman/listinfo/orechem
+>>
+>
+>
+>
+> --
+> Peter Murray-Rust
+> Reader in Molecular Informatics
+> Unilever Centre, Dep. Of Chemistry
+> University of Cambridge
+> CB2 1EW, UK
+> +44-1223-763069
+>
+>
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091120/632a8213/attachment.htm
+From ojd20 at cam.ac.uk  Sat Nov 21 06:39:52 2009
+From: ojd20 at cam.ac.uk (Jim Downing)
+Date: Sat Nov 21 06:40:44 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <67fd68330911201420m65273949q329d18ebd7c254cf@mail.gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com> 
+	<67fd68330911201420m65273949q329d18ebd7c254cf@mail.gmail.com>
+Message-ID: <2ab1b110911210339qa75ea06rd243da84a201c263@mail.gmail.com>
+
+Hi Peter, all,
+
+2009/11/20 Peter Murray-Rust <pm286@cam.ac.uk>:
+> On Fri, Nov 20, 2009 at 4:31 PM, Nick Day <ned24@cam.ac.uk> wrote:
+>> Jim and I have created an example Atom archive feed at:
+>>
+>> http://wwmm.ch.cam.ac.uk/crystaleye/feed/orechem/feed.xml
+>>
+>> where each entry describes a molecular moiety from an issue of Acta
+>> Crystallographica Section C.? Any comments are most welcome.
+>>
+> The feed per se resolves in my browsers by default to the Acta Cryst page,
+> not to the moiety, though the moiety is also referenced in the feed. You
+> might want to add a word or two of explanation of the various URIs in the
+> feed.
+
+Isn't the ORE Atom self evident? ;-)
+
+I'd like to add a clear "main data file is here" link comment.
+
+What's the recommended way of getting the RDF representation of an
+oreatom:entry? Con-neg or another link@rel='alternate'?
+
+> Is this in a state where IU can start ingesting molecules?
+
+Yes, absolutely. In a sense we'd be building the distributed workflow
+from the back - in future we'll link from named entities in the
+documents to these crystaleye moieties.
+
+jim
+
+> P.
+>
+>
+>>
+>> cheers,
+>> Nick
+>>
+>> _______________________________________________
+>> Orechem mailing list
+>> Orechem@openarchives.org
+>> http://www.openarchives.org/mailman/listinfo/orechem
+>>
+>
+>
+>
+> --
+> Peter Murray-Rust
+> Reader in Molecular Informatics
+> Unilever Centre, Dep. Of Chemistry
+> University of Cambridge
+> CB2 1EW, UK
+> +44-1223-763069
+>
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+>
+>
+
+From clagoze at gmail.com  Sun Nov 22 10:48:25 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Sun Nov 22 10:48:32 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <2ab1b110911200858g7afd0398m4e7056f701f128b9@mail.gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+	<2ab1b110911200858g7afd0398m4e7056f701f128b9@mail.gmail.com>
+Message-ID: <F6CE1F08-0626-4861-904C-87B76084A783@gmail.com>
+
+Nice work guys. Than the for the look at this.
+
+ regarding the alternate links, this is something that atom required of us and I"m not much concerned with how we actually use it at this point.
+
+By the way, you may want to run this through the W3C feed validator.  There a few minor problems
+
+Carl
+On Nov 20, 2009, at 11:58 AM, Jim Downing wrote:
+
+> The link@rel='alternate' links contain the DOI URLs, which probably
+> isn't what you intended.
+> 
+> Cheers,
+> jim
+> 
+> 2009/11/20 Nick Day <ned24@cam.ac.uk>:
+>> Hi,
+>> 
+>> Jim and I have created an example Atom archive feed at:
+>> 
+>> http://wwmm.ch.cam.ac.uk/crystaleye/feed/orechem/feed.xml
+>> 
+>> where each entry describes a molecular moiety from an issue of Acta
+>> Crystallographica Section C.  Any comments are most welcome.
+>> 
+>> cheers,
+>> Nick
+>> 
+>> _______________________________________________
+>> Orechem mailing list
+>> Orechem@openarchives.org
+>> http://www.openarchives.org/mailman/listinfo/orechem
+>> 
+>> 
+> 
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+
+
+From clagoze at gmail.com  Sun Nov 22 11:00:12 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Sun Nov 22 11:00:49 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <2ab1b110911210339qa75ea06rd243da84a201c263@mail.gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+	<67fd68330911201420m65273949q329d18ebd7c254cf@mail.gmail.com>
+	<2ab1b110911210339qa75ea06rd243da84a201c263@mail.gmail.com>
+Message-ID: <1F9ABC7F-0E16-4C1A-9731-53C0CFFD18AE@gmail.com>
+
+
+On Nov 21, 2009, at 6:39 AM, Jim Downing wrote:
+
+> Hi Peter, all,
+> 
+> 2009/11/20 Peter Murray-Rust <pm286@cam.ac.uk>:
+>> On Fri, Nov 20, 2009 at 4:31 PM, Nick Day <ned24@cam.ac.uk> wrote:
+>>> Jim and I have created an example Atom archive feed at:
+>>> 
+>>> http://wwmm.ch.cam.ac.uk/crystaleye/feed/orechem/feed.xml
+>>> 
+>>> where each entry describes a molecular moiety from an issue of Acta
+>>> Crystallographica Section C.  Any comments are most welcome.
+>>> 
+>> The feed per se resolves in my browsers by default to the Acta Cryst page,
+>> not to the moiety, though the moiety is also referenced in the feed. You
+>> might want to add a word or two of explanation of the various URIs in the
+>> feed.
+> 
+> Isn't the ORE Atom self evident? ;-)
+> 
+> I'd like to add a clear "main data file is here" link comment.
+> 
+> What's the recommended way of getting the RDF representation of an
+> oreatom:entry? Con-neg or another link@rel='alternate'?
+
+I'm confused about your question here.  You can translate to the RDF/XML translation of the feed via the grddl at http://www.openarchives.org/ore/atom-grddl.xsl.
+
+Carl
+
+> 
+>> Is this in a state where IU can start ingesting molecules?
+> 
+> Yes, absolutely. In a sense we'd be building the distributed workflow
+> from the back - in future we'll link from named entities in the
+> documents to these crystaleye moieties.
+> 
+> jim
+> 
+>> P.
+>> 
+>> 
+>>> 
+>>> cheers,
+>>> Nick
+>>> 
+>>> _______________________________________________
+>>> Orechem mailing list
+>>> Orechem@openarchives.org
+>>> http://www.openarchives.org/mailman/listinfo/orechem
+>>> 
+>> 
+>> 
+>> 
+>> --
+>> Peter Murray-Rust
+>> Reader in Molecular Informatics
+>> Unilever Centre, Dep. Of Chemistry
+>> University of Cambridge
+>> CB2 1EW, UK
+>> +44-1223-763069
+>> 
+>> _______________________________________________
+>> Orechem mailing list
+>> Orechem@openarchives.org
+>> http://www.openarchives.org/mailman/listinfo/orechem
+>> 
+>> 
+> 
+> _______________________________________________
+> Orechem mailing list
+> Orechem@openarchives.org
+> http://www.openarchives.org/mailman/listinfo/orechem
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091122/d94d32bb/attachment.htm
+From ojd20 at cam.ac.uk  Sun Nov 22 11:19:44 2009
+From: ojd20 at cam.ac.uk (Jim Downing)
+Date: Sun Nov 22 11:20:37 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <1F9ABC7F-0E16-4C1A-9731-53C0CFFD18AE@gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com> 
+	<67fd68330911201420m65273949q329d18ebd7c254cf@mail.gmail.com> 
+	<2ab1b110911210339qa75ea06rd243da84a201c263@mail.gmail.com> 
+	<1F9ABC7F-0E16-4C1A-9731-53C0CFFD18AE@gmail.com>
+Message-ID: <2ab1b110911220819k3c9496avd5fa3fb11269136f@mail.gmail.com>
+
+2009/11/22 Carl Lagoze <clagoze@gmail.com>:
+> What's the recommended way of getting the RDF representation of an
+> oreatom:entry? Con-neg or another link@rel='alternate'?
+>
+> I'm confused about your question here. ?You can translate to the RDF/XML
+> translation of the feed via the grddl
+> at?http://www.openarchives.org/ore/atom-grddl.xsl.
+
+GRDDL's OK, but I'd rather provide access to the RDF for the majority
+of clients, who don't have either knowledge of OREAtom or an XLST
+processor.
+
+jim
+
+From clagoze at gmail.com  Tue Nov 24 06:03:11 2009
+From: clagoze at gmail.com (Carl Lagoze)
+Date: Tue Nov 24 06:03:48 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <2ab1b110911220819k3c9496avd5fa3fb11269136f@mail.gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+	<67fd68330911201420m65273949q329d18ebd7c254cf@mail.gmail.com>
+	<2ab1b110911210339qa75ea06rd243da84a201c263@mail.gmail.com>
+	<1F9ABC7F-0E16-4C1A-9731-53C0CFFD18AE@gmail.com>
+	<2ab1b110911220819k3c9496avd5fa3fb11269136f@mail.gmail.com>
+Message-ID: <58098149-F7C7-482B-BB09-8B6F084110B0@gmail.com>
+
+I don't think we anticipated this situation :-( personally, I always think that it's a bad idea to maintain a hard copy of something that is computable because of the danger of them getting out of phase. But, I understand your motivation here. Perhaps the use of the link/related facility in atom would make sense here. One could argue that the RDF XML representation is just a mirror copy of this representation of the aggregation, albeit in another format.
+On Nov 22, 2009, at 11:19 AM, Jim Downing wrote:
+
+> 2009/11/22 Carl Lagoze <clagoze@gmail.com>:
+>> What's the recommended way of getting the RDF representation of an
+>> oreatom:entry? Con-neg or another link@rel='alternate'?
+>> 
+>> I'm confused about your question here.  You can translate to the RDF/XML
+>> translation of the feed via the grddl
+>> at http://www.openarchives.org/ore/atom-grddl.xsl.
+> 
+> GRDDL's OK, but I'd rather provide access to the RDF for the majority
+> of clients, who don't have either knowledge of OREAtom or an XLST
+> processor.
+> 
+> jim
+
+
+From pm286 at cam.ac.uk  Tue Nov 24 22:53:04 2009
+From: pm286 at cam.ac.uk (Peter Murray-Rust)
+Date: Tue Nov 24 22:53:38 2009
+Subject: [Orechem] Example CrystalEye feed
+In-Reply-To: <58098149-F7C7-482B-BB09-8B6F084110B0@gmail.com>
+References: <a1c7586b0911200831j6047f916m1d35705dc9b7994a@mail.gmail.com>
+	<67fd68330911201420m65273949q329d18ebd7c254cf@mail.gmail.com>
+	<2ab1b110911210339qa75ea06rd243da84a201c263@mail.gmail.com>
+	<1F9ABC7F-0E16-4C1A-9731-53C0CFFD18AE@gmail.com>
+	<2ab1b110911220819k3c9496avd5fa3fb11269136f@mail.gmail.com>
+	<58098149-F7C7-482B-BB09-8B6F084110B0@gmail.com>
+Message-ID: <67fd68330911241953s580bd8aaoc98600cb3988380a@mail.gmail.com>
+
+I'm only just back from Australia and haven't completely caught up with Jim.
+FWIW the normal way we express ontologies is RDF/XML but I will explore the
+issues with Jim.
+
+We had a very good session on Linked Open Data at eResearch - about 50
+people came and we let the discussion take its own course. There were a
+number of people interested in RDF and the OREChem approach but in practice
+the major issues were all about Open Data and who owned what and released
+what/when/to_whom, etc.
+
+On Tue, Nov 24, 2009 at 11:03 AM, Carl Lagoze <clagoze@gmail.com> wrote:
+
+> I don't think we anticipated this situation :-( personally, I always think
+> that it's a bad idea to maintain a hard copy of something that is computable
+> because of the danger of them getting out of phase. But, I understand your
+> motivation here. Perhaps the use of the link/related facility in atom would
+> make sense here. One could argue that the RDF XML representation is just a
+> mirror copy of this representation of the aggregation, albeit in another
+> format.
+>  On Nov 22, 2009, at 11:19 AM, Jim Downing wrote:
+>
+> > 2009/11/22 Carl Lagoze <clagoze@gmail.com>:
+> >> What's the recommended way of getting the RDF representation of an
+> >> oreatom:entry? Con-neg or another link@rel='alternate'?
+> >>
+> >> I'm confused about your question here.  You can translate to the RDF/XML
+> >> translation of the feed via the grddl
+> >> at http://www.openarchives.org/ore/atom-grddl.xsl.
+> >
+> > GRDDL's OK, but I'd rather provide access to the RDF for the majority
+> > of clients, who don't have either knowledge of OREAtom or an XLST
+> > processor.
+> >
+> > jim
+>
+>
+
+
+-- 
+Peter Murray-Rust
+Reader in Molecular Informatics
+Unilever Centre, Dep. Of Chemistry
+University of Cambridge
+CB2 1EW, UK
++44-1223-763069
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/orechem/attachments/20091125/b2f3915b/attachment.htm

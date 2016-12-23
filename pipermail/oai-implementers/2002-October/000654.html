@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] SPECIAL CHARACTERS...
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tim%40tim.brody.btinternet.co.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000653.html">
+   <LINK REL="Next"  HREF="000655.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] SPECIAL CHARACTERS...
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tim%40tim.brody.btinternet.co.uk"
+       TITLE="[OAI-implementers] SPECIAL CHARACTERS...">tim@tim.brody.btinternet.co.uk
+       </A><BR>
+    <I>Wed, 2 Oct 2002 13:05:12 +0100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000653.html">[OAI-implementers] [OAI Implementers] - CompleteListSize Problem Solved
+</A></li>
+        <LI> Next message: <A HREF="000655.html">[OAI-implementers] SPECIAL CHARACTERS...
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#654">[ date ]</a>
+              <a href="thread.html#654">[ thread ]</a>
+              <a href="subject.html#654">[ subject ]</a>
+              <a href="author.html#654">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>(Only tested using the Perl expat parser  ...)
+
+I don't *think* your solution will cover all situations (e.g., it didn't
+encode the last of the three example latin characters). Exhaustively parsing
+all 8-bit character codes produces the following required regexps to go from
+raw any-ascii text to UTF-8 parsable (i.e. a shot-gun approach):
+
+s/&amp;/&amp;amp;/sg;
+s/&lt;/&amp;lt;/sg;
+s/&gt;/&amp;gt;/sg;
+s/[\x00-\x08\x0b-\x0c\x0e-\x1f]//sg;
+s/([\x80-\xff])/sprintf(&quot;&amp;#x%04x;&quot;,ord($1))/seg;
+
+This will delete any control characters that aren't valid Unicode, and
+entity-encode characters above 127 (note, there are control characters above
+127 in the Unicode database but these seem to be accepted by the parser
+...).
+
+It would still be better to use a proper encoding transform than rely on
+regexps :-)
+
+Regards,
+Tim.
+
+----- Original Message -----
+From: &quot;Marina Muilwijk&quot; &lt;<A HREF="mailto:m.muilwijk@library.uu.nl">m.muilwijk@library.uu.nl</A>&gt;
+To: &quot;OAI Implementers&quot; &lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+Sent: Friday, September 27, 2002 2:46 PM
+Subject: Re: [OAI-implementers] SPECIAL CHARACTERS...
+
+
+On 27 Sep 2002 at 10:06, Ramon Martins Sodoma da Fonseca wrote:
+
+&gt;<i> We are having problems with the character encoding.
+</I>&gt;<i> We need to display special charaters, like &quot;ç, ã, ö&quot;, and others, and
+</I>&gt;<i> our question is:
+</I>
+We use Perl's sprintf function. For instance:
+$creators =~ s/([^&lt;&gt;:a-zA-Z, .\/-])/sprintf &quot;&amp;#x%04X;&quot;, ord($1)/ei;
+
+which converts everything but the characters within brackets to their
+hexadecimal value and adds the &quot;&amp;#X&quot; required for Unicode encoding.
+
+
+
+_______________________________________________
+OAI-implementers mailing list
+<A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000653.html">[OAI-implementers] [OAI Implementers] - CompleteListSize Problem Solved
+</A></li>
+	<LI> Next message: <A HREF="000655.html">[OAI-implementers] SPECIAL CHARACTERS...
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#654">[ date ]</a>
+              <a href="thread.html#654">[ thread ]</a>
+              <a href="subject.html#654">[ subject ]</a>
+              <a href="author.html#654">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

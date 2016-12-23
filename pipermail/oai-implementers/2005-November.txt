@@ -1,0 +1,421 @@
+From libsurvey at yahoo.com  Thu Nov  3 08:31:30 2005
+From: libsurvey at yahoo.com (Lib Survey)
+Date: Thu Nov  3 08:32:16 2005
+Subject: [OAI-implementers] Please help me to fill the questionnaire
+	--Survey on Common Interface Frameworks for Online Libraries
+Message-ID: <200511031331.jA3DVUCe015901@rform.com>
+
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20051103/7438b5f7/attachment.htm
+From robert.tansley at hp.com  Tue Nov  8 20:06:04 2005
+From: robert.tansley at hp.com (Tansley, Robert)
+Date: Tue Nov  8 20:06:48 2005
+Subject: [OAI-implementers] RE: [Dspace-tech] OAI validation - withdrawn
+	items, new dc types
+Message-ID: <19ADCC0B9D4CAD4582BB9900BBCE357401AA0E02@tayexc13.americas.cpqcorp.net>
+
+Hi Liam,
+
+Actually it's a weird corner case where it's not clear to me what the
+'right' thing to do is.  It could be that the repository explorer is
+wrong, or DSpace.
+
+Basically
+http://demo.openrepository.com/demo-oai/request?verb=ListIdentifiers&met
+adataPrefix=oai_dc asks for all records which have oai_dc metadata.  You
+*have* to ask for a particular metadata prefix with ListIdentifiers.
+
+But when you actually ask for the oai_dc metadata on a deleted item,
+DSpace reports there is no oai_dc metadata for that item.  Because there
+isn't.  Because it's been deleted.
+
+However, if DSpace simply didn't include <record status="deleted"> for
+that item in the ListIdentifiers response, harvesters would never know
+the record had actually been deleted.
+
+DSpace could simply claim to have oai_dc metadata for deleted items in a
+ListMetadataFormats response, but this doesn't seem right.
+
+Alternatively, it could give an 'idDoesNotExist' error code, but this
+doesn't feel right either.  ListMetadataFormats doesn't provide any
+means to indicate something like status="deleted".
+
+I've CC'd this to oai-implementers, in case anyone there can give us
+some pointers -- what's the appropriate behaviour?
+
+ Robert TANSLEY / HP Labs / MIT Visiting Researcher
+ http://www.hpl.hp.com/personal/Robert_Tansley/
+
+> -----Original Message-----
+> From: dspace-tech-admin@lists.sourceforge.net 
+> [mailto:dspace-tech-admin@lists.sourceforge.net] On Behalf Of 
+> Liam Lynch
+> Sent: 03 November 2005 11:26
+> To: Dspace-Tech (E-mail)
+> Subject: [Dspace-tech] OAI validation - withdrawn items, new dc types
+> 
+> Hi all -
+> 
+> Just testing out our OAI-PMH capabilities on a demo 
+> repository using the OAI repository explorer (i.e. using this 
+> http://re.cs.uct.ac.za/ ) and I have a couple of validation 
+> errors. I've searched back in the lists and haven't found 
+> anything obvious about these issues, so wondering if anyone 
+> can help ....
+> 
+> One problem seems to relate to this feature of DSpace -
+> 
+> "DSpace's OAI service does support the exposing of deletion 
+> information for withdrawn items, but not for items that are 
+> 'expunged' ( see above 
+> <http://www.dspace.org/technology/system-docs/functional.html#
+> deletions>). "
+> 
+> If you look at this xml from a ListIdentifiers request, 
+> you'll notice how the first item is deleted (i.e. withdrawn) -
+> http://demo.openrepository.com/demo-oai/request?verb=ListIdent
+ifiers&metadataPrefix=oai_dc
+> 
+> i.e. this bit -
+> 
+> <header status="deleted">
+> <identifier>oai:demo.openrepository.com:123456789/9</identifier>
+> <datestamp>2005-05-19T10:38:31Z</datestamp>
+> </header>
+> 
+> The OAI explorer test uses this particular item for a 
+> ListMetadataFormats request - and it doesn't like what it gets back -
+> 
+> (22) Testing : ListMetadataFormats (identifier)
+> URL : 
+> http://demo.openrepository.com/demo-oai/request?verb=ListMetad
+ataFormats&identifier=oai:demo.openrepository.com:123456789/9
+> ------ Start of XML Response ------
+> <?xml version="1.0" encoding="UTF-8" ?><OAI-PMH 
+> xmlns="http://www.openarchives.org/OAI/2.0/" 
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ 
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"><responseDate
+>2005-11-03T14:28:13Z</responseDate><request >
+identifier="oai:demo.openrepository.com:123456789/9" 
+> verb="ListMetadataFormats">http://demo.openrepository.com/demo
+> -oai/request</request><error code="noMetadataFormats">There 
+> are no metadata formats available for the specified 
+> item.</error></OAI-PMH>
+> ------- End of XML Response -------
+> Test Result : FAIL!
+> **** [ERROR] Error tag found but not expected : noMetadataFormats
+> 
+> 
+> So what do you reckon - it doesn't understand what 
+> status="deleted" means, and that if it did it wouldn't try 
+> this test? Is this a problem with the xml DSpace produces or 
+> more with the OAI explorer testing utility?
+> 
+> 
+> The next problem relates to these new DC types we've added - 
+> basically, it doesn't like 'em (see below). And no there's 
+> reason why it should, I guess - it's got it's own schema, it 
+> knows what it likes. So as we've customised our repository to 
+> add some dc types, we need to change the OAIDCCrosswalk class 
+> to not put these in the oai_dc XML, right?  That's fine, but 
+> I guess it would be better if only dc fields that would be 
+> accepted by the OAI_DC schema are actually put in generally - 
+> i.e. if it only puts in elements that are in [title, creator, 
+> subject, description, publisher, contributor, date, type, 
+> format, identifier, source, relation, coverage, rights]. If 
+> so no extra effort would be needed when new dc types are 
+> added.  Would it make sense to change OAIDCCrosswalk to do this?
+> 
+> Any thoughts much appreciated.
+> 
+> Cheers,
+> Liam
+> 
+> validation message -
+> 
+> (41) Testing : GetRecord (identifier, oai_dc)
+> URL : 
+> http://demo.openrepository.com/demo-oai/request?verb=GetRecord
+&identifier=oai:demo.openrepository.com:123456789/224&metadataPrefix=oai
+_dc
+> ------ Response from Xerces Schema Validation ------
+> [Error] re.0NiDLV:1:3495: cvc-complex-type.2.4.a: Invalid 
+> content was found starting with element 'dc:entrez'. One of 
+> '{"http://purl.org/dc/elements/1.1/":title, 
+> "http://purl.org/dc/elements/1.1/":creator, 
+> "http://purl.org/dc/elements/1.1/":subject, 
+> "http://purl.org/dc/elements/1.1/":description, 
+> "http://purl.org/dc/elements/1.1/":publisher, 
+> "http://purl.org/dc/elements/1.1/":contributor, 
+> "http://purl.org/dc/elements/1.1/":date, 
+> "http://purl.org/dc/elements/1.1/":type, 
+> "http://purl.org/dc/elements/1.1/":format, 
+> "http://purl.org/dc/elements/1.1/":identifier, 
+> "http://purl.org/dc/elements/1.1/":source, 
+> "http://purl.org/dc/elements/1.1/":language, 
+> "http://purl.org/dc/elements/1.1/":relation, 
+> "http://purl.org/dc/elements/1.1/":coverage, 
+> "http://purl.org/dc/elements/1.1/":rights}' is expected.
+> /tmp/re.0NiDLV: 777;11;0 ms (35 elems, 10 attrs, 0 spaces, 2388 chars)
+> ------- End of Xerces Schema Validation Report  -------
+> 
+> 
+> 
+> 
+> This email has been scanned by Postini.
+> For more information please visit http://www.postini.com
+> 
+> 
+> 
+> 
+> -------------------------------------------------------
+> SF.Net email is sponsored by:
+> Tame your development challenges with Apache's Geronimo App 
+> Server. Download
+> it for free - -and be entered to win a 42" plasma tv or your very own
+> Sony(tm)PSP.  Click here to play: http://sourceforge.net/geronimo.php
+> _______________________________________________
+> DSpace-tech mailing list
+> DSpace-tech@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/dspace-tech
+> 
+
+From hussein at cs.uct.ac.za  Wed Nov  9 11:28:04 2005
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Wed Nov  9 11:28:20 2005
+Subject: [OAI-implementers] Re: [Dspace-tech] OAI validation - withdrawn
+	items, new dc types
+In-Reply-To: <19ADCC0B9D4CAD4582BB9900BBCE357401AA0E02@tayexc13.americas.cpqcorp.net>
+References: <19ADCC0B9D4CAD4582BB9900BBCE357401AA0E02@tayexc13.americas.cpqcorp.net>
+Message-ID: <43722394.4080606@cs.uct.ac.za>
+
+well, for starters, i would say the repository explorer is wrong and 
+shouldnt make any ListMetaFormats requests for deleted ids ... so ive 
+fixed that! it now searches for the first non-deleted id in the ListIds 
+response or assumes no id exists if all ids are deleted.
+
+the broader question of orthogonality of the deletion feature is of 
+course more difficult ... (and something we dredge up every now and then 
+with no resolution :))
+
+ttfn,
+----hussein
+
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+Tansley, Robert wrote:
+> Hi Liam,
+> 
+> Actually it's a weird corner case where it's not clear to me what the
+> 'right' thing to do is.  It could be that the repository explorer is
+> wrong, or DSpace.
+> 
+> Basically
+> http://demo.openrepository.com/demo-oai/request?verb=ListIdentifiers&met
+> adataPrefix=oai_dc asks for all records which have oai_dc metadata.  You
+> *have* to ask for a particular metadata prefix with ListIdentifiers.
+> 
+> But when you actually ask for the oai_dc metadata on a deleted item,
+> DSpace reports there is no oai_dc metadata for that item.  Because there
+> isn't.  Because it's been deleted.
+> 
+> However, if DSpace simply didn't include <record status="deleted"> for
+> that item in the ListIdentifiers response, harvesters would never know
+> the record had actually been deleted.
+> 
+> DSpace could simply claim to have oai_dc metadata for deleted items in a
+> ListMetadataFormats response, but this doesn't seem right.
+> 
+> Alternatively, it could give an 'idDoesNotExist' error code, but this
+> doesn't feel right either.  ListMetadataFormats doesn't provide any
+> means to indicate something like status="deleted".
+> 
+> I've CC'd this to oai-implementers, in case anyone there can give us
+> some pointers -- what's the appropriate behaviour?
+> 
+>  Robert TANSLEY / HP Labs / MIT Visiting Researcher
+>  http://www.hpl.hp.com/personal/Robert_Tansley/
+> 
+> 
+>>-----Original Message-----
+>>From: dspace-tech-admin@lists.sourceforge.net 
+>>[mailto:dspace-tech-admin@lists.sourceforge.net] On Behalf Of 
+>>Liam Lynch
+>>Sent: 03 November 2005 11:26
+>>To: Dspace-Tech (E-mail)
+>>Subject: [Dspace-tech] OAI validation - withdrawn items, new dc types
+>>
+>>Hi all -
+>>
+>>Just testing out our OAI-PMH capabilities on a demo 
+>>repository using the OAI repository explorer (i.e. using this 
+>>http://re.cs.uct.ac.za/ ) and I have a couple of validation 
+>>errors. I've searched back in the lists and haven't found 
+>>anything obvious about these issues, so wondering if anyone 
+>>can help ....
+>>
+>>One problem seems to relate to this feature of DSpace -
+>>
+>>"DSpace's OAI service does support the exposing of deletion 
+>>information for withdrawn items, but not for items that are 
+>>'expunged' ( see above 
+>><http://www.dspace.org/technology/system-docs/functional.html#
+>>deletions>). "
+>>
+>>If you look at this xml from a ListIdentifiers request, 
+>>you'll notice how the first item is deleted (i.e. withdrawn) -
+>>http://demo.openrepository.com/demo-oai/request?verb=ListIdent
+> 
+> ifiers&metadataPrefix=oai_dc
+> 
+>>i.e. this bit -
+>>
+>><header status="deleted">
+>><identifier>oai:demo.openrepository.com:123456789/9</identifier>
+>><datestamp>2005-05-19T10:38:31Z</datestamp>
+>></header>
+>>
+>>The OAI explorer test uses this particular item for a 
+>>ListMetadataFormats request - and it doesn't like what it gets back -
+>>
+>>(22) Testing : ListMetadataFormats (identifier)
+>>URL : 
+>>http://demo.openrepository.com/demo-oai/request?verb=ListMetad
+> 
+> ataFormats&identifier=oai:demo.openrepository.com:123456789/9
+> 
+>>------ Start of XML Response ------
+>><?xml version="1.0" encoding="UTF-8" ?><OAI-PMH 
+>>xmlns="http://www.openarchives.org/OAI/2.0/" 
+>>xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+>>xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ 
+>>http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"><responseDate
+>>2005-11-03T14:28:13Z</responseDate><request >
+> 
+> identifier="oai:demo.openrepository.com:123456789/9" 
+> 
+>>verb="ListMetadataFormats">http://demo.openrepository.com/demo
+>>-oai/request</request><error code="noMetadataFormats">There 
+>>are no metadata formats available for the specified 
+>>item.</error></OAI-PMH>
+>>------- End of XML Response -------
+>>Test Result : FAIL!
+>>**** [ERROR] Error tag found but not expected : noMetadataFormats
+>>
+>>
+>>So what do you reckon - it doesn't understand what 
+>>status="deleted" means, and that if it did it wouldn't try 
+>>this test? Is this a problem with the xml DSpace produces or 
+>>more with the OAI explorer testing utility?
+>>
+>>
+>>The next problem relates to these new DC types we've added - 
+>>basically, it doesn't like 'em (see below). And no there's 
+>>reason why it should, I guess - it's got it's own schema, it 
+>>knows what it likes. So as we've customised our repository to 
+>>add some dc types, we need to change the OAIDCCrosswalk class 
+>>to not put these in the oai_dc XML, right?  That's fine, but 
+>>I guess it would be better if only dc fields that would be 
+>>accepted by the OAI_DC schema are actually put in generally - 
+>>i.e. if it only puts in elements that are in [title, creator, 
+>>subject, description, publisher, contributor, date, type, 
+>>format, identifier, source, relation, coverage, rights]. If 
+>>so no extra effort would be needed when new dc types are 
+>>added.  Would it make sense to change OAIDCCrosswalk to do this?
+>>
+>>Any thoughts much appreciated.
+>>
+>>Cheers,
+>>Liam
+>>
+>>validation message -
+>>
+>>(41) Testing : GetRecord (identifier, oai_dc)
+>>URL : 
+>>http://demo.openrepository.com/demo-oai/request?verb=GetRecord
+> 
+> &identifier=oai:demo.openrepository.com:123456789/224&metadataPrefix=oai
+> _dc
+> 
+>>------ Response from Xerces Schema Validation ------
+>>[Error] re.0NiDLV:1:3495: cvc-complex-type.2.4.a: Invalid 
+>>content was found starting with element 'dc:entrez'. One of 
+>>'{"http://purl.org/dc/elements/1.1/":title, 
+>>"http://purl.org/dc/elements/1.1/":creator, 
+>>"http://purl.org/dc/elements/1.1/":subject, 
+>>"http://purl.org/dc/elements/1.1/":description, 
+>>"http://purl.org/dc/elements/1.1/":publisher, 
+>>"http://purl.org/dc/elements/1.1/":contributor, 
+>>"http://purl.org/dc/elements/1.1/":date, 
+>>"http://purl.org/dc/elements/1.1/":type, 
+>>"http://purl.org/dc/elements/1.1/":format, 
+>>"http://purl.org/dc/elements/1.1/":identifier, 
+>>"http://purl.org/dc/elements/1.1/":source, 
+>>"http://purl.org/dc/elements/1.1/":language, 
+>>"http://purl.org/dc/elements/1.1/":relation, 
+>>"http://purl.org/dc/elements/1.1/":coverage, 
+>>"http://purl.org/dc/elements/1.1/":rights}' is expected.
+>>/tmp/re.0NiDLV: 777;11;0 ms (35 elems, 10 attrs, 0 spaces, 2388 chars)
+>>------- End of Xerces Schema Validation Report  -------
+>>
+>>
+>>
+>>
+>>This email has been scanned by Postini.
+>>For more information please visit http://www.postini.com
+>>
+>>
+>>
+>>
+>>-------------------------------------------------------
+>>SF.Net email is sponsored by:
+>>Tame your development challenges with Apache's Geronimo App 
+>>Server. Download
+>>it for free - -and be entered to win a 42" plasma tv or your very own
+>>Sony(tm)PSP.  Click here to play: http://sourceforge.net/geronimo.php
+>>_______________________________________________
+>>DSpace-tech mailing list
+>>DSpace-tech@lists.sourceforge.net
+>>https://lists.sourceforge.net/lists/listinfo/dspace-tech
+>>
+> 
+> 
+> 
+> -------------------------------------------------------
+> SF.Net email is sponsored by:
+> Tame your development challenges with Apache's Geronimo App Server. Download
+> it for free - -and be entered to win a 42" plasma tv or your very own
+> Sony(tm)PSP.  Click here to play: http://sourceforge.net/geronimo.php
+> _______________________________________________
+> DSpace-tech mailing list
+> DSpace-tech@lists.sourceforge.net
+> https://lists.sourceforge.net/lists/listinfo/dspace-tech
+
+From kochw at ait.co.at  Tue Nov 15 06:00:26 2005
+From: kochw at ait.co.at (Walter Koch)
+Date: Tue Nov 15 06:01:17 2005
+Subject: [OAI-implementers] UDDI-OAI
+Message-ID: <6.2.3.4.2.20051115115232.02ff1778@pop.nextra.at>
+
+Hi,
+
+     in course of designing a business registry for a region I wonder 
+whether OAI-PMH could be an enabling technology for implementing 
+UDDI.V3. I would be grateful for any information about relevant activities.
+
+Rgds
+
+W.Koch
+
+*********************************************************************************************
+*  Univ.-Prof.Dr.Walter KOCH
+*  c/o Angewandte Informationstechnik Forschungsgesellschaft mbH
+*  Klosterwiesgasse 32/1; A-8010 Graz/Austria/Europe
+*  TEL:+43(316)835359-0 FAX:+43(316)835359-75 Mobile:+43.664.3556521
+*  e-mail: kochw@ait.co.at     *    Skype:  kochwgraz
+**********************************************************************************************
+
+

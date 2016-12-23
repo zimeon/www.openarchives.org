@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] valid character encoding
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001004.html">
+   <LINK REL="Next"  HREF="001007.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] valid character encoding
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] valid character encoding">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Wed, 13 Aug 2003 22:46:48 -0400 (EDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001004.html">[OAI-implementers] valid character encoding
+</A></li>
+        <LI> Next message: <A HREF="001007.html">[OAI-implementers] Patriot Act E-Learning Course
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1005">[ date ]</a>
+              <a href="thread.html#1005">[ thread ]</a>
+              <a href="subject.html#1005">[ subject ]</a>
+              <a href="author.html#1005">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Thu, 14 Aug 2003, Steve Thomas wrote:
+&gt;<i> While we're on the topic, I have records with the name Niccolò in them (as in 
+</I>&gt;<i> Machiavelli) -- there's a grave accent over the final &quot;o&quot;. But this doesn't 
+</I>&gt;<i> seem to be part of UTF-8, or your conditioner doesn't recognise it. (Although 
+</I>&gt;<i> it displays correctly everywhere.)
+</I>&gt;<i> 
+</I>&gt;<i> Is this invalid in UTF-8, or ... what?
+</I>&gt;<i>
+</I>&gt;<i> When I dump it in Unix, the character is \xf2, apparently.
+</I>
+0xF2 is NOT a valid UTF-8 sequence.
+
+No single byte in the range 0x80--0xFF is a valid UTF-8 sequence. 0xF2 is
+the Latin 1, CP1252 and Unicode code for o grave and is represented as a
+two-byte sequence in UTF-8 (0xC3 0xB2).
+
+If you have data in Latin 1 it is trivial to convert that to UTF-8 but you
+must do the conversion before writing XML records for OAI use!
+
+
+There seems to be some confusion about these issues so I'll attempt to
+summarize a few key points:
+
+o UTF-8 is a particular ENCODING of Unicode (UCS, ISO 10646). Individual
+characters are represented by a sequence of between 1 and 6 bytes. Any
+byte &gt;= 0x80 is part of a multi-byte sequence.
+
+o The ASCII characters (0x20-0x7F) have the same codes in Latin 1 (aka ISO
+8859-1) and Unicode. They are also represented by single bytes with the
+same values in a UTF-8 stream.
+
+o The Latin 1 characters (0xC0-0xFF) have the same codes in Unicode. In
+UTF-8 streams they are encoded as two-byte sequences. (Direct inclusion of
+these codes in UTF-8 will likely result in invalid UTF-8 sequences and
+will certainly not be correctly interpreted.)
+
+o Almost every other character set can be mapped to Unicode but may 
+require look-up-tables. 
+
+o There are libraries and tools to do character set conversion and 
+encoding in most common languages. For example, perl permits quite general 
+conversion; say latin1 to utf8:
+  #see <A HREF="http://search.cpan.org/author/JHI/perl-5.8.0/ext/Encode/Encode.pm">http://search.cpan.org/author/JHI/perl-5.8.0/ext/Encode/Encode.pm</A>
+  use Encode; 
+  $utf8data = encode(&quot;utf8&quot;, decode(&quot;iso-8859-1&quot;, $latin1data));
+
+For more details see:
+  <A HREF="http://www.cl.cam.ac.uk/~mgk25/unicode.html">http://www.cl.cam.ac.uk/~mgk25/unicode.html</A> (FAQ)
+  <A HREF="http://www.ietf.org/rfc/rfc2279.txt">http://www.ietf.org/rfc/rfc2279.txt</A> (UTF-8)
+  <A HREF="http://www.unicode.org/standard/standard.html">http://www.unicode.org/standard/standard.html</A> (Unicode)
+
+
+I hope this helps.
+
+Cheers,
+Simeon.
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001004.html">[OAI-implementers] valid character encoding
+</A></li>
+	<LI> Next message: <A HREF="001007.html">[OAI-implementers] Patriot Act E-Learning Course
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1005">[ date ]</a>
+              <a href="thread.html#1005">[ thread ]</a>
+              <a href="subject.html#1005">[ subject ]</a>
+              <a href="author.html#1005">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,2205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>ResourceSync Framework Specification - Format Investigation</title>
+<link rel="shortcut icon" href="http://www.openarchives.org/rs/0.1/img/favicon.ico" type="image/x-icon"/>
+<link rel="stylesheet" href="css/resourcesync.css" type="text/css"/>
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/rs/">CURRENT ResourceSync SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logo and ReSync title">
+    <tbody><tr>
+      <td><img alt="NISO logo" src="img/niso_logo.png"/></td>
+      <td><img alt="OAI logo" src="img/OA100.gif" width="100" height="70"/></td>
+      <td class="OREtext">Open Archives Initiative<br />ResourceSync Framework Specification</td>
+      <td><img alt="ReSync logo" src="img/resync_logo.jpg"/></td>
+    </tr>
+  </tbody></table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ResourceSync Framework Specification - Format Investigation</h2>
+  <h3 class="subTitle">15 November 2012</h3>
+</div><!--div-titleBlock-->
+<dl>
+  <dt>This document:</dt>
+  <dd><a href="http://www.openarchives.org/rs/0.2/format_investigation">http://www.openarchives.org/rs/0.2/format_investigation</a></dd>
+  <dt>Based on the previous version of the ResourceSync specification:</dt>
+  <dd><a href="http://www.openarchives.org/rs/0.1/resourcesync">http://www.openarchives.org/rs/0.1/resourcesync</a></dd>
+  <dt>Latest version of ResourceSync specification:</dt>
+  <dd><a href="http://www.openarchives.org/rs/resourcesync">http://www.openarchives.org/rs/resourcesync</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (in alphabetical order):</dt>
+  <dd>Bernhard Haslhofer, Cornell University Information Science</dd>
+  <dd>Martin Klein, Los Alamos National Laboratory</dd>
+  <dd>Carl Lagoze, University of Michigan</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, Los Alamos National Laboratory</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dd>Simeon Warner, Cornell University</dd>
+</dl>
+
+<div class="abstract">
+<h2><a name="abstract"></a>Abstract</h2>
+<p>This document is an experiment to investigate a possible alternative format for ResourceSync that is not based on the Sitemaps protocol. The format of this document follows the structure of the <a href="http://www.openarchives.org/rs/0.1/resourcesync">0.1 alpha draft</a> but reworks the examples using a possible new XML format in the <code>http://www.openarchives.org/rs/</code> namespace. Sections of the specification not related to document format are omitted.</p>
+</div>
+    
+<div class="abstract">
+<h2><a name="status"></a>Status of this Document</h2>
+<p>This is format investigation related to the ResourceSync alpha draft and is distributed for public comment.</p>
+</div>
+
+<div class="toc">
+<h2><a name="contents"></a>Table of Contents</h2>
+<p class="toc">
+
+...<br />
+
+2. <a href="#ReSyncBasics">ResourceSync Basics</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#Walkthrough">Walkthrough</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;...<br />
+
+3. <a href="#ReSyncDocFormat">ResourceSync Document Format</a><br />
+
+4. <a href="#DescCon">Describing Content - Inventories</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.1 <a href="#Inventory">Inventories</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.2 <a href="#InventoryIndex">Inventory Index</a><br />
+
+5. <a href="#PackCon">Packaging Content - Dumps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;5.1 <a href="#Dump">Dumps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1.1 <a href="#DumpManifest">Dump Manifest</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;5.2 <a href="#DumpIndex">Dump Index</a><br />
+
+6. <a href="#DesChanges">Describing Changes - Change Lists</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;6.1 <a href="#ChangeLists">Change Lists</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;6.2 <a href="#ChangeListIndex">Change List Index</a><br />
+
+7. <a href="#PackConChanges">Packaging Content Changes - Change Dumps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;7.1 <a href="#ChangeDump">Change Dumps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.1.1 <a href="#ChangeDumpManifest">Change Dump Manifest</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;7.2 <a href="#ChangeDumpIndex">Change Dump Index</a><br />
+
+8. <a href="#PushingChanges">Pushing Changes</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.1 <a href="#xmpp">XMPP</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.2 <a href="#callback">HTTP Callback</a><br />
+
+9. <a href="#LinkRelRes">Linking to Related Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;9.1 <a href="#AltConTrans">Alternate Content Transfer</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9.1.1 <a href="#MirCon">Mirrored Content</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9.1.2 <a href="#AltRep">Alternate Representations</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9.1.3 <a href="#PartCon">Partial Content</a><br />
+<!--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9.1.4 <a href="#AltInt">Alternate Interpretation</a><br />-->
+&nbsp;&nbsp;&nbsp;&nbsp;9.2 <a href="#ResVers">Resource Versions</a><br />
+
+10. <a href="#ArchivedInvDumps">Archiving Inventories and Dumps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;10.1 <a href="#ArchivedInventories">Archived Inventories</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;10.2 <a href="#ArchivedDumps">Archived Dumps</a><br />
+
+11. <a href="#AdvCaps">Advertising Capabilities</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;11.1 <a href="#Capabilities">Capabilities</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;11.2 <a href="#CapabilitiesIndex">Capabilities Index</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;11.3 <a href="#Discovery">Discovery</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11.3.1 <a href="#wellknown">.well-known URI</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11.3.2 <a href="#xhtmllinkEle">X/HTML Link Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11.3.3 <a href="#HTTPLinkHrds">HTTP Link Header</a><br />
+
+12. <a href="#RePub">Republishing</a><br />
+
+13. <a href="#References">References</a><br />
+</p>
+
+<h3><a name="appendices"></a>Appendices</h3>
+<p class="toc">
+A. <a href="#ElemOv">XML Element Overview</a><br />
+B. <a href="#acknowledgments">Acknowledgements</a><br />
+C. <a href="#Changelog">Change Log</a></p>
+</div>
+
+<div class="body">
+
+<p style="font-size: 130%; color: #CC0000; padding: 2ex">...[sections omitted]...</p>
+
+<h2>2. <a name="ReSyncBasics">ResourceSync Basics</a></h2>
+<p>
+This section provides an overview of the various ResourceSync
+capabilities that a server may support in order to enable remote systems
+to become and remain synchronized with its evolving resources.
+The following terms are introduced:
+</p>
+
+<ul>
+  <li>A <strong>Source</strong> is a server that hosts resources that
+may change over time.</li>
+  <li>A <strong>Destination</strong> is a system that is to
+remain in step with changes at the Source.</li>
+</ul>
+
+<h3>2.1. <a name="Walkthrough">Walkthrough</a></h3>
+
+<p>
+        Let's assume a Source, http://example.com/, that wants to make it
+        easy for Destinations to follow its changing content. A basic first
+        step towards that goal is for this Source to publish an
+        <a href="#DescCon">Inventory</a> that lists the URIs of resources
+        that the Source wants Destinations to know about. This Inventory is
+        implemented with an <a href="#ReSyncDocFormat">XML document format</a> that is used
+        throughout the ResourceSync framework. As shown in
+        <a href="#ex_2_1_1">Example 2.1</a>, the Source conveys the URI of
+        each resource as the value of the
+        <code>href</code> attribute of an
+        <code>item</code> element. Note the
+        <code>modified</code> attribute of the <code>resync</code>
+        element that expresses the datetime of the Inventory's most recent update,
+        allowing a Destination to quickly determine whether or not
+        it has previously processed this specific Inventory.
+</p>
+
+<!--EXAMPLE:ex_2_1_1.xml-->
+<a name="ex_2_1_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;item href=&quot;http://example.com/res1&quot;/&gt;
+  &lt;item href=&quot;http://example.com/res2&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 2.1: A basic Inventory</p>
+<!--/EXAMPLE:ex_2_1_1.xml-->
+
+
+<p>
+        The Source can provide additional information in the Inventory to
+        help the Destination with optimizing the process of collecting
+        content and verifying the accuracy of the collected content. For example,
+        when the Source expresses the datetime of the most recent modification
+        for a resource, a Destination can determine whether or not it already
+        holds the current version, minimizing the number of HTTP requests it
+        needs to issue in order to remain up-to-date. When the Source also
+        conveys a hash for a specific bitstream, a Destination can verify whether
+        the process of obtaining it was successful.
+        <a href="#ex_2_1_2">Example 2.2</a> shows an Inventory in which such
+        additional information about each resource is conveyed in the
+        <code>modified</code> and <code>hash</code>
+        attributes of the respective <code>item</code> elements.
+                </p>
+
+<!--EXAMPLE:ex_2_1_2.xml-->
+<a name="ex_2_1_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;item href=&quot;http://example.com/res1&quot;
+        modified=&quot;2012-10-30T19:00:00Z&quot;
+        hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;/&gt;
+  &lt;item href=&quot;http://example.com/res2&quot;
+        modified=&quot;2012-10-30T18:00:00Z&quot;
+        hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 2.2: An Inventory with additional information</p>
+<!--/EXAMPLE:ex_2_1_2.xml-->
+
+<p>
+        In order to describe its changing content in a more timely manner, the
+        Source can increase the frequency at which it publishes an up-to-date
+        Inventory. However, changes may be so frequent or the size of the content
+        collection so vast that regularly updating a complete Inventory may
+        be impractical. In such cases, the Source can implement an additional
+        capability that focuses on communicating information about changes
+        only. To this end, ResourceSync introduces Change Lists. A Change List
+        only lists resources after they have changed, along with the nature of the
+        change (create, update, or delete) and the time that the change occurred. A
+        Destination can recurrently obtain a Change List from the Source,
+        compare the listed changes with those it already acted upon, and
+        process the remaining ones. Changes in a Change List are given in
+        temporal order, making it straight-forward for a Destination to determine when it should stop processing.
+        The longer that Change Lists are maintained by the Source, the better the odds are for a Destination to catch up
+        on changes it missed, for example, because it was off-line. 
+	</p>
+	<p>
+	In order
+        to allow a Destination to remain even more tightly synchronized with
+        the Source, ResourceSync also introduces a capability that consists of
+        a Source recurrently pushing Change Lists that describe the most
+        recent changes to a Destination via publish/subscribe technology. <a
+                href="#ex_2_1_3">Example 2.3</a> shows a Change List that lists two
+        resource changes, one an update and the other a deletion, as can be
+        seen from the value of the <code>change</code> attribute of the
+        <code>item</code> element. The example also shows the use of the
+        <code>modified</code> attribute to convey the time of the changes. Note that the Change List
+        is ordered on the basis of this temporal information.
+</p>
+
+<!--EXAMPLE:ex_2_1_3.xml-->
+<a name="ex_2_1_3"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;item href=&quot;http://example.com/res2.pdf&quot;
+        change=&quot;updated&quot;
+        modified=&quot;2012-10-31T04:20:00Z&quot;/&gt;
+  &lt;item href=&quot;http://example.com/res3.tiff&quot;
+        change=&quot;deleted&quot;
+        modified=&quot;2012-10-31T02:10:00Z&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 2.3: A Change List</p>
+<!--/EXAMPLE:ex_2_1_3.xml-->
+
+<p>A Destination can obtain the Source's data by issuing HTTP GET requests against each resource URI listed in an Inventory. For
+large Inventories, issuing all of these requests may be cumbersome. Therefore, ResourceSync introduces a capability that consists of a Source
+making all of its content available as a Dump. A Dump packages the Source's data in a ZIP file, along with a Manifest
+that describes the ZIP's constituent bitstreams. A Destination can retrieve such a Dump with a single HTTP GET request and unpack it.
+Since the Manifest also lists the URI the Source associates with each bitstream, a Destination is able to achieve
+the same result as obtaining the data using the links in an Inventory.
+<a href="#ex_2_1_4">Example 2.4</a> shows a Manifest that indicates that the Source's Dump contains two bitstreams.
+Note that the <code>path</code> attribute of the <code>item</code> element conveys the file system path where the bitstream will reside
+after unpacking the ZIP file (relative to where it was unpacked), whereas the <code>href</code> attribute conveys the URI associated with the bitstream at the Source.
+</p>
+
+<!--EXAMPLE:ex_2_1_4.xml-->
+<a name="ex_2_1_4"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/dump-manifest&quot;
+        modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;item href=&quot;http://example.com/res1&quot;
+        modified=&quot;2012-10-30T19:00:00Z&quot;
+        hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+        path=&quot;/resources/res1&quot;/&gt;
+  &lt;item href=&quot;http://example.com/res2&quot;
+        modified=&quot;2012-10-30T18:00:00Z&quot;
+        hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e&quot;
+        path=&quot;/resources/res2&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 2.4: A Manifest detailing the content of a Dump</p>
+<!--/EXAMPLE:ex_2_1_4.xml-->
+
+<!-- 
+Shouldn't be part of the walk through if there's no example (RS)
+
+<p>In essence, a Dump is a by-value manner of obtaining the Source's data whereas an Inventory is a by-reference approach to do so.
+Similarly, a Change List is a by-reference approach to obtain the Source's changes. ResourceSync also introduces a symmetrical capablity
+that provides a by-value means to obtain the changes, named a Change Dump.</p>
+-->
+
+<p>ResourceSync introduces a way for the Source to describe the capabilities that it supports.
+<a href="#ex_2_1_5">Example 2.5</a> shows an example of such a description that indicates the Source supports
+Inventory and Dump capabilities and their respective URIs. Note also the inclusion of
+a <code>link</code> element which points at a description of the data that the Source makes available.</p>
+
+<p>There are various ways for a Destination to discover the capabilities supported by the Source. The main discovery approach
+leverages the well-known URI specification [<a href="#ref-rfc5785">RFC5785</a>] and consists of the Source making the capability description
+available at <code>/.well-known/resourcesync.xml</code>.</p>
+
+<!--EXAMPLE:ex_2_1_5.xml-->
+<a name="ex_2_1_5"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        modified=&quot;2012-09-31T03:00:00Z&quot;&gt;
+  &lt;link href=&quot;http://example.com/info-about-source.xml&quot;/&gt;
+        rel=&quot;describedby&quot;
+        type=&quot;application/xml&quot;
+  &lt;item href=&quot;http://example.com/inventory.xml&quot;
+        rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        type=&quot;application/xml&quot;
+  &lt;item href=&quot;http://example.com/dump.zip&quot;
+        rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        type=&quot;application/zip&quot;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 2.5: A description of the ResourceSync capabilities of a Source</p>
+<!--/EXAMPLE:ex_2_1_5.xml-->
+
+<p style="font-size: 130%; color: #CC0000; padding: 2ex">...[sections omitted]...</p>
+
+<h2>3. <a name="ReSyncDocFormat">ResourceSync Document Format</a></h2>
+<p>
+In order to convey information pertaining to resources that play a role in the ResourceSync framework, an
+XML-based document format is introduced that is consistently used for a variety of purposes.
+The document format is illustrated in <a href="#ex_3_1">Example 3.1</a>. All elements are in the ResourceSync XML Namespace and can have attributes.
+The attributes defined in this specification are in the
+ResourceSync XML Namespace. They are listed in <a href="#elem_intro_tab">Table 3.1</a> and their meaning is detailed below.
+The <code>link</code> element as well as several of the ResourceSync attributes have namesakes introduced in other
+specifications and in those cases inherit the semantics defined there; the &quot;RFC&quot; column of <a href="#elem_intro_tab">Table 3.1</a> refers to those specifications.
+Communities can introduce
+additional attributes when needed but must use an XML Namespace other than the ResourceSync one for them.
+</p>
+
+<a name="ex_3_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync xmlns="http://www.openarchives.org/rs/"&gt;
+   &lt;link/&gt;
+   &lt;item&gt;
+     &lt;link/&gt;
+     &lt;link/&gt;
+   &lt;/item&gt;
+   &lt;item&gt;
+     ...
+   &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 3.1: Elements used in the ResourceSync Document Format</p>
+
+<p>The overall structure of the ResourceSync document format is as follows:</p>
+<ul>
+<li><code>resync</code> - The root element of a ResourceSync document; it has two mandatory attributes:
+<ul>
+<li><code>rstype</code> - The value of the attribute conveys the nature of the document, e.g. whether the document is an Inventory, a Change List, a Manifest, etc.
+Defined values are the URIs listed in <a href="#tab_A_1">Table A 1</a> of Appendix A.</li>
+<li><code>modified</code> - The value of the attribute is the last modification time of the document, expressed as a <a href="#w3c-datetime">W3C Datetime</a>;
+the use of a complete date and time expressed in UTC using the format
+<code>YYYY-MM-DDThh:mm:ss[.s]Z</code> is recommended.</li>
+</ul></li>
+<li><code>link</code> - The <code>resync</code> element can have one or more <code>link</code> child elements, each used to support discovery of another document, 
+for example, the description of a Source's capabilities.
+The URI of such document is provided in a mandatory <code>href</code> attribute. The <code>rel</code> attribute to express a relationship is also mandatory.
+Other attributes can be used, such as <code>type</code> to express the media type of the document.</li>
+<li><code>item</code> - The <code>resync</code> element can have one or more <code>item</code> child elements, each used to convey information about a
+resource that plays a role in the ResourceSync framework. An <code>item</code> element can have several attributes. The ones defined in the ResourceSync XML Namespace are:
+<ul>
+<li><code>href</code> - Conveys the URI of the resource that plays a role in the ResourceSync framework.</li>
+<li><code>rstype</code> - When the attribute is not used, this signifies that the resource with the URI provided in <code>href</code>
+is subject to synchronization. When the attribute is used, its value indicates the nature of
+that resource, e.g. whether it is an Inventory, a Change List, a Manifest, etc. Defined values are the URIs listed in <a href="#tab_A_1">Table A 1</a>.</li>
+<li><code>modified</code> - The value of the attribute is the last modification time of the resource, expressed as a <a href="#w3c-datetime">W3C Datetime</a> as described above.</li>
+<li><code>change</code> - The value of the attribute conveys the type of change (create, update, delete) that a resource underwent. This attribute is used in
+<a href="#ChangeLists">Change Lists</a> and <a href="#ChangeDumpManifest">Change Dump Manifests</a>.</li>
+<li><code>hash</code> - The value of the attribute conveys fixity information for a resource representation returned when the URI in the <code>href</code> attribute is dereferenced.
+The attribute value is expressed in the form of a whitespace-delimited list of hash values.
+Each hash value is represented by a hex-encoded digest and is preceeded by a token that identifies the utilized hash algorithm, e.g. <code>md5:</code>, <code>sha-256:</code>.</li>
+<li><code>length</code> - The value of the attribute conveys the content length of a resource representation returned when the URI in the <code>href</code> attribute is dereferenced.
+The value of the <code>length</code> attribute should be equal to the value of the <code>Content-Length</code> header in the HTTP response
+and must be computed as defined in <a href="#ref-rfc2616">RFC 2616, Sec. 4.4</a>.
+</li>
+<li><code>etag</code> - The value of the attribute conveys the etag of a resource representation returned when the URI in the <code>href</code> attribute is dereferenced.</li>
+<li><code>type</code> - The value of the attribute conveys the media type of a resource representation returned when the URI in the <code>href</code> attribute is dereferenced.
+Registered values are listed in the <a href="http://www.iana.org/assignments/media-types/index.html">IESG MIME-Type registry</a>.</li>
+<li><code>path</code> - The attribute is only used in <a href="#DumpManifest">Dump Manifests</a> and <a href="#ChangeDumpManifest">Change Dump Manifests</a>.
+Its value conveys the file path where a bitstream associated with the URI expressed in the <code>href</code> attribute will be available after unpacking the Dump or Change Dump, respectively.
+The path is expressed relative to the directory where the unpacking occurs.</li>
+</ul></li>
+<li><code>link</code> - An <code>item</code> element can have one or more <code>link</code> child elements to point at related resources, such as
+a copy on a mirror site, a prior version of the resource, etc. (see Linking to Related Resources in <a href="#SourcePers">Section 2.2.1</a>).
+The URI of the related resource is provided in a mandatory <code>href</code> attribute and the relationship is expressed in the mandatory <code>rel</code> attribute. 
+Other attributes defined by ResourceSync that can be used are <code>modified</code>, <code>hash</code>, <code>length</code>, <code>etag</code>, <code>type</code>, and 
+<code>path</code> and their use is as described above.
+</li>
+</ul>
+
+<p><a href="#elem_intro_tab">Table 3.1</a> lists the elements of the ResourceSync document format and for each shows the attributes in the ResourceSync XML Namespace
+that can be used with them. The  &quot;RFC&quot; column refers to the specification where a namesake attribute was introduced from which the ResourceSync attributes inherits
+its semantics. A mark in the &quot;Representation&quot; column for an attribute indicates that it can only be used when a specific representation of a resource is concerned,
+whereas a mark in the &quot;Resource&quot; column indicates it is usable for a resource in general.</p>
+
+
+<a name="elem_intro_tab"></a>
+<table class="elem_intro-table">
+ <tbody>
+ <tr class="top">
+  <th class="left">Element/Attribute</th><th>RFC</th><th>Resource</th><th>Representation</th>
+ </tr>
+ <tr class="odd">
+  <td class="left"><b><code>&lt;resync&gt;</code></b></td><td>this specification</td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>rstype</code></td><td>this specification</td><td></td><td></td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;link&gt;</code></b></td><td><a href="#ref-rfc4287">4287</a></td><td></td><td></td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td><a href="#ref-rfc4287">4287</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td><a href="#ref-rfc4287">4287</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;item&gt;</code></b></td><td>this specification</td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rstype</code></td><td>this specification</td><td></td><td></td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td><a href="#ref-rfc4287">4287</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>change</code></td><td>this specification</td><td>X</td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>hash</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>length</code></td><td><a href="#ref-rfc4287">4287</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>etag</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td><a href="#ref-rfc4287">4287</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>path</code></td><td>this specification</td><td>X</td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;link&gt;</code></b></td><td><a href="#ref-rfc4287">4287</a></td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td><a href="#ref-rfc4287">4287</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td><a href="#ref-rfc4287">4287</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>hash</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>length</code></td><td><a href="#ref-rfc4287">4287</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>etag</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td><a href="#ref-rfc4287">4287</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>path</code></td><td>this specification</td><td>X</td><td>X</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 3.1: Elements and associated attributes defined for the ResourceSync document format</p>
+
+
+<h2>4. <a name="DescCon">Describing Content - Inventories</a></h2>
+
+<p>A Source may publish a description of its resources in order to allow Destinations to keep track of the state of its data. This information enables
+a Destination to make a copy of all or part of the data, or to update a local copy to remain synchronized with changes at a Source.
+</p>
+
+<h3>4.1. <a name="Inventory">Inventories</a></h3>
+<p>
+To list all of the resources provided by a Source the notion of an <strong>Inventory</strong> is introduced for the ResourceSync framework.
+An Inventory reflects a snapshot of all resources by means of a list of URIs at one particular point in time that are made available by the Source for
+synchronization.
+</p>
+
+<p>
+The <code>rstype</code> that identifies an Inventory is shown below.
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/inventory&quot;</span>
+</pre>
+</div>
+<p>
+Besides the mandatory <code>resync</code> root element with its <code>rstype</code> and <code>modified</code> attributes,
+an Inventory must have at least one <code>item</code> element with an <code>href</code> attribute.
+An example Inventory with two resources is shown in <a href="#ex_4_1">Example 4.1</a>. The elements and attributes introduced in
+<a href="#ReSyncDocFormat">Section 3</a> can be applied here.
+</p>
+<p>
+With the location information, a Destination can retrieve representations from the listed resources. 
+The addition of the last modification information allows a client to check for updates without accessing each resource individually.
+A Destination may compare the last modification time with that of a local copy and thus determine whether there has been a change
+and perhaps new content should be downloaded.
+</p>
+<p>
+All ResourceSync documents contain a top level <code>link</code> element pointing to the capabilities document (see <a href="#AdvCaps">Section 11</a>).
+This supports a Destination in discovering all capabilities offered by a Source.
+</p>
+
+<a name="ex_4_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/inventory&quot;</span> modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/datasets/capabilities-index.xml&quot;/&gt;
+  &lt;item <span class="rs">href</span>=&quot;http://example.com/res1&quot;
+        <span class="rs">modified</span>=&quot;2012-10-30T19:00:00Z&quot;
+        <span class="rs">hash</span>=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+        <span class="rs">length</span>=&quot;8876&quot;
+        <span class="rs">etag</span>=&quot;114c12b-213f-4ccb066bfd140&quot;
+        <span class="rs">type</span>=&quot;text/html&quot;/&gt;
+  &lt;item href=&quot;http://example.com/res2&quot;
+        modified=&quot;2012-10-30T18:00:00Z&quot;
+        hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e sha-256:854f61290e2e197a11bc91063afce22e43f8ccc655237050ace766adc68dc784&quot;
+        length=&quot;14599&quot;
+        etag=&quot;114c070-21b5-4ca7e085f5c80&quot;
+        type=&quot;application/pdf&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 4.1: An Inventory</p>
+
+<h3>4.2. <a name="InventoryIndex"></a>Inventory Index</h3>
+<p>
+In the simplest case, the snapshot of resources conveyed by an Inventory is represented in one file.
+However, if the Inventory is too large a Source can decide to split it and use an <b>Inventory Index</b> to refer
+to the individual parts.
+The union of the Inventory parts forms the entire Inventory. If needed, Inventory Indexes can be nested.
+However, it is important to note that an Inventory, regardless of whether it is represented as an individual file or as an Index with
+pointers to Inventory parts, represents one and only one state of a Source's data.
+</p>
+<p>
+The <code>rstype</code> for an Inventory Index is shown below.
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/inventory-index&quot;</span>
+</pre>
+</div>
+<p>
+The structure of an Inventory Index is shown in <a href="#ex_4_2">Example 4.2</a>.
+Since its <code>item</code> elements do not point to resources subject to synchronization, they must have an <code>rstype</code>
+attribute.
+All optional Inventory attributes introduced in <a href="#ReSyncDocFormat">Section 3</a> can be applied here too. Note, however, that the
+last modification datetime will be identical for all linked Inventories and Inventory Indexes.
+</p>
+<a name="ex_4_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/inventory-index&quot;</span> modified=&quot;2012-10-11T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/datasets/capabilities-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory-part3.xml&quot;
+        modified=&quot;2012-09-30T01:00:00Z&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory-part2.xml&quot;
+        modified=&quot;2012-09-30T01:00:00Z&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory-index-1.xml&quot;
+        modified=&quot;2012-09-30T01:00:00Z&quot;
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 4.2: An Inventory Index</p>
+
+
+<p>
+<a href="#ex_4_2">Example 4.2</a> points to two parts of the Inventory and one nested Index which is identified by the URI <code>http://example.com/inventory-index-1.xml</code>.
+This Index is displayed in <a href="#ex_4_3">Example 4.3</a> as it contains two references to parts of the Inventory.
+Note that it further contains a second top level <code>link</code> element with a reference &quot;up&quot; to its parent Inventory Index indicated by the link relation type
+<code>up</code>. This link is meant to ease navigation for Destinations through Inventory Indexes. Their adoption is strongly recommended.  
+</p>
+
+<a name="ex_4_3"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/inventory-index&quot; modified=&quot;2012-09-30T01:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/datasets/capabilities-index.xml&quot;/&gt;
+  &lt;link <span class="rs">rel=&quot;up&quot;</span>
+        href=&quot;http://example.com/datasets/inventory-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory-part1_2.xml&quot;
+        modified=&quot;2012-09-30T01:00:00Z&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory-part1_1.xml&quot;
+        modified=&quot;2012-09-30T01:00:00Z&quot;
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 4.3: An Inventory Index with link &quot;up&quot;</p>
+
+
+<h2>5. <a name="PackCon">Packaging Content - Dumps</a></h2>
+
+<p>
+To reduce the number of HTTP GET requests necessary to transfer content, a Source can publish a <strong>Dump</strong>
+which packages its data.
+</p>
+
+<h3>5.1. <a name="Dump">Dumps</a></h3>
+<p>
+A Dump packages the Source's data in a file, along with a Manifest that describes the file's constituent bitstreams.
+The Dump represents a Source's state at one particular point in time.
+It may be used to transfer resources from a Source in bulk, without a Destination having to request the resources separately.
+A typical scenario for a Destination to obtain a Dump is to initiate a Baseline Synchronization.
+</p>
+<p>
+The default Dump format in the ResourceSync framework is the
+<a href="http://en.wikipedia.org/wiki/Zip_(file_format)">Zip file format</a>.
+However, communities may establish their own Dump format. In this case they would have to mint their own values for the
+<code>rstype</code> attribute. 
+The description below refers to the ResourceSync Zip file format based Dump.
+</p>
+<p>
+The appropriate <code>rstype</code> that identifies a Dump is:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/dump&quot;</span>
+</pre>
+</div>
+
+<h4>5.1.1. <a name="DumpManifest">Dump Manifest</a></h4>
+<p>
+The <code>rstype</code> for a Dump Manifest is shown below.
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/dump-manifest&quot;</span>
+</pre>
+</div>
+
+<p>
+Each Dump must contain a <code>/manifest.xml</code> file detailing the content of the Dump.
+The Manifest needs to be located at the top level of the Dump.
+Each bitstream that is part of the Dump must be described within an <code>item</code> element and its location within the
+Dump must be indicated by the value of the <code>path</code> attribute.
+The path must start with a slash (/) as demonstrated in the example <code>manifest.xml</code> file shown below.
+</p>
+<p>
+Additional elements and attributes introduced in <a href="#ReSyncDocFormat">Section 3</a> can be applied.
+</p>
+<a name="ex_5_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/dump-manifest&quot;</span> modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/datasets/capabilities-index.xml&quot;/&gt;
+  &lt;item href=&quot;http://example.com/res1&quot;
+        modified=&quot;2012-10-30T19:00:00Z&quot;
+        hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+        length=&quot;8876&quot;
+        etag=&quot;114c12b-213f-4ccb066bfd140&quot;
+        type=&quot;text/html&quot;
+        <span class="rs">path=&quot;/resources/res1&quot;</span>/&gt;
+  &lt;item href=&quot;http://example.com/res2&quot;
+        modified=&quot;2012-10-30T18:00:00Z&quot;
+        hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e sha-256:854f61290e2e197a11bc91063afce22e43f8ccc655237050ace766adc68dc784&quot;
+        length=&quot;14599&quot;
+        etag=&quot;114c070-21b5-4ca7e085f5c80&quot;
+        type=&quot;application/pdf&quot;
+        <span class="rs">path=&quot;/resources/res2&quot;</span>/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 5.1: A Dump Manifest</p>
+
+
+<h3>5.2. <a name="DumpIndex"></a>Dump Index</h3>
+<p>
+A Source can choose to split the Dump into parts and use a <b>Dump Index</b> to point to the parts of the Dump.
+The union of the Dump parts form the entire Dump and represents the state of a Source's data at the time the Dump was created.
+Dump Indexes can be nested.
+</p>
+<p>
+A Dump Index can be identified by its <code>rstype</code>:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/dump-index&quot;</span>
+</pre>
+</div>
+<a name="ex_5_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/dump-index&quot;</span> modified=&quot;2012-10-11T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/datasets/capabilities-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        href=&quot;http://example.com/dump-part3.zip&quot;
+        modified=&quot;2012-10-03T07:00:00Z&quot;
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        href=&quot;http://example.com/dump-part2.zip&quot;
+        modified=&quot;2012-10-03T07:00:00Z&quot;
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        href=&quot;http://example.com/dump-index-1.xml&quot;
+        modified=&quot;2012-10-03T07:00:00Z&quot;
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 5.2: A Dump Index</p>
+
+
+
+
+<h2>6. <a name="DesChanges">Describing Changes</a></h2>
+
+<p>A Source may hold on to changes to its content over a period of time. If it supports communication of these changes it enables Destinations to 
+efficiently follow them and it therefore provides means for incremental synchronization.
+</p>
+
+<h3>6.1. <a name="ChangeLists">Change Lists</a></h3>
+<p>
+A <strong>Change List</strong> is a document that contains the description of all changes to resources that a Source wishes to 
+communicate to Destinations. 
+If a resource underwent multiple changes, it can be listed multiple times in a Change List.
+It is up to the Source to define the frequency with which it publishes Change Lists and also what 
+time period the Change List covers. A Source may choose to publish only the <i>n</i> most recent changes or only the changes from
+the last <i>m</i> hours.
+</p>
+<p>
+A Change List must be in descending temporal order, in particular, the most recently changed resource must be listed on top of the Change List while the
+least recently changed resource must be listed at the end of the document.
+</p>
+<p>
+The <code>rstype</code> for a Change List is:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/changelist&quot;</span>
+</pre>
+</div>
+<p>
+Each changed resource is described within an <code>item</code> element which has to have a <code>href</code> attribute pointing to the location of the
+changed resource as well as a <code>change</code> attribute indicating the type of change of the resource.
+<a href="#tab_6_1">Table 6.1</a> summarizes all change types supported in the ResourceSync framework.
+</p>
+
+<a name="tab_6_1"></a>
+<table class="elements-table">
+ <tbody><tr class="top">
+  <th class="change">Value</th><th class="desc1">Description</th>
+ </tr>
+ <tr class="odd">
+   <td class="change"><code>created</code></td><td class="desc">express a creation</td>
+ </tr>
+ <tr class="even">
+   <td class="change"><code>updated</code></td><td class="desc">express an update</td>
+ </tr>
+ <tr class="odd">
+   <td class="change"><code>deleted</code></td><td class="desc">express a deletion</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 6.1: ResourceSync supported <code>change</code> attribute values</p>
+
+<p>
+The <code>modified</code> attribute to each <code>item</code> element is mandatory in a Change List. It conveys the datetime of the change. 
+Its value can be used by Destinations to determine if a particular change has already been processed. A Destination can walk through the 
+Change List until it reaches a change that it has already seen and start processing the new changes in order of their occurrence.
+Other elements and attributes introduced in <a href="#ReSyncDocFormat">Section 3</a> can be applied in a Change List too.
+</p>
+<p>
+<a href="#ex_6_1">Example 6.1</a> shows the content of a Change List with changes to three resources. The example shows one creation, 
+one update, and one deletion and the changes are in descending temporal order.
+</p>
+<a name="ex_6_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/changelist&quot;</span> modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item <span class="rs">change=&quot;created&quot;</span> href=&quot;http://example.com/res1.html&quot;
+        modified=&quot;2012-10-31T<span class="rs">07:30:00Z</span>&quot;/&gt;
+  &lt;item <span class="rs">change=&quot;updated&quot;</span> href=&quot;http://example.com/res2.pdf&quot;
+        modified=&quot;2012-10-31T<span class="rs">04:20:00Z</span>&quot;/&gt;
+  &lt;item <span class="rs">change=&quot;deleted&quot;</span> href=&quot;http://example.com/res3.tiff&quot;
+        modified=&quot;2012-10-31T<span class="rs">02:10:00Z</span>&quot;/&gt;
+&lt;/resync&gt;
+</pre>    
+</div>
+<p class="caption">Example 6.1: Change List describing three changed resources: a creation, an update, and a deletion.</p>
+
+<p>
+A unique identifier for each change might be useful in some use cases. No dedicated change-identifying element is defined in this specification.
+However, the combination of the values of the <code>href</code> and of the <code>modified</code> attributes is recommended 
+for this purpose. It is important to note that in the ResourceSync framework the Source is responsible for providing a sufficient
+granularity for the <code>modified</code> value to ensure that this combination results in a truly unique identifier.
+</p>
+
+
+<h3>6.2. <a name="ChangeListIndex"></a>Change List Index</h3>
+<p>
+A Change List informs about changes to resources over a period of time. The Source defines what that time span is and hence can control how large
+a Change List gets. However, if the Source decides that a Change List is too large and needs to be split,
+it can introduce a <b>Change List Index</b>.
+The Index points to the parts of the Change List. For example, a Source that offers a Change List that covers resource changes
+for an entire week may decide to split the entire Change List into seven parts, one per day.
+Change List Indexes can be nested.
+</p>
+<p>
+This implies that for a Change List Index each value of the <code>modified</code> attribute associated with a pointer to a part of the Change List
+is likely to be different. All pointers in Change List Indexes have to be in descending temporal order. The datetime can be used by Destinations
+to determine if new changes have to be processed. 
+</p>
+<p>
+The appropriate <code>rstype</code> for a Change List Index is:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/changelist-index&quot;</span>
+</pre>
+</div>
+<p>
+<a href="#ex_6_2">Example 6.2</a> shows a Change List Index that points to various parts of the Change List.
+The example shows three pointers to individual parts of the Change List and one pointer to yet another Change List Index, all of which were
+created on four consecutive days.
+</p>
+
+<a name="ex_6_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/changelist-index&quot;</span> modified=&quot;2012-10-10T20:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist-10.xml&quot;
+        <span class="rs">modified=&quot;2012-10-10T20:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist-09.xml&quot;
+        <span class="rs">modified=&quot;2012-10-09T20:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist-08.xml&quot;
+        <span class="rs">modified=&quot;2012-10-08T20:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist-index-07.xml&quot;
+        <span class="rs">modified=&quot;2012-10-07T20:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 6.2: A Change List Index</p>
+
+
+<p>
+<a href="#ex_6_3">Example 6.3</a> shows the Change List Index that is linked to from the Change List Index seen above in 
+<a href="#ex_6_2">Example 6.2</a> and identified by <code>http://example.com/changelist-index-07.xml</code>. 
+Besides the link to the Source's capabilities, it also contains a hierarchical link &quot;up&quot; to its parent index indicated by the link relation type
+<code>up</code>. These links are meant to ease navigation for Destinations through Change Lists and their adoption is therefore strongly recommended.
+</p>
+
+<a name="ex_6_3"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist-index&quot; modified=&quot;2012-10-07T20:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;link <span class="rs">rel=&quot;up&quot;</span> 
+        href=&quot;http://example.com/dataset/changelist-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist-07-part3.xml&quot;
+        <span class="rs">modified=&quot;2012-10-07T18:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist-07-part2.xml&quot;
+        <span class="rs">modified=&quot;2012-10-07T12:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist-07-part1.xml&quot;
+        <span class="rs">modified=&quot;2012-10-07T06:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 6.3: A Change List Index</p>
+
+
+
+
+<h2>7. <a name="PackConChanges">Packaging Content Changes - Change Dumps</a></h2>
+<p>
+Upon recognition of a change a Destination can obtain the changed resource by sending an HTTP GET request against the provided URI. However, the Source may
+provide <strong>Change Dumps</strong>.
+</p>
+
+
+<h3>7.1. <a name="ChangeDump">Change Dumps</a></h3>
+<p>
+A <strong>Change Dump</strong> contains bitstreams associated with resource changes.
+Similar to Change Lists, it is up to the Source to determine the time period a Change Dump covers or how many changes it comprises.
+Its default format is the ZIP file format, previously introduced for Dumps.
+</p>
+<p>
+A Change Dump has the <code>rstype</code>:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/changedump&quot;</span>
+</pre>
+</div>
+
+<h4>7.1.1. <a name="ChangeDumpManifest">Change Dump Manifest</a></h4>
+<p>
+A Change Dump has to include a Change Dump Manifest named <code>/manifest.xml</code> which describes the bitstream associated with each resource change.
+The Manifest has to be packaged at the top level of the Change Dump.
+Each bitstream is described in an <code>item</code> element and the location of its associated resource in the Change Dump must be provided
+with the <code>path</code> attribute. The <code>change</code> and the <code>modified</code> attributes to the <code>item</code> elements are also 
+mandatory in a Change Dump. 
+Change Dump Manifests need to be in descending temporal order.
+Further information about the change can be indicated by elements and attributes introduced in <a href="#ReSyncDocFormat">Section 3</a>.
+</p>
+<p>
+A Change Dump Manifest has the <code>rstype</code>:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/changedump-manifest&quot;</span>
+</pre>
+</div>
+<p>
+A simple Change Dump Manifest is shown in <a href="#ex_7_1">Example 7.1</a> below. It shows a total of four changes to three resources. 
+The resource <code>http://example.com/res1.html</code> is included twice. It was first created and later on updated, which accounts for two
+changes.
+</p>
+<a name="ex_7_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/changedump-manifest&quot;</span> modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res1.html&quot;
+        modified=&quot;2012-10-30T19:00:00Z&quot;
+        hash=&quot;md5:0988647082c8bc51778894a48ec3b576&quot;
+        length=&quot;5426&quot;
+        etag=&quot;80102-20b-4b4247135838c&quot;
+        type=&quot;text/html&quot;
+        <span class="rs">path=&quot;/changes/res1.html&quot;</span>/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res2.pdf&quot;
+        modified=&quot;2012-10-30T18:00:00Z&quot;
+        hash=&quot;md5:f906610c3d4aa745cb2b986f25b37c5a sha-256:f138185cddef488264a0323aee56e7647e89cd7a4d6e45ba28b3be26234a6d09&quot;
+        length=&quot;38297&quot;
+        etag=&quot;415706-1b2a-4be234cb66fc0&quot;
+        type=&quot;application/pdf&quot;
+        <span class="rs">path=&quot;/changes/res2.pdf&quot;</span>/&gt;
+  &lt;item change=&quot;deleted&quot; href=&quot;http://example.com/res3.tiff&quot;
+        modified=&quot;2012-10-30T09:10:00Z&quot;/&gt;
+  &lt;item change=&quot;created&quot; href=&quot;http://example.com/res1.html&quot;
+        modified=&quot;2012-10-28T11:00:00Z&quot;
+        hash=&quot;md5:1c1b0e264fa9b7e1e9aa6f9db8d6362b&quot;
+        length=&quot;4339&quot;
+        etag=&quot;92304-29g-5y3329684638c&quot;
+        type=&quot;text/html&quot;
+        <span class="rs">path=&quot;/changes/res1.html&quot;</span>/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 7.1: A Change Dump Manifest</p>
+
+
+<h3>7.2. <a name="ChangeDumpIndex"></a>Change Dump Index</h3>
+<p>
+Change Dump Indexes are conceptually similar to Change List Indexes. If a Source decides a Change Dump gets too large and needs to
+be split, it can introduce a Change Dump Index with pointers to parts of the Change Dump. Change Dump Indexes can be nested as well.
+</p>
+<p>
+A Change Dump Index has the following <code>rstype</code>:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/changedump-index&quot;</span>
+</pre>
+</div>
+<p>
+An example for a Change Dump Index is provided below. It contains a link to the capabilities document and three pointers to Change Dumps,
+two are which are individual zip files and one is yet another Change Dump Index. The Change Dump Index linked here 
+(<code>http://example.com/changedump-index-08.xml</code>) would also contain a link &quot;up&quot; to this Index, as seen in <a href="#ex_6_3">Example 6.3</a>.
+</p>
+
+<a name="ex_7_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/changedump-index&quot;</span> modified=&quot;2012-10-11T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changedump&quot;
+        href=&quot;http://example.com/changedump-10.zip&quot;
+        modified=&quot;2012-10-10T01:00:00Z&quot;
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changedump&quot;
+        href=&quot;http://example.com/changedump-09.zip&quot;
+        modified=&quot;2012-10-09T01:00:00Z&quot;
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changedump&quot;
+        href=&quot;http://example.com/changedump-index-08.xml&quot;
+        modified=&quot;2012-10-08T01:00:00Z&quot;
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 7.2: A Change Dump Index</p>
+
+
+
+<h2>8. <a name="PushingChanges">Pushing Changes</a></h2>
+<!--A Source may publish a description of changes for Destinations to pull, or may use XMPP PubSub or 
+qHTTP Callback to push changes to subscribing Destinations.-->
+
+<p>
+In <a href="#DesChanges">Section 6</a> a Source publishes Change Lists at a self-defined frequency. A Destination periodically
+needs to check for updates by pulling the Change List. This setup may imply a latency since the publication interval is
+usually unknown to the Destination.
+</p>
+<p>
+For scenarios where a latency is unacceptable or Destinations simply can not continuously
+pull for Change Lists, push-based approaches are featured in the ResourceSync framework.
+These approaches are suitable, for example, for environments with high frequency content changes 
+at the Source's end and a high synchronization demands at the Destination's end.
+Since descriptions of changes can rapidly and continuously be pushed to Destinations, the latency inflicted by the Destination's 
+&quot;guessing&quot; of when to pull for a new Change List is eliminated.
+</p>
+<p>
+Two push based approaches are described below: the first is based on XMPP and the second is based on HTTP Callback.
+</p>
+
+<h3>8.1. <a name="xmpp">XMPP</a></h3>
+<p>
+The <a href="http://xmpp.org/">Extensible Messaging and Presence Protocol (XMPP)</a>,
+more specifically, its <a href="http://xmpp.org/extensions/xep-0060.html">PubSub extension</a>,
+allows a Source to support subscriptions to Change Lists communicated via XMPP messaging infrastructure. 
+</p>
+
+<p>
+An XMPP message sent by a Source is encapsulated in an <code>xmpp:iq</code> element. This element contains, amongst
+others, the address of the sender and the recipient. The protocol's PubSub extension adds the <code>xmpp:pubsub</code> and 
+the <code>xmpp:publish</code> element. The latter contains the name of the XMPP PubSub node the message is published 
+to.
+</p>
+<p>
+The body of the XMPP PubSub message, which is a regular Change List, is wrapped in an <code>xmpp:item</code> element. 
+</p>
+<p>
+<a href="#ex_8_1">Example 8.1</a> shows four descriptions of changes wrapped in a XMPP PubSub message. It is up to the Source to 
+decide whether to bundle more than one description of a change into one XMPP PubSub message (as seen below) or to send 
+one message per change in which case the encapsulating <code>resync</code> would only include one <code>item</code> element.
+</p>
+<!--  new xmpp stanza sender view -->
+<a name="ex_8_1"></a>
+<div class="exampleInner">
+<pre>&lt;xmpp:iq from="sender@example.com" type="set" to="destination.com" id="liAJUz3S"
+         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+         xmlns:xmpp="http://jabber.org/protocol/pubsub"
+         xmlns:rs="http://www.openarchives.org/rs/terms/"&gt;
+   &lt;xmpp:pubsub&gt;
+      &lt;xmpp:publish node="PubSub_NodeName"&gt;
+         &lt;xmpp:item id="3294"&gt;
+            &lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+               &lt;item change=&quot;created&quot; href=&quot;http://example.com/res1.html&quot;
+                     modified=&quot;2012-10-31T08:51:00Z&quot;/&gt;
+               &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res2.pdf&quot;
+                     modified=&quot;2012-10-31T08:27:00Z&quot;/&gt;
+               &lt;item change=&quot;deleted&quot; href=&quot;http://example.com/res3.tiff&quot;
+                     modified=&quot;2012-10-31T07:43:00Z&quot;/&gt;
+               &lt;item change=&quot;deleted&quot; href=&quot;http://example.com/res4.png&quot;
+                     modified=&quot;2012-10-31T07:03:00Z&quot;/&gt;
+            &lt;/resync&gt;
+         &lt;/xmpp:item&gt;
+      &lt;/xmpp:publish&gt;
+   &lt;/xmpp:pubsub&gt;
+&lt;/xmpp:iq&gt;
+</pre>    
+</div>
+<p class="caption">Example 8.1: Push-based XMPP message containing a Change List.</p>
+
+<p>
+The <code>xmpp:item</code> element has an identifier that is not part of the ResourceSync framework.
+It is used within XMPP to distinguish between messages and, for example, to purge individual 
+(persistent) messages from an XMPP server.
+</p>
+
+<h3>8.2. <a name="callback">HTTP Callback</a></h3>
+
+<p>
+HTTP callback allows Sources to directly push Change Lists to registered Destinations
+without the need for other infrastructure.
+With this method a Source can push Change Lists to the specified URIs of registered Destinations.
+It is again up to the Source to push Change Lists containing descriptions of multiple changes (as seen below) 
+or only one change description.
+<a href="#ex_8_2">Example 8.2</a> shows four descriptions of changes communicated via the HTTP callback method.
+</p>
+
+<a name="ex_8_2"></a>
+<div class="exampleInner">
+<pre>&gt;&gt; Subscription Request &lt;&lt; 
+POST /subscribe HTTP/1.1
+Host: example.com
+
+callbackURI=http://aggregator.org/callback
+
+&gt;&gt; Change Notification &lt;&lt; 
+POST /callback HTTP/1.1
+Host: aggregator.org
+
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;created&quot; href=&quot;http://example.com/res1.html&quot;
+        modified=&quot;2012-10-31T08:51:00Z&quot;/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res2.pdf&quot;
+        modified=&quot;2012-10-31T08:27:00Z&quot;/&gt;
+  &lt;item change=&quot;deleted&quot; href=&quot;http://example.com/res3.tiff&quot;
+        modified=&quot;2012-10-31T07:43:00Z&quot;/&gt;
+  &lt;item change=&quot;deleted&quot; href=&quot;http://example.com/res4.png&quot;
+        modified=&quot;2012-10-31T07:03:00Z&quot;/&gt;
+&lt;/resync&gt;
+</pre>    
+</div>
+<p class="caption">Example 8.2: Push-based HTTP Callback method communicating a Change List.</p>
+
+
+<h2>9. <a name="LinkRelRes">Linking to Related Resources</a></h2>
+
+<h3>9.1. <a name="AltConTrans">Alternate Content Transfer</a></h3>
+
+<p>
+Certain scenarios may require a Source to offer alternate methods of content transfer.
+The following cases are recognized in the ResourceSync framework:
+</p>
+<ul>
+ <li>a Source provides content through a mirror location</li>
+ <li>a Source provides alternate representations of content</li>
+ <li>a Source only provides partial content i.e., the actual changes and not the entire changed resource</li>
+ <!--<li>a Source provides additddional information on an alternate interpretation of a given resource's URI.</li>-->
+ <li>a Source provides access to versions of resources</li>
+</ul>
+<p>
+In each of the scenarios the Source needs to provide additional information for resources that can be conveyed with the
+inclusion of the <code>link</code> element and attributes introduced in <a href="#ReSyncDocFormat">Section 3</a>.
+</p>
+<p>
+The following sections provide examples for each of the above mentioned scenarios.
+</p>
+
+<h4>9.1.1. <a name="MirCon">Mirrored Content</a></h4>
+<p>
+In case where a Source promotes a mirror location for its content, the <code>link</code> element must have the 
+relation type <code>duplicate</code> with the <code>href</code> attribute holding the URI of the resource's mirror location.
+</p>
+<p>
+<a href="#ex_9_1">Example 9.1</a> shows how a Source can convey information about mirror locations of a resource.
+Since the two locations in the below example point to duplicates of the resource specified in the
+<code>item</code> element, the values of all attributes, other than <code>href</code> and <code>modified</code>, are expected to be 
+identical and hence should be omitted from the <code>link</code> elements. 
+Even though the resources are duplicates, their last modified datetimes may vary between mirror locations.
+</p>
+<a name="ex_9_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res1&quot;
+        modified=&quot;2012-10-30T19:00:00Z&quot;
+        hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+        length=&quot;8876&quot;
+        etag=&quot;114c12b-213f-4ccb066bfd140&quot;
+        type=&quot;text/html&quot;
+    &lt;link <span class="rs">rel=&quot;duplicate&quot;</span> href=&quot;http://mirror1.example.com/res1&quot;
+          modified=&quot;2012-10-30T23:00:00Z&quot;/&gt;
+    &lt;link rel=&quot;duplicate&quot; href=&quot;http://mirror2.example.com/res1&quot;
+          modified=&quot;2012-10-30T21:20:00Z&quot;/&gt;
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 9.1: Alternate Content Transfer from a mirror site.</p>
+<p>
+This scenario is possible for Inventories and Change Lists (as displayed above).
+</p>
+
+<h4>9.1.2. <a name="AltRep">Alternate Representations</a></h4>
+<p>
+A resource, as it is subject to HTTP content negotiation, may have multiple representations available from different URIs. 
+For such cases and to express the notion of a specific versus a generic URI, the Source should use the relation type 
+<code>alternate</code> in the <code>link</code> elements.
+<a href="#ex_9_2">Example 9.2</a> shows how to promote a generic URI and also point to alternate representations
+of the resource that could be the result of HTTP content negotiation.
+</p>
+<a name="ex_9_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res3&quot;
+        modified=&quot;2012-10-31T14:00:00Z&quot;&gt;
+    &lt;link <span class="rs">rel=&quot;alternate&quot;</span> href=&quot;http://example.com/res3.html&quot;
+          modified=&quot;2012-10-31T14:00:00Z&quot;
+          <span class="rs">type=&quot;text/html&quot;</span>/&gt;
+    &lt;link rel=&quot;alternate&quot; href=&quot;http://example.com/res3.pdf&quot;
+          modified=&quot;2012-10-31T14:00:00Z&quot;
+          <span class="rs">type=&quot;application/pdf&quot;</span>/&gt;
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 9.2: Generic URI and alternates with specific URIs</p>
+<p>
+This scenario is possible for Inventories, Change Lists (as displayed above), Dump Manifests, as well as for Changes Dump Manifests.
+In the latter two cases, however, the <code>path</code> attribute should be added to the <code>link</code> element(s).
+</p>
+
+<p>
+<a href="#ex_9_3">Example 9.3</a> shows different resource representations with specific URIs only. 
+These representations are not subject to HTTP content negotiation but they do represent alternatives to the URI 
+of the <code>item</code> element.
+</p>
+<a name="ex_9_3"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/default.res3.html&quot;
+        modified=&quot;2012-10-31T14:00:00Z&quot;
+        type=&quot;text/html&quot;&gt;
+    &lt;link rel=&quot;alternate&quot; href=&quot;http://example.com/iphone.res3.html&quot;
+          modified=&quot;2012-10-31T14:00:00Z&quot;
+          type=&quot;text/html&quot;&gt;
+    &lt;link rel=&quot;alternate&quot; href=&quot;http://example.com/ipad.res3.html&quot;
+          modified=&quot;2012-10-31T14:00:00Z&quot;
+          type=&quot;text/html&quot;&gt;
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 9.3: Alternate resource representations with specific URIs</p>
+<p>
+This scenario is possible for Inventories, Change Lists (as displayed above), Dump Manifests, as well as for Changes Dump Manifests.
+In the latter two cases, however, the <code>path</code> attribute should be added to the <code>link</code> element(s).
+</p>
+
+<h4>9.1.3. <a name="PartCon">Partial Content</a></h4>
+<p>
+Scenarios exist where it is more efficient for a Destination to make available that part of a resource
+that has actually changed instead of the entire resource. Minor changes such as fixed typos in or minor additions
+to large resources, for example, may not justify the transfer of the entire document, especially if these kind of
+changes occur frequently. 
+</p>
+<p>
+The transfer of partial content can be advertised with a <code>link</code> element and the proper relation type as shown
+in <a href="#ex_9_4">Example 9.4</a>.
+The implementation of this capability is left up to the Source and implementation will be media type specific. 
+Whichever mechanism the Source uses, it needs to be understood by the Destination in order to complete the partial resource transfer.
+The mechanism to be used is specified in the <code>type</code> attribute.
+The below shows an example where the media type specific mechanism <code>application/json-patch</code> (introduced in
+<a href="http://tools.ietf.org/html/draft-pbryan-json-patch-04">JSON Patch</a>) is used.
+A Destination that understands this mechanism can now apply the partial content that is provided in the
+<code>href</code> attribute of the <code>link</code> child element to the resource identified by the URI in the 
+<code>href</code> attribute of the <code>item</code> element, of which it presumably has a local copy.
+</p>
+<a name="ex_9_4"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res1&quot;
+        hash=&quot;sha-256:f4OxZX_x_DFGFDgghgdfb6rtSx-iosjf6735432nklj&quot;
+        length=&quot;56778&quot;
+        modified=&quot;2012-10-30T21:40:00Z&quot;&gt;
+    &lt;link <span class="rs">rel=&quot;http://www.openarchives.org/rs/diff&quot;</span> 
+          href=&quot;http://www.example.com/res1-json-patch&quot;
+          hash=&quot;sha-256:f4OxZX_x_DFGFDgghgdfb6rtSx-iosjf6735432nklj&quot;
+          length=&quot;73&quot;
+          modified=&quot;2012-10-30T21:40:00Z&quot;
+          <span class="rs">type=&quot;application/json-patch&quot;</span>/&gt;
+  &lt;/item&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res2-full.tiff&quot;
+        hash=&quot;sha-256:f4OxZX_x_FO5LcGBSKHWXfwtSx-j1ncoSt3SABJtkGk&quot;
+        length=&quot;9788456778&quot;
+        modified=&quot;2012-10-30T13:50:00Z&quot;
+        type=&quot;image/tiff&quot;&gt;
+    &lt;link rel=&quot;http://www.openarchives.org/rs/diff&quot;
+          href=&quot;http://www.example.com/res2-diff&quot;
+          hash=&quot;sha-256:h986gT_t_87HTkjHYE76G558hY-jdfgy76t55sadJUYT&quot;
+          length=&quot;4533&quot;
+          modified=&quot;2012-10-30T13:50:00Z&quot;
+          <span class="rs">type=&quot;application/x-tiff-diff&quot;</span>/&gt;
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 9.4: Partial Content Transfer in a Change List.</p>
+<p>
+This scenario is only possible for Change Lists (as displayed above) and Changes Dump Manifests.
+If it is included in a Manifest, the <code>path</code> attribute must be added to the <code>link</code> element(s) since only 
+the changed part of the resource is actually included in the Change Dump.
+</p>
+
+<!--
+<h4>9.1.4. <a name="AltInt">Alternate Interpretation</a></h4>
+<p class="todo">needs work</p>
+<p>
+<a href="#ex_8_1_4">Example 8.1.4</a>
+</p>
+<a name="ex_8_1_4"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot;
+        modified=&quot;2012-10-01T16:20:00Z&quot;&gt;
+    &lt;link <span class="rs">rel=&quot;http://www.openarchives.org/rs/endpoint&quot;</span> href=&quot;http://example.com/sparql-endpoint&quot;/&gt;
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 8.1.4: Alternate content transfer from a SPARQL endpoint</p>
+
+
+<p class="todo">The only case where the <code>href</code> attribute is not mandatory in Change Lists. 
+It probably needs to be considered in Sections 3 and 6.
+</p>
+-->
+
+<h3>9.2. <a name="ResVers">Resource Versions</a></h3>
+<p>
+A Source may allow a Destination to obtain prior versions of resources. Where Destinations need to obtain all versions of a resource, not just
+the current one, this capability becomes very useful.
+</p>
+<p>
+In addition to having a generic URI that applies to all versions of a resource, a Source may mint a URI that is associated with each
+particular version. When communicating about the resource, its generic URI is provided in the <code>href</code> attribute of the <code>item</code> 
+element whereas the URI of the specific version of the resource (the historical content) can be provided using a <code>link</code> element that has 
+a relation type of &quot;memento&quot;. It is up to the Source to decide for how long the version resource remains accessible.
+</p>
+<p>
+A Source can further associate a TimeGate with the resource, as per the Memento protocol 
+[<a href="#Memento-Draft">Memento Internet Draft</a>].
+A TimeGate supports negotiation in the datetime dimensions to obtain a version of the
+resource as it existed at a specified moment in time, for example, the
+time provided in the <code>modified</code> attribute of the <code>item</code> element.
+The URI of the TimeGate associated with the resource can be provided using a
+<code>link</code> element that has a relation type of &quot;timegate&quot;. It is up to the
+Source to decide for how long version resources remains accessible.
+</p>
+
+<p>
+<a href="#ex_9_5">Example 9.5</a> shows a Change List with a link to a version of a resource as well as a link to a Timegate.
+Note that the values of the <code>hash, length, etag,</code> and <code>type</code> attributes are identical between the <code>item</code>
+element and the <code>link</code> element that points to the version.
+</p>
+<a name="ex_9_5"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; modified=&quot;2012-10-31T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; href=&quot;http://example.com/res1&quot;
+        modified=&quot;2012-10-30T19:00:00Z&quot;
+        hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+        length=&quot;8876&quot;
+        etag=&quot;114c12b-213f-4ccb066bfd140&quot;
+        type=&quot;text/html&quot;
+    &lt;link <span class="rs">rel=&quot;memento&quot;</span> href=&quot;http://example.com/20121001151000/res1&quot;
+        modified=&quot;2012-10-30T19:00:00Z&quot;
+        hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+        length=&quot;8876&quot;
+        etag=&quot;114c12b-213f-4ccb066bfd140&quot;
+        type=&quot;text/html&quot;
+    &lt;link <span class="rs">rel=&quot;timegate&quot;</span> href=&quot;http://example.com/timegate/http://example.com/res1&quot;/&gt; 
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>    
+</div>
+<p class="caption">Example 9.5: Links to a resource version and a Memento TimeGate.</p>
+
+
+
+
+
+<h2>10. <a name="ArchivedInvDumps"></a>Archiving Inventories and Dumps</h2>
+<p>
+<b>Archived Inventories</b> and <b>Archived Dumps</b> are supported to enable situations where a Source wants to provide historical snapshots of its resources.
+Both functionalities are implemented using the ResourceSync XML format to provide a list of pointers to previous versions of the snapshots.</p>
+<p>
+It is important to note that all Inventories/Dumps, in form of individual Inventories/Dumps or Indexes thereof, that are linked to
+from the list, have to be considered as distinct snapshots of the Source's data, each of which was current at a certain point in time.  The particular point in time
+is conveyed in the <code>modified</code> attribute on the item in the Archived Inventories or Archived Dumps list, as well as on the root <code>resync</code>
+element in the referenced Inventory or Dump's Manifest.  This is unlike Indexes, where the referenced resources are part of the same logical whole.
+</p>
+
+<p>
+If the Inventories and Dumps contain a discovery or "up" link, then these should remain as they were originally and not be rewritten to point to the list of archived resources.
+</p>
+
+<h3>10.1. <a name="ArchivedInventories">Archived Inventories</a></h3>
+<p>
+The <code>rstype</code> for Archived Inventories is:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/archived-inventories&quot;</span>
+</pre>
+</div>
+<p>
+<a href="#ex_9_1">Example 10.1</a> shows a list with pointers to three archived individual
+Inventories and one archived Inventory Index.
+The URI <code>http://example.com/inventory_1014.xml</code> identifies the entire Inventory from October 14th,
+the URI <code>http://example.com/inventory_0914.xml</code> identifies the inventory from September 14th and
+the URI <code>http://example.com/inventory_0814.xml</code> identifies the inventory from August 14th.
+The URI <code>http://example.com/inventory-index_0714.xml</code> is an Inventory Index and its constituent parts represent the Inventory of July 14th.
+</p>
+
+<p>
+The list contains a link to the discovery mechanism and all linked items have to be in descending temporal order.
+</p>
+<a name="ex_9_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/archived-inventories&quot;</span> modified=&quot;2012-10-14T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/datasets/capabilities-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory_1014.xml&quot;
+        <span class="rs">modified=&quot;2012-10-14T01:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory_0914.xml&quot;
+        <span class="rs">modified=&quot;2012-09-14T01:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory_0814.xml&quot;
+        <span class="rs">modified=&quot;2012-08-14T01:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory-index_0714.xml&quot;
+        <span class="rs">modified=&quot;2012-07-14T01:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 10.1: A list of archived Inventories</p>
+
+
+<h3>10.2. <a name="ArchivedDumps">Archived Dumps</a></h3>
+<p>As part of the regular maintenance of its data, a Source might
+        maintain old Dumps. For a Destination that wishes to compare or
+        archive versions of the data over time, access to these Dumps allows
+        the packaged historical data to be downloaded all at once, rather than
+        requiring the Source to support access to the individual resource
+        versions, and for the Destination to collect them one at a time.</p>
+
+<p>
+A list providing pointers to archived Dumps or archived Dump Indexes in descending temporal order is shown in the below
+example. It includes two links to individual archived zip files and one link to an archived Dump Index. Each of the three
+links references a snapshot of the Source's data at a certain point in time.
+</p>
+<p>
+For Archived Dumps the following <code>rstype</code> needs to be used:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/archived-dumps&quot;</span>
+</pre>
+</div>
+<a name="ex_9_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/archived-dumps&quot;</span> modified=&quot;2012-09-11T09:00:00Z&quot;&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/datasets/capabilities-index.xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        href=&quot;http://example.com/dump_0911.zip&quot;
+        <span class="rs">modified=&quot;2012-09-11T07:00:00Z&quot;</span>
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        href=&quot;http://example.com/dump_0711.zip&quot;
+        <span class="rs">modified=&quot;2012-07-11T07:00:00Z&quot;</span>
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        href=&quot;http://example.com/dump-index_0511.xml&quot;
+        <span class="rs">modified=&quot;2012-05-11T07:00:00Z&quot;</span>
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 10.2: A list of archived Dumps</p>
+
+
+
+
+
+<h2>11. <a name="AdvCaps"></a>Advertising of Capabilities</h2>
+<p>
+In order to make use of the capabilities that a Source provides, it is first necessary to determine which are supported and the URLs to get to them.
+The Resource Sync framework re-uses the same constructions of the <code>resync</code> document format, along with indexes to enable the partitioning of the descriptions,
+to provide pointers to the component resources that provide the capabilities.    This <b>Capabilities</b> document is made discoverable in various ways, including a well-known URI pattern,
+HTML or XHTML <code>link</code> elements from web pages, or HTTP link headers from other resources that are to be synchronized.
+</p>
+<p>
+We also introduce the notion of a <b>Dataset</b>, or Collection, to allow the Source to host multiple distinct sets of resources which can be synchronized individually, and may
+have different capabilities.  These Datasets can be further described as to their content using formats and standards outside of the Resource Sync specification.  The
+Datasets may be completely distinct, or may have overlapping resources to any degree.  This allows for Source-determined sub-sets of large
+Datasets to be identified and synchronized separately, divided along any line seen as useful by the Source, including potentially format, content, length, and so on.
+</p>
+
+<h3>11.1. <a name="Capabilities"></a>Capabilities</h3>
+<p>
+The capabilities of a Dataset are described in a Capabilities document, with a format similar to that of Inventories or Change Lists.  The same root element
+is used, with mandatory <code>modified</code> and <code>rstype</code> attributes.  
+</p>
+<p>
+The <code>rstype</code> of a Capabilities document is:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/capabilities&quot;</span>
+</pre>
+</div>
+<p>
+Like all other uses of the ResourceSync XML format, a Capabilities document has a root <code>resync</code> node that contains <code>item</code> elements. 
+Each references the document that provides a capability in the <code>href</code> attribute, and provides the type of capability in the <code>rstype</code> attribute. 
+If the document is an Index, the <code>rstype</code> attribute's value should still be the base type; thus, for example, an Inventory Index is still referenced using the 
+Inventory URI: <code>http://www.openarchives.org/rs/inventory</code>.
+</p>
+
+<p>
+The <code>resync</code> element may also contain <code>link</code> elements to point to resources which describe the Dataset.  These links must have the <code>rel</code> attribute with the value <code>describedby</code>.
+More than one such link may appear, and the resources should be differentiated by the mime-type given in the <code>type</code> attribute. Another <code>link</code> element may be present to refer to a Capabilities Index.
+</p>
+<p>
+<a href="#ex_11_1">Example 11.1</a> provides an example of a Capabilities document.
+In this example the Source offers several capabilities and also provides a link to a description of its data in XML.
+Even though it is not shown in the example below, the use of the <code>modified</code> attribute for <code>item</code> elements is possible.
+</p>
+<a name="ex_11_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/capabilities&quot;</span> modified=&quot;2012-09-31T03:00:00Z&quot;&gt;
+  &lt;link <span class="rs">rel=&quot;describedby&quot;</span>
+        href=&quot;http://example.com/info-about-source-and-dataset.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/inventory&quot;
+        href=&quot;http://example.com/inventory.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/dump&quot;
+        href=&quot;http://example.com/dump.zip&quot;
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changelist&quot;
+        href=&quot;http://example.com/changelist.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/changedump&quot;
+        href=&quot;http://example.com/changedump.zip&quot;
+        type=&quot;application/zip&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/archived-inventories&quot;
+        href=&quot;http://example.com/archived-inventories.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/archived-dumps&quot;
+        href=&quot;http://example.com/archived-dumps.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 11.1: A Capabilities document</p>
+
+
+
+<h3>11.2. <a name="CapabilitiesIndex"></a>Capabilities Index</h3>
+<p>
+If there is more than one Dataset being made available by the Source, then as with other aspects of the framework, an Index construction is used.
+In this case, each item refers to a Capabilities document for a particular Dataset.  Each <code>item</code> must therefore have 
+the proper value for the <code>rstype</code> attribute identifying a Capabilities document. The Capabilities Index may also have a link to a document 
+that describes the Source as a whole, either in machine or human readable syntax, using the same <code>describedby</code> relation type.  It is possible that
+a Capabilities Index contains only one <code>item</code> element.
+</p>
+<p>
+The <code>rstype</code> of a Capabilities Index is:
+</p>
+<div class="exampleInnerDisco">
+<pre>
+<span class="rsdisco">rstype=&quot;http://www.openarchives.org/rs/capabilities-index&quot;</span>
+</pre>
+</div>
+<p>
+<a href="#ex_11_2">Example 11.2</a> shows such an index with pointers to capabilities documents for three different Datasets.
+</p>
+<a name="ex_11_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync <span class="rs">rstype=&quot;http://www.openarchives.org/rs/capabilities-index&quot;</span> modified=&quot;2012-09-31T03:00:00Z&quot;&gt;
+  &lt;link rel=&quot;describedby&quot;
+        href=&quot;http://example.com/info-about-source.html&quot;
+        type=&quot;text/html&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset1/capabilities.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset2/capabilities.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;item rstype=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset3/capabilities.xml&quot;
+        type=&quot;application/xml&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 11.2: A Capabilities Index</p>
+
+
+<h3>11.3. <a name="Discovery"></a>Discovery</h3>
+<p>Three mechanisms are provided to discover the location of the Capabilities or Capabilities Index documents, and are described in more detail in the following sections.</p>
+
+<h4>11.3.1. <a name="wellknown"></a>.well-known URI</h4>
+<p>The well-known URI [<a href="#ref-rfc5785">RFC 5785</a>] <code>/.well-known/resourcesync.xml</code> is defined for the ResourceSync framework. When dereferenced, the
+representation obtained will be either a Capabilities document or a Capabilities Index, and thus provide a mechanism for Destinations to discover the capabilities 
+offered by the Source without any prior knowledge.</p>
+
+<h4>11.3.2. <a name="xhtmllinkEle">X/HTML Link Element</a></h4>
+<p>Many implementations of the specification will not be able to serve directly from the root of the web server, as is required for the .well-known URI approach for discovery of the capabilities
+documents.  In this case, the easiest method of making the document discoverable, is to link to it from an HTML web page that describes the Dataset or from HTML pages within the Dataset.  As the links are not rendered in
+browsers, there is no harm to including it in as many locations as is feasible.  Such web pages should include a <code>link</code> element in the <code>head</code>
+of the page which points to the capabilities document, and the <code>rel</code> attribute in this case must be the URI <code>http://www.openarchives.org/rs/capabilities</code>.</p>
+
+<p>Example 11.3 contains the structure of a web page which contains such a link to the Capabilities document, in this case an index for multiple Datasets.</p>
+
+<a name="ex_11_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;html&gt;
+  &lt;head&gt;
+    <span class="rs">&lt;link rel="http://www.openarchives.org/rs/capabilities" href="http://www.example.com/datasets/capabilities-index.xml"/&gt;</span>
+    ...
+  &lt;/head&gt;
+  &lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</div>
+<p class="caption">Example 11.3: HTML Link Discovery Syntax</p>
+
+<h4>11.3.3. <a name="HTTPLinkHrds">HTTP Link Header</a></h4>
+<p>If the resources within the Dataset are not HTML pages, and there isn't a web page describing the Dataset, then it is still possible to link to the Capabilities document or Capabilities Index.
+In this instance an HTTP Link header is used, which conveys the same information as the link elements from HTML and Resource Sync.  As it is an HTTP header, it can be returned
+along with a representation of any content-type, but is more difficult to capture.
+</p>
+
+<p>Example 11.4 contains the beginning of the HTTP response, including the HTTP status line and the first headers returned.  The Link header is provided which mirrors the link
+element from Example 11.3</p>
+
+<a name="ex_11_4"></a>
+<div class="exampleInner">
+<pre>
+HTTP/1.1 200 OK
+  Date: Thu, 21 Jan 2010 00:02:12 GMT
+  Server: Apache
+  <span class="rs">Link: &lt;http://www.example.com/datasets/capabilities-index.xml&gt;; rel="http://www.openarchives.org/rs/capabilities"</span>
+  ...
+</pre>
+</div>
+<p class="caption">Example 11.4: HTTP Link Discovery Syntax</p>
+
+
+<h2>12. <a name="RePub">Republishing</a></h2>
+
+<p class="todo">there are other use cases of 3rd party publishing which eventually should be added/mentioned here</p>
+
+<h3>12.1. <a name="RePubChanges">Republishing Changes</a></h3>
+
+<p>
+A Destination may also act as a Source for data that it has retrieved from an original Source.  In this scenario, it
+is important that a Destination retrieving the content from the second Source can also verify its veracity with the original Source.  A link back to the original is
+introduced to fulfill this requirement, and may be used multiple times to represent the complete chain of synchronization. 
+</p>
+<p>
+Examples <a href="#ex_12_1">12.1</a>, <a href="#ex_12_2">12.2</a>, and <a href="#ex_12_3">12.3</a> outline the process that starts with
+an original Source publishing a Change List. A primary aggregator consumes the Change List, obtains the changed resource and integrates it into its own Dataset.
+It then republishes its own Change List that includes the description of the change but also gives credit to where the change originated from.
+The cycle repeats as a secondary aggregator consumes the Change List from the primary aggregator.
+Note the datetimes in all three examples.
+</p>
+
+<a name="ex_12_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; <span class="rs">modified=&quot;2012-10-30T12:00:00Z&quot;</span>&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.com/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; <span class="rs">href=&quot;http://example.com/little-museum.html&quot;</span>
+        hash=&quot;md5:5567&quot;
+        length=&quot;347&quot;
+        <span class="rs">modified=&quot;2012-10-30T07:00:00Z&quot;</span>
+        type=&quot;text/html&quot;/&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 12.1: An original Source publishes</p>
+
+
+<p>
+The scenario where the primary aggregator obtains the changed resource and republishes a Change List with the description of the change is shown below.
+The aggregator uses a <code>link</code> element and the <code>via</code> relation type to convey the origin of the changed resource and its metadata.
+</p>
+<a name="ex_12_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; <span class="rs">modified=&quot;2012-10-30T21:00:00Z&quot;</span>&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.org/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; <span class="rs">href=&quot;http://example.org/pseudo-europeana.html&quot;</span>
+        hash=&quot;md5:5567&quot;
+        length=&quot;347&quot;
+        <span class="rs">modified=&quot;2012-10-30T18:00:00Z&quot;</span>
+        type=&quot;text/html&quot;&gt;
+    &lt;link <span class="rs">rel=&quot;via&quot; href=&quot;http://example.com/little-museum.html&quot;</span>
+          hash=&quot;md5:5567&quot;
+          length=&quot;347&quot;
+          <span class="rs">modified=&quot;2012-10-30T07:00:00Z&quot;</span>
+          type=&quot;text/html&quot;/&gt;
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 12.2: A primary aggregator republishes</p>
+
+<p>
+A secondary aggregator obtains the changed resource as it consumes the Change List of the primary aggregator and republishes its Change List where it adds 
+yet another <code>link</code> element to convey the original Source from its perspective.
+</p>
+<a name="ex_12_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;resync rstype=&quot;http://www.openarchives.org/rs/changelist&quot; <span class="rs">modified=&quot;2012-10-31T17:00:00Z&quot;</span>&gt;
+  &lt;link rel=&quot;http://www.openarchives.org/rs/capabilities&quot;
+        href=&quot;http://example.net/dataset/capabilities-index.xml&quot;/&gt;
+  &lt;item change=&quot;updated&quot; <span class="rs">href=&quot;http://example.net/dpla-europeana.html&quot;</span>
+        hash=&quot;md5:5567&quot;
+        length=&quot;347&quot;
+        <span class="rs">modified=&quot;2012-10-31T11:00:00Z&quot;</span>
+        type=&quot;text/html&quot;&gt;
+    &lt;link <span class="rs">rel=&quot;via&quot; href=&quot;http://example.org/pseudo-europeana.html&quot;</span>
+          hash=&quot;md5:5567&quot;
+          length=&quot;347&quot;
+          <span class="rs">modified=&quot;2012-10-30T18:00:00Z&quot;</span>
+          type=&quot;text/html&quot;/&gt;
+    &lt;link <span class="rs">rel=&quot;via&quot; href=&quot;http://example.com/little-museum.html&quot;</span>
+          hash=&quot;md5:5567&quot;
+          length=&quot;347&quot;
+          <span class="rs">modified=&quot;2012-10-30T07:00:00Z&quot;</span>
+          type=&quot;text/html&quot;/&gt;
+  &lt;/item&gt;
+&lt;/resync&gt;
+</pre>
+</div>
+<p class="caption">Example 12.3: A secondary aggregator republishes</p>
+
+<h2>13. <a name="References">References</a></h2>
+
+<dl>
+<dt>[<a name="ref-ale" id="ref-ale">Atom Link Extensions</a>]</dt>
+<dd><a href="http://tools.ietf.org/html/draft-snell-atompub-link-extensions-09"><cite>Atom Link Extensions</cite></a>,
+J. Snell, 08 June 2012.</dd>
+
+<dt>[<a name="ref-webarch" id="ref-webarch">Web Architecture</a>]</dt>
+<dd><a href="http://www.w3.org/TR/webarch/"><cite>Architecture of the World Wide Web, Volume One</cite></a>,
+I. Jacobs and N. Walsh, Editors, World Wide Web Consortium, 15 January 2004.</dd>
+
+<dt>[<a name="ref-rfc1864">RFC 1864</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc1864.txt">
+The Content-MD5 Header Field -- HTTP/1.1</a></cite>,
+J. Myers and M. Rose, October 1995.</dd>
+
+<dt>[<a name="ref-rfc2616">RFC 2616</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc2616.txt">
+RFC 2616 Hypertext Transfer Protocol -- HTTP/1.1</a></cite>,
+R. Fielding, <i>et al.</i>, June 1999.</dd>
+
+<dt>[<a name="ref-rfc4287">RFC 4287</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4287.txt">
+RFC 4287: The Atom Syndication Format</a></cite>, 
+M. Nottingham, R. Sayre, December 2005.</dd>
+
+<dt>[<a name="ref-rfc4648">RFC 4648</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4648.txt">
+The Base16, Base32, and Base64 Data Encodings</a></cite>, 
+S. Josefsson, October 2006.</dd>
+
+<dt>[<a name="ref-rfc5785">RFC 5785</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc5785.txt">
+RFC 5785: Defining Well-Known Uniform Resource Identifiers (URIs)</a></cite>, 
+M. Nottingham, E. Hammer-Lahav, April 2010.</dd>
+
+<dt>[<a name="ref-rfc5988">RFC 5988</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc5988.txt">
+RFC 5988: Web Linking</a></cite>, 
+M. Nottingham, October 2010.</dd>
+
+<dt>[<a name="ref-rfc6120">RFC 6120</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc6120.txt">
+RFC 6120: Extensible Messaging and Presence Protocol (XMPP): Core</a></cite>, 
+P. Saint-Andre, March 2011.</dd>
+
+<dt>[<a name="ref-rfc6415">RFC 6415</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc6415.txt">
+RFC 6415: Web Host Metadata</a></cite>, 
+E. Hammer-Lahav, B.Cook, October 2011.</dd>
+
+<dt>[<a name="ref-sitemaps">Sitemaps</a>]</dt>
+<dd><cite><a href="http://www.sitemaps.org/protocol.html">Sitemaps XML format and protocol</a></cite>,
+sitemaps.org, 27 February 2008.</dd>
+
+<dt>[<a name="w3c-datetime" id="w3c-datetime">W3C Datetime</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/1998/NOTE-datetime-19980827">Date and Time Formats</a></cite>,
+Misha Wolf, Charles Wicksteed, 15 September 1997.</dd>
+
+<dt>[<a name="ref-oaipmh">The Open Archives Initiative Protocol for Metadata Harvesting</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The Open Archives Initiative Protocol for Metadata Harvesting</a></cite>,
+C. Lagoze, H. Van de Sompel <i>et al.</i>, December 2008</dd>
+
+<dt>[<a name="Memento-Draft" id="Memento-Draft">Memento Internet Draft</a>]</dt>
+<dd><cite><a href="http://www.mementoweb.org/guide/rfc/ID/">Memento Internet Draft</a></cite>,
+H. Van de Sompel, M. L. Nelson, R. D. Sanderson, May 2012</dd>
+
+<dt>[<a name="xmpp-0060">XEP-0060: Publish-Subscribe</a>]</dt>
+<dd><cite><a href="http://xmpp.org/extensions/xep-0060.html">XEP-0060: Publish-Subscribe</a></cite>,
+Peter Millard, Peter Saint-Andre, Ralph Meijer, July 2010</dd>
+
+<dt>[<a name="warc">WARC</a>]</dt>
+<dd><cite><a href="http://bibnum.bnf.fr/WARC/warc_ISO_DIS_28500.pdf">WARC File Format</a></cite>,
+June 2006</dd>
+
+</dl>
+
+</div> <!--class="body"-->
+
+<div class="back">
+<div class="body">
+
+<h2><a name="ElemOv"></a>A. XML Element Overview</h2>
+
+<p class="todo">to come: text with brief intro of <a href="#elem_ov_tab1">Table A.1</a> containing all here introduced XML elements and the technologies they can be used in.</p>
+
+<a name="tab_A_1"></a>
+<table class="elements-table">
+ <tbody>
+ <tr class="top">
+  <th class="rstype">Element/Attribute/Value</th><th class="sec">Section</th>
+ </tr>
+ <tr class="odd">
+   <td><code>&lt;resync&gt;</code></td><td></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;rstype</code></td><td></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/inventory</code></td><td class="sec"><a href="#Inventory">4.1. Inventory</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/inventory-index</code></td><td class="sec"><a href="#InventoryIndex">4.2. Inventory Index</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/dump-manifest</code></td><td class="sec"><a href="#DumpManifest">5.1.1. Dump Manifest</a></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/dump-index</code></td><td class="sec"><a href="#DumpIndex">5.2. Dump Index</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/changelist</code></td><td class="sec"><a href="#ChangeLists">6.1. Change Lists</a></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/changelist-index</code></td><td class="sec"><a href="#ChangeListIndex">6.2. Change List Index</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/changedump-manifest</code></td><td class="sec"><a href="#ChangeDumpManifest">7.1.1. Change Dump Manifest</a></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/changedump-index</code></td><td class="sec"><a href="#ChangeDumpIndex">7.2. Change Dump Index</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/archived-inventories</code></td><td class="sec"><a href="#ArchivedInventories">10.1. Archived Inventories</a></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/archived-dumps</code></td><td class="sec"><a href="#ArchivedDumps">10.2. Archived Dumps</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/capabilities</code></td><td class="sec"><a href="#Capabilities">11.1. Capabilities</a></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/capabilities-index</code></td><td class="sec"><a href="#CapabilitiesIndex">11.2. Capabilities Index</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;item&gt;</code></td><td class="sec"></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rstype</code></td><td class="sec"></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/inventory</code></td><td class="sec"><a href="#InventoryIndex">4.2. Inventory Index</a>, <a href="#ArchivedInventories">10.1. Archived Inventories</a>, <a href="#Capabilities">11.1. Capabilities</a></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/dump</code></td><td class="sec"><a href="#DumpIndex">5.2. Dump Index</a>, <a href="#ArchivedDumps">10.2. Archived Dumps</a>, <a href="#Capabilities">11.1. Capabilities</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/changelist</code></td><td class="sec"><a href="#ChangeLists">6.1. Change Lists</a>, <a href="#ChangeListIndex">6.2. Change List Index</a>, <a href="#Capabilities">11.1. Capabilities</a></td>
+ </tr>
+ <tr class="odd">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/changedump</code></td><td class="sec"><a href="#ChangeDumpIndex">7.2. Change Dump Index</a>, <a href="#Capabilities">11.1. Capabilities</a></td>
+ </tr>
+ <tr class="even">
+   <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/rs/capabilities</code></td><td class="sec"><a href="#CapabilitiesIndex">11.2. Capabilities Index</a></td>
+ </tr>
+</tbody></table>
+<p class="caption">Table A.1: ResourceSync supported <code>rstype</code> attribute values</p>
+
+<a name="tab_A_2"></a>
+<table class="elem_overview-table" summary="XML Elements vs Technologies they are used for">
+ <tbody>
+ <tr class="top">
+  <th>Element/Attribute</th><th colspan="4">Technology</th>
+ </tr>
+ <tr class="top">
+  <th>&nbsp;</th><th>Inventory</th><th>Dump Manifest</th><th>Change List</th><th>Change Dump Manifest</th>
+ </tr>
+ <tr class="odd">
+  <td class="left"><code>&lt;resync&gt;</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>rstype</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;link&gt;</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;item&gt;</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required (except for current solution of 8.1.4. Alternate Interpretation)</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td class="opt" colspan="2">optional</td><td class="req" colspan="2">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>change</code></td><td colspan="2">NA</td><td class="req" colspan="2">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>hash</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>length</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>etag</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>path</code></td><td>NA</td><td class="req">required</td><td>NA</td><td class="req">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;link&gt;</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td class="opt" colspan="2">optional</td><td class="req" colspan="2">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>hash</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>length</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>etag</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>path</code></td><td>NA</td><td class="req">required</td><td>NA</td><td class="req">required</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table A.2: All XML elements and attributes for Inventory, Dump Manifest, Change List, and Change Dump Manifest.</p>
+
+
+<a name="tab_A_3"></a>
+<table class="elem_overview-table" summary="XML Elements vs Technologies they are used for">
+ <tbody>
+ <tr class="top">
+  <th>Element/Attribute</th><th colspan="4">Technology</th>
+ </tr>
+ <tr class="top">
+  <th>&nbsp;</th><th>Inventory Index</th><th>Dump Index</th><th>Change List Index</th><th>Change Dump Index</th>
+ </tr>
+ <tr class="odd">
+  <td class="left"><code>&lt;resync&gt;</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>rstype</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;link&gt;</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;item&gt;</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rstype</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td class="opt" colspan="2">optional</td><td class="req" colspan="2">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;link&gt;</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table A.3: All XML elements and attributes for Inventory Index, Dump Index, Change List Index, and Change Dump Index.</p>
+
+
+
+<a name="tab_A_4"></a>
+<table class="elem_overview-table" summary="XML Elements vs Technologies they are used for">
+ <tbody>
+ <tr class="top">
+  <th class="left">Element/Attribute</th><th colspan="4">Technology</th>
+ </tr>
+ <tr class="top">
+  <th class="left">&nbsp;</th><th>Archived Inventories</th><th>Archived Dumps</th><th>Capabilities</th><th>Capabilities Index</th>
+ </tr>
+ <tr class="odd">
+  <td class="left"><code>&lt;resync&gt;</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>rstype</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;link&gt;</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>&lt;item&gt;</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rstype</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td class="req" colspan="4">required</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td class="opt" colspan="4">optional</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table A.4: All XML elements and attributes for archived Inventories, archived Dumps, Discovery, and Discovery Index.</p>
+
+
+
+<h2><a name="acknowledgments"></a>C. Acknowledgements</h2>
+
+<p>This specification is the work of 
+<a href="http://niso.org/">NISO</a> and the 
+<a href="http://www.openarchives.org/">Open Archives Initiative</a>. 
+Funding for ResourceSync is provided by the 
+<a href="http://www.sloan.org/">Alfred P. Sloan Foundation</a>. 
+UK participation is supported by the 
+<a href="http://www.jisc.ac.uk/">JISC</a>.</p>
+
+<p>This specification is based on the meetings of the ResourceSync 
+Technical Committee. The Technical Committee includes the editors 
+and (in alphabetical order):
+Manuel Bernhardt (Delving B.V.),
+Richard Jones (Cottage Labs),
+Graham Klyne (University of Oxford),
+Stuart Lewis (University of Edinburgh),
+Kevin Ford (Library of Congress),
+David Rosenthal (LOCKSS),
+Christian Sadilek (Red Hat),
+Shlomo Sanders (Ex Libris, Inc.),
+Sjoerd Siebinga (Delving B.V.),
+Ed Summers (Library of Congress),
+Zhiwu Xie (Virginia Tech),
+and 
+Jeff Young (Online Computer Library Center).</p>
+
+<p class="todo">Check participant status and affiliations</p>
+
+<div class="Changelog">
+<h2><a name="Changelog">D. Change Log</a></h2>
+<table class="Changelog" summary="Change log">
+<tbody><tr>
+ <th>Date</th>
+ <th>Editor</th>
+ <th>Description</th>
+</tr>
+<tr>
+ <td>2012-11-15</td>
+ <td>martin, herbert, rob, simeon, bernhard</td>
+ <td>format investigation draft</td>
+</tr></tbody>
+</table>
+</div>
+
+</div>
+</div>
+    
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="img/88x31.png"/></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+</body></html>

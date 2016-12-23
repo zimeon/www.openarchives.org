@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: [oai-alpha] Re: Help!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40lanl.gov">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000009.html">
+   <LINK REL="Next"  HREF="000011.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: [oai-alpha] Re: Help!
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40lanl.gov"
+       TITLE="[OAI-implementers] Re: [oai-alpha] Re: Help!">simeon@lanl.gov
+       </A><BR>
+    <I>Mon, 29 Jan 2001 11:10:33 -0700 (MST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000009.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+        <LI> Next message: <A HREF="000011.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+On Mon, 29 Jan 2001, herbert van de sompel wrote:
+&gt;<i> hi all,
+</I>&gt;<i> 
+</I>&gt;<i> Quite an interesting discussion regarding the exception handling (400,
+</I>&gt;<i> empty records et all).  
+</I>&gt;<i> 
+</I>&gt;<i> When writing the specs as a result of the discussion over the weekend 2
+</I>&gt;<i> weeks ago, my goal was to distinguish between the handling of:
+</I>&gt;<i> - illegal verbs, 
+</I>&gt;<i> - illegal arguments,
+</I>&gt;<i> - values (both illegal and not leading to any result).
+</I>&gt;<i> 
+</I>&gt;<i> I thought that was a pretty clear line to draw:
+</I>&gt;<i> 
+</I>&gt;<i> - illegal protocol syntax: usage of illegal verbs and illegal arguments
+</I>&gt;<i> results in 400
+</I>&gt;<i> - something wrong with argument values: usage of illegal values and/or
+</I>&gt;<i> values that lead to no result yield &quot;empty&quot; responses
+</I>&gt;<i> 
+</I>&gt;<i> The current dicussion seems to suggest that illegal values should also
+</I>&gt;<i> result in a 400.  But from the discussion, it shows that defining what
+</I>&gt;<i> an illegal value is isn't all that simple: illegal as to the protcol
+</I>&gt;<i> (e.g. illegal format for datestamp) or illegal in a certain repository
+</I>&gt;<i> (e.g. non-supported metadataPrefix), ...  
+</I>
+I disagree here, I think the discussion has only been about what is
+illegal from the protocol point of view. I think we all agree that
+illegal/unsupported/unknown from a repository point of view should
+lead to empty responses.
+
+It is not clear to me why it is beneficial to silently accept requests
+that include syntactically incorrect arguments which clearly indicate
+errors in a harvester program. 400 seems more sensible.
+
+&gt;<i> While I do agree that the provision of a datestamp with an illegal
+</I>&gt;<i> syntax can be considered to be illegal protocol syntax, I remain tempted
+</I>&gt;<i> to stick with the original concept, whereby everything that is releated
+</I>&gt;<i> to values of arguments is NOT handled with a 400, but with an &quot;empty&quot;
+</I>&gt;<i> response. Please note that the out-of-context usage of a
+</I>&gt;<i> resumptionToken falls under the category of &quot;illegal protocol syntax&quot;
+</I>&gt;<i> because the section on resumptionTokens explicitely says &quot;all other
+</I>&gt;<i> usage of resumptionTokens is illegal and hence returns 400&quot;. 
+</I>&gt;<i> 
+</I>&gt;<i>  I think that the issue re oai-format identifiers that was brought up
+</I>&gt;<i> supports the above approach: some repos will use oai-formated
+</I>&gt;<i> identifiers, others will not. 
+</I>
+From the protocol point of view, only invalid URIs are invalid
+identifiers, any other restriction is repository specfic.
+ 
+Cheers,
+Simeon
+
+
+&gt;<i>  similarly, other xsd's will be used as
+</I>&gt;<i> &quot;description&quot; containers, some of which may limit the validity of other
+</I>&gt;<i> argument values (valid set values, for instance).  if we take the return
+</I>&gt;<i> of 400 down to the level of argument values, and in addition take into
+</I>&gt;<i> account these repo (or community) specific issues in the decission
+</I>&gt;<i> whether an argument value is &quot;legal&quot; or &quot;illegal&quot; (hence in deciding
+</I>&gt;<i> whether to return 400 or not), all repos will do exception handling in
+</I>&gt;<i> different manners.  I am not too enthusiastic about that idea.
+</I>&gt;<i> 
+</I>&gt;<i> I am very interested in comments.
+</I>&gt;<i> 
+</I>&gt;<i> herbert
+</I>&gt;<i> 
+</I>&gt;<i> Simeon Warner wrote:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; On Sat, 27 Jan 2001, ePrints Support wrote:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt; (from oai-alpha)
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; On Fri, Jan 26, 2001 at 06:26:33PM -0700, Simeon Warner wrote:
+</I>&gt;<i> &gt; &gt; &gt; I agree that the following can be illegal in fairly obvious
+</I>&gt;<i> &gt; &gt; &gt; ways:
+</I>&gt;<i> &gt; &gt; &gt;   from &amp; until     (illegal dates)
+</I>&gt;<i> &gt; &gt; &gt;   identifier       (illegal uri)
+</I>&gt;<i> &gt; &gt; &gt;   resumptionToken  (spec says illegal use and expired will give 400)
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; However, according to the schemas of verbs that return values that
+</I>&gt;<i> &gt; &gt; &gt; will be used for set and metadataPrefix, they also be illegal:
+</I>&gt;<i> &gt; &gt; &gt;   set              (doesn't match &quot;([a-zA-Z0-9_])+(:[A-Za-z0-9]+)*&quot;)
+</I>&gt;<i> &gt; &gt; &gt;   metadataPrefix   (doesn't match &quot;[a-zA-Z0-9_]+&quot;)
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; from &amp; until: Illegal dates (I agree)
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; identifier: what's an illegal uri?
+</I>&gt;<i> &gt; &gt;    a) one which dosn't match oai:[a-z]+:.*    (regexp may be slightly off)
+</I>&gt;<i> &gt; &gt; or
+</I>&gt;<i> &gt; &gt;    b) one which dosn't match oai:nameofarchive:.*
+</I>&gt;<i> &gt; &gt; I suggest (a) - it's possible that an archive could mirror OAI records
+</I>&gt;<i> &gt; &gt; from another archive AS WELL as it's own. (Isn't it?)
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; My feeling was that only a) qualifies for a 400 response.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt; resumptionToken: If an archive dosn't support this
+</I>&gt;<i> &gt; &gt;    then I suppose it should always give a 400 error.
+</I>&gt;<i> &gt; &gt; Isn't there an 'expired' return code in http? it's confusing giving
+</I>&gt;<i> &gt; &gt; the same response for 'illegal' and 'expired'
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; The spec says there should be 400 in both cases. Any sensible
+</I>&gt;<i> &gt; harvester will know that it is giving back a once-valid
+</I>&gt;<i> &gt; resumptionToken and hence 400 =&gt; expired.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt; set: not matching [a-zA-Z0-9_])+(:[A-Za-z0-9]+)* is a 400 error but
+</I>&gt;<i> &gt; &gt;    how about a set which passes the spec but isn't in the archive?
+</I>&gt;<i> &gt; &gt; I suggest it just returns a header with no results in that case.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; The second case should certainly return header with no results, only
+</I>&gt;<i> &gt; illegal value (not matching regexp) gives 400.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt; metadataPrefix: similar. Not matching [a-zA-Z0-9_]+ is illegal (400)
+</I>&gt;<i> &gt; &gt;    but what happens if it passes the regexp but isn't in the list
+</I>&gt;<i> &gt; &gt;    supported the archive?
+</I>&gt;<i> &gt; &gt; Again, I suggest it just returns a header with no results in this case.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Again, unrecognized/unsupported should return header with no results,
+</I>&gt;<i> &gt; only illegal value gives 400.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt; Other queries:
+</I>&gt;<i> &gt; &gt;    oai_dc: When should we put a 'oai_' before the metadataPrefix,
+</I>&gt;<i> &gt; &gt;    exactly what does it mean (why isn't it just dc?)
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; My understanding is that the metadataPrefixes are simply strings
+</I>&gt;<i> &gt; returned by ListMetadataFormats which may be reused in requests
+</I>&gt;<i> &gt; that specify a metadataPrefix to request metedata according the
+</I>&gt;<i> &gt; corresponding schema in the ListMetadataFormats response.
+</I>&gt;<i> &gt; Further, 'oai_dc' is the name oai has chosen to refer to dc
+</I>&gt;<i> &gt; by (and everyone must support it and not call it 'wibble'
+</I>&gt;<i> &gt; instead). Given that the metadataPrefixes are just shorthand
+</I>&gt;<i> &gt; names to refer to the schema, I don't know why it was necessary
+</I>&gt;<i> &gt; to add the 'oai_'.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; &gt;    inside &lt;metadata&gt;&lt;/metadata&gt; is ANYTHING defined by OAI or
+</I>&gt;<i> &gt; &gt;    is everything, including the initial tags &lt;dc&gt;&lt;/dc&gt; and namespace
+</I>&gt;<i> &gt; &gt;    etc. defined by the metadata standard?
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; As far as I understand it (which is not really very well), everything
+</I>&gt;<i> &gt; from the initial &lt;dc ...&gt; tag to the &lt;/dc&gt; is specified by the
+</I>&gt;<i> &gt; dc schema (<A HREF="http://www.openarchives.org/OAI/dc.xsd">http://www.openarchives.org/OAI/dc.xsd</A>), or other
+</I>&gt;<i> &gt; schema for other metadata formats. In the dc schema it says:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt;  &lt;element name=&quot;dc&quot; type=&quot;dc:dublincoreType&quot;/&gt;
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Cheers,
+</I>&gt;<i> &gt; Simeon.
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000009.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+	<LI> Next message: <A HREF="000011.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#10">[ date ]</a>
+              <a href="thread.html#10">[ thread ]</a>
+              <a href="subject.html#10">[ subject ]</a>
+              <a href="author.html#10">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

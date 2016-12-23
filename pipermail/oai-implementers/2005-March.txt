@@ -1,0 +1,1356 @@
+From Fabio.Simeoni at cis.strath.ac.uk  Thu Mar  3 13:38:33 2005
+From: Fabio.Simeoni at cis.strath.ac.uk (Fabio Simeoni)
+Date: Thu Mar  3 13:36:28 2005
+Subject: [OAI-implementers] on resource harvesting & datestamps
+Message-ID: <200503031836.j23IaAGD032310@ramsay.cis.strath.ac.uk>
+
+
+Hi,
+apologies if this has been brought up before.
+
+I have just read "Resource Harvesting within the OAI-PMH Framework" (Van de
+Sompel, Nelson, Lagoze, Warner), where issues of ambiguity in locating
+resources as well as changes to resources have been related to the
+inadequacy of simple metadata formats (primarily Dublin Core) in supporting
+OAIPMH-driven resource harvesting. 
+
+Part of the argument is based on the observation that, in the semantics of
+the OAI-PMH, datestamps capture change to metadata (records precisely), but
+not change to resources. The latter may then go unnoticed (if the metadata
+has not changed) or too eagerly assumed (if the metadata only has changed).
+Problems are thus those of incomplete or inefficient resource harvesting. 
+
+Complex object formats are offered as a potential solution, for they
+represent metadata along with the corresponding resources (by-value or
+by-reference), so that any change to the latter induces change to the entire
+representation and thus the updating of datestamps.
+
+A couple of questions now:
+
+1) how do complex object formats may help with the problem of redundant
+harvesting?
+2) more importantly, is the propagation of change from resources to metadata
+really dependent on the exchange format? Couldn't a provider use DC and yet
+enforce a strong versioning policy which translate changes to resource in
+new items (and thus records)? Even when (minor) changes are allowed to
+preserve the identity of the resources, and thus no versioning takes place,
+could not a provider reflect those changes in the datestamp of the
+associated metadata records?
+
+Overall, I wonder whether both problems are not related to the provider's
+policy rather than the exchange format per se. At best, the adoption of
+complex object formats reveals a commitment to change propagation -- among
+many other complexity-inducing management policies. This commitment is then
+most visible in the case of inclusion by-reference of content within the
+overall resource representation; without it, the complex object format alone
+would offer no solution. If it's about policy rather than format, then one
+wonders whether a complex object format is really a minimal solution for the
+datestamp problem. Put another way, should I adopt the overall complexity of
+a complex object format to guarantee correctness of incremental resource
+harvesting, or should I just introduce as much complexity as needed for the
+problem and retain the low costs of a DC-based solution for the rest?
+
+Any comment appreciated,
+
+f
+
+
+ 
+  	
+##############################################
+Fabio Simeoni 
+Research Fellow
+Department of Computer & Information Sciences
+University of Strathclyde, Glasgow
+
+TEL: +44 141 548 (3590)
+FAX: +44 141 548 (4523)
+
+
+From mln at cs.odu.edu  Sat Mar  5 11:12:20 2005
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Sat Mar  5 11:12:24 2005
+Subject: [OAI-implementers] on resource harvesting & datestamps
+In-Reply-To: <200503031836.j23IaAGD032310@ramsay.cis.strath.ac.uk>
+References: <200503031836.j23IaAGD032310@ramsay.cis.strath.ac.uk>
+Message-ID: <Pine.GSO.4.58.0503051111160.22261@tango.cs.odu.edu>
+
+
+> A couple of questions now:
+>
+> 1) how do complex object formats may help with the problem of redundant
+> harvesting?
+
+It depends on how your CO is constructed.  For example, if your CO
+provides the following datastreams by-value:
+
+        MARC + TIFFs + OCR + PDF
+
+and you change your MARC -> DC mapping, then the changes will be
+limited to oai_dc records and not oai_didl, saving you the penalty
+of downloading the large CO.  However, if you change your MARC in
+the above example, you will download the entire CO again.  Also,
+if you edit any of TIFFs _or_ your OCR _or_ your PDF you will
+download the entire CO again. The reason is that the OAI-PMH only
+knows a single datastamp, and that is the datetime of creation /
+modification of the digital object as a whole.  as soon as one of
+the constituent datastreams MARC, TIFF, OCR, PDF) changes, the
+datestamp of the object changes.
+
+Having said that, one can imagine optimizations that would combine
+OAI-PMH semantics and semantics _outside_ of the OAI-PMH.  For
+example, imagine that:
+
+(*) the CO that represents our digital object provides all its
+datastreams by-reference (instead of by-value)
+
+(*) we insert metadata into the CO that expresses the datetime of
+creation/modification of each constituent datastream.
+
+Both can be achieved using a decent CO format.  In this scenario,
+the OAI-PMH datestamp of the CO triggers reharvest of a very
+lightweight CO every time a constituent datastream changes.
+Introspection of the harvested CO would reveal the creation /
+modification datetime of each constituent datastream, and based
+upon this, a decision can be made whether or not to collect the
+datastreams that were provided by-reference.  This would be the
+scenario:
+
+1.  We do verb=ListRecords&metadataPrefix=oai_didl&from=2005-01-01
+
+2.  Record1 is the only match
+
+3.  We examine Record1 to find:
+
+Record1 (all datastreams are by-ref):
+         - MARC (2005-01-30)
+         - OCR (2005-01-25)
+         - TIFF1 .. TIFFN (2003-07-23)
+         - PDF (2003-07-23)
+
+4. We can now decide to only dereference the MARC and OCR.
+
+> 2) more importantly, is the propagation of change from resources to metadata
+> really dependent on the exchange format? Couldn't a provider use DC and yet
+> enforce a strong versioning policy which translate changes to resource in
+> new items (and thus records)? Even when (minor) changes are allowed to
+> preserve the identity of the resources, and thus no versioning takes place,
+> could not a provider reflect those changes in the datestamp of the
+> associated metadata records?
+
+There are three problems:
+
+1.  This introduces new, potentially confusing semantics for DC
+(and MARC, etc.) and OAI-PMH.  If a "regular" harvester downloads
+a DC record that says it has changed on 2004-12-23, and it is bit
+equivalent with a the same record that last had a datestamp of
+2003-02-21 -- what would that mean exactly?
+
+2.  Related to the above, you would have to convey to harvesters
+that you "do" or "do not" adhere to "DC-update means resource updates"
+policy.  This could be done with a <description> container in an
+Identify response, but this would likely be community-specific and
+hard to generalize.
+
+3.  You still need to convey how to "grab all the stuff".  In the
+CO example above, the value in DC.Identifier is probably just a
+"splash page"; how to grab the MARC, OCR, TIFFs, PDF etc. is not
+easily conveyed in a generalizable manner.
+
+In summary, chosing a sufficiently rich CO format will prevent
+the above problems and ambiguities.
+
+regards,
+
+Michael, Herbert, Simeon & Carl
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From cbailey at uh.edu  Sat Mar  5 17:01:55 2005
+From: cbailey at uh.edu (Charles W. Bailey, Jr.)
+Date: Sat Mar  5 17:01:57 2005
+Subject: [OAI-implementers] Open Access Bibliography
+Message-ID: <6.1.2.0.2.20050305160119.02852e38@mail.uh.edu>
+
+The Open Access Bibliography: Liberating Scholarly
+Literature with E-Prints and Open Access Journals presents
+over 1,300 selected English-language books, conference
+papers (including some digital video presentations),
+debates, editorials, e-prints, journal and magazine
+articles, news articles, technical reports, and other
+printed and electronic sources that are useful in
+understanding the open access movement's efforts to provide
+free access to and unfettered use of scholarly literature.
+Most sources have been published between 1999 and August 31,
+2004; however, a limited number of key sources published
+prior to 1999 are also included. Where possible, links are
+provided to sources that are freely available on the
+Internet (approximately 78 percent of the bibliography's
+references have such links).
+
+http://info.lib.uh.edu/cwb/oab.pdf
+
+This bibliography has been published as a printed book
+(ISBN 1-59407-670-7) by the Association of Research Libraries
+(ARL).
+
+http://www.arl.org/pubscat/pubs/openaccess/
+
+ARL and the author have made the above PDF version
+of the bibliography freely available.  It is licensed under
+the Creative Commons Attribution-NonCommercial License.
+
+
+Table of Contents
+
+Preface
+
+Acknowledgments
+
+Key Open Access Concepts
+
+1 General Works
+1.1 Overviews
+1.2 Analysis and Critiques
+1.3 Debates and Dialogs
+1.3.1 Nature Web Debate on Future E-Access to the Primary
+      Literature
+1.3.2 Nature Web Focus on Access to the Literature: The
+      Debate Continues
+1.3.3 Other
+1.4 Research Studies
+1.5 Other
+
+2 Open Access Statements
+2.1 Berlin Declaration on Open Access to Knowledge in the
+    Sciences and Humanities
+2.2 Bethesda Statement on Open Access
+2.3 Budapest Open Access Initiative
+2.4 NEAR
+2.5 OECD Final Communique
+2.6 Tempe Principles
+2.7 Washington DC Principles for Free Access to Science
+2.8 Wellcome Trust Position Statement and Research Reports
+2.9 World Summit on the Information Society Declaration of
+    Principles and Plan of Action
+2.10 Other
+
+3 Copyright Arrangements for Self-Archiving and Use
+3.1 General Works
+3.2 Copyright Ownership and Rights
+3.3 Creative Commons
+3.4 Permissions Crisis
+3.5 Research Studies
+
+4 Open Access Journals
+4.1 General Works
+4.2 Economic Issues
+4.2.1 General Works
+4.2.2 BMJ Rapid Responses about "Author Pays" May Be the New
+      Science Publishing Model
+4.3 Open Access Journal Change Agents
+4.3.1 SPARC
+4.4 Open Access Journal Publishers and Distributors
+4.4.1 BioMed Central
+4.4.2 Public Library of Science
+4.4.3 PubMed Central
+4.4.3.1 General Works
+4.4.3.2 Science Magazine dEbate on "Building a GenBank of
+        the Published Literature"
+4.4.3.3 Science Magazine dEbate on "Is a Government Archive
+        the Best Option?"
+4.4.3.4 Science Magazine dEbate on "Just a Minute, Please"
+4.4.3.5 Other
+4.5 Specific Open Access Journals
+4.5.1 Journals in the Directory of Open Access Journals
+4.5.2 Pioneering Free E-Journals Not in the DOAJ
+4.5.3 Other
+4.6 Research Studies
+
+5 E-Prints
+5.1 General Works
+5.2 History
+5.3 Research Studies
+
+6 Disciplinary Archives
+6.1 General Works
+6.2 Specific Archives and Projects
+6.2.1 arXiv
+6.2.2 NASA Astrophysics Data System
+6.2.3 RePEc
+6.2.4 Other
+
+7 Institutional Archives and Repositories
+7.1 General Works
+7.2 E-Print Archives
+7.2.1 General Works
+7.2.2 Specific Archives and Projects
+7.2.2.1 ePrints-UK
+7.2.2.2 SHERPA
+7.2.2.3 Other
+7.3 Repositories with Diverse Materials
+7.3.1 General Works
+7.3.2 Specific Repositories and Projects
+7.3.2.1 DAEDALUS
+7.3.2.2 DSpace
+7.3.2.3 eScholarship
+7.3.2.4 Fedora
+7.3.2.5 OSU Knowledge Bank
+7.3.2.6 Other
+7.4 Electronic Theses and Dissertations
+
+8 Open Archives Initiative and OAI-PMH
+8.1 General Works
+8.2 Specific Data or Service Providers and Projects
+8.2.1 AmericanSouth.org
+8.2.2 Arc
+8.2.3 Kepler
+8.2.4 OAIster
+8.2.5 OpCit
+8.2.6 Open Archives Forum
+8.2.7 Open Archives Initiative Metadata Harvesting Project
+8.2.8 Other
+8.3 Research Studies
+
+9 Conventional Publisher Perspectives
+
+10 Government Inquires and Legislation
+10.1 European Commission Study
+10.2 Sabo Bill
+10.3 U.K. House of Commons Science and Technology Committee
+     Inquiry
+10.4 U.S. House Appropriations Committee Recommendations
+10.5 Other
+
+11 Open Access Arrangements for Developing Countries
+11.1 General Works
+11.2 Free or Reduced Cost Access
+11.2.1 AGORA
+11.2.2 HINARI
+11.2.3 Other
+11.3 SciELO
+
+About the Author
+
+
+Best Regards,
+Charles
+
+Charles W. Bailey, Jr., Assistant Dean for Digital Library
+Planning and Development, University of Houston,
+Library Administration, 114 University Libraries,
+Houston, TX 77204-2000.  E-mail: cbailey@uh.edu.
+Voice: (713) 743-9804.  Fax: (713) 743-9811.
+http://info.lib.uh.edu/cwb/bailey.htm 
+
+
+
+From Fabio.Simeoni at cis.strath.ac.uk  Mon Mar  7 06:25:41 2005
+From: Fabio.Simeoni at cis.strath.ac.uk (Fabio Simeoni)
+Date: Mon Mar  7 06:23:57 2005
+Subject: [OAI-implementers] on resource harvesting & datestamps
+In-Reply-To: <Pine.GSO.4.58.0503051111160.22261@tango.cs.odu.edu>
+Message-ID: <200503071123.j27BNFlX020768@ramsay.cis.strath.ac.uk>
+
+
+thanks for the exhaustive reply.
+here are some further comments.
+
+> It depends on how your CO is constructed.  For example, if your CO
+provides the following datastreams by-value:
+>        MARC + TIFFs + OCR + PDF
+> and you change your MARC -> DC mapping, then the changes will be limited
+to oai_dc records and not oai_didl, saving you the penalty of downloading
+the
+> large CO.  
+
+I am afraid I don't follow here. if DC is not in the CO example, how does
+the change to the MARC->DC mapping relate to our discussion on CO support
+for avoiding redundant harvesting? the assumption for that discussion is
+that there is some metadata-only change to the CO, right?
+
+> However, if you change your MARC in the above example, you will download
+the entire CO again.  Also, if you edit any of TIFFs _or_ your OCR _or_ your
+> PDF you will download the entire CO again. The reason is that the OAI-PMH
+only knows a single datastamp, and that is the datetime of creation / 
+> modification of the digital object as a whole.  as soon as one of the
+constituent datastreams MARC, TIFF, OCR, PDF) changes, the datestamp of the
+object
+> changes.
+
+indeed. that's exactly why I had the impression COs could well amplify the
+problem of redundancy rather than solving it: changes to the 'metadata
+parts' (MARC above) would force redundant harvesting of all 'content parts'
+which are included by-value, whether the DIDL harvester planned to harvest
+those resources or not.
+
+> Having said that, one can imagine optimizations that would combine OAI-PMH
+semantics and semantics _outside_ of the OAI-PMH.  For example, imagine
+that:
+
+> (*) the CO that represents our digital object provides all its datastreams
+by-reference (instead of by-value)
+> (*) we insert metadata into the CO that expresses the datetime of
+creation/modification of each constituent datastream.
+
+> Both can be achieved using a decent CO format....
+
+sure. but what does that imply? seems to me we have eliminated what
+distinguishes COs from 'simple' metadata records (the included content,
+perhaps dynamically generated, perhaps not Web-accessible) and we've added
+conventions/extensions to the use of CO formats at both ends of the data
+exchange. this is certainly an option, but had we not started with wanting
+to avoid conventional/extended use of formats in the first place? put
+another way, why not add datestamps to dc.format and have harvesters inspect
+those instead? wouldn't it be in fact a simpler proposition to present to
+those harvester which have an interest in resorce harvesting and are
+currently DC-based? 
+
+In any case, note that the 'redundant harvesting' issue requires a
+commitment from DPs to report resource changes, and that this commitment is
+not only outside the scope of OAI-PMH, but also outside the scope of CO
+formats as such. Multiple datestamps have to be mantained and their changes
+have to be reported, and this follows from policy not, say, DIDL.
+
+>> 2) more importantly, is the propagation of change from resources to 
+>> metadata really dependent on the exchange format? Couldn't a provider 
+>> use DC and yet enforce a strong versioning policy which translate 
+>> changes to resource in new items (and thus records)? Even when (minor) 
+>> changes are allowed to preserve the identity of the resources, and 
+>> thus no versioning takes place, could not a provider reflect those 
+>> changes in the datestamp of the associated metadata records?
+
+>There are three problems:
+
+> 1.  This introduces new, potentially confusing semantics for DC (and MARC,
+etc.) and OAI-PMH.  If a "regular" harvester downloads a DC record that says
+> it has changed on 2004-12-23, and it is bit equivalent with a the same
+record that last had a datestamp of
+> 2003-02-21 -- what would that mean exactly?
+>
+> 2.  Related to the above, you would have to convey to harvesters that you
+"do" or "do not" adhere to "DC-update means resource updates"
+> policy.  This could be done with a <description> container in an Identify
+response, but this would likely be community-specific and hard to
+generalize.
+
+sorry, I did not make the context sufficiently clear. I was trying to point
+out that (i) there is little in the definitional 'complexity' of CO formats
+(i.e. the fact that they include content representations) which directly
+solves the datastamps problems (redundant and incomplete harvesting), and
+that (ii) a solution relies on DP policy and on a format which might expose
+that policy to interested harvesters. 
+As to the format, the comparison is thus between an ad-hoc DC extension and
+a CO format, say DIDL. Whichever you go for, questions 1) and 2) admit the
+same answers. For example, plain-DC harvesters should see 'cloned' records
+no more than they should se DIDL records and no more that plain-DIDL
+harvesters (use DIDL but don't care for resource harvesting) should see
+'cloned' DIDL objects which *refer* to an updated PDF without including it.
+They will not be asking for them and they will not be given any.
+In both cases, we have got two communities of adoption, DC and DIDL, and a
+set of conventions/extensions proposed to support a particular usage:
+resource harvesting. To the members within the community which do not
+follow/interpret those conventions, the 'clone' record cannot be explained
+(not that it would be noticed, or harmful at that); to those who do,
+however, it means what they agreed it should mean, that resources referred
+to by the data have changed and should be re-harvested. 
+If we instead assume that DIDL harvesters are by definition aware of the
+conventions specific to resource harvesting via the OAI-PMH, wouldn't we
+also deny that DIDL is a 'strong standard' and thus lose the obvious reason
+to prefer it over some newly convened-upon DC extension?
+
+> 3.  You still need to convey how to "grab all the stuff".  In the CO
+example above, the value in DC.Identifier is probably just a "splash page";
+how to
+> grab the MARC, OCR, TIFFs, PDF etc. is not easily conveyed in a
+generalizable manner.
+
+sure. my issues were with the datestamp part of the argument, i.e. the
+'locate resource change' part. again, my doubt was on the inherent virtues
+of COs to solve datastamp-related problems of resource harvesting.
+
+as to the 'locate resource' part of the argument, I agree that it would be
+good thing if DPs converged towards a potentially strong standard as they
+show will to cooperate towards the particular requirements of resource
+harvesting. In this sense, it would be interesting to gauge the cost of
+adopting a CO, say DIDL, within the infrastructure of the existing OAI
+community (both server and client sides costs of course) and then to compare
+that cost with that associated with a convened-upon DC extension or, at
+that, with the cost associated with an ad-hoc protocol extension blessed by
+the OAI for the purpose. For example, one might argue that a protocol
+extension would talk to the same interested parties a CO format or DC
+extension would. It would work smoothly with existing exchange formats,
+orthogonally addressing directly the redundant and incomplete harvesting
+problems. Further, it would not require that resources be Web-accessible to
+be harvested. 
+
+your paper, thoroughly enjoyable and insightful otherwise, does not seem to
+address these cost issues and comparisons directly. Initially, I got the
+impression COs would solve the problems of resource harvesting by virtue of
+their definitional properties. seems to me the argument is all but
+technical, for it has to do with growing a community around a strong
+standard which *may* nonetheless prove relatively cheap to adopt wrt to the
+alternatives. but does it?
+
+regards,
+
+fabio
+
+##############################################
+Fabio Simeoni 
+Research Fellow
+Department of Computer & Information Sciences
+University of Strathclyde, Glasgow
+
+TEL: +44 141 548 (3590)
+FAX: +44 141 548 (4523)
+
+
+From Fabio.Simeoni at cis.strath.ac.uk  Thu Mar 17 11:26:37 2005
+From: Fabio.Simeoni at cis.strath.ac.uk (Fabio Simeoni)
+Date: Thu Mar 17 11:24:06 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+Message-ID: <200503171623.j2HGNwfD026293@smtphost.cis.strath.ac.uk>
+
+
+hi,
+I don't think this has been directly brought up before on the list
+(apologies otherwise).
+
+When writing up about the protocol's exchange model, I found myself
+wondering about the *necessity* of the item-resource distinction, which is
+otherwise very clear. Given that the unit of exchange remains the metadata
+record, what design considerations suggested to identify full abstract
+descriptions of resources rather than the resources themselves? IOW, as a
+data provider or aggregator, what problems do I incur into by reading a
+getrecord request as one for a record in a given format about a resource
+with a given identifier? Isn't it indeed the case that DPs at the edge of
+the OAI network generate/map OAI identifiers from internal resource
+identifiers? As I wonder how the relationship item-resource could not
+possibly be one-to-one, the question seems at least licit. Perhaps I am
+missing something obvious here. Any suggestion?
+
+cheers,
+
+f
+
+
+
+##############################################
+Fabio Simeoni 
+Research Fellow
+Department of Computer & Information Sciences
+University of Strathclyde, Glasgow
+
+TEL: +44 141 548 (3590)
+FAX: +44 141 548 (4523)
+
+
+From cwilper at cs.cornell.edu  Thu Mar 17 11:56:45 2005
+From: cwilper at cs.cornell.edu (Chris Wilper)
+Date: Thu Mar 17 11:58:01 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+Message-ID: <772EF7E386FEDF4FA6E11A9DA703A4D24E0008@EXCHVS1.cs.cornell.edu>
+
+Hi,
+
+I think the idea with this distinction is that there may be multiple items
+that disseminate different assertions (but in the same metadataFormat) about
+the same resource.  Example: Bob's item about the resource http://w3.org/
+says the dc:title is "The W3C", and Cindy's items says the dc:title is "The
+homepage of the W3C".
+
+- Chris
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org on behalf of Fabio Simeoni
+Sent: Thu 3/17/2005 11:26 AM
+To: oai-implementers@openarchives.org
+Subject: [OAI-implementers] on the OAI-PMH data model
+ 
+
+hi,
+I don't think this has been directly brought up before on the list
+(apologies otherwise).
+
+When writing up about the protocol's exchange model, I found myself
+wondering about the *necessity* of the item-resource distinction, which is
+otherwise very clear. Given that the unit of exchange remains the metadata
+record, what design considerations suggested to identify full abstract
+descriptions of resources rather than the resources themselves? IOW, as a
+data provider or aggregator, what problems do I incur into by reading a
+getrecord request as one for a record in a given format about a resource
+with a given identifier? Isn't it indeed the case that DPs at the edge of
+the OAI network generate/map OAI identifiers from internal resource
+identifiers? As I wonder how the relationship item-resource could not
+possibly be one-to-one, the question seems at least licit. Perhaps I am
+missing something obvious here. Any suggestion?
+
+cheers,
+
+f
+
+
+
+##############################################
+Fabio Simeoni 
+Research Fellow
+Department of Computer & Information Sciences
+University of Strathclyde, Glasgow
+
+TEL: +44 141 548 (3590)
+FAX: +44 141 548 (4523)
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20050317/93ad9acb/attachment.htm
+From Fabio.Simeoni at cis.strath.ac.uk  Thu Mar 17 12:33:31 2005
+From: Fabio.Simeoni at cis.strath.ac.uk (Fabio Simeoni)
+Date: Thu Mar 17 12:31:39 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <772EF7E386FEDF4FA6E11A9DA703A4D24E0008@EXCHVS1.cs.cornell.edu>
+Message-ID: <200503171730.j2HHUqrp002655@smtphost.cis.strath.ac.uk>
+
+> I think the idea with this distinction is that there may be multiple items
+that disseminate different assertions (but in the same metadataFormat) about
+the same resource.   
+>  Example: Bob's item about the resource  <http://w3.org/> http://w3.org/
+says 
+>  the dc:title is "The W3C", and Cindy's items says the dc:title is "The
+homepage of the W3C".
+ 
+that makes sense, of course. thanks. is there anyone 'using' the distinction
+in that sense? since we're at it, how common is it for datestamps to be
+actually attached to records, as per specs?  iow, who's keeping persistent
+records in different formats and allow the latter to change independently
+from items and each other? Aggregators? What class of changes are record-
+but not item-dependent, btw? 
+ 
+thanks,
+ 
+f 
+
+##############################################
+Fabio Simeoni
+Research Fellow
+Department of Computer & Information Sciences
+University of Strathclyde, Glasgow
+
+TEL: +44 141 548 (3590)
+FAX: +44 141 548 (4523)
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+ <http://www.openarchives.org/mailman/listinfo/oai-implementers>
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20050317/84d5616b/attachment.htm
+From herbertv at lanl.gov  Thu Mar 17 12:54:53 2005
+From: herbertv at lanl.gov (herbert van de sompel)
+Date: Thu Mar 17 12:55:01 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <200503171730.j2HHUqrp002655@smtphost.cis.strath.ac.uk>
+References: <200503171730.j2HHUqrp002655@smtphost.cis.strath.ac.uk>
+Message-ID: <4239C46D.4010903@lanl.gov>
+
+Fabio Simeoni wrote:
+>>  I think the idea with this distinction is that there may be multiple 
+> items that disseminate different assertions (but in the same 
+> metadataFormat) about the same resource.   
+>>   Example: Bob's item about the resource http://w3.org/ says 
+>>  the dc:title is "The W3C", and Cindy's items says the dc:title is "The 
+> homepage of the W3C".
+>  
+> that makes sense, of course. thanks. is there anyone 'using' the 
+> distinction in that sense? since we're at it, how common is it for 
+> datestamps to be actually attached to records, as per specs?  iow, who's 
+> keeping persistent records in different formats and allow the latter to 
+> change independently from items and each other? Aggregators? What class 
+> of changes are record- but not item-dependent, btw?
+>  
+
+annotations
+
+herbert
+
+
+> thanks,
+>  
+> f 
+> 
+> ##############################################
+> Fabio Simeoni
+> Research Fellow
+> Department of Computer & Information Sciences
+> University of Strathclyde, Glasgow
+> 
+> TEL: +44 141 548 (3590)
+> FAX: +44 141 548 (4523)
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> <http://www.openarchives.org/mailman/listinfo/oai-implementers>http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-- 
+Herbert Van de Sompel
+Digital Library Research & Prototyping
+Los Alamos National Laboratory, Research Library
+http://public.lanl.gov/herbertv/
+tel. +1 505 667 1267
+
+
+
+From caar at loc.gov  Thu Mar 17 16:54:50 2005
+From: caar at loc.gov (Caroline Arms)
+Date: Thu Mar 17 16:55:38 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <200503171730.j2HHUqrp002655@smtphost.cis.strath.ac.uk>
+Message-ID: <Pine.SOL.4.21.0503171607120.9709-100000@sun8.loc.gov>
+
+
+Fabio,
+
+LC, in providing access to digital reproductions of content in its
+collections does find the 3-level distinction useful -- even if the
+OAI terminology is not intuitive to my colleagues.
+
+In LC's lcoa1 data provider, most of the "items" are essentially master
+descriptive records in the MARC format.  The OAI "records" are generated
+on the fly from those master records.  Recently, we changed the MARC to DC
+transformation.  We changed the datestamp on all the virtual oai_dc
+records when we changed the transformation, but the marc21 and mods
+records have earlier datestamps.  The marc21 datestamps will correspond to
+the last time the underlying MARC record was changed in the OAI
+repository.  A mods record timestamp may correspond to the last update to
+the underlying "item" or the date we last changed the MARC to MODS
+transformation.  We maintain datestamps for OAI records even though the
+records do not actually exist.
+
+These 'items' (master descriptive records) are maintained independently of
+the resources they describe.  In the oai_dc records, the significant
+attributes (dc:date, dc:creator, etc.) usually relate to a physical
+original which hasn't changed since it was created (usually before 1923
+for copyright reasons and maybe many centuries before that) and the fact
+that it was digitized by the Library of Congress is of secondary
+importance for discovery.
+
+That may provide an example of why the distinction is made for OAI.  
+It certainly doesn't mean that every implementation needs to make use of
+the distinction.  If the master metadata for your OAI implmentation is
+embedded into the resources, for example, it would make little sense to
+distinguish item from resource.
+
+   Caroline Arms                                  caar@loc.gov
+   Library of Congress
+
+    
+
+
+On Thu, 17 Mar 2005, Fabio Simeoni wrote:
+
+> > I think the idea with this distinction is that there may be multiple items
+> that disseminate different assertions (but in the same metadataFormat) about
+> the same resource.   
+> >  Example: Bob's item about the resource  <http://w3.org/> http://w3.org/
+> says 
+> >  the dc:title is "The W3C", and Cindy's items says the dc:title is "The
+> homepage of the W3C".
+>  
+> that makes sense, of course. thanks. is there anyone 'using' the distinction
+> in that sense? since we're at it, how common is it for datestamps to be
+> actually attached to records, as per specs?  iow, who's keeping persistent
+> records in different formats and allow the latter to change independently
+> from items and each other? Aggregators? What class of changes are record-
+> but not item-dependent, btw? 
+>  
+> thanks,
+>  
+> f 
+> 
+> ##############################################
+> Fabio Simeoni
+> Research Fellow
+> Department of Computer & Information Sciences
+> University of Strathclyde, Glasgow
+> 
+> TEL: +44 141 548 (3590)
+> FAX: +44 141 548 (4523)
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+>  <http://www.openarchives.org/mailman/listinfo/oai-implementers>
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> 
+> 
+> 
+
+
+
+From chas at uchicago.edu  Thu Mar 17 13:09:04 2005
+From: chas at uchicago.edu (Charles Blair)
+Date: Fri Mar 18 09:29:38 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <200503171730.j2HHUqrp002655@smtphost.cis.strath.ac.uk>
+References: <772EF7E386FEDF4FA6E11A9DA703A4D24E0008@EXCHVS1.cs.cornell.edu>
+	<200503171730.j2HHUqrp002655@smtphost.cis.strath.ac.uk>
+Message-ID: <20050317180904.GR611@nirvana.lib.uchicago.edu>
+
+> since we're at it, how common is it for datestamps to be actually
+> attached to records, as per specs?  iow, who's keeping persistent
+> records in different formats and allow the latter to change
+> independently from items and each other?
+
+we are.
+
+> What class of changes are record- but not item-dependent, btw?
+
+if someone running a harvester wanted us to specify something more or
+something differently, and we could comply, we would. the datestamp
+would then serve as an indication to the harvester that we had made
+the change(s), and which records had changed. in our case, this would
+typically affect dc_qual and not oai_dc, so dc_qual would change
+independently of oai_dc and of the items (to go back to the first
+question).
+
+From Fabio.Simeoni at cis.strath.ac.uk  Fri Mar 18 11:54:50 2005
+From: Fabio.Simeoni at cis.strath.ac.uk (Fabio Simeoni)
+Date: Fri Mar 18 11:52:40 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <20050317180904.GR611@nirvana.lib.uchicago.edu>
+Message-ID: <200503181652.j2IGqBR4001730@smtphost.cis.strath.ac.uk>
+
+
+
+> we are.
+
+good, yours is example number 2 I've gathered, after Library of Congress. 
+I suppose you also generate the different formats on the fly rather than
+actually store persistent versions, right? That is, I assume that, for each
+item, you only persist record datestamps for each format you disseminate,
+along with a master record datestamp (like Library of Congress), is this
+correct? And also that every time you actually change the item/master-record
+-- in the day-to-day operation of your repository -- you also update all the
+datestamps you are maintain. 
+In any case, you're doing this to potentially avoid SPs having to repeat a
+historical harvest of records which have not actually changed but appear to
+have because a mapping of the master record onto another format -- say a
+newly adopted format of no relevance to old SPs -- has. Is this also
+correct? 
+>From a repository-centric perspective, this seems to me quite a service you
+do to SPs and the OAI-PMH. I find it interesting for it shows that, even
+within the OAI-PMH, some service costs may be absorbed by DPs rather than
+SPs. 
+
+I wonder now if DP could be as good-willed as you are and yet avoid the
+bookkeeping you are doing by: 
+(i) avoid updating the item/master-record datestamp when a format mapping
+changes, and 
+(ii) use out-of-band techniques to tell harvester which are interested in
+the mapping change that, as a result of that change, they should do a
+historical re-harvest. 
+
+All the other harvester would still be spared from doing costly and yet
+irrelevant historical harvests. Of course, this requires DPs to know who's
+harvesting them and for what. 
+
+So, at least 4 possible scenario for DPs:
+
+1) only one dissemination format: don't bother and attach datestamps to
+items/master-records.
+2) many dissemination formats: bother and keep/mantain datestamps for each
+format disseminated.
+3) many dissemination formats: bother, attach datestamps to
+items/master-records, and tell only some harvesters to re-harvest in case of
+per-format change.
+4) many dissemination formats: don't' bother (and be evil)
+
+Any comments appreciated.
+
+regards,
+
+fabio
+
+
+From mln at cs.odu.edu  Fri Mar 18 12:41:25 2005
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Fri Mar 18 12:41:27 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <200503181652.j2IGqBR4001730@smtphost.cis.strath.ac.uk>
+References: <200503181652.j2IGqBR4001730@smtphost.cis.strath.ac.uk>
+Message-ID: <Pine.GSO.4.58.0503181214570.2374@tango.cs.odu.edu>
+
+On Fri, 18 Mar 2005, Fabio Simeoni wrote:
+>
+> I wonder now if DP could be as good-willed as you are and yet avoid the
+> bookkeeping you are doing by:
+> (i) avoid updating the item/master-record datestamp when a format mapping
+> changes, and
+> (ii) use out-of-band techniques to tell harvester which are interested in
+> the mapping change that, as a result of that change, they should do a
+> historical re-harvest.
+
+I don't understand why oob techniques would be required.  If a repo
+exposes metadata formats:
+
+	- xyz (native)
+	- abc (dynamically generated from xyz)
+
+it is easy for the repo to associate a datestamp with the mapping itself
+("from" shown):
+
+foreach $record (@records) {
+  if ($request->format eq "abc") {
+    if ( ($request->datestamp < $record->datestamp) ||
+         ($request->datestamp < $map_to_abc->datestamp) ) {
+           push(@result, $record);
+    }
+  }
+  if ($request->format eq "xyz") {
+    if ($request->datestamp < $record->datestamp) {
+      push(@result, $record);
+    }
+  }
+}
+
+a new mapping of xyz->abc will not impact xyz harvesters, and keeping the
+datestamp with the mapping function doesn't represent a hardship for the
+repo.
+
+regards,
+
+Michael
+
+>
+> All the other harvester would still be spared from doing costly and yet
+> irrelevant historical harvests. Of course, this requires DPs to know who's
+> harvesting them and for what.
+>
+> Any comments appreciated.
+>
+> regards,
+>
+> fabio
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From Fabio.Simeoni at cis.strath.ac.uk  Sat Mar 19 06:08:49 2005
+From: Fabio.Simeoni at cis.strath.ac.uk (Fabio Simeoni)
+Date: Sat Mar 19 06:06:53 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <Pine.GSO.4.58.0503181214570.2374@tango.cs.odu.edu>
+Message-ID: <200503191106.j2JB691i029061@smtphost.cis.strath.ac.uk>
+
+ 
+
+>foreach $record (@records) ....
+
+absolutely yes! much better. I can now make sense of the following excerpt
+from Section 3 of the Implementation Guidelines:
+
+"The datestamp values used for OAI are for the purpose of incremental
+harvesting. They should be changed to reflect any change in the item which
+includes any change to any of the disseminations. For example, even if the
+underlying master-record within a repository is not changed, a change to the
+way that some formats are generated on the fly should result in updates to
+the datestamps of all items for which that format may be disseminated. One
+way that this may be implemented internally when building a datestamp index
+is:
+
+if (internalItemDatestamp > disseminationInterfaceDatestamp) {
+  datestamp = internalItemDatestamp
+} else {
+  datestamp = disseminationInterfaceDatestamp
+}"
+
+which I tended to find a bit obscure. many thanks indeed.
+
+regards,
+
+fabio 
+
+
+From chas at uchicago.edu  Fri Mar 18 15:27:23 2005
+From: chas at uchicago.edu (Charles Blair)
+Date: Mon Mar 21 08:36:53 2005
+Subject: [OAI-implementers] on the OAI-PMH data model
+In-Reply-To: <200503181652.j2IGqBR4001730@smtphost.cis.strath.ac.uk>
+References: <20050317180904.GR611@nirvana.lib.uchicago.edu>
+	<200503181652.j2IGqBR4001730@smtphost.cis.strath.ac.uk>
+Message-ID: <20050318202722.GN3124@nirvana.lib.uchicago.edu>
+
+> I suppose you also generate the different formats on the fly rather than
+> actually store persistent versions, right? 
+
+we precompute the metadata portion of the OAI response for all
+metadata formats we support. we generate the rest of the response,
+including the datestamp, on the fly from a record in our
+database. this record also contains a pointer to the precomputed
+portion.
+
+> I assume that, for each item, you only persist record datestamps for
+> each format you disseminate, 
+
+yes.
+
+> along with a master record datestamp (like Library of Congress), is
+> this correct?
+
+no, but only because we don't disseminate master records via
+OAI. however, we know what that datestamp would be, so if it were ever
+to change, then ...
+
+> And also that every time you actually change the item/master-record
+> -- in the day-to-day operation of your repository -- you also update
+> all the datestamps you are maintain.
+
+yes.
+
+> In any case, you're doing this to potentially avoid SPs having to repeat a
+> historical harvest of records which have not actually changed but appear to
+> have because a mapping of the master record onto another format -- say a
+> newly adopted format of no relevance to old SPs -- has. Is this also
+> correct? 
+
+if we were to add a new format, the records for the new format would
+get a datestamp more recent than that for any of our other formats,
+because we'd want the harvesters to pick them up. the records for the
+old formats would not receive a new datestamp, because nothing about
+them would have changed.
+
+> >From a repository-centric perspective, this seems to me quite a service you
+> do to SPs and the OAI-PMH. I find it interesting for it shows that, even
+> within the OAI-PMH, some service costs may be absorbed by DPs rather than
+> SPs. 
+
+you betcha, as we like to say in the midwest. :-)
+
+-- 
+Charles Blair           Co-Director, Digital Library Development Center
+773-702-8459		University of Chicago Library
+chas@uchicago.edu       http://www.lib.uchicago.edu/~chas/
+
+From adilkhan_242 at hotmail.com  Thu Mar 24 01:38:58 2005
+From: adilkhan_242 at hotmail.com (adil khan)
+Date: Thu Mar 24 01:39:30 2005
+Subject: [OAI-implementers] (no subject)
+Message-ID: <BAY2-F4B42AF1240DFCB537D97EA8400@phx.gbl>
+
+hi
+                thnx for  making me a member of oai-imploement
+
+_________________________________________________________________
+Express yourself instantly with MSN Messenger! Download today it's FREE! 
+http://messenger.msn.click-url.com/go/onm00200471ave/direct/01/
+
+
+From WSimpson at wiley.co.uk  Thu Mar 24 20:14:30 2005
+From: WSimpson at wiley.co.uk (WSimpson@wiley.co.uk)
+Date: Thu Mar 24 20:16:47 2005
+Subject: [OAI-implementers] Will Simpson is out of the office.
+Message-ID: <OF917BE8A3.7728A7E8-ON80256FCF.0006D263-80256FCF.0006D265@wiley.co.uk>
+
+I will be out of the office starting  23/03/2005 and will not return until
+29/03/2005.
+
+I will respond to your message when I return.
+
+Please contact ukcsjrnl@wiley.co.uk for matters relating to journals
+production. For all other urgent matters please contact Nicki Boyd
+(nboyd@wiley.co.uk) or John Elbourne (jelbourn@wiley.co.uk).
+
+
+######################################################################
+The information contained in this e-mail and any subsequent 
+correspondence is private and confidential and intended solely 
+for the named recipient(s).  If you are not a named recipient, 
+you must not copy, distribute, or disseminate the information, 
+open any attachment, or take any action in reliance on it.  If you 
+have received the e-mail in error, please notify the sender and delete
+the e-mail.  
+
+Any views or opinions expressed in this e-mail are those of the 
+individual sender, unless otherwise stated.  Although this e-mail has 
+been scanned for viruses you should rely on your own virus check, as 
+the sender accepts no liability for any damage arising out of any bug 
+or virus infection.
+######################################################################
+
+From info at ask23.de  Wed Mar 30 11:22:29 2005
+From: info at ask23.de (ulf treger, ask23)
+Date: Wed Mar 30 11:23:28 2005
+Subject: [OAI-implementers] testing a static repository
+Message-ID: <424AD245.7080805@ask23.de>
+
+hi,
+
+I'm trying to test and validate a static repository file. I followed the
+guidelines at
+http://www.openarchives.org/OAI/2.0/guidelines-static-repository.htm.
+
+while testing/validating it, I get errors: e.g. with the explorer
+at
+http://re.cs.uct.ac.za/cgi-bin/Explorer/2.0-1.46/testoai?archive=http://oai.ask23.de/static/ask23-oai.edit.xml
+(as proposed by http://www.language-archives.org/sr ) or with the
+Experimental OAI Static Repository Gateway at http://libtest.lanl.gov/
+
+okay, that indicates, that there's something wrong with the xml. but: if
+I use other static repository files to validate, e.g. the sample at the
+OAI guidelines or the sample given at http://libtest.lanl.gov/vb1.xml, I
+get the same errors.
+
+funny. so what's wrong? the xml files or the explorer and validators?
+
+thanx in advance, ulf
+
+
+
+
+
+From Patrick.Hochstenbach at ugent.be  Wed Mar 30 12:43:05 2005
+From: Patrick.Hochstenbach at ugent.be (Patrick Hochstenbach)
+Date: Wed Mar 30 12:43:08 2005
+Subject: [OAI-implementers] testing a static repository
+In-Reply-To: <424AD245.7080805@ask23.de>
+References: <424AD245.7080805@ask23.de>
+Message-ID: <Pine.LNX.4.62.0503301932490.7467@cbvent02.ugent.be>
+
+
+
+Hi Ulf,
+
+Did you register your file at a Static Repository Gateway?
+A Static Repository file by itself is not a valid OAI repository,
+it needs a gateway to respond to all OAI verbs. There are several
+to accomplish this: register at a gateway of your community
+e.g. OLAC, register at a demonstration gateway at http://libtest.lanl.gov/
+or try to install/implement a gateway yourself (see e.g. 
+http://srepod.sourceforge.net for a implementation).
+
+KR,
+
+Patrick
+
+On Wed, 30 Mar 2005, ulf treger, ask23 wrote:
+
+> hi,
+>
+> I'm trying to test and validate a static repository file. I followed the
+> guidelines at
+> http://www.openarchives.org/OAI/2.0/guidelines-static-repository.htm.
+>
+> while testing/validating it, I get errors: e.g. with the explorer
+> at
+> http://re.cs.uct.ac.za/cgi-bin/Explorer/2.0-1.46/testoai?archive=http://oai.ask23.de/static/ask23-oai.edit.xml
+> (as proposed by http://www.language-archives.org/sr ) or with the
+> Experimental OAI Static Repository Gateway at http://libtest.lanl.gov/
+>
+> okay, that indicates, that there's something wrong with the xml. but: if
+> I use other static repository files to validate, e.g. the sample at the
+> OAI guidelines or the sample given at http://libtest.lanl.gov/vb1.xml, I
+> get the same errors.
+>
+> funny. so what's wrong? the xml files or the explorer and validators?
+>
+> thanx in advance, ulf
+>
+>
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+From mnovo at cesca.es  Wed Mar 30 10:14:11 2005
+From: mnovo at cesca.es (Maite Novo)
+Date: Wed Mar 30 16:28:42 2005
+Subject: [OAI-implementers] illegal OAI verb
+Message-ID: <NGBBLHPGEJIOMCACPLAEKEDEHJAA.mnovo@cesca.es>
+
+
+Hi all,
+
+I'm having problems registering new repositories as Data Providers. We've
+been using Ming Luo and Hussein Suleman's ETD-db OAI Extensions(v.2-10) and
+till now, all of them has been registered successfully. Does anybody knows
+what's happen? or how to fix the problem?.
+
+Thanks in advance,
+Best regards,
+
+		Teresa.
+
+****************************************************
+
+We received a request to validate (but not register) the following
+repository:
+
+Base URL: http://www.tdx.cesca.es/TDX_URL/NDLTD-OAI/oai.pl
+adminEmail: tdx@cesca.es
+
+............................................................................
+...
+
+Unfortunately your repository did not validate at version 2.0 of the OAI-PMH
+according to our OAI protocol conformance tester. The error(s) received
+during
+testing is/are listed below.
+
+POST test was unsuccessful. Response to Identify was:
+<?xml version="1.0" encoding="UTF-8"?>
+
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+
+<responseDate>2005-03-18T09:12:09Z</responseDate>
+<request>http://www.tdx.cesca.es/TDX_URL/NDLTD-OAI/oai.pl</request>
+
+<error code="badVerb">illegal OAI verb</error>
+
+</OAI-PMH>
+
+
+SUMMARY:
+
+Total exceptions improperly handled: 0 out of 15
+Total error count: 1
+
+
+
+____________________________________________________
+         __
+        / /       M? Teresa Novo Canalias
+  C E / S / C A   Dept. Assist?ncia T?cnica
+      /_/              <mnovo@cesca.es>
+
+       Centre de Supercomputacio de Catalunya
+         Tlf: +34932056464  Fax: +34932056979
+____________________________________________________
+
+
+
+From simeon at cs.cornell.edu  Wed Mar 30 16:32:34 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Wed Mar 30 16:32:42 2005
+Subject: [OAI-implementers] illegal OAI verb
+In-Reply-To: <NGBBLHPGEJIOMCACPLAEKEDEHJAA.mnovo@cesca.es>
+References: <NGBBLHPGEJIOMCACPLAEKEDEHJAA.mnovo@cesca.es>
+Message-ID: <Pine.LNX.4.58.0503301629320.11744@dhcp103-124.cs.cornell.edu>
+
+
+It seems that the repository you mention does not respond the requests via
+the HTTP POST method correctly, although HTTP GET works OK.
+--
+Simeon
+
+
+On Wed, 30 Mar 2005, Maite Novo wrote:
+> Hi all,
+>
+> I'm having problems registering new repositories as Data Providers. We've
+> been using Ming Luo and Hussein Suleman's ETD-db OAI Extensions(v.2-10) and
+> till now, all of them has been registered successfully. Does anybody knows
+> what's happen? or how to fix the problem?.
+>
+> Thanks in advance,
+> Best regards,
+>
+> 		Teresa.
+>
+> ****************************************************
+>
+> We received a request to validate (but not register) the following
+> repository:
+>
+> Base URL: http://www.tdx.cesca.es/TDX_URL/NDLTD-OAI/oai.pl
+> adminEmail: tdx@cesca.es
+>
+> ............................................................................
+> ...
+>
+> Unfortunately your repository did not validate at version 2.0 of the OAI-PMH
+> according to our OAI protocol conformance tester. The error(s) received
+> during
+> testing is/are listed below.
+>
+> POST test was unsuccessful. Response to Identify was:
+> <?xml version="1.0" encoding="UTF-8"?>
+>
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>
+> <responseDate>2005-03-18T09:12:09Z</responseDate>
+> <request>http://www.tdx.cesca.es/TDX_URL/NDLTD-OAI/oai.pl</request>
+>
+> <error code="badVerb">illegal OAI verb</error>
+>
+> </OAI-PMH>
+>
+>
+> SUMMARY:
+>
+> Total exceptions improperly handled: 0 out of 15
+> Total error count: 1
+>
+>
+>
+> ____________________________________________________
+>          __
+>         / /       M? Teresa Novo Canalias
+>   C E / S / C A   Dept. Assist?ncia T?cnica
+>       /_/              <mnovo@cesca.es>
+>
+>        Centre de Supercomputacio de Catalunya
+>          Tlf: +34932056464  Fax: +34932056979
+> ____________________________________________________
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+

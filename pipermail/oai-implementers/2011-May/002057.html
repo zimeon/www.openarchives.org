@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] harvester guidelines
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20harvester%20guidelines&In-Reply-To=E9244AACE8CE844487FF2FAB528CA7CE01704581%40ENTWEXMB0000002.university.harvard.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002058.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] harvester guidelines</H1>
+    <B>Jasper Op de Coul</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20harvester%20guidelines&In-Reply-To=E9244AACE8CE844487FF2FAB528CA7CE01704581%40ENTWEXMB0000002.university.harvard.edu"
+       TITLE="[OAI-implementers] harvester guidelines">opdecoul at ubib.eur.nl
+       </A><BR>
+    <I>Thu May 26 11:54:30 EDT 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002058.html">[OAI-implementers] harvester guidelines
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2057">[ date ]</a>
+              <a href="thread.html#2057">[ thread ]</a>
+              <a href="subject.html#2057">[ subject ]</a>
+              <a href="author.html#2057">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On 05/26/2011 03:02 PM, McGath, Gary wrote:
+&gt;&gt;<i> From: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A> [mailto:oai-
+</I>&gt;&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">implementers-bounces at openarchives.org</A>] On Behalf Of Jasper Op de Coul
+</I>&gt;&gt;<i> Sent: Thursday, May 26, 2011 6:44 AM
+</I>&gt;&gt;<i> To: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">OAI-implementers at openarchives.org</A>
+</I>&gt;&gt;<i> Subject: [OAI-implementers] harvester guidelines
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Hi list,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I've been doing some work with OAIPMH harvesters lately, and would like
+</I>&gt;&gt;<i> to share some of my experiences on the subject.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> When harvesting specific sets with the `set` param, there is an issue
+</I>&gt;&gt;<i> that a harvester is not notified when a record is removed from that
+</I>&gt;&gt;<i> set.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I think most implementers are aware of this, and it is the biggest hole
+</I>&gt;&gt;<i> in the specification.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> For example: A specific set is harvested, but at a later time one of
+</I>&gt;&gt;<i> the
+</I>&gt;&gt;<i> records is no longer part of that set. The record then disappears from
+</I>&gt;&gt;<i> the feed, but the harvester is never notified because there is no
+</I>&gt;&gt;<i> delete
+</I>&gt;&gt;<i> event.
+</I>&gt;<i>
+</I>&gt;<i> Implementers of services could avoid this problem by adopting a policy of never removing a record from a set. If its placement in a set turns out to be erroneous or outdated, the service would delete and re-add the record. Of course, this only helps with the services that adopt and announce the policy, and uprooting the old record could be a problem in some scenarios, but it sounds like a reasonable policy to adopt, with the advantage outweighing the downside.
+</I>&gt;<i>
+</I>&gt;<i> One problem I can think of is that it could get messy if there are major changes in set organization, resulting in large numbers of bookkeeping deletions.
+</I>&gt;<i>
+</I>
+Yes, solving it with a policy is probably the best option. Especially if 
+your sets don't change that often.
+
+It is possible to solve the problem on the service side, but it is not 
+trivial, and kind of a hack:
+
+If a server recieves a request with a set parameter. It could respond by 
+not only the returning the records from that set, but returning all 
+records in the repository and marking them as deleted except the records 
+from the chosen set.
+This would be confusing for a client since the server returned records 
+that were not in the set the client asked. So the server should also add 
+the requested setspec to all other resources. The adding of the setspec 
+and deleted headers would be trivial to add in the http server, and 
+should not be stored in the database.
+However, this scenario could lead to problems if a client does multiple 
+harvests of different sets. In that case a record could be marked as 
+deleted in one set, while it is not deleted in another set. If the 
+harvested data is stored in one database (which is common), these 
+records would overwrite each other.
+
+In the MOAI server we can make many oaipmh feeds out of one oaipmh feed 
+base on the setspec headers. Every set could basically have it's own 
+oaipmh feed that contains just the records from that set, and all other 
+records marked as delete. The harvester could then harvest the feed 
+without the need to specify a set parameter. Furthermore each of these 
+oaipmh feeds could use slightly different oai:ids so that there would 
+not be any collisions when the harvested data is merged into a single 
+database.
+
+This does not completely solve the problem since you have to get 
+harvesters to use these different feeds instead of harvesting the 'main' 
+feed with set params. But for harvesters that use these feeds you have 
+eliminated the problem, without too much bookkeeping.
+
+
+
+-- 
+Jasper Op de Coul -- Erasmus University Rotterdam
+t +31 10 4082922  -- <A HREF="http://eur.nl/ub">http://eur.nl/ub</A>
+Burgemeester Oudlaan 50 3062 PA Rotterdam -- The Netherlands
+
+--------------------------------Disclaimer--------------------------------
+De informatie  verzonden in dit e-mail bericht  inclusief de bijlage(n) is
+vertrouwelijk  en is  uitsluitend  bestemd  voor de geadresseerde  van dit
+bericht. Lees verder: <A HREF="http://www.eur.nl/email-disclaimer">http://www.eur.nl/email-disclaimer</A>
+
+The information in this e-mail message  is confidential and may be legally
+privileged. Read more: <A HREF="http://www.eur.nl/english/email-disclaimer">http://www.eur.nl/english/email-disclaimer</A>
+--------------------------------------------------------------------------
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002058.html">[OAI-implementers] harvester guidelines
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2057">[ date ]</a>
+              <a href="thread.html#2057">[ thread ]</a>
+              <a href="subject.html#2057">[ subject ]</a>
+              <a href="author.html#2057">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

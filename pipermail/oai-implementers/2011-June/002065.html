@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Question on flow control / resumption token
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Question%20on%20flow%20control%20/%20resumption%20token&In-Reply-To=71B5A2C57E0AD04F97E997AA244D455E025F241F%40BEDIVERE.alfredst.oxford-analytica.local">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002064.html">
+   
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Question on flow control / resumption token</H1>
+    <B>Michael Nelson</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Question%20on%20flow%20control%20/%20resumption%20token&In-Reply-To=71B5A2C57E0AD04F97E997AA244D455E025F241F%40BEDIVERE.alfredst.oxford-analytica.local"
+       TITLE="[OAI-implementers] Question on flow control / resumption token">mln at cs.odu.edu
+       </A><BR>
+    <I>Thu Jun 30 12:34:46 EDT 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002064.html">[OAI-implementers] Question on flow control / resumption token
+</A></li>
+        
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2065">[ date ]</a>
+              <a href="thread.html#2065">[ thread ]</a>
+              <a href="subject.html#2065">[ subject ]</a>
+              <a href="author.html#2065">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Moray,
+
+The spec calls resumptionToken an &quot;exclusive&quot; argument, meaning that it is 
+the only argument that should be used.  from section 4:
+
+# exclusive, the argument may be included with request, but must be the 
+only argument (in addition to the verb argument).
+
+this means your rT &quot;abcdefgh&quot; must logically encode the other arguments: 
+set, from, until, etc. as well as the cursor through the result set.
+
+this can be done in two ways:
+
+1.  server-side result set (supported in some systems)
+
+2.  encoded in the rT itself (the most common approach).
+
+some these rTs are opaque, e.g.:
+
+<A HREF="http://edoc.hu-berlin.de/OAI-2.0?verb=ListIdentifiers&amp;metadataPrefix=oai_dc">http://edoc.hu-berlin.de/OAI-2.0?verb=ListIdentifiers&amp;metadataPrefix=oai_dc</A> 
+--&gt;
+<A HREF="http://edoc.hu-berlin.de/OAI-2.0?verb=ListIdentifiers&amp;resumptionToken=1309451189">http://edoc.hu-berlin.de/OAI-2.0?verb=ListIdentifiers&amp;resumptionToken=1309451189</A>
+
+and some are not, e.g.:
+
+<A HREF="http://amsacta.cib.unibo.it/cgi/oai2?verb=ListIdentifiers&amp;metadataPrefix=oai_dc">http://amsacta.cib.unibo.it/cgi/oai2?verb=ListIdentifiers&amp;metadataPrefix=oai_dc</A> 
+--&gt;
+<A HREF="http://amsacta.cib.unibo.it/cgi/oai2?verb=ListIdentifiers&amp;resumptionToken=metadataPrefix%3Doai_dc%26offset%3D1908">http://amsacta.cib.unibo.it/cgi/oai2?verb=ListIdentifiers&amp;resumptionToken=metadataPrefix%3Doai_dc%26offset%3D1908</A>
+
+It is quite dated now, but here are the slides from a tutorial we gave at 
+JCDL 2003:
+
+<A HREF="http://www.cs.odu.edu/~mln/jcdl03/oai-2.0-adv.ppt">http://www.cs.odu.edu/~mln/jcdl03/oai-2.0-adv.ppt</A>
+
+but there is some guidance on different strategies for creating rTs.
+
+hope this helps,
+
+Michael
+
+On Thu, 30 Jun 2011, Moray McConnachie wrote:
+
+&gt;<i> Hi,
+</I>&gt;<i>
+</I>&gt;<i> We're implementing a repository in OAI-PMH (not public at this stage),
+</I>&gt;<i> and I have a query where the specification isn't very clear.
+</I>&gt;<i>
+</I>&gt;<i> It's about flow control.
+</I>&gt;<i>
+</I>&gt;<i> Taking ListIdentifiers as an example, is the resumptionToken the ONLY
+</I>&gt;<i> argument which a client MUST supply to resume an incomplete list? Or
+</I>&gt;<i> must they also supply the other original arguments?
+</I>&gt;<i>
+</I>&gt;<i> Or to put it another way, if we receive a query with from and until
+</I>&gt;<i> parameters set, and we send back an incomplete list with a resumption
+</I>&gt;<i> token, then when the client submits a request using the resumption
+</I>&gt;<i> token, can we also expect them to supply again the from and until
+</I>&gt;<i> parameters?
+</I>&gt;<i>
+</I>&gt;<i> This affects what information we need to store about the request against
+</I>&gt;<i> the resumption token.
+</I>&gt;<i>
+</I>&gt;<i> Example:
+</I>&gt;<i>
+</I>&gt;<i> First request:
+</I>&gt;<i> <A HREF="http://some.where/oaipmh?verb=ListIdentifiers&amp;from=2011-06-29T03:05:00Z&amp;">http://some.where/oaipmh?verb=ListIdentifiers&amp;from=2011-06-29T03:05:00Z&amp;</A>
+</I>&gt;<i> until=2011-06-30T03:05:00Z
+</I>&gt;<i>
+</I>&gt;<i> To which response includes resumptionToken abcdefgh
+</I>&gt;<i>
+</I>&gt;<i> Must the second request then be
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://some.where/oaipmh?verb=ListIdentifiers&amp;from=2011-06-29T03:05:00Z&amp;">http://some.where/oaipmh?verb=ListIdentifiers&amp;from=2011-06-29T03:05:00Z&amp;</A>
+</I>&gt;<i> until=2011-06-30T03:05:00Z&amp;resumptionToken=abcdefgh
+</I>&gt;<i>
+</I>&gt;<i> OR is it legitimate for a client just to ask this:
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://some.where?verb=ListIdentifiers&amp;resumptionToken=abcdefgh">http://some.where?verb=ListIdentifiers&amp;resumptionToken=abcdefgh</A>
+</I>&gt;<i>
+</I>&gt;<i> Thanks for the tip.
+</I>&gt;<i>
+</I>&gt;<i> -------------------------------------
+</I>&gt;<i> Moray McConnachie
+</I>&gt;<i> Director of IT    +44 1865 261 600
+</I>&gt;<i> Oxford Analytica  <A HREF="http://www.oxan.com">http://www.oxan.com</A>
+</I>&gt;<i>
+</I>&gt;<i> ---------------------------------------------------------
+</I>&gt;<i> Disclaimer
+</I>&gt;<i>
+</I>&gt;<i> This message and any attachments are confidential and/or privileged. If this has been sent to you in error, please do not use, retain or disclose them, and contact the sender as soon as possible.
+</I>&gt;<i>
+</I>&gt;<i> Oxford Analytica Ltd
+</I>&gt;<i> Registered in England: No. 1196703
+</I>&gt;<i> 5 Alfred Street, Oxford
+</I>&gt;<i> United Kingdom, OX1 4EH
+</I>&gt;<i> ---------------------------------------------------------
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+----
+Michael L. Nelson <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">mln at cs.odu.edu</A> <A HREF="http://www.cs.odu.edu/~mln/">http://www.cs.odu.edu/~mln/</A>
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002064.html">[OAI-implementers] Question on flow control / resumption token
+</A></li>
+	
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2065">[ date ]</a>
+              <a href="thread.html#2065">[ thread ]</a>
+              <a href="subject.html#2065">[ subject ]</a>
+              <a href="author.html#2065">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

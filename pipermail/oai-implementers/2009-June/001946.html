@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%0A%09for%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To=4A252932.6000402%40cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001943.html">
+   <LINK REL="Next"  HREF="001947.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache</H1>
+    <B>Fridman, Rozita</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%0A%09for%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To=4A252932.6000402%40cornell.edu"
+       TITLE="[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache">Rozita.Fridman at FIZ-Karlsruhe.DE
+       </A><BR>
+    <I>Tue Jun  2 10:50:07 EDT 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001943.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+        <LI>Next message: <A HREF="001947.html">[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1946">[ date ]</a>
+              <a href="thread.html#1946">[ thread ]</a>
+              <a href="subject.html#1946">[ subject ]</a>
+              <a href="author.html#1946">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hello Simeon,
+
+thanks a lot for your quick response.
+
+&gt;<i> The notion of including an explicit start-next-incremental-harvest-from
+</I>&gt;<i> date
+</I>&gt;<i> in the response is something I have thought about too. It would solve
+</I>&gt;<i> the
+</I>&gt;<i> cache problem you describe. Not sure how much support there would be
+</I>&gt;<i> for such
+</I>&gt;<i> a change, what do others think?
+</I>
+Hopefully we will get support from other OAI-developer to extend a schema for the OAI-PMH response.
+ 
+
+&gt;<i> One way to solve this using the current protocol without modification
+</I>&gt;<i> is to
+</I>&gt;<i> use days granularity and to make sure that the cache is updated at
+</I>&gt;<i> least once
+</I>&gt;<i> within each day (and that the the update does not span a day boundary
+</I>&gt;<i> in UTC).
+</I>&gt;<i> That way T1=T2 always using your example.
+</I>
+It is a good solution until we get a protocol enhancement. But the problem is when a cache update has not run for 1 day (for example because an underlying repository was not available) a harvester will miss records for that day.
+
+Now we use the same workaround, that fedora-OAI-Provider uses: we deliver records based on update time in a cache and not on original update time of records in an underlying repository. But this approach requires us to change the earliestDatestamp entry contained in a OAI-PMH Identify-response. It have to be set to a time of the first cache update and not to original earliest time stamp in the underlying repository. Otherwise a harvester will possibly miss changes in the time range between earliest time stamp in the underlying repository and the first cache update time.
+
+&gt;<i> If you opted to follow the 503 route then you could issue a
+</I>&gt;<i> second/multiple
+</I>&gt;<i> 503's if the harvester comes back before the update is complete. This
+</I>&gt;<i> is
+</I>&gt;<i> really the only good approach if the cache is in an inconsistent state
+</I>&gt;<i> such
+</I>&gt;<i> that the idempotency requirements of the protocol are not met.
+</I>&gt;<i> 
+</I>
+Yes, it is an option. 
+
+Best regards,
+Rozita
+
+&gt;<i> Cheers.
+</I>&gt;<i> Simeon
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Fridman, Rozita wrote:
+</I>&gt;<i> &gt; Hello all,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; we developed an OAI-Provider for Escidoc repositories.
+</I>&gt;<i> &gt; Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses
+</I>&gt;<i> a
+</I>&gt;<i> &gt; cache to reduce a response time. Escidoc repositories intend to
+</I>&gt;<i> contain
+</I>&gt;<i> &gt; multiple millions of objects. The Escidoc-Core framework only
+</I>&gt;<i> requires
+</I>&gt;<i> &gt; that objects metadata stored in a Escidoc repository are well formed
+</I>&gt;<i> &gt; xml-structures. Therefore using of a cache in the Escidoc-OAI-
+</I>&gt;<i> Provider
+</I>&gt;<i> &gt; is essential to ensure validness of metadata in OAI-PMH response and
+</I>&gt;<i> an
+</I>&gt;<i> &gt; acceptable response time.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; But the current OAI-PMH protocol specification doesn't account for
+</I>&gt;<i> some
+</I>&gt;<i> &gt; issues, caused by the employment of a cache.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The main problem is a time lag between a harvester request and a last
+</I>&gt;<i> &gt; cache update:
+</I>&gt;<i> &gt; A harvester asks the OAI-Provider for all records that have changed
+</I>&gt;<i> &gt; between T0 and T2 in the underlying repository. The last cache update
+</I>&gt;<i> &gt; was at T1.The harvester gets records that have changed between T0 and
+</I>&gt;<i> &gt; T1, but assumes that it got all changes between T0 and T2. Therefore
+</I>&gt;<i> in
+</I>&gt;<i> &gt; the next request it asks for records that have changed between T2 and
+</I>&gt;<i> T3
+</I>&gt;<i> &gt; and is missing all changes between T1 and T2. If cache update
+</I>&gt;<i> interval
+</I>&gt;<i> &gt; is long and the next cache update takes place after T3, the harvester
+</I>&gt;<i> is
+</I>&gt;<i> &gt; also missing all changes between T2 and T3 and so on.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; One proposal would be to put a date stamp of the last cache update
+</I>&gt;<i> into
+</I>&gt;<i> &gt; the OAI-PMH response, in order to inform a harvester about possibly
+</I>&gt;<i> &gt; missed records.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Does anybody face the same problem? What do you think about it? Maybe
+</I>&gt;<i> &gt; there are better solutions for this problem?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The other issue is that depending on the OAI-Provider implementation
+</I>&gt;<i> a
+</I>&gt;<i> &gt; cache may be in an inconsistent state while a cache update process is
+</I>&gt;<i> &gt; running. Are there means in the OAI-PMH protocol to respond to
+</I>&gt;<i> harvester
+</I>&gt;<i> &gt; requests during a cache update? A possible solution would be to
+</I>&gt;<i> respond
+</I>&gt;<i> &gt; with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of
+</I>&gt;<i> the
+</I>&gt;<i> &gt; specification), but the problem is to specify Retry-After period. A
+</I>&gt;<i> &gt; duration of the cache update is not constant, it depends on the
+</I>&gt;<i> changes
+</I>&gt;<i> &gt; in the repository.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Thanks a lot,
+</I>&gt;<i> &gt; Rozita
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ---------------------------------------------------------------------
+</I>&gt;<i> ---
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; -------------------------------------------------------
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Fachinformationszentrum Karlsruhe, Gesellschaft f&#195;&#188;r
+</I>&gt;<i> wissenschaftlich-technische Information mbH.
+</I>&gt;<i> &gt; Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim
+</I>&gt;<i> HRB 101892.
+</I>&gt;<i> &gt; Gesch&#195;&#164;ftsf&#195;&#188;hrerin: Sabine Br&#195;&#188;nger-Weilandt.
+</I>&gt;<i> &gt; Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ---------------------------------------------------------------------
+</I>&gt;<i> ---
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>
+
+
+-------------------------------------------------------
+
+Fachinformationszentrum Karlsruhe, Gesellschaft f&#252;r wissenschaftlich-technische Information mbH. 
+Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+Gesch&#228;ftsf&#252;hrerin: Sabine Br&#252;nger-Weilandt. 
+Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001943.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+	<LI>Next message: <A HREF="001947.html">[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1946">[ date ]</a>
+              <a href="thread.html#1946">[ thread ]</a>
+              <a href="subject.html#1946">[ subject ]</a>
+              <a href="author.html#1946">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

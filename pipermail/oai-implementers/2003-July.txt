@@ -1,0 +1,369 @@
+From pnewell@csufresno.edu  Tue Jul  1 23:21:31 2003
+From: pnewell@csufresno.edu (Patrick Newell)
+Date: Tue, 01 Jul 2003 15:21:31 -0700
+Subject: [OAI-implementers] Community information
+Message-ID: <3F02096B.5000302@csufresno.edu>
+
+Does anyone know of any work being done to use OAI to provide Community
+Information?  I'm working on a community health information repository 
+and am wondering if anyone from the OAI community has done any work in 
+this area.  While MARC21 bibliographic data has been mapped in XML, I'm 
+not certain if MARC21 Community Information has been mapped in XML or if 
+the MARC21/CI data fields have been used in an OAI repository.
+
+Some guidance would be greatly appreciated.
+
+
+
+
+From stephen.thomas@adelaide.edu.au  Wed Jul  2 12:48:28 2003
+From: stephen.thomas@adelaide.edu.au (Steve Thomas)
+Date: Wed, 02 Jul 2003 21:18:28 +0930
+Subject: [OAI-implementers] Registration -- how long is it supposed to take?
+Message-ID: <3F02C68C.3080204@adelaide.edu.au>
+
+Hi.
+
+I registered a new respository over a week ago, and received confirmation, and 
+yet it is still not showing in the respository list at the OAI site.
+
+Is it supposed to take this long, or has something gone wrong?
+
+I've just registered again, but ... doesn't seem right.
+
+Base URL is http://etext.library.adelaide.edu.au/cgi-bin/OAI-lite.pl
+
+Regards,
+Steve
+
+-- 
+Stephen Thomas,
+Senior Systems Analyst,
+Adelaide University Library
+ADELAIDE UNIVERSITY SA 5005
+AUSTRALIA
+Tel: +61 8 8303 5190  Fax: +61 8 8303 4369
+Email: stephen.thomas@adelaide.edu.au
+URL: http://staff.library.adelaide.edu.au/~sthomas/
+
+
+From ehs@pobox.com  Tue Jul  8 18:45:26 2003
+From: ehs@pobox.com (Ed Summers)
+Date: Tue, 8 Jul 2003 13:45:26 -0400
+Subject: [OAI-implementers] Net::OAI::Harvester
+Message-ID: <20030708174526.GA12383@karma.dancygier.com>
+
+A beta version of a Perl OAI-PMH harvesting library was just uploaded to
+CPAN as Net::OAI::Harvester. The idea behind Net::OAI::Harvester is to
+provide an object-oriented client interface to the data found in OAI-PMH 
+repositories (similar to what LWP::UserAgent does for HTTP). 
+
+More about OAI-PMH can be found here:
+     http://www.openarchives.org
+
+And more about Net::OAI::Harvester can be found here:
+     http://search.cpan.org/author/ESUMMERS/OAI-Harvester-0.1/
+
+All of the 6 OAI-PMH verbs are supported. As an example here is the code to 
+retrieve a particular record from LC as Dublin Core and display the title.
+
+     my $harvester = Net::OAI::Harvester->new(
+          baseUrl => 'http://memory.loc.gov/cgi-bin/oai2_0'
+     );
+
+     my $record = $harvester->getRecord(
+          identifier     => 'oai:lcoa1.loc.gov:loc.gmd/g3764s.pm003250',
+	  metadataPrefix => 'oai_dc'
+     );
+
+     my $metadata = $record->metadata();
+     print "title: ", $metadata->title(), "\n";
+
+Features:
+
+- OAI-PMH responses can often be rather large XML files. Net::OAI::Harvester 
+  uses stream based parsing (XML::SAX) and serializes data as Perl objects on 
+  disk (using YAML). This serialized data is then made available through
+  an iterator interface which means that you keep a relatively low
+  memory foot print when doing ListRecords or ListIdentifiers requests.
+
+- Net::OAI::Harvester includes Net::OAI::Record::OAI_DC which is an
+  XML::SAX handler for parsing and providing an object oriented
+  interface to baseline Dublin Core metadata. It also provides a
+  framework for dropping in your own XML::SAX handler if you want to
+  parse other types of metadata. The idea is that as people create their
+  own handlers they can be easily included in the Net::OAI::Harvester
+  distribution.
+
+- If you are interested in the XML itself you can easily get a hold of the 
+  temporary file that contains the full XML response, and do what you want 
+  with it.
+
+- You can easily can a hold of the error code and message associated with any 
+  request.
+
+Caveats:
+
+- Net::OAI::Harvester only supports OAI-PMH v.2.
+
+- No support for compression (yet).
+
+- Needs more documentation, and examples.
+
+- You need to handle resumptionTokens explicitly. This means a call to 
+  listRecords() will not go and grab everything, but just the first chunk. 
+  However, there is infrastrucutre and methods to easily get at and pass the 
+  tokens.
+
+Feedback/comments/testser would be appreciated. If you are at all interested in 
+getting involved in the project please write to me directly, or (preferably) 
+use perl4lib@perl.org or oai-implementers@oaisrv.nsdl.cornell.edu.
+
+//Ed
+
+From Philip Hunter <lispjh@ukoln.ac.uk>  Tue Jul 15 15:26:29 2003
+From: Philip Hunter <lispjh@ukoln.ac.uk> (Philip Hunter)
+Date: Tue, 15 Jul 2003 15:26:29 +0100
+Subject: [OAI-implementers] 'In Practice, Good Practice: the Future of Open Archives' - The 4th Open Archives Forum Workshop, 4-5 September 2003, Bath UK.
+Message-ID: <02bf01c34add$1e269a20$4992268a@ulpcpjh>
+
+**Apologies for cross-posting**
+
+'In Practice, Good Practice: the Future of Open Archives' - The 4th Open Archives Forum Workshop, 4-5 September 2003, Bath UK.
+
+The 4th Open Archives Forum will take place at UKOLN, University of Bath,
+UK, on the 4th and 5th of September. The title of the workshop is: 'In
+Practice, Good Practice'. 
+
+The workshop is now taking registrations for this event. Registration can be completed via a page at the 
+Open Archives Forum project site at: http://www.oaforum.org/workshops/bath_invitation.php. 
+The programme of the workshop is available at: 
+http://www.oaforum.org/workshops/bath_programme.php
+
+***
+
+Details:
+
+The event will focus on good practice in the implementation of open
+archives. A particular theme of the workshop will be the use of the Open
+Archives Initiative Protocol for Metadata Harvesting [OAI-PMH] in the area
+of Cultural Heritage. The workshop will also be looking at the use of the
+OAI protocol as a way of publishing information about university theses,
+and how that might contribute to developing useful content for
+institutional (as opposed to subject-based) eprint archives.
+
+The workshop will build on issues discussed during the whole project, and
+draw inferences about best practice. These include technical issues,
+organisational issues and Intellectual Property Rights. A report on
+organisational issues written by a OAForum working group will be
+discussed at the workshop. Breakout sessions will offer the opportunity to
+discuss issues of practice with others working at the sharp end of
+implementation.
+
+There also will be an introduction to one of the project's key
+deliverables: an online tutorial which will give guidance to those wishing
+to implement a project using the OAI-PMH. This tutorial will be based on
+the experience of the successful pre-workshop tutorials held in Lisbon
+(2002) and Berlin (2003).
+
+There will be a  poster session to allow  project dissemination, and  time and space for
+ networking. Those wishing to submit a poster should contact Sara Hassen (s.hassen@ukoln.ac.uk)
+
+There will be representatives of the Open Archives Initiative 
+present at the workshop, as we have had at earlier workshops, 
+and there will be other important figures in the open archives world present. 
+There will be contribution from LIBER and SPARC on the current status of Open Access. 
+A panel session closing the second day of the workshop will offer the opportunity 
+to exchange views about the future direction of open archives, and about our experience of the open 
+archives approach so far.
+
+The Open Archives Forum is a EU funded project, whose purpose is to explore
+the possibilities of the open archives idea in the European context, and to
+facilitate access to relevant information. More information can be found on the Open Archives Forum website at: http://www.oaforum.org/
+
+***
+
+ *******************************************************
+Philip Hunter, UKOLN Research Officer.
+UKOLN, University of Bath, Bath, BA2 7AY
+Tel: +44 (0) 1225 323 668  Fax: +44 (0) 1225 826838 
+Email: p.j.hunter@ukoln.ac.uk  UKOLN: http://www.ukoln.ac.uk/   
+OA-FORUM: http://www.oaforum.org/
+ *******************************************************
+
+
+From deridder@cs.utk.edu  Mon Jul 21 21:23:00 2003
+From: deridder@cs.utk.edu (deridder)
+Date: Mon, 21 Jul 2003 16:23:00 -0400 (EDT)
+Subject: [OAI-implementers] base url change
+Message-ID: <Pine.GSO.4.51.0307211620110.13982@cetus20.cs.utk.edu>
+
+FYI, for anyone harvesting the repository at the
+University of Tennessee Libraries:
+  we have changed our repository base link, and re-registered.  You can
+harvest our current holdings at:
+http://diglib.lib.utk.edu/cgi/b/broker20/broker20
+
+  ( it used to be http://diglib.lib.utk.edu/oai/oai20.php )
+Sorry for the inconvenience.
+
+  Thanks!
+
+  Jody DeRidder
+  IT Administrator II
+  Digital Library Center
+  648A John C. Hodges Library
+  University of Tennessee
+  Knoxville, TN 37996
+
+  Phone: (865) 974-4796
+  Email: deridder@aztec.lib.utk.edu
+
+
+From hickey@oclc.org  Wed Jul 30 17:30:53 2003
+From: hickey@oclc.org (Hickey,Thom)
+Date: Wed, 30 Jul 2003 12:30:53 -0400
+Subject: [OAI-implementers] Compact repository code in Python
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98056A58D7@oa3-server.oa.oclc.org>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_001_01C356B7.F1D3F06F
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+After seeing how short an OAI client could be (our shortest version so far
+is 42 lines of Python code), we thought it would be interesting to see how
+much code it would take to support a validated OAI repository in Python.  We
+now have a version  ( http://purl.oclc.org/hickey/2PageOAI
+<http://purl.oclc.org/hickey/2PageOAI> ) that is 105 lines of code and fits
+on two pages, including the rather lengthy copyright statement.  It is
+released under our open-source license and we are interested in comments and
+improvements.  It could be a practical server for static databases with less
+than 100,000 records.  Currently only oai_dc is supported, but sets,
+resumption tokens, etc. are all there.
+ 
+The program is self-contained, using the basic HTTP server and XML library
+that comes with Python.  We've modified the client script so that it creates
+a file suitable for input to the repository code.
+ 
+--Thom Hickey
+--Jenny Toves
+ 
+
+------_=_NextPart_001_01C356B7.F1D3F06F
+Content-Type: text/html;
+	charset="iso-8859-1"
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+
+<META content="MSHTML 6.00.2600.0" name=GENERATOR></HEAD>
+<BODY>
+<DIV><SPAN class=759200116-30072003><FONT face=Arial size=2>After seeing how 
+short an OAI client could be (our shortest version so far is 42 lines of Python 
+code),&nbsp;we thought it would be interesting to see how much code it would 
+take to support a validated OAI repository in Python.&nbsp; We now have a 
+version&nbsp; (<A 
+href="http://purl.oclc.org/hickey/2PageOAI">http://purl.oclc.org/hickey/2PageOAI</A>) 
+that is 105 lines of code and fits on two pages, including the rather lengthy 
+copyright statement.&nbsp; It is released under our open-source license 
+and&nbsp;we are interested in comments and improvements.&nbsp; It could be a 
+practical server for static databases with less than 100,000 records.&nbsp; 
+Currently only oai_dc is supported, but sets, resumption tokens, etc. are all 
+there.</FONT></SPAN></DIV>
+<DIV><SPAN class=759200116-30072003><FONT face=Arial 
+size=2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=759200116-30072003><FONT face=Arial size=2>The program is 
+self-contained, using the basic HTTP server and XML library that comes with 
+Python.&nbsp; We've modified the client script so that it creates a file 
+suitable for input to the repository code.</FONT></SPAN></DIV>
+<DIV><SPAN class=759200116-30072003><FONT face=Arial 
+size=2></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=759200116-30072003><FONT face=Arial size=2>--Thom 
+Hickey</FONT></SPAN></DIV>
+<DIV><SPAN class=759200116-30072003><FONT face=Arial size=2>--Jenny 
+Toves</FONT></SPAN></DIV>
+<DIV><SPAN class=759200116-30072003><FONT face=Arial 
+size=2></FONT></SPAN>&nbsp;</DIV></BODY></HTML>
+
+------_=_NextPart_001_01C356B7.F1D3F06F--
+
+From Philip Hunter <lispjh@ukoln.ac.uk>  Tue Jul 15 15:26:29 2003
+From: Philip Hunter <lispjh@ukoln.ac.uk> (Philip Hunter)
+Date: Tue, 15 Jul 2003 15:26:29 +0100
+Subject: [OAI-implementers] [OAI-general] 'In Practice, Good Practice: the Future of Open Archives' - The 4th Open Archives Forum Workshop, 4-5 September 2003, Bath UK.
+Message-ID: <02bf01c34add$1e269a20$4992268a@ulpcpjh>
+
+**Apologies for cross-posting**
+
+'In Practice, Good Practice: the Future of Open Archives' - The 4th Open Archives Forum Workshop, 4-5 September 2003, Bath UK.
+
+The 4th Open Archives Forum will take place at UKOLN, University of Bath,
+UK, on the 4th and 5th of September. The title of the workshop is: 'In
+Practice, Good Practice'. 
+
+The workshop is now taking registrations for this event. Registration can be completed via a page at the 
+Open Archives Forum project site at: http://www.oaforum.org/workshops/bath_invitation.php. 
+The programme of the workshop is available at: 
+http://www.oaforum.org/workshops/bath_programme.php
+
+***
+
+Details:
+
+The event will focus on good practice in the implementation of open
+archives. A particular theme of the workshop will be the use of the Open
+Archives Initiative Protocol for Metadata Harvesting [OAI-PMH] in the area
+of Cultural Heritage. The workshop will also be looking at the use of the
+OAI protocol as a way of publishing information about university theses,
+and how that might contribute to developing useful content for
+institutional (as opposed to subject-based) eprint archives.
+
+The workshop will build on issues discussed during the whole project, and
+draw inferences about best practice. These include technical issues,
+organisational issues and Intellectual Property Rights. A report on
+organisational issues written by a OAForum working group will be
+discussed at the workshop. Breakout sessions will offer the opportunity to
+discuss issues of practice with others working at the sharp end of
+implementation.
+
+There also will be an introduction to one of the project's key
+deliverables: an online tutorial which will give guidance to those wishing
+to implement a project using the OAI-PMH. This tutorial will be based on
+the experience of the successful pre-workshop tutorials held in Lisbon
+(2002) and Berlin (2003).
+
+There will be a  poster session to allow  project dissemination, and  time and space for
+ networking. Those wishing to submit a poster should contact Sara Hassen (s.hassen@ukoln.ac.uk)
+
+There will be representatives of the Open Archives Initiative 
+present at the workshop, as we have had at earlier workshops, 
+and there will be other important figures in the open archives world present. 
+There will be contribution from LIBER and SPARC on the current status of Open Access. 
+A panel session closing the second day of the workshop will offer the opportunity 
+to exchange views about the future direction of open archives, and about our experience of the open 
+archives approach so far.
+
+The Open Archives Forum is a EU funded project, whose purpose is to explore
+the possibilities of the open archives idea in the European context, and to
+facilitate access to relevant information. More information can be found on the Open Archives Forum website at: http://www.oaforum.org/
+
+***
+
+ *******************************************************
+Philip Hunter, UKOLN Research Officer.
+UKOLN, University of Bath, Bath, BA2 7AY
+Tel: +44 (0) 1225 323 668  Fax: +44 (0) 1225 826838 
+Email: p.j.hunter@ukoln.ac.uk  UKOLN: http://www.ukoln.ac.uk/   
+OA-FORUM: http://www.oaforum.org/
+ *******************************************************
+
+_______________________________________________
+OAI-general mailing list
+List information, archives, preferences and to unsubscribe:
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-general
+

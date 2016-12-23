@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: [OAI-general] question about using the Va Tech provider
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:hussein%40cs.uct.ac.za">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000812.html">
+   <LINK REL="Next"  HREF="000813.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: [OAI-general] question about using the Va Tech provider
+   </H1>
+    <B>Hussein Suleman
+    </B> 
+    <A HREF="mailto:hussein%40cs.uct.ac.za"
+       TITLE="[OAI-implementers] Re: [OAI-general] question about using the Va Tech provider">hussein@cs.uct.ac.za
+       </A><BR>
+    <I>Fri, 28 Mar 2003 01:12:34 +0200</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000812.html">[OAI-implementers] DOCTYPE question
+</A></li>
+        <LI> Next message: <A HREF="000813.html">[OAI-implementers] DOCTYPE question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#811">[ date ]</a>
+              <a href="thread.html#811">[ thread ]</a>
+              <a href="subject.html#811">[ subject ]</a>
+              <a href="author.html#811">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi
+
+(this should have gone to oai-implementors so i am cross-posting it)
+
+regarding the VTOAI code i published a while ago, there isn't much it 
+does that can lead to a scalability problem. offhand, the only time a 
+large chunk of data is needed is when you ListRecords (and maybe 
+ListIdentifiers).
+
+in any event, i do not suggest 10k records - what is the byte size of a 
+typical response ? 30MB ? thats really too much ...
+
+the memory needed to store and process that is probably the cause of the 
+problem from the VTOAI perspective, and also from the perspective of 
+some XML parsers. instead, try 1000-1500 records. remember also there 
+are some potential service providers like me down here in South Africa 
+who would almost never be able to get a 30MB chunk at most times of the 
+day over our network :)
+
+lastly, fwiw, FastCGI won't help for this problem. but if you want to 
+try a really obscure solution, the code has an internal representation 
+of a record that you might try replacing with a pointer of some sort. 
+that way you don't simultaneously store lots of records in memory but 
+you still have enough info to generate the record in XML when required.
+
+hope this helps ... if you want more details about anything really 
+specific, send me a direct email.
+
+ttfn,
+----hussein
+
+
+<A HREF="mailto:will.sexton@duke.edu">will.sexton@duke.edu</A> wrote:
+&gt;<i> I'm working on establishing OAI provider services, starting with a
+</I>&gt;<i> metadata set related to a particular project.  We're using the Va Tech
+</I>&gt;<i> &quot;VTOAI OAI-PMH2 PERL Implementation&quot;, running on a Solaris machine, under
+</I>&gt;<i> Apache server cgi.  The data set is derived from several sources; we've
+</I>&gt;<i> worked to convert it all into flat XML files.
+</I>&gt;<i> 
+</I>&gt;<i> We have, I believe, about 16k records.  When using the repository explorer
+</I>&gt;<i> at <A HREF="http://oai.dlib.vt.edu">http://oai.dlib.vt.edu</A> to test our setup with smaller data sets (up to
+</I>&gt;<i> 1k records) it works fine.  However, in recent days I've transferred up
+</I>&gt;<i> about 10k records for testing, and now we're finding that we're getting
+</I>&gt;<i> time-out errors.
+</I>&gt;<i> 
+</I>&gt;<i> I've spoken with someone in the past who implemented the Va Tech
+</I>&gt;<i> implementation using FastCGI in Apache, and they said they had good
+</I>&gt;<i> results with it.  But I was working with our sysadmin today to set this
+</I>&gt;<i> up, and we've been getting 500 (internal server) errors when we test;
+</I>&gt;<i> mainly, I think, because we're not completely sure about how to wrap the
+</I>&gt;<i> oai.pl process in FastCGI.
+</I>&gt;<i> 
+</I>&gt;<i> I know that the author of the Va Tech implementation is on this list, as
+</I>&gt;<i> well as others who seem to have a fair amount of experience with OAI
+</I>&gt;<i> implementations.  So I'm seeking some advice.  Is the Va Tech
+</I>&gt;<i> implementation, plus or minus FastCGI, sufficiently robust to handle a
+</I>&gt;<i> repository of 15k+ XML-file records?  If so, and we need to use FastCGI,
+</I>&gt;<i> can someone offer some guidance on using them together?  And if not,
+</I>&gt;<i> should we consider another provider framework, and which one?
+</I>&gt;<i> 
+</I>&gt;<i> Thanks in advance...
+</I>&gt;<i> 
+</I>&gt;<i> Will
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i> Will Sexton / Metadata Architect * Research &amp; Content Development
+</I>&gt;<i> Perkins Library * Duke University / <A HREF="http://www.duke.edu/~wsexton/">http://www.duke.edu/~wsexton/</A>
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-general mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-general@oaisrv.nsdl.cornell.edu">OAI-general@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-general">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-general</A>
+</I>
+
+-- 
+=====================================================================
+hussein suleman ~ <A HREF="mailto:hussein@cs.uct.ac.za">hussein@cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+=====================================================================
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000812.html">[OAI-implementers] DOCTYPE question
+</A></li>
+	<LI> Next message: <A HREF="000813.html">[OAI-implementers] DOCTYPE question
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#811">[ date ]</a>
+              <a href="thread.html#811">[ thread ]</a>
+              <a href="subject.html#811">[ subject ]</a>
+              <a href="author.html#811">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

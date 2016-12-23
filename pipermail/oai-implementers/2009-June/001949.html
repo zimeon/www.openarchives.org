@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%20for%0A%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To=4A252D21.9080908%40cs.uct.ac.za">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001944.html">
+   <LINK REL="Next"  HREF="001950.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache</H1>
+    <B>Michael Nelson</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20issues%20with%20OAI-PMH%20specifications%20for%0A%09OAI-Provider%20implementations%20using%20a%20cache&In-Reply-To=4A252D21.9080908%40cs.uct.ac.za"
+       TITLE="[OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache">mln at cs.odu.edu
+       </A><BR>
+    <I>Tue Jun  2 11:21:39 EDT 2009</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001944.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+        <LI>Next message: <A HREF="001950.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1949">[ date ]</a>
+              <a href="thread.html#1949">[ thread ]</a>
+              <a href="subject.html#1949">[ subject ]</a>
+              <a href="author.html#1949">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+On Tue, 2 Jun 2009, Hussein Suleman wrote:
+
+&gt;<i> hi Rozita
+</I>&gt;<i>
+</I>&gt;<i> if you use a purpose-built cache, hopefully you can update the datestamp in 
+</I>&gt;<i> the cache so the datestamps of the cache are used to answer queries instead 
+</I>&gt;<i> of the original datestamps ... if you do this, you will not have a problem, 
+</I>&gt;<i> and i do believe this is the recommend OAI-PMH usage for 
+</I>&gt;<i> hierarchical/intermediate systems (i am sure it is written down somewhere but 
+</I>&gt;<i> i cant recall where)
+</I>
+I just realized that my response was essentially the same as Hussein's 
+here -- I should have sent my mesg in reply &amp; support of this one.
+
+regards,
+
+Michael
+
+&gt;<i>
+</I>&gt;<i> then, regarding cache downtime, i was going to say what Simeon has just 
+</I>&gt;<i> written regarding using multiple 503s ...
+</I>&gt;<i>
+</I>&gt;<i> (a day granularity may be restrictive, but it does depend on specifics of 
+</I>&gt;<i> your application)
+</I>&gt;<i>
+</I>&gt;<i> regarding the metadata issue, the reason for the requirement is so that 
+</I>&gt;<i> metadata records are self-contained and can be stored, verified and moved 
+</I>&gt;<i> around without losing namespace information. this requirement exists to some 
+</I>&gt;<i> degree because OAI-PMH was designed in the early and somewhat &quot;wild-west&quot; 
+</I>&gt;<i> days of XML when XML parsers were not very namespace-aware ... although i 
+</I>&gt;<i> should add that even today if you programmatically extract an XML sub-tree 
+</I>&gt;<i> with many parsing tools, you will still not have have fully validifiable 
+</I>&gt;<i> (valid?) XML unless namespace information is in the inner tags ... so it is 
+</I>&gt;<i> all about maintaining verification information within records come what may 
+</I>&gt;<i> ...
+</I>&gt;<i>
+</I>&gt;<i> ttfn,
+</I>&gt;<i> ----hussein
+</I>&gt;<i>
+</I>&gt;<i> =====================================================================
+</I>&gt;<i> hussein suleman ~ <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">hussein at cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+</I>&gt;<i> =====================================================================
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Fridman, Rozita wrote:
+</I>&gt;&gt;<i> Hello all,
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> we developed an OAI-Provider for Escidoc repositories.
+</I>&gt;&gt;<i> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+</I>&gt;&gt;<i> cache to reduce a response time. Escidoc repositories intend to contain
+</I>&gt;&gt;<i> multiple millions of objects. The Escidoc-Core framework only requires
+</I>&gt;&gt;<i> that objects metadata stored in a Escidoc repository are well formed
+</I>&gt;&gt;<i> xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+</I>&gt;&gt;<i> is essential to ensure validness of metadata in OAI-PMH response and an
+</I>&gt;&gt;<i> acceptable response time. 
+</I>&gt;&gt;<i> But the current OAI-PMH protocol specification doesn't account for some
+</I>&gt;&gt;<i> issues, caused by the employment of a cache.
+</I>&gt;&gt;<i>  The main problem is a time lag between a harvester request and a last
+</I>&gt;&gt;<i> cache update:
+</I>&gt;&gt;<i> A harvester asks the OAI-Provider for all records that have changed
+</I>&gt;&gt;<i> between T0 and T2 in the underlying repository. The last cache update
+</I>&gt;&gt;<i> was at T1.The harvester gets records that have changed between T0 and
+</I>&gt;&gt;<i> T1, but assumes that it got all changes between T0 and T2. Therefore in
+</I>&gt;&gt;<i> the next request it asks for records that have changed between T2 and T3
+</I>&gt;&gt;<i> and is missing all changes between T1 and T2. If cache update interval
+</I>&gt;&gt;<i> is long and the next cache update takes place after T3, the harvester is
+</I>&gt;&gt;<i> also missing all changes between T2 and T3 and so on.
+</I>&gt;&gt;<i>    One proposal would be to put a date stamp of the last cache update into
+</I>&gt;&gt;<i> the OAI-PMH response, in order to inform a harvester about possibly
+</I>&gt;&gt;<i> missed records. 
+</I>&gt;&gt;<i> Does anybody face the same problem? What do you think about it? Maybe
+</I>&gt;&gt;<i> there are better solutions for this problem?
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> The other issue is that depending on the OAI-Provider implementation a
+</I>&gt;&gt;<i> cache may be in an inconsistent state while a cache update process is
+</I>&gt;&gt;<i> running. Are there means in the OAI-PMH protocol to respond to harvester
+</I>&gt;&gt;<i> requests during a cache update? A possible solution would be to respond
+</I>&gt;&gt;<i> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+</I>&gt;&gt;<i> specification), but the problem is to specify Retry-After period. A
+</I>&gt;&gt;<i> duration of the cache update is not constant, it depends on the changes
+</I>&gt;&gt;<i> in the repository.
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> Thanks a lot,
+</I>&gt;&gt;<i> Rozita
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> ------------------------------------------------------------------------
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> -------------------------------------------------------
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> Fachinformationszentrum Karlsruhe, Gesellschaft f&#252;r 
+</I>&gt;&gt;<i> wissenschaftlich-technische Information mbH. Sitz der Gesellschaft: 
+</I>&gt;&gt;<i> Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+</I>&gt;&gt;<i> Gesch&#228;ftsf&#252;hrerin: Sabine Br&#252;nger-Weilandt. Vorsitzender des Aufsichtsrats: 
+</I>&gt;&gt;<i> MinR Hermann Riehl.
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> ------------------------------------------------------------------------
+</I>&gt;&gt;<i> 
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> OAI-implementers mailing list
+</I>&gt;&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;&gt;<i> 
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+----
+Michael L. Nelson <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">mln at cs.odu.edu</A> <A HREF="http://www.cs.odu.edu/~mln/">http://www.cs.odu.edu/~mln/</A>
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001944.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+	<LI>Next message: <A HREF="001950.html">[OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1949">[ date ]</a>
+              <a href="thread.html#1949">[ thread ]</a>
+              <a href="subject.html#1949">[ subject ]</a>
+              <a href="author.html#1949">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

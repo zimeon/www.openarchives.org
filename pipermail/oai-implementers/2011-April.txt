@@ -1,0 +1,60 @@
+From simeon.warner at cornell.edu  Wed Apr 13 10:17:59 2011
+From: simeon.warner at cornell.edu (Simeon Warner)
+Date: Wed Apr 13 10:33:26 2011
+Subject: [OAI-implementers] Re: A question on OAI-PMH 2.0 / Selective
+	Harvesting and Sets
+In-Reply-To: <4DA489B0020000ED0001655E@gwia.bsb-muenchen.de>
+References: <4DA489B0020000ED0001655E@gwia.bsb-muenchen.de>
+Message-ID: <20110413141759.GE25087@ice.library.cornell.edu>
+
+On Tue, Apr 12, 2011 at 05:19:44PM +0200, Mathias Kratzer wrote:
+> please forgive if this question had already been raised, discussed, and perhaps even resolved on any of the community platforms. I wasn't able to find an answer on the net so I decided to ask for your advice.
+> 
+> Let R denote an OAI-PMH 2.0 compliant repository with the following set hierarchy:
+> - institution
+> - institution:nebraska
+> - institution:florida
+> 
+> Now let's assume we want to set up a local database consisting of all the items of R which are grouped in the set institution:florida. Of course, we can easily do so by sending a ListRecords request to R which includes the argument set=institution:florida. We can even keep our local database in sync with R by scheduling a daily ListRecords request to R which does not only include the argument set=institution:florida but also the relevant "from" and "until" datestamps.
+> 
+> My question is: If an item X belongs to set institution:florida only by mistake (e.g. due to wrong metadata) and we harvest it today will we ever get a chance to notice that X doesn't belong to set institution:florida any longer after the mistake has been corrected? 
+
+Indeed. If you are harvesting a particular set from the data provider
+then you will not be able to tell if an item moves out of that
+set. See, for example,
+http://www.openarchives.org/pipermail/oai-implementers/2003-October/001036.html
+and other parts of that thread.
+
+>The only solution I can think of was to reset the "from" datestamp of our harvester request to some date way back in the past and do a full re-sync but is there also a way which is less brute-force?
+
+Not specifying the "from" and "until" datastamps will do a complete
+re-harvest. In the case that you are harvesting from only a particular
+set then this is the only way to be sure you know whether items have
+moved out of the set.
+
+In the case that you are harvesting the entire repository then,
+provided the data provider updates an item's datestamp for set
+membership changes, then you will be able to pick up set membership
+changes.
+
+This is an understood flaw in the sets mechanism and one of the
+reasons that I think sets should be used only to support selective
+harvesting needs. I.e. unless you really expect someone to want to
+harvest just the institution:nebraska or institution:florida sets, it
+is probably best not to create them. If the goal is to indicate a
+metadata property then that should go in the metadata.
+
+Cheers,
+Simeon
+
+From lemaire-crespy at cerimes.fr  Thu Apr 14 04:48:38 2011
+From: lemaire-crespy at cerimes.fr (Marie-Laure Lemaire-Crespy)
+Date: Thu Apr 14 04:48:46 2011
+Subject: [OAI-implementers] unsubscribe
+Message-ID: <002501cbfa80$bf6a6550$3e3f2ff0$@fr>
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20110414/50946531/attachment.htm

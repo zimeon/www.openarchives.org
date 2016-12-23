@@ -1,0 +1,65 @@
+<!-- Open Archives MARC Transport Definition -->
+<!-- This DTD can be used to encode MARC records for transport within the -->
+<!-- Open Archives community. -->
+<!-- Draft version 0.1, Robert France, 19 January 2000 -->
+
+<!-- For the MARC standard, see "http://www.loc.gov/marc/". -->
+
+<!-- Questions: -->
+<!--   1)  What entity sets should we use? US-MARC generally uses an  -->
+<!--     extended (8-bit) ASCII standard called ANSEL, although it is -->
+<!--     defined to also allow UNICODE transcription.  I'm not aware -->
+<!--     of any standard entity set that covers the ANSEL characters. -->
+<!--   2)  MARC field IDs are always 3-digit decimal integers; subfield -->
+<!--     labels for variable fields are always single letters.  Is it -->
+<!--     worthwhile defining entities for these?  -->
+<!--   3)  Instead of !DOCTYPE, Mark Doyle uses this construct: -->
+<!--        <!ENTITY % doctype "oa_marc"> -->
+<!--        <!ELEMENT %doctype; (fixfield+, varfield*)> -->
+<!--     Why does he do this, and which way is better here? -->
+
+<! --
+<!ENTITY % ISOlat1 PUBLIC
+     "ISO 8879-1986//ENTITIES Added Latin 1//EN"                  >
+
+<!ENTITY % ISOlat2 PUBLIC
+     "ISO 8879-1986//ENTITIES Added Latin 2//EN"                  >
+
+<!ENTITY  % ISOdia  PUBLIC
+     "ISO 8879-1986//ENTITIES Diacritical Marks//EN"              >
+
+
+
+<!DOCTYPE oa_marc [
+   <!ELEMENT oa_marc ( fixfield+, varfield* )  >
+   <!ATTLIST oa_marc 
+        status  CDATA   #IMPLIED
+        type    CDATA   #REQUIRED
+        level   CDATA   #REQUIRED
+        ctlType CDATA   #IMPLIED
+        charEnc CDATA   #IMPLIED
+        encLvl  CDATA   #IMPLIED
+        catForm CDATA   #IMPLIED
+        lrRqrd  CDATA   #IMPLIED  >
+
+<!-- "Fixed fields" are fixed-length character strings, each position (range) -->
+<!--     of which has different meaning.  Blanks are used within these fields -->
+<!--     to indicate missing or unknown values, and two blanks are thus very -->
+<!--     different from one blank.  Accordingly, the (#PCDATA) in fixfield -->
+<!--     elements must always be quoted.  How do we say that in XML? -->
+<!--     Since fixed field values are always ASCII not ANSEL, and thus contain -->
+<!--     neither tags nor entities, would it work simply to use (CDATA) instead? -->
+   <!ELEMENT fixfield ( #PCDATA )  >
+   <!ATTLIST fixfield
+        id      CDATA   #REQUIRED  >	<!-- Field ID: three decimal digits. -->
+
+   <!ELEMENT varfield ( subfield+ )  >
+   <!ATTLIST varfield
+        id      CDATA   #REQUIRED	<!-- Field ID: three decimal digits. -->
+        i1      CDATA   #REQUIRED	<!-- Indicators:  each one -->
+        i2      CDATA   #REQUIRED  >	<!--   character, quoted. -->
+
+   <!ELEMENT subfield ( #PCDATA )  >
+   <!ATTLIST subfield
+        label   CDATA   #REQUIRED  >	<!-- Subfield label: one character. -->
+] >

@@ -1,0 +1,80 @@
+<schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+          xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+          targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+          elementFormDefault="qualified"
+          attributeFormDefault="unqualified">
+
+  <annotation>
+   <documentation>
+     Schema to verify validity of responses to ListRecords OAI-protocol request.
+    This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-23
+    with XSV 1.176/1.87 of 2001/02/16 16:38:43
+   </documentation>
+  </annotation>
+
+  <element name="ListRecords" type="oai:ListRecordsType"/>
+
+  <!-- response to ListRecords-request -->
+  <!-- this response may contain an optional resumptionToken -->
+
+  <complexType name="ListRecordsType">
+   <sequence>
+     <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+     <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+     <element name="record" minOccurs="0" maxOccurs="unbounded" type="oai:recordType"/>
+     <element name="resumptionToken" minOccurs="0" maxOccurs="1" type="string"/>
+   </sequence>
+   </complexType>
+
+  <!-- define recordType -->
+  <!-- a record has a header and a metadata part -->
+
+  <complexType name="recordType">
+   <sequence>
+     <element name="header" minOccurs="1" maxOccurs="1" type="oai:headerType"/>
+     <element name="metadata" minOccurs="0" maxOccurs="1" type="oai:metadataType"/>
+     <element name="about" minOccurs="0" maxOccurs="1" type="oai:aboutType"/>
+   </sequence>
+    <attribute name="status" use="optional" type="oai:statusType"/>
+  </complexType>
+
+  <!-- define headerType -->
+  <!-- a header has a unique identifier and a datestamp -->
+
+  <complexType name="headerType">
+   <sequence>
+     <element name="identifier" minOccurs="1" maxOccurs="1" type="uriReference"/>
+     <element name="datestamp" minOccurs="1" maxOccurs="1" type="date"/>
+   </sequence>
+  </complexType>
+
+  <!-- define metadataType -->
+  <!-- metadata must be expressed in XML that complies with another XML Schema -->
+  <!-- metadata must be explicitely qualified in the response -->
+
+  <complexType name="metadataType">
+   <sequence>
+    <any namespace="##any" processContents="lax"/>
+   </sequence>
+  </complexType>
+
+ <!-- define aboutType -->
+ <!-- data "about" the record must be expressed in XML -->
+ <!-- that is compliant with an XML Schema defined by a community -->
+
+ <complexType name="aboutType">
+  <sequence>
+   <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="1"/>
+  </sequence>
+ </complexType>
+
+ <!-- define statusType -->
+ <!-- a record can have a status of "deleted" . -->
+
+ <simpleType name="statusType">
+   <restriction base="string">
+    <enumeration value="deleted"/>
+   </restriction>
+  </simpleType>
+
+</schema>

@@ -1,0 +1,1203 @@
+From krichel at openlib.org  Wed Sep  7 12:07:32 2005
+From: krichel at openlib.org (Thomas Krichel)
+Date: Wed Sep  7 12:07:00 2005
+Subject: [OAI-implementers] First Workshop on eprints in Library and
+	Information Science
+Message-ID: <20050907160732.GA4608@openlib.org>
+
+Announcement [crossposted]
+
+First Workshop on Eprints in Library and Information Science
+
+22 October, 2005 from 13:45 to 19:00
+Council Chamber, CERN, Geneva, Switzerland
+
+The workshop takes place right after the CERN workshop on Innovations
+in Scholarly Communication OAI4 http://oai4.web.cern.ch/OAI4/. It
+is sponsored by CERN, CILEA and the Polytechnic University of Valencia.
+The meeting is followed by a reception. 
+
+The workshop is for activists, friends and folks who want to find out
+more about the E-LIS eprints archive for Library and Information
+Science (LIS), at http://eprints.rclis.org.  E-LIS was formed in 2003
+to further the open archiving of papers in LIS and related fields. It
+is an open-access international eprints archive maintained by
+volunteers. It has grown spectacularly well. At the time of writing
+almost 3000 eprints have been archived.
+
+At the workshop the E-LIS community will discuss technical details of
+E-LIS and organizational models for the E-LIS community. Outsiders
+will find it interesting to see how a really successful open archive
+works.  Some efforts that are related to E-LIS will also be discussed.
+This workshop will be an important contribution to the development of
+open archiving within LIS scholarly communication.
+
+Registration for this event is free, but limited to to the first 150
+people. See the workshop web site at 
+
+http://www.aepic.it/conf/index.php?cf=4 
+
+for further details and online registration.
+
+From jewelw at usc.edu  Tue Sep 13 15:29:04 2005
+From: jewelw at usc.edu (Jewel Ward)
+Date: Tue Sep 13 15:29:13 2005
+Subject: [OAI-implementers] implementation of non-English characters w/UTF-8?
+Message-ID: <43272880.6050601@usc.edu>
+
+
+How have other people implemented "non-UTF-8" characters in their DP 
+records?
+
+Meaning, we have non-English characters that are "choking" when we test 
+our Data Provider.  [Think "e" with the accent over it 
+http://lib-app1.usc.edu:8085/oaidp?verb=GetRecord&identifier=oai:usc:digitalarchive:bhe/bhe-m27&metadataPrefix=oai_dc 
+(surname after first name of "Elmo").]  Eventually, we will have several 
+Asian language character sets, as well as the current non-English 
+characters.
+
+I have looked over the protocol, looked at various tutorials, the 
+oai-implementers archives, and the OAI Best Practices site, and have not 
+seen any guidelines other than this thread:
+
+http://www.openarchives.org/pipermail/oai-implementers/2001-April/000093.html
+
+I'm also looking at OLAC and some of the DP implementations in Japan, 
+but have not [yet] found the solution.  [Like this: 
+http://mitizane.ll.chiba-u.jp/cgi-bin/oai/oai2.0?verb=ListRecords&metadataPrefix=oai_dc 
+.]
+
+Will we just have to locate the individual characters that are choking 
+and encode those a specific way?
+
+Thanks in advance,
+
+Jewel
+
+-- 
+Jewel H. Ward
+Program Manager, USC Digital Archive
+Leavey Library, Information Services Division
+University of Southern California
+Tel: (213) 821-2298   Cell: (213) 219-2784
+
+From cwilper at cs.cornell.edu  Tue Sep 13 16:40:23 2005
+From: cwilper at cs.cornell.edu (Chris Wilper)
+Date: Tue Sep 13 16:45:10 2005
+Subject: [OAI-implementers] implementation of non-English characters
+	w/UTF-8?
+Message-ID: <772EF7E386FEDF4FA6E11A9DA703A4D24E01D5@EXCHVS1.cs.cornell.edu>
+
+Hi Jewel,
+
+UTF-8 can handle any Unicode character ("e" with an accent, and thousands
+more from many languages).  As long as the encoding of the your characters
+constitute valid UTF-8, you should be set.  The problem often arises when you
+think you have UTF-8 to begin with, but your source data is actually using
+some other encoding.  Often the problem isn't apparent until you get to the
+non-ascii characters because several different encodings represent
+"low-ascii" in the same way (the first few bytes).  It sounds like that might
+be what's happening in your case.
+
+If so, the best thing to do (and this is sometimes really hard) is to find
+out what encoding the original provider of the file used.  If you know that,
+then you can convert it to UTF-8 using a tool designed for that job[1].   If
+you're unable to determine what the original encoding was, you can at least
+make the file validate by replacing the odd characters with valid (though,
+probably incorrect) UTF-8 ones[2].
+
+- Chris
+
+[1] Like this one that google told me about:
+http://www.chilkatsoft.com/CharsetStudio.asp
+[2] Simeon here at Cornell wrote a nice utility for this:
+http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org on behalf of Jewel Ward
+Sent: Tue 9/13/2005 3:29 PM
+To: OAI-implementers
+Subject: [OAI-implementers] implementation of non-English characters w/UTF-8?
+ 
+
+How have other people implemented "non-UTF-8" characters in their DP 
+records?
+
+Meaning, we have non-English characters that are "choking" when we test 
+our Data Provider.  [Think "e" with the accent over it 
+http://lib-app1.usc.edu:8085/oaidp?verb=GetRecord&identifier=oai:usc:digitala
+rchive:bhe/bhe-m27&metadataPrefix=oai_dc 
+(surname after first name of "Elmo").]  Eventually, we will have several 
+Asian language character sets, as well as the current non-English 
+characters.
+
+I have looked over the protocol, looked at various tutorials, the 
+oai-implementers archives, and the OAI Best Practices site, and have not 
+seen any guidelines other than this thread:
+
+http://www.openarchives.org/pipermail/oai-implementers/2001-April/000093.html
+
+I'm also looking at OLAC and some of the DP implementations in Japan, 
+but have not [yet] found the solution.  [Like this: 
+http://mitizane.ll.chiba-u.jp/cgi-bin/oai/oai2.0?verb=ListRecords&metadataPre
+fix=oai_dc 
+.]
+
+Will we just have to locate the individual characters that are choking 
+and encode those a specific way?
+
+Thanks in advance,
+
+Jewel
+
+-- 
+Jewel H. Ward
+Program Manager, USC Digital Archive
+Leavey Library, Information Services Division
+University of Southern California
+Tel: (213) 821-2298   Cell: (213) 219-2784
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20050913/ec6029a8/attachment.htm
+From simeon at cs.cornell.edu  Tue Sep 13 16:47:09 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Tue Sep 13 16:47:53 2005
+Subject: [OAI-implementers] implementation of non-English characters
+	w/UTF-8?
+In-Reply-To: <43272880.6050601@usc.edu>
+References: <43272880.6050601@usc.edu>
+Message-ID: <Pine.LNX.4.58.0509131601080.20951@dhcp103-124.cs.cornell.edu>
+
+
+Hi Jewel,
+
+Perhaps I'm not understanding your question properly, but I think the
+bottom line is that you have to convert whatever it is you have into
+Unicode. When you know the Unicode code point you can then either write an
+XML numeric entity (e.g. &#252; for code point 252(decimal)) or encode it
+as a two-byte UTF-8 sequence.
+
+In arXiv, for example, we have legacy data that uses TeX escape sequences
+to represent non-ASCII characters in author names and such. Our OAI
+interface has code to convert these to numeric entities. For example, the
+TeX escape sequence \"u (u-umlaut) is Unicode code point 0x00FC, or 252 in
+decimal which is represented as "&#252;" in the XML. You can see this in
+the response from:
+
+http://arxiv.org/oai2?verb=GetRecord&identifier=oai:arXiv.org:hep-th/9901140&metadataPrefix=oai_dc
+
+My choice to use the somewhat less efficient numeric entities rather than
+direct UTF-8 was motivated by debugging ease on systems where tools for
+UTF-8 were not really mature.
+
+The site you refer to, http://mitizane.ll.chiba-u.jp/, correctly uses
+direct UTF-8 encodings as far as I can see. We need never know what
+internal format they use (ah! the beauty of standard interfaces...).
+
+If you have problems locating UTF-8 encoding errors in XML you might find
+my little utf8conditioner program helpful:
+http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/
+
+Cheers,
+Simeon
+
+
+On Tue, 13 Sep 2005, Jewel Ward wrote:
+> How have other people implemented "non-UTF-8" characters in their DP
+> records?
+>
+> Meaning, we have non-English characters that are "choking" when we test
+> our Data Provider.  [Think "e" with the accent over it
+> http://lib-app1.usc.edu:8085/oaidp?verb=GetRecord&identifier=oai:usc:digitalarchive:bhe/bhe-m27&metadataPrefix=oai_dc
+> (surname after first name of "Elmo").]  Eventually, we will have several
+> Asian language character sets, as well as the current non-English
+> characters.
+>
+> I have looked over the protocol, looked at various tutorials, the
+> oai-implementers archives, and the OAI Best Practices site, and have not
+> seen any guidelines other than this thread:
+>
+> http://www.openarchives.org/pipermail/oai-implementers/2001-April/000093.html
+>
+> I'm also looking at OLAC and some of the DP implementations in Japan,
+> but have not [yet] found the solution.  [Like this:
+> http://mitizane.ll.chiba-u.jp/cgi-bin/oai/oai2.0?verb=ListRecords&metadataPrefix=oai_dc
+> .]
+>
+> Will we just have to locate the individual characters that are choking
+> and encode those a specific way?
+>
+> Thanks in advance,
+>
+> Jewel
+>
+> --
+> Jewel H. Ward
+> Program Manager, USC Digital Archive
+> Leavey Library, Information Services Division
+> University of Southern California
+> Tel: (213) 821-2298   Cell: (213) 219-2784
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From chas at jump.lib.uchicago.edu  Tue Sep 13 17:27:47 2005
+From: chas at jump.lib.uchicago.edu (Charles Blair)
+Date: Tue Sep 13 17:27:48 2005
+Subject: [OAI-implementers] implementation of non-English characters
+	w/UTF-8? 
+In-Reply-To: Your message of "Tue, 13 Sep 2005 16:14:34 CDT."
+Message-ID: <20050913212747.CE36A3A5E7A@jump.lib.uchicago.edu>
+
+> Meaning, we have non-English characters that are "choking" when we
+> test our Data Provider.  [Think "e" with the accent over it
+> http://lib-app1.usc.edu:8085/oaidp?verb=GetRecord&identifier=oai:usc:digitalarchive:bh
+> e/ bhe-m27&metadataPrefix=oai_dc (surname after first name of
+> "Elmo").]
+
+this seems to be encoded in iso-8859-1. a unix command like this will
+convert it to utf-8:
+
+recode -v ISO-8859-1/..UTF-8 < oaidp.xml > r-oaidp.xml
+
+(recode is GNU recode.)
+
+From jewelw at usc.edu  Tue Sep 13 19:30:28 2005
+From: jewelw at usc.edu (Jewel Ward)
+Date: Tue Sep 13 19:30:31 2005
+Subject: [OAI-implementers] implementation of non-English characters
+	w/UTF-8?
+In-Reply-To: <Pine.LNX.4.58.0509131601080.20951@dhcp103-124.cs.cornell.edu>
+References: <43272880.6050601@usc.edu>
+	<Pine.LNX.4.58.0509131601080.20951@dhcp103-124.cs.cornell.edu>
+Message-ID: <43276114.2010802@usc.edu>
+
+thanks for all of the online and offline advice.
+
+it appears that our data may not be "as UTF-8" as it ought to be, in 
+spite of the fact that it's in an Oracle db.  we're going to re-check 
+this and do some Perlin' and we'll see how the next round of testing goes.
+
+thanks again.
+
+Jewel
+
+From amuvhunzwi at ivu.ac.zw  Wed Sep 14 04:52:52 2005
+From: amuvhunzwi at ivu.ac.zw (Ariel Muvhunzwi)
+Date: Wed Sep 14 15:39:42 2005
+Subject: [OAI-implementers] OPAC software for digital library catalogue
+Message-ID: <4327E4E4.4000706@ivu.ac.zw>
+
+I need an open sources software Online public library access catalogue 
+for University virtual Library. Where can i down load it to operate on 
+the web site with a search interface.
+
+Thank you
+
+From amuvhunzwi at ivu.ac.zw  Wed Sep 14 04:54:42 2005
+From: amuvhunzwi at ivu.ac.zw (Ariel Muvhunzwi)
+Date: Wed Sep 14 17:10:49 2005
+Subject: [OAI-implementers] Digital library work flow plan example
+Message-ID: <4327E552.1080902@ivu.ac.zw>
+
+Dear all
+
+May i have an example of a workflow for a digital library of a university.
+
+From krichel at openlib.org  Sat Sep 17 09:53:25 2005
+From: krichel at openlib.org (Thomas Krichel)
+Date: Sat Sep 17 09:53:11 2005
+Subject: [OAI-implementers] OAI4 2nd call for participation
+Message-ID: <20050917135324.GA18217@openlib.org>
+
+CERN Workshop on Innovations in Scholarly Communication - OAI4
+20-22 October 2005
+
+The 4th Cern Workshop on Open Access is still open for bookings. 155
+firm bookings have already been made, and only a small number of
+vacant places now remain. The Programme can be found at
+http://oai4.web.cern.ch/OAI4/, where details on how to register can
+also be found.
+
+The series of Cern Workshop has established itself as one of the
+premier meetings on Open Access in Europe. The 2005 Programme reflects
+a wide spectrum of interest in the Open Access movement, with papers
+and workshops to interest librarians, funders, academics and technical
+specialists.
+
+If you are interested in attending the Workshop, please book without
+delay to avoid disappointment.
+
+
+From katharine.lindsay at computing-services.oxford.ac.uk  Mon Sep 19 04:29:41 2005
+From: katharine.lindsay at computing-services.oxford.ac.uk (Kate Lindsay)
+Date: Mon Sep 19 08:31:45 2005
+Subject: [OAI-implementers] Harvesting DC records for DDI system
+Message-ID: <432E76F5.2040707@oucs.ox.ac.uk>
+
+We are currently using a piece of open-source software called the 
+Virtual Data Center (VDC) from Harvard that implements a complete 
+digital library system for numeric data - e.g. social sciences 
+quantitative research data (http://thedata.org/index.php/Main/AboutVDC). 
+Whilst the system provides extensive support for federated and 
+distributed collections it will currently only provide federated search 
+functionality for  records in other VDC  systems however it will harvest 
+metadata from other systems that implement OAI.
+
+We would like to make the system search the UK Data Archive (UKDA) - as 
+the UKDA does not use VDC we are looking at being able to harvest their 
+records. The UKDA have a test OAI service but this only contains a 
+reduced Dublin Core record for each of their catalogue entries and it 
+seems that the VDC system will only harvest DDI metadata. Has any body 
+got any experience of what would be needed to harvest DC records and put 
+them into DDI. At first glance it seems that DC and DDI map pretty well.
+
+Any advice on how this would be done and how much work it would take 
+would be much appreciated.
+
+Kate
+
+-- 
+****************************************************************************************
+Katharine Lindsay katharine.lindsay@oucs.ox.ac.uk
+Academic Computing Development Team  
+www.oucs.ox.ac.uk/acdt/
+ACDT is part of the Learning Technologies Group  
+www.oucs.ox.ac.uk/ltg/
+
+Learning Technologies Group | OUCS | University of Oxford |
+13 Banbury Road | Oxford OX2 6NN | Tel: 01865 273226
+
+*****************************************************************************************
+
+
+From eric at infrae.com  Mon Sep 19 09:12:54 2005
+From: eric at infrae.com (eric casteleijn)
+Date: Mon Sep 19 09:12:37 2005
+Subject: [OAI-implementers] Harvesting DC records for DDI system
+In-Reply-To: <432E76F5.2040707@oucs.ox.ac.uk>
+References: <432E76F5.2040707@oucs.ox.ac.uk>
+Message-ID: <432EB956.8060703@infrae.com>
+
+> We would like to make the system search the UK Data Archive (UKDA) - as 
+> the UKDA does not use VDC we are looking at being able to harvest their 
+> records. The UKDA have a test OAI service but this only contains a 
+> reduced Dublin Core record for each of their catalogue entries and it 
+> seems that the VDC system will only harvest DDI metadata. Has any body 
+> got any experience of what would be needed to harvest DC records and put 
+> them into DDI. At first glance it seems that DC and DDI map pretty well.
+> 
+> Any advice on how this would be done and how much work it would take 
+> would be much appreciated.
+
+If the needed DDI-fields are there in the DC metadata, an xslt 
+transformation could be used to translate the harvested xml to the 
+format you need. (I have no experience with DDI, so I can't really say 
+how hard or easy this will be, but I don't think it'll be very hard). 
+You could then have an intermediate server that harvests UKDA and 
+provides an OAI service with the metadata in DDI. This can probably 
+achieved in a lot of ways, but at least one of them is using the open 
+source pyoai package (full disclosure: I work for the company who makes 
+that, but it is available free of charge through cvs here: 
+cvs.infrae.com/pyoai/), which provides both OAIPMH client and server 
+software. Putting just a thin xslt-layer between harvester and server 
+should not be that hard in Python.
+
+eric casteleijn
+infrae
+
+From eric at infrae.com  Mon Sep 19 09:27:11 2005
+From: eric at infrae.com (eric casteleijn)
+Date: Mon Sep 19 09:26:55 2005
+Subject: [OAI-implementers] Harvesting DC records for DDI system
+In-Reply-To: <432EB956.8060703@infrae.com>
+References: <432E76F5.2040707@oucs.ox.ac.uk> <432EB956.8060703@infrae.com>
+Message-ID: <432EBCAF.3060103@infrae.com>
+
+eric casteleijn wrote:
+>> We would like to make the system search the UK Data Archive (UKDA) - 
+>> as the UKDA does not use VDC we are looking at being able to harvest 
+>> their records. The UKDA have a test OAI service but this only contains 
+>> a reduced Dublin Core record for each of their catalogue entries and 
+>> it seems that the VDC system will only harvest DDI metadata. Has any 
+>> body got any experience of what would be needed to harvest DC records 
+>> and put them into DDI. At first glance it seems that DC and DDI map 
+>> pretty well.
+>>
+>> Any advice on how this would be done and how much work it would take 
+>> would be much appreciated.
+> 
+> 
+> If the needed DDI-fields are there in the DC metadata, an xslt 
+> transformation could be used to translate the harvested xml to the 
+> format you need. (I have no experience with DDI, so I can't really say 
+> how hard or easy this will be, but I don't think it'll be very hard). 
+> You could then have an intermediate server that harvests UKDA and 
+> provides an OAI service with the metadata in DDI. This can probably 
+> achieved in a lot of ways, but at least one of them is using the open 
+> source pyoai package (full disclosure: I work for the company who makes 
+> that, but it is available free of charge through cvs here: 
+> cvs.infrae.com/pyoai/), which provides both OAIPMH client and server 
+> software. Putting just a thin xslt-layer between harvester and server 
+> should not be that hard in Python.
+
+Sorry, I was confused, probably due to caffeine deficiency: what I 
+(should have) meant to say is: you could do this with a thin xslt layer 
+that takes the xml output of the UKDA server and transforms it to DDI, 
+*or* you could set up a small intermediary server that harvests UKDA and 
+outputs DDI, but this would have nothing to do with xslt.
+
+I'll be having a coffee now.
+
+eric
+
+From kristina at infomuse.net  Mon Sep 19 14:04:00 2005
+From: kristina at infomuse.net (Kristina M. Spurgin)
+Date: Mon Sep 19 14:04:06 2005
+Subject: [OAI-implementers] trouble registering a static repository
+Message-ID: <432EFD90.6060005@infomuse.net>
+
+Hello,
+
+We've developed a static repository containing records for the films 
+made available through www.folkstreams.net. The xml repository document 
+resides at: http://www.folkstreams.net/oai/static_repository.xml
+
+My question is two-fold.
+
+First, we have been able to identify only two static repository gateways 
+that will allow us to register our repository: OLAC and the 
+demonstration gateway at http://libtest.lanl.gov/. Our content is not 
+language-related, so OLAC is not appropriate. We are unclear about the 
+scope/purpose of the demonstration gateway. Is it there for permenant 
+use by any repository, or is it just meant for testing purposes? 
+Finally, is there a central listing of static repository gateways 
+somewhere that we have missed?
+
+Second, we have tried to register our respository with the demonstration 
+gateway at http://libtest.lanl.gov/ and receive a message that our 
+repository is not a valid repository.
+
+We've tested our repository against the schema and it validates, so we 
+have had trouble identifying why it is not a valid repository.
+
+If someone could take a look at our repository ( 
+http://www.folkstreams.net/oai/static_repository.xml ) and let us know 
+if you see what could be causing this problem, that would be very helpful.
+
+Thank you,
+-- 
+Kristina M. Spurgin
+Doctoral student, teaching fellow, folkstreams.net grant manager
+School of Information and Library Science
+University of North Carolina at Chapel Hill
+kristina@infomuse.net
+http://www.infomuse.net
+
+From thabing at uiuc.edu  Mon Sep 19 14:28:30 2005
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Mon Sep 19 14:28:34 2005
+Subject: [OAI-implementers] trouble registering a static repository
+In-Reply-To: <432EFD90.6060005@infomuse.net>
+References: <432EFD90.6060005@infomuse.net>
+Message-ID: <432F034E.8070103@uiuc.edu>
+
+Hi Kristina,
+
+We at UIUC have a static repository gateway which we have not widely 
+advertised (until now :-)).  We currently do not respond to the initiate 
+or terminate requests, but can manually add new static repositories, and 
+would be happy to add your repo to the list.
+
+We are currently hosting six repositories.  One is:
+ 
+http://imlsdcc.grainger.uiuc.edu/gateway/oai.asp/ep.lib.cbs.dk/oai.xml?verb=Identify
+
+Take a look at the friends list for the baseURLs of the other repos that 
+we support.
+
+Let me know if you would like to give our gateway a try.
+
+Kind regards,
+
+Tom Habing
+
+
+Kristina M. Spurgin wrote:
+> Hello,
+> 
+> We've developed a static repository containing records for the films 
+> made available through www.folkstreams.net. The xml repository document 
+> resides at: http://www.folkstreams.net/oai/static_repository.xml
+> 
+> My question is two-fold.
+> 
+> First, we have been able to identify only two static repository gateways 
+> that will allow us to register our repository: OLAC and the 
+> demonstration gateway at http://libtest.lanl.gov/. Our content is not 
+> language-related, so OLAC is not appropriate. We are unclear about the 
+> scope/purpose of the demonstration gateway. Is it there for permenant 
+> use by any repository, or is it just meant for testing purposes? 
+> Finally, is there a central listing of static repository gateways 
+> somewhere that we have missed?
+> 
+> Second, we have tried to register our respository with the demonstration 
+> gateway at http://libtest.lanl.gov/ and receive a message that our 
+> repository is not a valid repository.
+> 
+> We've tested our repository against the schema and it validates, so we 
+> have had trouble identifying why it is not a valid repository.
+> 
+> If someone could take a look at our repository ( 
+> http://www.folkstreams.net/oai/static_repository.xml ) and let us know 
+> if you see what could be causing this problem, that would be very helpful.
+> 
+> Thank you,
+
+
+From schwander at kingfish.lanl.gov  Mon Sep 19 17:28:27 2005
+From: schwander at kingfish.lanl.gov (Thorsten Schwander)
+Date: Tue Sep 20 09:38:37 2005
+Subject: [OAI-implementers] trouble registering a static repository
+References: <432EFD90.6060005@infomuse.net>
+Message-ID: <17199.11643.150068.788174@kingfish.lanl.gov>
+
+
+Hi Kristina,
+
+indeed the static xml file at
+http://www.folkstreams.net/oai/static_repository.xml is valid, but the expat
+parser used at the srepo backend doesn't handle the multiple namespaces
+correctly. We are looking for alternatives for the next update.
+
+Meanwhile, removing some declarations which are not strictly needed, will
+allow you to submit to  http://libtest.lanl.gov/.
+
+Replace
+
+<Repository xmlns="http://www.openarchives.org/OAI/2.0/static-repository" 
+	    xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+            xmlns:dc="http://purl.org/dc/elements/1.1/" 
+            xmlns:oai="http://www.openarchives.org/OAI/2.0/" 
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+            xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/static-repository 
+                                http://www.openarchives.org/OAI/2.0/static-repository.xsd
+				http://www.openarchives.org/OAI/2.0/oai_dc/ 
+          			http://www.openarchives.org/OAI/2.0/oai_dc.xsd
+				http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt
+         			http://www.openarchives.org/OAI/1.1/rfc1807.xsd
+				">
+
+with
+
+<Repository 
+   xmlns="http://www.openarchives.org/OAI/2.0/static-repository"
+   xmlns:oai="http://www.openarchives.org/OAI/2.0/"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="
+http://www.openarchives.org/OAI/2.0/static-repository
+http://www.openarchives.org/OAI/2.0/static-repository.xsd">
+
+
+
+With regard to you second question, http://libtest.lanl.gov/ is a
+demonstration service with very little active usage or maintenance at this
+point. See the other response to your question for an alternative static repo
+gateway.
+
+
+Cheers
+T. Schwander
+----------------------------------------------------------------------
+| Dr. Thorsten Schwander                                             |
+| Research Library, STB-RL MS P362      | schwander@lanl.gov         |
+| Los Alamos National Laboratories      | voice: +1 505 667 7301     |
+| Los Alamos, NM, 87545                 | fax:   +1 505 665 6452     |
+| USA                                                                |
+----------------------------------------------------------------------
+
+
+
+Kristina M. Spurgin writes:
+ > Hello,
+ > 
+ > We've developed a static repository containing records for the films 
+ > made available through www.folkstreams.net. The xml repository document 
+ > resides at: http://www.folkstreams.net/oai/static_repository.xml
+ > 
+ > My question is two-fold.
+ > 
+ > First, we have been able to identify only two static repository gateways 
+ > that will allow us to register our repository: OLAC and the 
+ > demonstration gateway at http://libtest.lanl.gov/. Our content is not 
+ > language-related, so OLAC is not appropriate. We are unclear about the 
+ > scope/purpose of the demonstration gateway. Is it there for permenant 
+ > use by any repository, or is it just meant for testing purposes? 
+ > Finally, is there a central listing of static repository gateways 
+ > somewhere that we have missed?
+ > 
+ > Second, we have tried to register our respository with the demonstration 
+ > gateway at http://libtest.lanl.gov/ and receive a message that our 
+ > repository is not a valid repository.
+ > 
+ > We've tested our repository against the schema and it validates, so we 
+ > have had trouble identifying why it is not a valid repository.
+ > 
+ > If someone could take a look at our repository ( 
+ > http://www.folkstreams.net/oai/static_repository.xml ) and let us know 
+ > if you see what could be causing this problem, that would be very helpful.
+ > 
+ > Thank you,
+ > -- 
+ > Kristina M. Spurgin
+ > Doctoral student, teaching fellow, folkstreams.net grant manager
+ > School of Information and Library Science
+ > University of North Carolina at Chapel Hill
+ > kristina@infomuse.net
+ > http://www.infomuse.net
+ > 
+ > _______________________________________________
+ > OAI-implementers mailing list
+ > List information, archives, preferences and to unsubscribe:
+ > http://www.openarchives.org/mailman/listinfo/oai-implementers
+ > 
+
+From haake at suub.uni-bremen.de  Tue Sep 20 03:21:00 2005
+From: haake at suub.uni-bremen.de (Dr. Elmar Haake)
+Date: Tue Sep 20 09:38:37 2005
+Subject: [OAI-implementers] Superscript- and subscript-nodes
+Message-ID: <432FB85C.3040302@suub.uni-bremen.de>
+
+Hi,
+
+Since we are acting as an OAI-Data- and OAI-Service-Provider we are
+interested in implementing special characters in our repository.
+We guess that it must be possible to implement UTF-8-coded numeric
+entities in the OAI2.0-interface. But how is it with superscripted
+characters like <sup>2+</sup>?
+These characters does not have numeric entities, so I would like to ask
+you about this case.
+
+We think, it must be possible to output the node in the way like HTML
+(e.g. <sup>2%2B</sup>), because the service-provider could parse them
+via XSLT-processor in an own routine.
+But the characters "<" and ">" are not URI-encoded, so it would not be
+possible to transfer them via the OAI-interface in the described way. If
+we encode them, the XSLT-Processor cannot parse it to the HTML-node
+(parsing is only possible with nodes beginning with <....>, not with
+&lt;...&gt;)
+So we resides in a dilemma. As a possible solution we think about
+cutting them away. But on this way we would modify the content which is
+not optimal for exchanging the metadata.
+
+Has someone of you any experiences or ideas?
+
+Greetings
+Elmar
+
+-- 
+Dr. Elmar Haake
+Fachreferat Chemie, IT Dienste
+Staats- und Universitaetsbibliothek Bremen
+Bibliothekstr.
+
+D-28359 Bremen
+
+Tel.: 0049 421 218 3612
+Fax:  0049 421 218 2614
+
+aktuell: http://suche.suub.uni-bremen.de
+
+
+
+
+
+
+
+From thabing at uiuc.edu  Tue Sep 20 10:23:58 2005
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Tue Sep 20 10:24:00 2005
+Subject: [OAI-implementers] Superscript- and subscript-nodes
+In-Reply-To: <432FB85C.3040302@suub.uni-bremen.de>
+References: <432FB85C.3040302@suub.uni-bremen.de>
+Message-ID: <43301B7E.4050405@uiuc.edu>
+
+Dr. Elmar Haake wrote:
+> Hi,
+> 
+> Since we are acting as an OAI-Data- and OAI-Service-Provider we are
+> interested in implementing special characters in our repository.
+> We guess that it must be possible to implement UTF-8-coded numeric
+> entities in the OAI2.0-interface. But how is it with superscripted
+> characters like <sup>2+</sup>?
+> These characters does not have numeric entities, so I would like to ask
+> you about this case.
+> 
+> We think, it must be possible to output the node in the way like HTML
+> (e.g. <sup>2%2B</sup>), because the service-provider could parse them
+> via XSLT-processor in an own routine.
+> But the characters "<" and ">" are not URI-encoded, so it would not be
+> possible to transfer them via the OAI-interface in the described way. If
+> we encode them, the XSLT-Processor cannot parse it to the HTML-node
+> (parsing is only possible with nodes beginning with <....>, not with
+> &lt;...&gt;)
+> So we resides in a dilemma. As a possible solution we think about
+> cutting them away. But on this way we would modify the content which is
+> not optimal for exchanging the metadata.
+> 
+> Has someone of you any experiences or ideas?
+> 
+> Greetings
+> Elmar
+> 
+
+There are Unicode code points for various superscripted and subscripted 
+characters in the ranges U+2070..U+209F plus U+00B2, U+00B3, and U+00B9. 
+  Because of font issues, most systems cannot display more than just the 
+numbers 1-3 as superscripts, but it might be adequate for your needs, 
+for example, <sup>2+</sup> could be encoded as &#xB2;&#x207A;
+
+If you need to represent more complex math in Unicode you might want to 
+check out the technical report "Unicode Support for Mathematics" at 
+http://www.unicode.org/reports/tr25/index.html and also
+
+From amuvhunzwi at ivu.ac.zw  Wed Sep 21 02:56:29 2005
+From: amuvhunzwi at ivu.ac.zw (Ariel Muvhunzwi)
+Date: Wed Sep 21 02:57:28 2005
+Subject: [OAI-implementers] WEBLIS
+Message-ID: <4331041D.6000605@ivu.ac.zw>
+
+Dear
+
+I have just managed to download one of the OAI-MH at UNESCO portal 
+_http://portal.unesco.org/ci/en/ev.php-URL_ID=18148&URL_DO=DO_TOPIC&URL_SECTION=201.html_ 
+  and need to set up it at LAN and WAN and provide resources through our 
+website
+
+May anyone have the knowledge of how we can set up of the web based opac 
+with some configurations needed.
+
+we will be running the at windows NT and we have Linux
+
+
+Thanks
+
+ariel
+
+From claudio.barchesi at iscima.cnr.it  Wed Sep 21 05:26:51 2005
+From: claudio.barchesi at iscima.cnr.it (claudio barchesi)
+Date: Wed Sep 21 05:15:24 2005
+Subject: [OAI-implementers] trouble registering a static repository
+References: <432EFD90.6060005@infomuse.net>
+Message-ID: <009001c5be8e$997fa500$d33f9296@iscima.locale>
+
+Hello,
+"Archeologia e Calcolatori - Published Articles"  uses Patrick
+Hochstenbach's gateway at U. Ghent.
+http://dor2.ugent.be/cgi-bin/gateway/gateway.cgi/www.progettocaere.rm.cnr.it/databasegestione/A_C_oai_Archive.xml?verb=Identify
+It works fine. In effect, and unfortunately, at present there are not so
+much Gateways around.
+Our repository is based on a Access database, capable to convert its tables
+in xml static repository format by a Visual Basic script.
+We have also added some other services to our project, to allow Google
+indexing and a local search interface. It works.
+http://soi.cnr.it/archcalc/Bibliografia_new.htm. Now we are going to insert
+more digital resources in the shared collection, at present listing about
+400 DC metadata records, but only ten allowable resources, that OAIster
+harvested succesfully. I suggest You to contact Patrick Hochstenbach that
+surely could help You, as he kindly did with us.
+Best regards,
+__________________________
+
+Claudio Barchesi
+Istituto di Studi sulle Civilt? Italiche e del Mediterraneo Antico
+Consiglio Nazionale delle Ricerche
+Viale di Villa Massimo 29, 00133 Roma
+Tel. 06 - 44239696 / 44239470  Fax 06 - 44239379
+Email c.barchesi@iscima.cnr.it
+
+----- Original Message ----- 
+From: "Kristina M. Spurgin" <kristina@infomuse.net>
+To: <oai-implementers@openarchives.org>
+Sent: Monday, September 19, 2005 8:04 PM
+Subject: [OAI-implementers] trouble registering a static repository
+
+
+> Hello,
+>
+> We've developed a static repository containing records for the films
+> made available through www.folkstreams.net. The xml repository document
+> resides at: http://www.folkstreams.net/oai/static_repository.xml
+>
+> My question is two-fold.
+>
+> First, we have been able to identify only two static repository gateways
+> that will allow us to register our repository: OLAC and the
+> demonstration gateway at http://libtest.lanl.gov/. Our content is not
+> language-related, so OLAC is not appropriate. We are unclear about the
+> scope/purpose of the demonstration gateway. Is it there for permenant
+> use by any repository, or is it just meant for testing purposes?
+> Finally, is there a central listing of static repository gateways
+> somewhere that we have missed?
+>
+> Second, we have tried to register our respository with the demonstration
+> gateway at http://libtest.lanl.gov/ and receive a message that our
+> repository is not a valid repository.
+>
+> We've tested our repository against the schema and it validates, so we
+> have had trouble identifying why it is not a valid repository.
+>
+> If someone could take a look at our repository (
+> http://www.folkstreams.net/oai/static_repository.xml ) and let us know
+> if you see what could be causing this problem, that would be very helpful.
+>
+> Thank you,
+> -- 
+> Kristina M. Spurgin
+> Doctoral student, teaching fellow, folkstreams.net grant manager
+> School of Information and Library Science
+> University of North Carolina at Chapel Hill
+> kristina@infomuse.net
+> http://www.infomuse.net
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+
+From thabing at uiuc.edu  Wed Sep 21 13:08:20 2005
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Wed Sep 21 13:08:40 2005
+Subject: [OAI-implementers] Superscript- and subscript-nodes
+In-Reply-To: <433108CA.2040208@suub.uni-bremen.de>
+References: <432FB85C.3040302@suub.uni-bremen.de> <43301B7E.4050405@uiuc.edu>
+	<433108CA.2040208@suub.uni-bremen.de>
+Message-ID: <43319384.7070200@uiuc.edu>
+
+Dr. Elmar Haake wrote:
+> Dear Thomas,
+> 
+> thank you for your answer!
+> Our tangible problem is implementing a chemical summary formular like 
+> 2-(Me_2 NCH_3 )C_6 H_4
+> What shall we deal with this example?
+
+Using Unicode numeric entities, something like this:
+
+   2-(Me&#x2082;NCH&#x2083;)C&#x2086;H&#x2084;
+
+I put together a quick test xml file at:
+
+   http://128.174.36.55/char/test.xml
+
+Using the Firefox web browser it looks fine with all of the subscripts 
+appearing, but using IE the _6 does not appear.  I have a lot of fonts 
+installed on my workstation, so your results may vary.
+
+Another option would be to define your own metadata schema which allows 
+mixed content with embedded <sub> and <sup> elements.  You could even 
+define your own schema that allows MathML to be embedded in certain 
+elements.  We have some experimental XML metadata schema that allow 
+this, but the problem is that most OAI service providers are not 
+prepared to deal with any schema beyond simple oai_dc.  Some harvesters 
+are beginning to support MODS, Qualified DC, or others, but this still 
+doesn't solve the problem of embedded markup such as required by 
+mathematics.
+
+> 
+> Elmar
+> 
+> 
+> Thomas G. Habing schrieb:
+> 
+>> Dr. Elmar Haake wrote:
+>>
+>>> Hi,
+>>>
+>>> Since we are acting as an OAI-Data- and OAI-Service-Provider we are
+>>> interested in implementing special characters in our repository.
+>>> We guess that it must be possible to implement UTF-8-coded numeric
+>>> entities in the OAI2.0-interface. But how is it with superscripted
+>>> characters like <sup>2+</sup>?
+>>> These characters does not have numeric entities, so I would like to ask
+>>> you about this case.
+>>>
+>>> We think, it must be possible to output the node in the way like HTML
+>>> (e.g. <sup>2%2B</sup>), because the service-provider could parse them
+>>> via XSLT-processor in an own routine.
+>>> But the characters "<" and ">" are not URI-encoded, so it would not be
+>>> possible to transfer them via the OAI-interface in the described way. If
+>>> we encode them, the XSLT-Processor cannot parse it to the HTML-node
+>>> (parsing is only possible with nodes beginning with <....>, not with
+>>> &lt;...&gt;)
+>>> So we resides in a dilemma. As a possible solution we think about
+>>> cutting them away. But on this way we would modify the content which is
+>>> not optimal for exchanging the metadata.
+>>>
+>>> Has someone of you any experiences or ideas?
+>>>
+>>> Greetings
+>>> Elmar
+>>>
+>>
+>> There are Unicode code points for various superscripted and 
+>> subscripted characters in the ranges U+2070..U+209F plus U+00B2, 
+>> U+00B3, and U+00B9.  Because of font issues, most systems cannot 
+>> display more than just the numbers 1-3 as superscripts, but it might 
+>> be adequate for your needs, for example, <sup>2+</sup> could be 
+>> encoded as &#xB2;&#x207A;
+>>
+>> If you need to represent more complex math in Unicode you might want 
+>> to check out the technical report "Unicode Support for Mathematics" at 
+>> http://www.unicode.org/reports/tr25/index.html and also
+>>
+>>
+> 
+
+
+From haake at suub.uni-bremen.de  Wed Sep 21 03:16:26 2005
+From: haake at suub.uni-bremen.de (Dr. Elmar Haake)
+Date: Thu Sep 22 02:52:45 2005
+Subject: [OAI-implementers] Superscript- and subscript-nodes
+In-Reply-To: <43301B7E.4050405@uiuc.edu>
+References: <432FB85C.3040302@suub.uni-bremen.de> <43301B7E.4050405@uiuc.edu>
+Message-ID: <433108CA.2040208@suub.uni-bremen.de>
+
+Dear Thomas,
+
+thank you for your answer!
+Our tangible problem is implementing a chemical summary formular like 
+2-(Me_2 NCH_3 )C_6 H_4
+What shall we deal with this example?
+
+Elmar
+
+
+Thomas G. Habing schrieb:
+
+> Dr. Elmar Haake wrote:
+>
+>> Hi,
+>>
+>> Since we are acting as an OAI-Data- and OAI-Service-Provider we are
+>> interested in implementing special characters in our repository.
+>> We guess that it must be possible to implement UTF-8-coded numeric
+>> entities in the OAI2.0-interface. But how is it with superscripted
+>> characters like <sup>2+</sup>?
+>> These characters does not have numeric entities, so I would like to ask
+>> you about this case.
+>>
+>> We think, it must be possible to output the node in the way like HTML
+>> (e.g. <sup>2%2B</sup>), because the service-provider could parse them
+>> via XSLT-processor in an own routine.
+>> But the characters "<" and ">" are not URI-encoded, so it would not be
+>> possible to transfer them via the OAI-interface in the described way. If
+>> we encode them, the XSLT-Processor cannot parse it to the HTML-node
+>> (parsing is only possible with nodes beginning with <....>, not with
+>> &lt;...&gt;)
+>> So we resides in a dilemma. As a possible solution we think about
+>> cutting them away. But on this way we would modify the content which is
+>> not optimal for exchanging the metadata.
+>>
+>> Has someone of you any experiences or ideas?
+>>
+>> Greetings
+>> Elmar
+>>
+>
+> There are Unicode code points for various superscripted and 
+> subscripted characters in the ranges U+2070..U+209F plus U+00B2, 
+> U+00B3, and U+00B9.  Because of font issues, most systems cannot 
+> display more than just the numbers 1-3 as superscripts, but it might 
+> be adequate for your needs, for example, <sup>2+</sup> could be 
+> encoded as &#xB2;&#x207A;
+>
+> If you need to represent more complex math in Unicode you might want 
+> to check out the technical report "Unicode Support for Mathematics" at 
+> http://www.unicode.org/reports/tr25/index.html and also
+>
+>
+
+-- 
+Dr. Elmar Haake
+Fachreferat Chemie, IT Dienste
+Staats- und Universitaetsbibliothek Bremen
+Bibliothekstr.
+
+D-28359 Bremen
+
+Tel.: 0049 421 218 3612
+Fax:  0049 421 218 2614
+
+aktuell: http://suche.suub.uni-bremen.de
+
+
+
+From haake at suub.uni-bremen.de  Thu Sep 22 06:16:44 2005
+From: haake at suub.uni-bremen.de (Dr. Elmar Haake)
+Date: Sun Sep 25 03:37:50 2005
+Subject: [OAI-implementers] Superscript- and subscript-nodes
+In-Reply-To: <43319384.7070200@uiuc.edu>
+References: <432FB85C.3040302@suub.uni-bremen.de> <43301B7E.4050405@uiuc.edu>
+	<433108CA.2040208@suub.uni-bremen.de> <43319384.7070200@uiuc.edu>
+Message-ID: <4332848C.70006@suub.uni-bremen.de>
+
+With your help I suggest that we have now found the solution.
+For exchanging the data via OAI2.0-protocol we could use the UTF-8 
+characters in the described way, for representing the data we could 
+transform the UTF-8 characters to HTML-nodes or -named entities (We are 
+using Cocoon from Apache group, therefore there are no problems with 
+specific UTF-8 characters).
+We'll try to test it.
+
+Thank you very much, Thomas!
+Greetings
+Elmar
+
+Thomas G. Habing schrieb:
+
+> Dr. Elmar Haake wrote:
+>
+>> Dear Thomas,
+>>
+>> thank you for your answer!
+>> Our tangible problem is implementing a chemical summary formular like 
+>> 2-(Me_2 NCH_3 )C_6 H_4
+>> What shall we deal with this example?
+>
+>
+> Using Unicode numeric entities, something like this:
+>
+>   2-(Me&#x2082;NCH&#x2083;)C&#x2086;H&#x2084;
+>
+> I put together a quick test xml file at:
+>
+>   http://128.174.36.55/char/test.xml
+>
+> Using the Firefox web browser it looks fine with all of the subscripts 
+> appearing, but using IE the _6 does not appear.  I have a lot of fonts 
+> installed on my workstation, so your results may vary.
+>
+> Another option would be to define your own metadata schema which 
+> allows mixed content with embedded <sub> and <sup> elements.  You 
+> could even define your own schema that allows MathML to be embedded in 
+> certain elements.  We have some experimental XML metadata schema that 
+> allow this, but the problem is that most OAI service providers are not 
+> prepared to deal with any schema beyond simple oai_dc.  Some 
+> harvesters are beginning to support MODS, Qualified DC, or others, but 
+> this still doesn't solve the problem of embedded markup such as 
+> required by mathematics.
+>
+>>
+>> Elmar
+>>
+>>
+>> Thomas G. Habing schrieb:
+>>
+>>> Dr. Elmar Haake wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> Since we are acting as an OAI-Data- and OAI-Service-Provider we are
+>>>> interested in implementing special characters in our repository.
+>>>> We guess that it must be possible to implement UTF-8-coded numeric
+>>>> entities in the OAI2.0-interface. But how is it with superscripted
+>>>> characters like <sup>2+</sup>?
+>>>> These characters does not have numeric entities, so I would like to 
+>>>> ask
+>>>> you about this case.
+>>>>
+>>>> We think, it must be possible to output the node in the way like HTML
+>>>> (e.g. <sup>2%2B</sup>), because the service-provider could parse them
+>>>> via XSLT-processor in an own routine.
+>>>> But the characters "<" and ">" are not URI-encoded, so it would not be
+>>>> possible to transfer them via the OAI-interface in the described 
+>>>> way. If
+>>>> we encode them, the XSLT-Processor cannot parse it to the HTML-node
+>>>> (parsing is only possible with nodes beginning with <....>, not with
+>>>> &lt;...&gt;)
+>>>> So we resides in a dilemma. As a possible solution we think about
+>>>> cutting them away. But on this way we would modify the content 
+>>>> which is
+>>>> not optimal for exchanging the metadata.
+>>>>
+>>>> Has someone of you any experiences or ideas?
+>>>>
+>>>> Greetings
+>>>> Elmar
+>>>>
+>>>
+>>> There are Unicode code points for various superscripted and 
+>>> subscripted characters in the ranges U+2070..U+209F plus U+00B2, 
+>>> U+00B3, and U+00B9.  Because of font issues, most systems cannot 
+>>> display more than just the numbers 1-3 as superscripts, but it might 
+>>> be adequate for your needs, for example, <sup>2+</sup> could be 
+>>> encoded as &#xB2;&#x207A;
+>>>
+>>> If you need to represent more complex math in Unicode you might want 
+>>> to check out the technical report "Unicode Support for Mathematics" 
+>>> at http://www.unicode.org/reports/tr25/index.html and also
+>>>
+>>>
+>>
+>
+>
+>
+
+-- 
+Dr. Elmar Haake
+Fachreferat Chemie, IT Dienste
+Staats- und Universitaetsbibliothek Bremen
+Bibliothekstr.
+
+D-28359 Bremen
+
+Tel.: 0049 421 218 3612
+Fax:  0049 421 218 2614
+
+aktuell: http://suche.suub.uni-bremen.de
+
+
+
+From franc at ncsi.iisc.ernet.in  Fri Sep 30 08:29:26 2005
+From: franc at ncsi.iisc.ernet.in (Francis Jayakanth)
+Date: Fri Sep 30 07:38:26 2005
+Subject: [OAI-implementers] Handling special characters in XML
+Message-ID: <Pine.LNX.4.53.0509301741370.5828@ncsi.iisc.ernet.in>
+
+
+Hi:
+
+I'm trying to port a set of records, which are in Italian language, to
+static repository XML file. Conversion goes through without any
+problem. But, when I try to view the static repository file through my
+browser, the following error is displayed:
+
+An invalid character was found in text content. Error processing resource
+...
+
+Since many of the records have accented characters, my browser (IE 6.0)
+treats such characters as invalid and in the process the XML file is not
+displayed correctly. Could somebody please tell the way accented
+characters are handled in XML?
+
+Many thanks.
+
+ - Francis
+
+NCSI, IISC
+Bangalore, India
+

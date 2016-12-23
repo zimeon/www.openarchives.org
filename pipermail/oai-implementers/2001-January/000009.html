@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: [oai-alpha] Re: Help!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:herbertv%40CS.Cornell.EDU">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000008.html">
+   <LINK REL="Next"  HREF="000010.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: [oai-alpha] Re: Help!
+   </H1>
+    <B>herbert van de sompel
+    </B> 
+    <A HREF="mailto:herbertv%40CS.Cornell.EDU"
+       TITLE="[OAI-implementers] Re: [oai-alpha] Re: Help!">herbertv@CS.Cornell.EDU
+       </A><BR>
+    <I>Mon, 29 Jan 2001 10:21:36 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000008.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+        <LI> Next message: <A HREF="000010.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi all,
+
+Quite an interesting discussion regarding the exception handling (400,
+empty records et all).  
+
+When writing the specs as a result of the discussion over the weekend 2
+weeks ago, my goal was to distinguish between the handling of:
+- illegal verbs, 
+- illegal arguments,
+- values (both illegal and not leading to any result).
+
+I thought that was a pretty clear line to draw:
+
+- illegal protocol syntax: usage of illegal verbs and illegal arguments
+results in 400
+- something wrong with argument values: usage of illegal values and/or
+values that lead to no result yield &quot;empty&quot; responses
+
+The current dicussion seems to suggest that illegal values should also
+result in a 400.  But from the discussion, it shows that defining what
+an illegal value is isn't all that simple: illegal as to the protcol
+(e.g. illegal format for datestamp) or illegal in a certain repository
+(e.g. non-supported metadataPrefix), ...  
+
+While I do agree that the provision of a datestamp with an illegal
+syntax can be considered to be illegal protocol syntax, I remain tempted
+to stick with the original concept, whereby everything that is releated
+to values of arguments is NOT handled with a 400, but with an &quot;empty&quot;
+response.  Please note that the out-of-context usage of a
+resumptionToken falls under the category of &quot;illegal protocol syntax&quot;
+because the section on resumptionTokens explicitely says &quot;all other
+usage of resumptionTokens is illegal and hence returns 400&quot;. 
+
+ I think that the issue re oai-format identifiers that was brought up
+supports the above approach: some repos will use oai-formated
+identifiers, others will not.  similarly, other xsd's will be used as
+&quot;description&quot; containers, some of which may limit the validity of other
+argument values (valid set values, for instance).  if we take the return
+of 400 down to the level of argument values, and in addition take into
+account these repo (or community) specific issues in the decission
+whether an argument value is &quot;legal&quot; or &quot;illegal&quot; (hence in deciding
+whether to return 400 or not), all repos will do exception handling in
+different manners.  I am not too enthusiastic about that idea.
+
+I am very interested in comments.
+
+herbert
+
+Simeon Warner wrote:
+&gt;<i> 
+</I>&gt;<i> On Sat, 27 Jan 2001, ePrints Support wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt; (from oai-alpha)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Fri, Jan 26, 2001 at 06:26:33PM -0700, Simeon Warner wrote:
+</I>&gt;<i> &gt; &gt; I agree that the following can be illegal in fairly obvious
+</I>&gt;<i> &gt; &gt; ways:
+</I>&gt;<i> &gt; &gt;   from &amp; until     (illegal dates)
+</I>&gt;<i> &gt; &gt;   identifier       (illegal uri)
+</I>&gt;<i> &gt; &gt;   resumptionToken  (spec says illegal use and expired will give 400)
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; However, according to the schemas of verbs that return values that
+</I>&gt;<i> &gt; &gt; will be used for set and metadataPrefix, they also be illegal:
+</I>&gt;<i> &gt; &gt;   set              (doesn't match &quot;([a-zA-Z0-9_])+(:[A-Za-z0-9]+)*&quot;)
+</I>&gt;<i> &gt; &gt;   metadataPrefix   (doesn't match &quot;[a-zA-Z0-9_]+&quot;)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; from &amp; until: Illegal dates (I agree)
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; identifier: what's an illegal uri?
+</I>&gt;<i> &gt;    a) one which dosn't match oai:[a-z]+:.*    (regexp may be slightly off)
+</I>&gt;<i> &gt; or
+</I>&gt;<i> &gt;    b) one which dosn't match oai:nameofarchive:.*
+</I>&gt;<i> &gt; I suggest (a) - it's possible that an archive could mirror OAI records
+</I>&gt;<i> &gt; from another archive AS WELL as it's own. (Isn't it?)
+</I>&gt;<i> 
+</I>&gt;<i> My feeling was that only a) qualifies for a 400 response.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; resumptionToken: If an archive dosn't support this
+</I>&gt;<i> &gt;    then I suppose it should always give a 400 error.
+</I>&gt;<i> &gt; Isn't there an 'expired' return code in http? it's confusing giving
+</I>&gt;<i> &gt; the same response for 'illegal' and 'expired'
+</I>&gt;<i> 
+</I>&gt;<i> The spec says there should be 400 in both cases. Any sensible
+</I>&gt;<i> harvester will know that it is giving back a once-valid
+</I>&gt;<i> resumptionToken and hence 400 =&gt; expired.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; set: not matching [a-zA-Z0-9_])+(:[A-Za-z0-9]+)* is a 400 error but
+</I>&gt;<i> &gt;    how about a set which passes the spec but isn't in the archive?
+</I>&gt;<i> &gt; I suggest it just returns a header with no results in that case.
+</I>&gt;<i> 
+</I>&gt;<i> The second case should certainly return header with no results, only
+</I>&gt;<i> illegal value (not matching regexp) gives 400.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; metadataPrefix: similar. Not matching [a-zA-Z0-9_]+ is illegal (400)
+</I>&gt;<i> &gt;    but what happens if it passes the regexp but isn't in the list
+</I>&gt;<i> &gt;    supported the archive?
+</I>&gt;<i> &gt; Again, I suggest it just returns a header with no results in this case.
+</I>&gt;<i> 
+</I>&gt;<i> Again, unrecognized/unsupported should return header with no results,
+</I>&gt;<i> only illegal value gives 400.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Other queries:
+</I>&gt;<i> &gt;    oai_dc: When should we put a 'oai_' before the metadataPrefix,
+</I>&gt;<i> &gt;    exactly what does it mean (why isn't it just dc?)
+</I>&gt;<i> 
+</I>&gt;<i> My understanding is that the metadataPrefixes are simply strings
+</I>&gt;<i> returned by ListMetadataFormats which may be reused in requests
+</I>&gt;<i> that specify a metadataPrefix to request metedata according the
+</I>&gt;<i> corresponding schema in the ListMetadataFormats response.
+</I>&gt;<i> Further, 'oai_dc' is the name oai has chosen to refer to dc
+</I>&gt;<i> by (and everyone must support it and not call it 'wibble'
+</I>&gt;<i> instead). Given that the metadataPrefixes are just shorthand
+</I>&gt;<i> names to refer to the schema, I don't know why it was necessary
+</I>&gt;<i> to add the 'oai_'.
+</I>&gt;<i> 
+</I>&gt;<i> &gt;    inside &lt;metadata&gt;&lt;/metadata&gt; is ANYTHING defined by OAI or
+</I>&gt;<i> &gt;    is everything, including the initial tags &lt;dc&gt;&lt;/dc&gt; and namespace
+</I>&gt;<i> &gt;    etc. defined by the metadata standard?
+</I>&gt;<i> 
+</I>&gt;<i> As far as I understand it (which is not really very well), everything
+</I>&gt;<i> from the initial &lt;dc ...&gt; tag to the &lt;/dc&gt; is specified by the
+</I>&gt;<i> dc schema (<A HREF="http://www.openarchives.org/OAI/dc.xsd">http://www.openarchives.org/OAI/dc.xsd</A>), or other
+</I>&gt;<i> schema for other metadata formats. In the dc schema it says:
+</I>&gt;<i> 
+</I>&gt;<i>  &lt;element name=&quot;dc&quot; type=&quot;dc:dublincoreType&quot;/&gt;
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Simeon.
+</I>&gt;<i> 
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Christopher Gutteridge
+</I>&gt;<i> &gt; ePrints Technical Support
+</I>&gt;<i> &gt; <A HREF="mailto:support@eprints.org">support@eprints.org</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+<A HREF="http://www.cs.cornell.edu/people/herbertv/">http://www.cs.cornell.edu/people/herbertv/</A>
+digital life in libraries used to be primitive
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000008.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+	<LI> Next message: <A HREF="000010.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#9">[ date ]</a>
+              <a href="thread.html#9">[ thread ]</a>
+              <a href="subject.html#9">[ subject ]</a>
+              <a href="author.html#9">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

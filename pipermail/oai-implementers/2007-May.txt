@@ -1,0 +1,1164 @@
+From caar at loc.gov  Tue May 15 11:39:35 2007
+From: caar at loc.gov (Caroline Arms)
+Date: Tue May 15 11:40:42 2007
+Subject: [OAI-implementers] A question for implementers of harvesters
+In-Reply-To: <Pine.LNX.4.64.0703221736210.24466@dhcp103-124.cs.cornell.edu>
+References: <10EEADDAD601FA4D83DF79F3281B8CF6224612@ISSVEXBE1.staff.aber.ac.uk>
+	<4602F59B.4080305@hab.de>
+	<Pine.LNX.4.64.0703221736210.24466@dhcp103-124.cs.cornell.edu>
+Message-ID: <46499BF7020000350001577B@ntgwgate.loc.gov>
+
+
+This question is a structural question about XML Schema in the OAI context.   We have a project to develop an XML Schema for the structured Format Description Documents (FDDs) in http://www.digitalpreservation.gov/formats/.  One objective is to make the FDDs OAI-harvestable.
+
+One aspect of the FDDs  (example: http://www.digitalpreservation.gov/formats/fdd/fdd000022.shtml)  is that the text in many of the table cells needs to be richer than plain text. We have identified a small set of HTML tags that we want to be able to use in a complexType to be called notesText.   We want the schema to limit us to that small set of tags as we edit FDDs.
+
+We have two structural options for the fdd.xsd schema.  We plan to have the fdd.xsd schema use the namespace "fdd" and require that element names be qualified with their namespace.
+
+1.  We could put the HTML tags into a separate .xsd file (to be included in fdd.xsd) that does not require the elements to be qualified.  This way we could use the HTML tags directly within the chunks of notesText.  They would be easily recognized, have familiar semantics, and be handled trivially in XSLT transformations to HTML.
+
+2.  For the convenience of having the specification in a single .xsd file, we could use different names (presumably in the fdd namespace).  These would be more cumbersome to read in the raw XML and need more work to convert to HTML.
+
+What do you see as pros and cons between these options?  For example, will OAI-harvesting applications have problems with the two-schema approach (option 1).
+
+Thanks for any feedback.   I will also be asking potential users of the harvested FDDs the equivalent question.
+
+Caroline Arms
+Library of Congress, Office of Strategic Initiatives
+caar@loc.gov
+
+
+From gary at hulmail.harvard.edu  Tue May 15 12:06:45 2007
+From: gary at hulmail.harvard.edu (Gary McGath)
+Date: Tue May 15 12:07:26 2007
+Subject: [OAI-implementers] A question for implementers of harvesters
+In-Reply-To: <46499BF7020000350001577B@ntgwgate.loc.gov>
+References: <10EEADDAD601FA4D83DF79F3281B8CF6224612@ISSVEXBE1.staff.aber.ac.uk>	<4602F59B.4080305@hab.de>	<Pine.LNX.4.64.0703221736210.24466@dhcp103-124.cs.cornell.edu>
+	<46499BF7020000350001577B@ntgwgate.loc.gov>
+Message-ID: <4649DA95.2070608@hulmail.harvard.edu>
+
+This interests me from both the OAI and the format description sides. I 
+don't see any particular difficulty in having the HTML tags in a 
+separate XSD; the additional work should be minor at most. The 
+transparency of not using false tags should make up for any additional 
+programming effort.
+
+Caroline Arms wrote:
+> This question is a structural question about XML Schema in the OAI context.   We have a project to develop an XML Schema for the structured Format Description Documents (FDDs) in http://www.digitalpreservation.gov/formats/.  One objective is to make the FDDs OAI-harvestable.
+> 
+> One aspect of the FDDs  (example: http://www.digitalpreservation.gov/formats/fdd/fdd000022.shtml)  is that the text in many of the table cells needs to be richer than plain text. We have identified a small set of HTML tags that we want to be able to use in a complexType to be called notesText.   We want the schema to limit us to that small set of tags as we edit FDDs.
+> 
+> We have two structural options for the fdd.xsd schema.  We plan to have the fdd.xsd schema use the namespace "fdd" and require that element names be qualified with their namespace.
+> 
+> 1.  We could put the HTML tags into a separate .xsd file (to be included in fdd.xsd) that does not require the elements to be qualified.  This way we could use the HTML tags directly within the chunks of notesText.  They would be easily recognized, have familiar semantics, and be handled trivially in XSLT transformations to HTML.
+> 
+> 2.  For the convenience of having the specification in a single .xsd file, we could use different names (presumably in the fdd namespace).  These would be more cumbersome to read in the raw XML and need more work to convert to HTML.
+> 
+> What do you see as pros and cons between these options?  For example, will OAI-harvesting applications have problems with the two-schema approach (option 1).
+> 
+> Thanks for any feedback.   I will also be asking potential users of the harvested FDDs the equivalent question.
+> 
+
+
+
+-- 
+Gary McGath
+Digital Library Software Engineer
+Harvard University Library Office for Information Systems
+http://hul.harvard.edu/~gary/index.html
+
+
+From thabing at uiuc.edu  Tue May 15 12:15:26 2007
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Tue May 15 12:15:34 2007
+Subject: [OAI-implementers] A question for implementers of harvesters
+In-Reply-To: <46499BF7020000350001577B@ntgwgate.loc.gov>
+References: <10EEADDAD601FA4D83DF79F3281B8CF6224612@ISSVEXBE1.staff.aber.ac.uk>	<4602F59B.4080305@hab.de>	<Pine.LNX.4.64.0703221736210.24466@dhcp103-124.cs.cornell.edu>
+	<46499BF7020000350001577B@ntgwgate.loc.gov>
+Message-ID: <4649DC9E.4000701@uiuc.edu>
+
+Hi Caroline,
+
+My inclination would be your #1 below for the reasons you've already 
+given.  I don't think any OAI harvester would have a problem harvesting 
+records with a 'mixed' XML schema where various namespaces are imported 
+or included from different schema.  In fact the OAI_DC schema itself is 
+already like this, defining its own root element and then importing the 
+DC elements from a different XML schema.  MODS is similar, importing 
+xlink attributes from a separate schema.
+
+Kind regards,
+	Tom
+
+Caroline Arms wrote:
+> This question is a structural question about XML Schema in the OAI
+> context.   We have a project to develop an XML Schema for the
+> structured Format Description Documents (FDDs) in
+> http://www.digitalpreservation.gov/formats/.  One objective is to
+> make the FDDs OAI-harvestable.
+> 
+> One aspect of the FDDs  (example:
+> http://www.digitalpreservation.gov/formats/fdd/fdd000022.shtml)  is
+> that the text in many of the table cells needs to be richer than
+> plain text. We have identified a small set of HTML tags that we want
+> to be able to use in a complexType to be called notesText.   We want
+> the schema to limit us to that small set of tags as we edit FDDs.
+> 
+> We have two structural options for the fdd.xsd schema.  We plan to
+> have the fdd.xsd schema use the namespace "fdd" and require that
+> element names be qualified with their namespace.
+> 
+> 1.  We could put the HTML tags into a separate .xsd file (to be
+> included in fdd.xsd) that does not require the elements to be
+> qualified.  This way we could use the HTML tags directly within the
+> chunks of notesText.  They would be easily recognized, have familiar
+> semantics, and be handled trivially in XSLT transformations to HTML.
+> 
+> 2.  For the convenience of having the specification in a single .xsd
+> file, we could use different names (presumably in the fdd namespace).
+> These would be more cumbersome to read in the raw XML and need more
+> work to convert to HTML.
+> 
+> What do you see as pros and cons between these options?  For example,
+> will OAI-harvesting applications have problems with the two-schema
+> approach (option 1).
+> 
+> Thanks for any feedback.   I will also be asking potential users of
+> the harvested FDDs the equivalent question.
+> 
+> Caroline Arms Library of Congress, Office of Strategic Initiatives 
+> caar@loc.gov
+> 
+> 
+> _______________________________________________ OAI-implementers
+> mailing list List information, archives, preferences and to
+> unsubscribe: 
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+Thomas G. Habing
+Research Programmer
+Grainger Engineering Library Information Center
+University of Illinois at Urbana-Champaign
+
+From Naomi at cs.cornell.edu  Tue May 15 13:16:33 2007
+From: Naomi at cs.cornell.edu (Naomi Dushay)
+Date: Tue May 15 13:18:29 2007
+Subject: [OAI-implementers] A question for implementers of harvesters
+References: <10EEADDAD601FA4D83DF79F3281B8CF6224612@ISSVEXBE1.staff.aber.ac.uk><4602F59B.4080305@hab.de><Pine.LNX.4.64.0703221736210.24466@dhcp103-124.cs.cornell.edu>
+	<46499BF7020000350001577B@ntgwgate.loc.gov>
+Message-ID: <A70557C8AAEABC45A0FDF4AF76AAB00B12C326@EXCHANGE1.cs.cornell.edu>
+
+Caroline,
+ 
+I've found the "best practices" documents at www.xfront.com to be excellent
+in describing just the sort of trade-offs you're evaluating:
+ 
+http://www.xfront.com/BestPracticesHomepage.html
+ 
+- Naomi Dushay
+Coordinator of Research & Development
+Colorado State University Libraries
+ 
+
+________________________________
+
+From: oai-implementers-bounces@openarchives.org on behalf of Caroline Arms
+Sent: Tue 5/15/2007 11:39 AM
+To: oai-implementers@openarchives.org
+Cc: Carl Fleischhauer; Ignacio GarciaDelCampo; Donald Emerson; Andrew Boyko
+Subject: [OAI-implementers] A question for implementers of harvesters
+
+
+
+
+This question is a structural question about XML Schema in the OAI context.
+We have a project to develop an XML Schema for the structured Format
+Description Documents (FDDs) in http://www.digitalpreservation.gov/formats/.
+One objective is to make the FDDs OAI-harvestable.
+
+One aspect of the FDDs  (example:
+http://www.digitalpreservation.gov/formats/fdd/fdd000022.shtml)  is that the
+text in many of the table cells needs to be richer than plain text. We have
+identified a small set of HTML tags that we want to be able to use in a
+complexType to be called notesText.   We want the schema to limit us to that
+small set of tags as we edit FDDs.
+
+We have two structural options for the fdd.xsd schema.  We plan to have the
+fdd.xsd schema use the namespace "fdd" and require that element names be
+qualified with their namespace.
+
+1.  We could put the HTML tags into a separate .xsd file (to be included in
+fdd.xsd) that does not require the elements to be qualified.  This way we
+could use the HTML tags directly within the chunks of notesText.  They would
+be easily recognized, have familiar semantics, and be handled trivially in
+XSLT transformations to HTML.
+
+2.  For the convenience of having the specification in a single .xsd file, we
+could use different names (presumably in the fdd namespace).  These would be
+more cumbersome to read in the raw XML and need more work to convert to HTML.
+
+What do you see as pros and cons between these options?  For example, will
+OAI-harvesting applications have problems with the two-schema approach
+(option 1).
+
+Thanks for any feedback.   I will also be asking potential users of the
+harvested FDDs the equivalent question.
+
+Caroline Arms
+Library of Congress, Office of Strategic Initiatives
+caar@loc.gov
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20070515/72d067e6/attachment.htm
+From Naomi at cs.cornell.edu  Tue May 15 13:22:33 2007
+From: Naomi at cs.cornell.edu (Naomi Dushay)
+Date: Tue May 15 13:22:58 2007
+Subject: [OAI-implementers] A question for implementers of harvesters
+References: <10EEADDAD601FA4D83DF79F3281B8CF6224612@ISSVEXBE1.staff.aber.ac.uk><4602F59B.4080305@hab.de><Pine.LNX.4.64.0703221736210.24466@dhcp103-124.cs.cornell.edu>
+	<46499BF7020000350001577B@ntgwgate.loc.gov>
+Message-ID: <A70557C8AAEABC45A0FDF4AF76AAB00B12C327@EXCHANGE1.cs.cornell.edu>
+
+And another reference (whhops - should have done my research first):
+ 
+http://devresource.hp.com/drc/resources/xmlSchemaBestPractices.jsp
+ 
+- Naomi
+
+________________________________
+
+From: oai-implementers-bounces@openarchives.org on behalf of Caroline Arms
+Sent: Tue 5/15/2007 11:39 AM
+To: oai-implementers@openarchives.org
+Cc: Carl Fleischhauer; Ignacio GarciaDelCampo; Donald Emerson; Andrew Boyko
+Subject: [OAI-implementers] A question for implementers of harvesters
+
+
+
+
+This question is a structural question about XML Schema in the OAI context.
+We have a project to develop an XML Schema for the structured Format
+Description Documents (FDDs) in http://www.digitalpreservation.gov/formats/.
+One objective is to make the FDDs OAI-harvestable.
+
+One aspect of the FDDs  (example:
+http://www.digitalpreservation.gov/formats/fdd/fdd000022.shtml)  is that the
+text in many of the table cells needs to be richer than plain text. We have
+identified a small set of HTML tags that we want to be able to use in a
+complexType to be called notesText.   We want the schema to limit us to that
+small set of tags as we edit FDDs.
+
+We have two structural options for the fdd.xsd schema.  We plan to have the
+fdd.xsd schema use the namespace "fdd" and require that element names be
+qualified with their namespace.
+
+1.  We could put the HTML tags into a separate .xsd file (to be included in
+fdd.xsd) that does not require the elements to be qualified.  This way we
+could use the HTML tags directly within the chunks of notesText.  They would
+be easily recognized, have familiar semantics, and be handled trivially in
+XSLT transformations to HTML.
+
+2.  For the convenience of having the specification in a single .xsd file, we
+could use different names (presumably in the fdd namespace).  These would be
+more cumbersome to read in the raw XML and need more work to convert to HTML.
+
+What do you see as pros and cons between these options?  For example, will
+OAI-harvesting applications have problems with the two-schema approach
+(option 1).
+
+Thanks for any feedback.   I will also be asking potential users of the
+harvested FDDs the equivalent question.
+
+Caroline Arms
+Library of Congress, Office of Strategic Initiatives
+caar@loc.gov
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20070515/080b1c28/attachment.htm
+From johnston at virginia.edu  Mon May 21 11:50:12 2007
+From: johnston at virginia.edu (Leslie Johnston)
+Date: Mon May 21 11:50:36 2007
+Subject: [OAI-implementers] OAI and Z39.50 or SRU
+In-Reply-To: <97e4e62e0605271421m50ffd53ew4dbeb4c1fffd86d9@mail.gmail.co
+ m>
+References: <97e4e62e0605271421m50ffd53ew4dbeb4c1fffd86d9@mail.gmail.com>
+Message-ID: <20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+
+I am now considering this same topic that was raised on this list a 
+year ago.  I'm not looking to make a Z39.50 resource available as 
+OAI, I'm wondering if I can additionally expose an existing OAI data 
+provider using Z39.50 or SRU.  It's one of many ideas we're bouncing 
+around for setting up a metasearch target for a particular collection.
+
+At 05:21 PM 5/27/2006, Steven Bird wrote:
+>The LOC Z39.50 site [1] lists an OAI/Z39.50 gateway, and links to [2]
+>(dated March 2003).  However, this latter site doesn't seem to exist
+>any more.  Can anyone tell me if there is an OAI gateway to Z39.50, or
+>better still, an aggregation service over libraries [3] that exposes
+>oai_dc records?  I'm aware of WorldCat, but it looks like there's only
+>a one-directional flow of information from OAI to WorldCat.  Thanks
+>for any advice.
+>
+>[1] http://www.loc.gov/z3950/agency/profiles/profiles.html
+>[2] http://frasier.library.uiuc.edu/research.htm
+>[3] http://www.loc.gov/z3950/
+>
+>-Steven Bird
+>
+>_______________________________________________
+>OAI-implementers mailing list
+>List information, archives, preferences and to unsubscribe:
+>http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+------------
+Leslie Johnston
+Head, Digital Access Services
+University of Virginia Library
+http://lib.virginia.edu/digital/
+http://lib.virginia.edu/digital/das/
+johnston@virginia.edu 
+
+
+From ian.ibbotson at k-int.com  Mon May 21 12:13:03 2007
+From: ian.ibbotson at k-int.com (Ian Ibbotson)
+Date: Mon May 21 12:12:48 2007
+Subject: [OAI-implementers] OAI and Z39.50 or SRU
+In-Reply-To: <20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+References: <97e4e62e0605271421m50ffd53ew4dbeb4c1fffd86d9@mail.gmail.com>
+	<20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+Message-ID: <1179763983.3461.5.camel@localhost.localdomain>
+
+For a while we experimented with an OAI feed for Index Data's Zebra
+information server that could be run periodically against a set of OAI
+data providers to inject updates into zebra (Sorry, Zebra is one of the
+hottest Z39.50 and SRW/U Server components around) using the Z39.50
+extended service for update. It all seemed to work quite well, but there
+wasn't really any demand for it at the time.. if there's interest now,
+I'm sure we can revive the code and rebuild it using the latest versions
+of JZKit and Zebra and stick it up on sourceforge.
+
+Ian.
+
+On Mon, 2007-05-21 at 11:50 -0400, Leslie Johnston wrote:
+> I am now considering this same topic that was raised on this list a 
+> year ago.  I'm not looking to make a Z39.50 resource available as 
+> OAI, I'm wondering if I can additionally expose an existing OAI data 
+> provider using Z39.50 or SRU.  It's one of many ideas we're bouncing 
+> around for setting up a metasearch target for a particular collection.
+> 
+> At 05:21 PM 5/27/2006, Steven Bird wrote:
+> >The LOC Z39.50 site [1] lists an OAI/Z39.50 gateway, and links to [2]
+> >(dated March 2003).  However, this latter site doesn't seem to exist
+> >any more.  Can anyone tell me if there is an OAI gateway to Z39.50, or
+> >better still, an aggregation service over libraries [3] that exposes
+> >oai_dc records?  I'm aware of WorldCat, but it looks like there's only
+> >a one-directional flow of information from OAI to WorldCat.  Thanks
+> >for any advice.
+> >
+> >[1] http://www.loc.gov/z3950/agency/profiles/profiles.html
+> >[2] http://frasier.library.uiuc.edu/research.htm
+> >[3] http://www.loc.gov/z3950/
+> >
+> >-Steven Bird
+> >
+> >_______________________________________________
+> >OAI-implementers mailing list
+> >List information, archives, preferences and to unsubscribe:
+> >http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> ------------
+> Leslie Johnston
+> Head, Digital Access Services
+> University of Virginia Library
+> http://lib.virginia.edu/digital/
+> http://lib.virginia.edu/digital/das/
+> johnston@virginia.edu 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+From thabing at uiuc.edu  Mon May 21 17:11:16 2007
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Mon May 21 17:11:19 2007
+Subject: [OAI-implementers] OAI and Z39.50 or SRU
+In-Reply-To: <20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+References: <97e4e62e0605271421m50ffd53ew4dbeb4c1fffd86d9@mail.gmail.com>
+	<20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+Message-ID: <46520AF4.7010005@uiuc.edu>
+
+Leslie Johnston wrote:
+> I am now considering this same topic that was raised on this list a year 
+> ago.  I'm not looking to make a Z39.50 resource available as OAI, I'm 
+> wondering if I can additionally expose an existing OAI data provider 
+> using Z39.50 or SRU.  It's one of many ideas we're bouncing around for 
+> setting up a metasearch target for a particular collection.
+> 
+> At 05:21 PM 5/27/2006, Steven Bird wrote:
+>> The LOC Z39.50 site [1] lists an OAI/Z39.50 gateway, and links to [2]
+>> (dated March 2003).  However, this latter site doesn't seem to exist
+>> any more.  
+
+If it would be useful, here is a new URL for [2]:
+
+http://gita.grainger.uiuc.edu/oai_z3950/
+
+Kind regards,
+	Tom
+
+Can anyone tell me if there is an OAI gateway to Z39.50, or
+>> better still, an aggregation service over libraries [3] that exposes
+>> oai_dc records?  I'm aware of WorldCat, but it looks like there's only
+>> a one-directional flow of information from OAI to WorldCat.  Thanks
+>> for any advice.
+>>
+>> [1] http://www.loc.gov/z3950/agency/profiles/profiles.html
+>> [2] http://frasier.library.uiuc.edu/research.htm
+>> [3] http://www.loc.gov/z3950/
+>>
+>> -Steven Bird
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> ------------
+> Leslie Johnston
+> Head, Digital Access Services
+> University of Virginia Library
+> http://lib.virginia.edu/digital/
+> http://lib.virginia.edu/digital/das/
+> johnston@virginia.edu
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+Thomas G. Habing
+Research Programmer
+Grainger Engineering Library Information Center
+University of Illinois at Urbana-Champaign
+
+From Simon.Huggard at lib.monash.edu.au  Mon May 21 20:55:36 2007
+From: Simon.Huggard at lib.monash.edu.au (Simon Huggard)
+Date: Mon May 21 20:55:46 2007
+Subject: [OAI-implementers] OAI and Z39.50 or SRU
+In-Reply-To: <46520AF4.7010005@uiuc.edu>
+References: <97e4e62e0605271421m50ffd53ew4dbeb4c1fffd86d9@mail.gmail.com>
+	<20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+	<46520AF4.7010005@uiuc.edu>
+Message-ID: <46523F88.7060708@lib.monash.edu.au>
+
+Hi all. If the Z39.50 resource is able to be queried as a SQL database, 
+the VTLS library system vendor have produced a thing called "Vortex". 
+It's written for their Virtua library system (which we don't have by the 
+way). I've downloaded it and briefly looked at it, and it looks like 
+you'd be able to modify it to allow OAI harvesting from a MARC database 
+that's query-able via SQL queries. It uses some SQL queries (via Perl) 
+to query for sets of records from the Virtua catalogue. You might find 
+that you can configure it to meets your needs. It's open source, so 
+there's no problem with downloading and using or modifying it.
+
+It's available at:
+http://www.vtls.com/Products/vortex.shtml
+
+Simon
+
+Thomas G. Habing wrote:
+> Leslie Johnston wrote:
+>> I am now considering this same topic that was raised on this list a 
+>> year ago.  I'm not looking to make a Z39.50 resource available as OAI, 
+>> I'm wondering if I can additionally expose an existing OAI data 
+>> provider using Z39.50 or SRU.  It's one of many ideas we're bouncing 
+>> around for setting up a metasearch target for a particular collection.
+>>
+>> At 05:21 PM 5/27/2006, Steven Bird wrote:
+>>> The LOC Z39.50 site [1] lists an OAI/Z39.50 gateway, and links to [2]
+>>> (dated March 2003).  However, this latter site doesn't seem to exist
+>>> any more.  
+> 
+> If it would be useful, here is a new URL for [2]:
+> 
+> http://gita.grainger.uiuc.edu/oai_z3950/
+> 
+> Kind regards,
+>     Tom
+> 
+> Can anyone tell me if there is an OAI gateway to Z39.50, or
+>>> better still, an aggregation service over libraries [3] that exposes
+>>> oai_dc records?  I'm aware of WorldCat, but it looks like there's only
+>>> a one-directional flow of information from OAI to WorldCat.  Thanks
+>>> for any advice.
+>>>
+>>> [1] http://www.loc.gov/z3950/agency/profiles/profiles.html
+>>> [2] http://frasier.library.uiuc.edu/research.htm
+>>> [3] http://www.loc.gov/z3950/
+>>>
+>>> -Steven Bird
+>>>
+>>> _______________________________________________
+>>> OAI-implementers mailing list
+>>> List information, archives, preferences and to unsubscribe:
+>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+>> ------------
+>> Leslie Johnston
+>> Head, Digital Access Services
+>> University of Virginia Library
+>> http://lib.virginia.edu/digital/
+>> http://lib.virginia.edu/digital/das/
+>> johnston@virginia.edu
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+> 
+> 
+
+-- 
+_______________________________________
+Simon Huggard
+Systems Manager
+Information Systems Department
+Monash University Library
+Monash University
+Building 4, Monash University, Vic, Australia 3800
+Phone: +61 3 9905 9138 Fax: + 61 3 9905 2610
+Mobile: 0425 774 260 (International : +61 425 774 260)
+
+From rob.tice at k-int.com  Tue May 22 05:09:01 2007
+From: rob.tice at k-int.com (Rob Tice)
+Date: Tue May 22 05:10:38 2007
+Subject: [OAI-implementers] OAI and Z39.50 or SRU
+In-Reply-To: <20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+Message-ID: <20070522090727.9500B81C0ED@mail.k-int.com>
+
+Hi Leslie
+
+There have been several replies to your initial posting all of which have a
+slightly different take on your requirements.
+
+Just for clarification.
+
+Are you looking to take an OAI feed and make its contents additionally
+available as a Z39.50/SRW/SRU target using the OAI feed itself to populate
+the Z39.50 system?
+
+Or are you looking to modify the underlying OAI database (data source) to
+support Z39.50/SRW/SRU?
+
+
+Cheers
+
+Rob
+
+
+
+
+
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org [mailto:oai-implementers-
+> bounces@openarchives.org] On Behalf Of Leslie Johnston
+> Sent: 21 May 2007 16:50
+> To: Steven Bird; oai-implementers@openarchives.org
+> Subject: [OAI-implementers] OAI and Z39.50 or SRU
+> 
+> I am now considering this same topic that was raised on this list a
+> year ago.  I'm not looking to make a Z39.50 resource available as
+> OAI, I'm wondering if I can additionally expose an existing OAI data
+> provider using Z39.50 or SRU.  It's one of many ideas we're bouncing
+> around for setting up a metasearch target for a particular collection.
+> 
+> At 05:21 PM 5/27/2006, Steven Bird wrote:
+> >The LOC Z39.50 site [1] lists an OAI/Z39.50 gateway, and links to [2]
+> >(dated March 2003).  However, this latter site doesn't seem to exist
+> >any more.  Can anyone tell me if there is an OAI gateway to Z39.50, or
+> >better still, an aggregation service over libraries [3] that exposes
+> >oai_dc records?  I'm aware of WorldCat, but it looks like there's only
+> >a one-directional flow of information from OAI to WorldCat.  Thanks
+> >for any advice.
+> >
+> >[1] http://www.loc.gov/z3950/agency/profiles/profiles.html
+> >[2] http://frasier.library.uiuc.edu/research.htm
+> >[3] http://www.loc.gov/z3950/
+> >
+> >-Steven Bird
+> >
+> >_______________________________________________
+> >OAI-implementers mailing list
+> >List information, archives, preferences and to unsubscribe:
+> >http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> ------------
+> Leslie Johnston
+> Head, Digital Access Services
+> University of Virginia Library
+> http://lib.virginia.edu/digital/
+> http://lib.virginia.edu/digital/das/
+> johnston@virginia.edu
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From johnston at virginia.edu  Tue May 22 12:57:32 2007
+From: johnston at virginia.edu (Leslie Johnston)
+Date: Tue May 22 12:58:18 2007
+Subject: [OAI-implementers] OAI and Z39.50 or SRU
+In-Reply-To: <20070522090727.9500B81C0ED@mail.k-int.com>
+References: <20070521155019.7E2CB1BFE2@fork2.mail.virginia.edu>
+	<20070522090727.9500B81C0ED@mail.k-int.com>
+Message-ID: <20070522165801.CC6861F5159@fork8.mail.virginia.edu>
+
+At 05:09 AM 5/22/2007, Rob Tice wrote:
+>Hi Leslie
+>
+>There have been several replies to your initial posting all of which have a
+>slightly different take on your requirements.
+>
+>Just for clarification.
+>
+>Are you looking to take an OAI feed and make its contents additionally
+>available as a Z39.50/SRW/SRU target using the OAI feed itself to populate
+>the Z39.50 system?
+
+Yes, this is precisely what I am interested in doing.  I have an OAI 
+data provider already that exposes oai-dc records (with MODS 
+planned), and I would like to potentially use this data to 
+additionally populate a Z39.50 system or gateway.
+
+It seemed worth researching, but it's not looking like there are any 
+tools to do this, at least not anything near production-ready.
+
+
+>Or are you looking to modify the underlying OAI database (data source) to
+>support Z39.50/SRW/SRU?
+
+No, I definitely do not want to do that.  My data source is XML, 
+programmatically generated from many different originating source 
+metadata formats.
+
+
+>Cheers
+>
+>Rob
+>
+>
+>
+>
+>
+> > -----Original Message-----
+> > From: oai-implementers-bounces@openarchives.org [mailto:oai-implementers-
+> > bounces@openarchives.org] On Behalf Of Leslie Johnston
+> > Sent: 21 May 2007 16:50
+> > To: Steven Bird; oai-implementers@openarchives.org
+> > Subject: [OAI-implementers] OAI and Z39.50 or SRU
+> >
+> > I am now considering this same topic that was raised on this list a
+> > year ago.  I'm not looking to make a Z39.50 resource available as
+> > OAI, I'm wondering if I can additionally expose an existing OAI data
+> > provider using Z39.50 or SRU.  It's one of many ideas we're bouncing
+> > around for setting up a metasearch target for a particular collection.
+> >
+> > At 05:21 PM 5/27/2006, Steven Bird wrote:
+> > >The LOC Z39.50 site [1] lists an OAI/Z39.50 gateway, and links to [2]
+> > >(dated March 2003).  However, this latter site doesn't seem to exist
+> > >any more.  Can anyone tell me if there is an OAI gateway to Z39.50, or
+> > >better still, an aggregation service over libraries [3] that exposes
+> > >oai_dc records?  I'm aware of WorldCat, but it looks like there's only
+> > >a one-directional flow of information from OAI to WorldCat.  Thanks
+> > >for any advice.
+> > >
+> > >[1] http://www.loc.gov/z3950/agency/profiles/profiles.html
+> > >[2] http://frasier.library.uiuc.edu/research.htm
+> > >[3] http://www.loc.gov/z3950/
+> > >
+> > >-Steven Bird
+> > >
+> > >_______________________________________________
+> > >OAI-implementers mailing list
+> > >List information, archives, preferences and to unsubscribe:
+> > >http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+> > ------------
+> > Leslie Johnston
+> > Head, Digital Access Services
+> > University of Virginia Library
+> > http://lib.virginia.edu/digital/
+> > http://lib.virginia.edu/digital/das/
+> > johnston@virginia.edu
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+>_______________________________________________
+>OAI-implementers mailing list
+>List information, archives, preferences and to unsubscribe:
+>http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+------------
+Leslie Johnston
+Head, Digital Access Services
+University of Virginia Library
+http://lib.virginia.edu/digital/
+http://lib.virginia.edu/digital/das/
+johnston@virginia.edu 
+
+
+From simeon at cs.cornell.edu  Tue May 22 17:21:10 2007
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Tue May 22 17:21:27 2007
+Subject: [OAI-implementers] Re: [OAI-PMH] an error in a regular expression
+ describing an OAI Identifier
+In-Reply-To: <46529FA8.1000507@man.poznan.pl>
+References: <46529FA8.1000507@man.poznan.pl>
+Message-ID: <Pine.LNX.4.62.0705221644230.19247@lion.cs.cornell.edu>
+
+
+Hi All,
+
+Agnieszka Lewandowska has pointed out an error in the patterns matching 
+domain names in the oai-identifier.xsd schema (message excerpt below, the 
+current schema doesn't permit single letter subdomain names). Such names 
+should be permitted (see: http://www.ietf.org/rfc/rfc1035.txt) so I 
+propose the following updates:
+
+in definition of repositoryIdentifierType:
+
+<       <pattern value="[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+"/>
+---
+>       <pattern value="[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+"/>
+
+and in definition of sampleIdentifierType:
+
+<       <pattern value="oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+:[a-zA-Z0-9\-_\.!~\*&apos;\(\);/\?:@&amp;=\+$,%]+"/>
+--
+>       <pattern value="oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+:[a-zA-Z0-9\-_\.!~\*&apos;\(\);/\?:@&amp;=\+$,%]+"/>
+
+I have put the updated schema online at
+   http://openarchives.org/OAI/2.0/oai-identifier.xsd.2007-05-22
+and there is a test instance at
+   http://openarchives.org/OAI/2.0/oai-identifier-test4.xml
+
+This change should not invalidate any currently valid instance. Unless 
+someone points out an error I will update the live schema version in a 
+week or two.
+
+Cheers,
+Simeon
+
+
+
+(For the really pedantic, the schema pattern is too broad in that it 
+permits a subdomain name ending in a hyphen (e.g "a-.com") which is not 
+valid according to RFC1035. Correcting this would make the patterns more 
+complicated and and I think it probably isn't worth it to change to 
+something like
+<pattern value="[a-zA-Z]([a-zA-Z0-9]|[a-zA-Z0-9\-]+[a-zA-Z0-9])?(\.[a-zA-Z]([a-zA-Z0-9]|[a-zA-Z0-9\-]+[a-zA-Z0-9])?)+"> 
+However, we could do this is people see value in it.)
+
+
+On Tue, 22 May 2007, Agnieszka Lewandowska wrote:
+> In one of documents describing the format of the OAI Identifier might be 
+> an error. The regular expression
+> 	"oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+:[a-zA-Z0-9\-_\.!~\*&apos;\(\);/\?:@&amp;=\+$,%]+"
+>
+> from a file under URI:
+>
+> http://www.openarchives.org/OAI/2.0/oai-identifier.xsd
+>
+> do not validate a proper URL address: 'ebipol.p.lodz.pl' (the part with
+> '.p' is causing an error). Furthermore a regular expression from a site
+>
+> http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm
+>
+> (especially point 2.1) enables URL 'ebibpol.p.lodz.pl'. After a little
+> change in the regular expression:
+>
+> "oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]*)+:[a-zA-Z0-9\-_\.!~\*&apos;\(\);/\?:@&amp;=\+$,%]+"
+>
+> it works.
+
+From eva.muller at ub.uu.se  Sun May 27 08:56:14 2007
+From: eva.muller at ub.uu.se (Eva =?iso-8859-1?b?TfxsbGVy?=)
+Date: Sun May 27 08:59:29 2007
+Subject: [OAI-implementers] Refistration still open: ETD2007 - June 13-16,
+	Sweden
+In-Reply-To: <20070426175035.tzfjxs3lwgs4cc4w@webmail3.uu.se>
+References: <20070426175035.tzfjxs3lwgs4cc4w@webmail3.uu.se>
+Message-ID: <20070527145614.cwbk20xmowk0kwsg@webmail3.uu.se>
+
+***Apologies for Cross Posting***
+Registration still open!
+
+ From ETD2007 Conference Committee - etd2007@ub.uu.se
+
+
+10th International Symposium on Electronic Theses and Dissertations
+Uppsala, Sweden, June 13-16, 2007
+http://epc.ub.uu.se/etd2007/
+ETD2007 - Added Value for E-theses
+This meeting offers scope for an exchange of experience and
+consolidation of cooperation in the field of electronic theses and
+dissertations at local, national and international levels.
+Under the general theme "Added Value for E-theses", ETD 2007 is
+organised around two main themes: "Integrating ETDs with institutional
+processes and practices" and "Value added services".
+The themes of the conference call for reflection on opportunities for
+joint effort    amongst various players in the production and
+information chain, both inside and outside our universities.
+
+To allow the specific developments relating to ETDs to be considered
+in context, we are delighted to welcome a number of excellent speakers
+including: Gregory Crane, Tufts University, USA; Clifford Lynch,
+Coalition for Networked Information, USA and Peter Murray-Rust,
+Cambridge University, UK.
+
+For more information about the speakers and the conference in general,
+please see the Web site at http://epc.ub.uu.se/etd2007/.
+
+Join us in Uppsala and help make our meeting a success!
+
+
+
+From eva.muller at ub.uu.se  Sun May 27 08:56:14 2007
+From: eva.muller at ub.uu.se (Eva =?iso-8859-1?b?TfxsbGVy?=)
+Date: Sun May 27 09:20:13 2007
+Subject: [OAI-implementers] [Ica-l] Refistration still open: ETD2007 - June
+	13-16, Sweden
+In-Reply-To: <20070426175035.tzfjxs3lwgs4cc4w@webmail3.uu.se>
+References: <20070426175035.tzfjxs3lwgs4cc4w@webmail3.uu.se>
+Message-ID: <20070527145614.cwbk20xmowk0kwsg@webmail3.uu.se>
+
+***Apologies for Cross Posting***
+Registration still open!
+
+ From ETD2007 Conference Committee - etd2007@ub.uu.se
+
+
+10th International Symposium on Electronic Theses and Dissertations
+Uppsala, Sweden, June 13-16, 2007
+http://epc.ub.uu.se/etd2007/
+ETD2007 - Added Value for E-theses
+This meeting offers scope for an exchange of experience and
+consolidation of cooperation in the field of electronic theses and
+dissertations at local, national and international levels.
+Under the general theme "Added Value for E-theses", ETD 2007 is
+organised around two main themes: "Integrating ETDs with institutional
+processes and practices" and "Value added services".
+The themes of the conference call for reflection on opportunities for
+joint effort    amongst various players in the production and
+information chain, both inside and outside our universities.
+
+To allow the specific developments relating to ETDs to be considered
+in context, we are delighted to welcome a number of excellent speakers
+including: Gregory Crane, Tufts University, USA; Clifford Lynch,
+Coalition for Networked Information, USA and Peter Murray-Rust,
+Cambridge University, UK.
+
+For more information about the speakers and the conference in general,
+please see the Web site at http://epc.ub.uu.se/etd2007/.
+
+Join us in Uppsala and help make our meeting a success!
+
+
+_______________________________________________
+Ica-l mailing list
+Ica-l@mailman.srv.ualberta.ca
+http://www.mailman.srv.ualberta.ca/mailman/listinfo/ica-l
+
+From eva.muller at ub.uu.se  Sun May 27 08:56:14 2007
+From: eva.muller at ub.uu.se (Eva =?iso-8859-1?b?TfxsbGVy?=)
+Date: Sun May 27 09:20:13 2007
+Subject: [OAI-implementers] [Ica-l] Refistration still open: ETD2007 - June
+	13-16, Sweden
+In-Reply-To: <20070426175035.tzfjxs3lwgs4cc4w@webmail3.uu.se>
+References: <20070426175035.tzfjxs3lwgs4cc4w@webmail3.uu.se>
+Message-ID: <20070527145614.cwbk20xmowk0kwsg@webmail3.uu.se>
+
+***Apologies for Cross Posting***
+Registration still open!
+
+ From ETD2007 Conference Committee - etd2007@ub.uu.se
+
+
+10th International Symposium on Electronic Theses and Dissertations
+Uppsala, Sweden, June 13-16, 2007
+http://epc.ub.uu.se/etd2007/
+ETD2007 - Added Value for E-theses
+This meeting offers scope for an exchange of experience and
+consolidation of cooperation in the field of electronic theses and
+dissertations at local, national and international levels.
+Under the general theme "Added Value for E-theses", ETD 2007 is
+organised around two main themes: "Integrating ETDs with institutional
+processes and practices" and "Value added services".
+The themes of the conference call for reflection on opportunities for
+joint effort    amongst various players in the production and
+information chain, both inside and outside our universities.
+
+To allow the specific developments relating to ETDs to be considered
+in context, we are delighted to welcome a number of excellent speakers
+including: Gregory Crane, Tufts University, USA; Clifford Lynch,
+Coalition for Networked Information, USA and Peter Murray-Rust,
+Cambridge University, UK.
+
+For more information about the speakers and the conference in general,
+please see the Web site at http://epc.ub.uu.se/etd2007/.
+
+Join us in Uppsala and help make our meeting a success!
+
+
+_______________________________________________
+Ica-l mailing list
+Ica-l@mailman.srv.ualberta.ca
+http://www.mailman.srv.ualberta.ca/mailman/listinfo/ica-l
+
+From jmartin at cesca.es  Mon May 28 08:36:52 2007
+From: jmartin at cesca.es (Jesus Martin)
+Date: Mon May 28 08:35:14 2007
+Subject: [OAI-implementers] About openarchives-registration
+Message-ID: <465ACCE4.4020900@cesca.es>
+
+Hello.
+I tried to register the following repository: 
+http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl
+in the openarchives. It passes all of tests except one post test:
+
+"Request: POST http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl 
+(Content: verb=GetRecord, identifier=oai:UOV.es:TDR-0328107-140900, 
+metadataPrefix=oai_dc)" (it's the second POST test).
+
+Months ago, we registered others data providers:
+
+http://www.tdr.cesca.es/TDR_UDC/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UAB/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UB/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UdG/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UIB/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UdL/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UV/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UJI/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UOC/NDLTD-OAI/oai.pl
+http://www.tdx.cesca.es/TDX_UPC/NDLTD-OAI/oai.pl
+
+We've been using Ming Luo and Hussein Suleman's ETD-db OAI Extensions 
+(v.2-10) and till now, all of them has been registered successfully. It 
+seems that the repository does not respond the HTTP POST requests, but 
+the HTTP GET requests works fine. What's happening now with the tests? 
+Why worked fine months ago with other repositories and now it's not 
+working? Any ideas to solve this problem?
+
+Thanks in advance
+
+-- 
+
+......................................................................
+         __
+        / /          Jes?s Mart?n Garc?a
+  C E / S / C A      T?cnic en Sistemes
+      /_/            Centre de Supercomputaci? de Catalunya
+
+  Gran Capit? 2-4 (Edifici Nexus)  08034 Barcelona
+  T. 93 205 6464  F.  93 205 6979  jmartin@cesca.es
+...................................................................... 
+
+
+From simeon at cs.cornell.edu  Tue May 29 18:29:06 2007
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Tue May 29 18:29:09 2007
+Subject: [OAI-implementers] About openarchives-registration
+In-Reply-To: <465ACCE4.4020900@cesca.es>
+References: <465ACCE4.4020900@cesca.es>
+Message-ID: <Pine.LNX.4.62.0705291825380.5402@lion.cs.cornell.edu>
+
+
+Hi Jesus,
+
+I assumed that you corrected the problem since I see you successfully 
+registered at 2007-05-29T09:17:46Z. 
+http://www.openarchives.org/Register/BrowseSites?viewRecord=http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl
+
+Cheers,
+Simeon
+
+
+On Mon, 28 May 2007, Jesus Martin wrote:
+> Hello.
+> I tried to register the following repository: 
+> http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl
+> in the openarchives. It passes all of tests except one post test:
+>
+> "Request: POST http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl (Content: 
+> verb=GetRecord, identifier=oai:UOV.es:TDR-0328107-140900, 
+> metadataPrefix=oai_dc)" (it's the second POST test).
+>
+> Months ago, we registered others data providers:
+>
+> http://www.tdr.cesca.es/TDR_UDC/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UAB/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UB/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UdG/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UIB/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UdL/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UV/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UJI/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UOC/NDLTD-OAI/oai.pl
+> http://www.tdx.cesca.es/TDX_UPC/NDLTD-OAI/oai.pl
+>
+> We've been using Ming Luo and Hussein Suleman's ETD-db OAI Extensions 
+> (v.2-10) and till now, all of them has been registered successfully. It seems 
+> that the repository does not respond the HTTP POST requests, but the HTTP GET 
+> requests works fine. What's happening now with the tests? Why worked fine 
+> months ago with other repositories and now it's not working? Any ideas to 
+> solve this problem?
+>
+> Thanks in advance
+>
+> -- 
+>
+> ......................................................................
+>        __
+>       / /          Jes?s Mart?n Garc?a
+> C E / S / C A      T?cnic en Sistemes
+>     /_/            Centre de Supercomputaci? de Catalunya
+>
+> Gran Capit? 2-4 (Edifici Nexus)  08034 Barcelona
+> T. 93 205 6464  F.  93 205 6979  jmartin@cesca.es
+> ...................................................................... 
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+From jmartin at cesca.es  Wed May 30 02:32:23 2007
+From: jmartin at cesca.es (Jesus Martin)
+Date: Wed May 30 02:30:54 2007
+Subject: [OAI-implementers] About openarchives-registration
+In-Reply-To: <Pine.LNX.4.62.0705291825380.5402@lion.cs.cornell.edu>
+References: <465ACCE4.4020900@cesca.es>
+	<Pine.LNX.4.62.0705291825380.5402@lion.cs.cornell.edu>
+Message-ID: <465D1A77.1040000@cesca.es>
+
+Yes, the POST does not work because the ETD-db OAI Extensions (the 
+software that uses the Data Provider) doesn't read correctly the STDIN. 
+Now it works correctly,
+thanks
+
+Jes?s
+
+
+Simeon Warner wrote:
+>
+> Hi Jesus,
+>
+> I assumed that you corrected the problem since I see you successfully 
+> registered at 2007-05-29T09:17:46Z. 
+> http://www.openarchives.org/Register/BrowseSites?viewRecord=http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl 
+>
+>
+> Cheers,
+> Simeon
+>
+>
+> On Mon, 28 May 2007, Jesus Martin wrote:
+>> Hello.
+>> I tried to register the following repository: 
+>> http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl
+>> in the openarchives. It passes all of tests except one post test:
+>>
+>> "Request: POST http://www.tdr.cesca.es/TDR_UOV/NDLTD-OAI/oai.pl 
+>> (Content: verb=GetRecord, identifier=oai:UOV.es:TDR-0328107-140900, 
+>> metadataPrefix=oai_dc)" (it's the second POST test).
+>>
+>> Months ago, we registered others data providers:
+>>
+>> http://www.tdr.cesca.es/TDR_UDC/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UAB/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UB/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UdG/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UIB/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UdL/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UV/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UJI/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UOC/NDLTD-OAI/oai.pl
+>> http://www.tdx.cesca.es/TDX_UPC/NDLTD-OAI/oai.pl
+>>
+>> We've been using Ming Luo and Hussein Suleman's ETD-db OAI Extensions 
+>> (v.2-10) and till now, all of them has been registered successfully. 
+>> It seems that the repository does not respond the HTTP POST requests, 
+>> but the HTTP GET requests works fine. What's happening now with the 
+>> tests? Why worked fine months ago with other repositories and now 
+>> it's not working? Any ideas to solve this problem?
+>>
+>> Thanks in advance
+>>
+>> -- 
+>>
+>> ......................................................................
+>>        __
+>>       / /          Jes?s Mart?n Garc?a
+>> C E / S / C A      T?cnic en Sistemes
+>>     /_/            Centre de Supercomputaci? de Catalunya
+>>
+>> Gran Capit? 2-4 (Edifici Nexus)  08034 Barcelona
+>> T. 93 205 6464  F.  93 205 6979  jmartin@cesca.es
+>> ......................................................................
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+
+
+-- 
+
+......................................................................
+         __
+        / /          Jes?s Mart?n Garc?a
+  C E / S / C A      T?cnic en Sistemes
+      /_/            Centre de Supercomputaci? de Catalunya
+
+  Gran Capit? 2-4 (Edifici Nexus)  08034 Barcelona
+  T. 93 205 6464  F.  93 205 6979  jmartin@cesca.es
+...................................................................... 
+
+

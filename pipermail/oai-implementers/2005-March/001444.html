@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] on resource harvesting &amp; datestamps
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20on%20resource%20harvesting%20%26%20datestamps&In-Reply-To=200503031836.j23IaAGD032310%40ramsay.cis.strath.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001443.html">
+   <LINK REL="Next"  HREF="001446.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] on resource harvesting &amp; datestamps</H1>
+    <B>Michael Nelson</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20on%20resource%20harvesting%20%26%20datestamps&In-Reply-To=200503031836.j23IaAGD032310%40ramsay.cis.strath.ac.uk"
+       TITLE="[OAI-implementers] on resource harvesting &amp; datestamps">mln at cs.odu.edu
+       </A><BR>
+    <I>Sat Mar  5 11:12:20 EST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001443.html">[OAI-implementers] on resource harvesting &amp; datestamps
+</A></li>
+        <LI>Next message: <A HREF="001446.html">[OAI-implementers] on resource harvesting &amp; datestamps
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1444">[ date ]</a>
+              <a href="thread.html#1444">[ thread ]</a>
+              <a href="subject.html#1444">[ subject ]</a>
+              <a href="author.html#1444">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+&gt;<i> A couple of questions now:
+</I>&gt;<i>
+</I>&gt;<i> 1) how do complex object formats may help with the problem of redundant
+</I>&gt;<i> harvesting?
+</I>
+It depends on how your CO is constructed.  For example, if your CO
+provides the following datastreams by-value:
+
+        MARC + TIFFs + OCR + PDF
+
+and you change your MARC -&gt; DC mapping, then the changes will be
+limited to oai_dc records and not oai_didl, saving you the penalty
+of downloading the large CO.  However, if you change your MARC in
+the above example, you will download the entire CO again.  Also,
+if you edit any of TIFFs _or_ your OCR _or_ your PDF you will
+download the entire CO again. The reason is that the OAI-PMH only
+knows a single datastamp, and that is the datetime of creation /
+modification of the digital object as a whole.  as soon as one of
+the constituent datastreams MARC, TIFF, OCR, PDF) changes, the
+datestamp of the object changes.
+
+Having said that, one can imagine optimizations that would combine
+OAI-PMH semantics and semantics _outside_ of the OAI-PMH.  For
+example, imagine that:
+
+(*) the CO that represents our digital object provides all its
+datastreams by-reference (instead of by-value)
+
+(*) we insert metadata into the CO that expresses the datetime of
+creation/modification of each constituent datastream.
+
+Both can be achieved using a decent CO format.  In this scenario,
+the OAI-PMH datestamp of the CO triggers reharvest of a very
+lightweight CO every time a constituent datastream changes.
+Introspection of the harvested CO would reveal the creation /
+modification datetime of each constituent datastream, and based
+upon this, a decision can be made whether or not to collect the
+datastreams that were provided by-reference.  This would be the
+scenario:
+
+1.  We do verb=ListRecords&amp;metadataPrefix=oai_didl&amp;from=2005-01-01
+
+2.  Record1 is the only match
+
+3.  We examine Record1 to find:
+
+Record1 (all datastreams are by-ref):
+         - MARC (2005-01-30)
+         - OCR (2005-01-25)
+         - TIFF1 .. TIFFN (2003-07-23)
+         - PDF (2003-07-23)
+
+4. We can now decide to only dereference the MARC and OCR.
+
+&gt;<i> 2) more importantly, is the propagation of change from resources to metadata
+</I>&gt;<i> really dependent on the exchange format? Couldn't a provider use DC and yet
+</I>&gt;<i> enforce a strong versioning policy which translate changes to resource in
+</I>&gt;<i> new items (and thus records)? Even when (minor) changes are allowed to
+</I>&gt;<i> preserve the identity of the resources, and thus no versioning takes place,
+</I>&gt;<i> could not a provider reflect those changes in the datestamp of the
+</I>&gt;<i> associated metadata records?
+</I>
+There are three problems:
+
+1.  This introduces new, potentially confusing semantics for DC
+(and MARC, etc.) and OAI-PMH.  If a &quot;regular&quot; harvester downloads
+a DC record that says it has changed on 2004-12-23, and it is bit
+equivalent with a the same record that last had a datestamp of
+2003-02-21 -- what would that mean exactly?
+
+2.  Related to the above, you would have to convey to harvesters
+that you &quot;do&quot; or &quot;do not&quot; adhere to &quot;DC-update means resource updates&quot;
+policy.  This could be done with a &lt;description&gt; container in an
+Identify response, but this would likely be community-specific and
+hard to generalize.
+
+3.  You still need to convey how to &quot;grab all the stuff&quot;.  In the
+CO example above, the value in DC.Identifier is probably just a
+&quot;splash page&quot;; how to grab the MARC, OCR, TIFFs, PDF etc. is not
+easily conveyed in a generalizable manner.
+
+In summary, chosing a sufficiently rich CO format will prevent
+the above problems and ambiguities.
+
+regards,
+
+Michael, Herbert, Simeon &amp; Carl
+
+----
+Michael L. Nelson <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">mln at cs.odu.edu</A> <A HREF="http://www.cs.odu.edu/~mln/">http://www.cs.odu.edu/~mln/</A>
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001443.html">[OAI-implementers] on resource harvesting &amp; datestamps
+</A></li>
+	<LI>Next message: <A HREF="001446.html">[OAI-implementers] on resource harvesting &amp; datestamps
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1444">[ date ]</a>
+              <a href="thread.html#1444">[ thread ]</a>
+              <a href="subject.html#1444">[ subject ]</a>
+              <a href="author.html#1444">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

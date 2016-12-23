@@ -1,0 +1,406 @@
+From faassen at infrae.com  Thu Jun  9 08:05:18 2005
+From: faassen at infrae.com (Martijn Faassen)
+Date: Thu Jun  9 08:05:14 2005
+Subject: [OAI-implementers] Selective Harvesting and Datestamps
+Message-ID: <42A8307E.7070709@infrae.com>
+
+Hi there,
+
+I'm implementing an OAI server and am wondering about the details of
+selective harvesting in date ranges.
+
+The spec says:
+
+   modification - the response *must* include records, corresponding to
+   the metadataPrefix argument, which have changed within the bounds of
+   the from and until arguments.
+
+Does this mean that records need to track their full history of modified
+dates? Just tracking their last modified datestamp does not seem enough
+to fully comply with this, as a record modified on 2005-04-10 and then
+again on 2005-06-05 would not show up in the range 2005-03-01 - 
+2005-05-01, as it would only be known it was modified 2005-06-05.
+
+On the other hand, there seems to be no requirement that a modified
+record gets exposed in its original, historical state; i.e. historical 
+revisions of metadata do not need to be retained to comply. This means 
+that in fact someone harvesting between 2005-03-01 - 2005-05-01 would 
+see all records in the most recent state anyway, thus including the 
+2005-06-05 change.
+
+It therefore seems that for incremental date-based harvesting to work,
+full historical information about modification dates is not strictly
+necessary, as at the end of a full harvest throughout the full date 
+range all the data *will* be correctly sent to the harvester..
+
+Tracking a full history of modification dates for all records seems like 
+an onerous requirement. Is this really the intent? Does it really hurt 
+if only last-modified dates are retained? Am I misreading the spec?
+
+Regards,
+
+Martijn
+
+
+From simeon at cs.cornell.edu  Thu Jun  9 09:04:59 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Thu Jun  9 09:05:06 2005
+Subject: [OAI-implementers] Selective Harvesting and Datestamps
+In-Reply-To: <42A8307E.7070709@infrae.com>
+References: <42A8307E.7070709@infrae.com>
+Message-ID: <Pine.LNX.4.58.0506090856360.8518@dhcp103-124.cs.cornell.edu>
+
+
+
+On Thu, 9 Jun 2005, Martijn Faassen wrote:
+
+> Hi there,
+>
+> I'm implementing an OAI server and am wondering about the details of
+> selective harvesting in date ranges.
+>
+> The spec says:
+>
+>    modification - the response *must* include records, corresponding to
+>    the metadataPrefix argument, which have changed within the bounds of
+>    the from and until arguments.
+>
+> Does this mean that records need to track their full history of modified
+> dates? Just tracking their last modified datestamp does not seem enough
+> to fully comply with this, as a record modified on 2005-04-10 and then
+> again on 2005-06-05 would not show up in the range 2005-03-01 -
+> 2005-05-01, as it would only be known it was modified 2005-06-05.
+
+It was intended to mean only the most recent changes. Thus, only the last
+modification date for each record needs to be recorded. Looking at the
+spec I see it is only implied that records have a single datestamp
+associated with them:
+
+spec> ... A repository must update the datestamp of a record if a change
+spec> occurs, the result of which would be a change to the metadata part
+spec> of the XML-encoding of the record. Such changes include, but
+spec> are not limited to, changes to the metadata of the record, changes
+spec> to the metadata format of the record, introduction of a new
+spec> metadata format, termination of support for a metadata format, etc
+
+> On the other hand, there seems to be no requirement that a modified
+> record gets exposed in its original, historical state; i.e. historical
+> revisions of metadata do not need to be retained to comply. This means
+> that in fact someone harvesting between 2005-03-01 - 2005-05-01 would
+> see all records in the most recent state anyway, thus including the
+> 2005-06-05 change.
+
+Records are only ever exposed in their current state, a complete
+modification history is not required.
+
+> It therefore seems that for incremental date-based harvesting to work,
+> full historical information about modification dates is not strictly
+> necessary, as at the end of a full harvest throughout the full date
+> range all the data *will* be correctly sent to the harvester..
+>
+> Tracking a full history of modification dates for all records seems like
+> an onerous requirement. Is this really the intent? Does it really hurt
+> if only last-modified dates are retained?
+
+Correct, only the last-modified dates need to be maintained.
+
+Cheers,
+Simeon
+
+> Am I misreading the spec?
+>
+> Regards,
+>
+> Martijn
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From faassen at infrae.com  Thu Jun  9 09:08:14 2005
+From: faassen at infrae.com (Martijn Faassen)
+Date: Thu Jun  9 09:08:04 2005
+Subject: [OAI-implementers] Selective Harvesting and Datestamps
+In-Reply-To: <Pine.LNX.4.58.0506090856360.8518@dhcp103-124.cs.cornell.edu>
+References: <42A8307E.7070709@infrae.com>
+	<Pine.LNX.4.58.0506090856360.8518@dhcp103-124.cs.cornell.edu>
+Message-ID: <42A83F3E.3030101@infrae.com>
+
+Simeon Warner wrote:
+> 
+> On Thu, 9 Jun 2005, Martijn Faassen wrote:
+> 
+>>I'm implementing an OAI server and am wondering about the details of
+>>selective harvesting in date ranges.
+>>
+>>The spec says:
+>>
+>>   modification - the response *must* include records, corresponding to
+>>   the metadataPrefix argument, which have changed within the bounds of
+>>   the from and until arguments.
+>>
+>>Does this mean that records need to track their full history of modified
+>>dates? Just tracking their last modified datestamp does not seem enough
+>>to fully comply with this, as a record modified on 2005-04-10 and then
+>>again on 2005-06-05 would not show up in the range 2005-03-01 -
+>>2005-05-01, as it would only be known it was modified 2005-06-05.
+>  
+> It was intended to mean only the most recent changes. Thus, only the last
+> modification date for each record needs to be recorded. Looking at the
+> spec I see it is only implied that records have a single datestamp
+> associated with them:
+> 
+> spec> ... A repository must update the datestamp of a record if a change
+> spec> occurs, the result of which would be a change to the metadata part
+> spec> of the XML-encoding of the record. Such changes include, but
+> spec> are not limited to, changes to the metadata of the record, changes
+> spec> to the metadata format of the record, introduction of a new
+> spec> metadata format, termination of support for a metadata format, etc
+
+Right, I saw vague hints that this was the case, and I couldn't imagine 
+it being otherwise, but a strict reading of the spec implies otherwise. 
+Perhaps a clarification can be added to the implemention guidelines.
+
+Thanks!
+
+Regards,
+
+Martijn
+
+From dmanchego at ifeanet.org  Sun Jun 12 01:42:07 2005
+From: dmanchego at ifeanet.org (Daniel Manchego)
+Date: Sun Jun 12 01:38:07 2005
+Subject: [OAI-implementers] About phpoai2-1.7.1.gz
+In-Reply-To: <E1DUoCM-0001DZ-Sm@spirit.veoweb.net>
+Message-ID: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAABgAAAAAAAAAMjWS9HYfm0Ow2HfaKwjfWsKAAAAQAAAApb757pSPBU6clIhCLXjBswEAAAAA@ifeanet.org>
+
+Hi,
+
+I have a question.
+
+I have a phpoai2-1.7.1.gz file. My OS is windows and i want to
+decompress this file. I have a linux too, but i don't know how.
+
+I tried with gunzip, but this file get me a file whithout extension.
+
+Could you help me please?
+
+Best Regards.
+
+Daniel
+
+
+From mf at cib.na.cnr.it  Sun Jun 12 05:12:23 2005
+From: mf at cib.na.cnr.it (Mario Mango Furnari)
+Date: Sun Jun 12 05:21:07 2005
+Subject: [OAI-implementers] About phpoai2-1.7.1.gz
+In-Reply-To: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAABgAAAAAAAAAMjWS9HYfm0Ow2HfaKwjfWsKAAAAQAAAApb757pSPBU6clIhCLXjBswEAAAAA@ifeanet.org>
+References: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAABgAAAAAAAAAMjWS9HYfm0Ow2HfaKwjfWsKAAAAQAAAApb757pSPBU6clIhCLXjBswEAAAAA@ifeanet.org>
+Message-ID: <1118567543.42abfc77c0d3f@webmail.ais.cib.na.cnr.it>
+
+Quoting Daniel Manchego <dmanchego@ifeanet.org>:
+
+> Hi,
+> 
+> I have a question.
+> 
+> I have a phpoai2-1.7.1.gz file. My OS is windows and i want to
+> decompress this file. I have a linux too, but i don't know how.
+> 
+> I tried with gunzip, but this file get me a file whithout extension.
+> 
+> Could you help me please?
+> 
+> Best Regards.
+> 
+> Daniel
+Hi Daniel,
+
+on linux you can extract it with tar, here an example
+
+ tar zxvf phpoai2-1.7.1.gz
+
+the z option is to uncompress it
+
+Hopignt that it solve
+
+Mario Mango Furnari
+-- 
+Istituto di Cibernetica Eduardo Caianiello
+Comprensorio Olivetti, Building 70
+Via Campi Flegrei, 34
+80078 Pozzuoli
+Italy
+
+Tel:  +39.0818675154
+Fax:  +39.0818675326
+email:mf@cib.na.cnr.it
+
+-------------------------------------------------
+This mail sent through IMP: http://horde.org/imp/
+
+
+From stamer at physnet.physik.uni-oldenburg.de  Mon Jun 13 10:01:58 2005
+From: stamer at physnet.physik.uni-oldenburg.de (Heinrich Stamerjohanns)
+Date: Tue Jun 14 08:45:49 2005
+Subject: [OAI-implementers] About phpoai2-1.7.1.gz
+In-Reply-To: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAABgAAAAAAAAAMjWS9HYfm0Ow2HfaKwjfWsKAAAAQAAAApb757pSPBU6clIhCLXjBswEAAAAA@ifeanet.org>
+References: <!~!UENERkVCMDkAAQACAAAAAAAAAAAAAAAAABgAAAAAAAAAMjWS9HYfm0Ow2HfaKwjfWsKAAAAQAAAApb757pSPBU6clIhCLXjBswEAAAAA@ifeanet.org>
+Message-ID: <Pine.LNX.4.61.0506131558060.10006@alexandria.physik.uni-oldenburg.de>
+
+On Sun, 12 Jun 2005, Daniel Manchego wrote:
+
+> Hi,
+> 
+> I have a question.
+> 
+> I have a phpoai2-1.7.1.gz file. My OS is windows and i want to
+> decompress this file. I have a linux too, but i don't know how.
+> 
+> I tried with gunzip, but this file get me a file whithout extension.
+> 
+> Could you help me please?
+
+Dear Daniel,
+
+actually, it is a .tgz file which means that this file a gzipped tar 
+archive, which is mostly used in the unix world, but many windows 
+programs are able to read such archives, too.
+
+However just replace phpoai2-1.7.1.tgz by phpoai2-1.7.1.zip and you will
+get a zip file, which I guess is more suitable for you.
+
+I have never tested phpoai2 with windows, but it should run ok. 
+If you have problems or feedback, please contact me directly via mail.
+
+Greetings, Heinrich
+ 
+
+> 
+> Best Regards.
+> 
+> Daniel
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  stamer@uni-oldenburg.de
+  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+
+
+From ann.apps at manchester.ac.uk  Wed Jun 15 06:39:57 2005
+From: ann.apps at manchester.ac.uk (Ann Apps)
+Date: Wed Jun 15 06:40:00 2005
+Subject: [OAI-implementers] DCMI Recommendation on Bibliographic Citations
+Message-ID: <mailman.0.1118832000.1440.oai-implementers@openarchives.org>
+
+Dear All,
+
+[Apologies for cross posting.]
+
+I'm pleased to report that the Dublin Core Metadata Initiative has published
+a Recommendation (http://www.dublincore.org/documents/#recommendation): 
+
+Guidelines for Encoding Bibliographic Citation Information in Dublin Core
+Metadata
+
+http://www.dublincore.org/documents/dc-citation-guidelines/
+
+This recommendation uses an OpenURL Framework ContextObject to describe a
+machine-parsable citation.
+
+It is primarily about capturing the bibliographic citation information about
+a journal article (for example) within its own metadata for which it
+recommends the DC property 'dcterms:bibliographicCitation', which is an
+element refinement of 'dc:identifier', but also includes recommendations for
+capturing references in 'dcterms:references'. But this could easily be
+extrapolated to using a recommended parsable citation as the value of a
+'dc:source' property, for example when capturing the publication citation
+for an eprint.
+
+Also the recommendations in the document assume that 'qualified' DC is being
+used, ie. with the availability of all the 'dcterms' properties. But it does
+also give guidelines for using simple Dublin Core.
+
+Best wishes,
+	Ann
+
+
+-------------------------------------------------
+Ann Apps. IT Specialist (Research & Development), MIMAS,
+   The University of Manchester, Oxford Road, Manchester, M13 9PL, UK 
+Tel: +44 (0) 161 275 6039  Fax: +44 (0) 161 275 6040
+Email: ann.apps@manchester.ac.uk WWW: http://epub.mimas.ac.uk/ann.html
+--------------------------------------------------
+
+
+
+From herbertv at lanl.gov  Fri Jun 17 17:42:04 2005
+From: herbertv at lanl.gov (herbert van de sompel)
+Date: Fri Jun 17 17:42:07 2005
+Subject: [OAI-implementers] OAI-PMH Resource Harvesting paper
+Message-ID: <42B343AC.6010308@lanl.gov>
+
+hi all,
+
+I thought that the following paper would be of interest to this list:
+
+Jeroen Bekaert, Herbert Van de Sompel. A Standards-based Solution for the 
+Accurate Transfer of Digital Assets. D-Lib Magazine. June 2005. Volume 11 Number 
+6. <http://dx.doi.org/10.1045/june2005-bekaert>.
+
+greetings
+
+herbert
+
+-- 
+Herbert Van de Sompel
+Digital Library Research & Prototyping
+Los Alamos National Laboratory, Research Library
+http://public.lanl.gov/herbertv/
+tel. +1 505 667 1267
+
+
+
+From paul.needham11 at btinternet.com  Mon Jun 27 07:52:59 2005
+From: paul.needham11 at btinternet.com (Paul Needham)
+Date: Mon Jun 27 07:53:23 2005
+Subject: [OAI-implementers] Cranfield QUEprints - new baseURL
+In-Reply-To: <42B343AC.6010308@lanl.gov>
+Message-ID: <001d01c57b0e$c3f81060$c8ec9d51@PASN1>
+
+Dear all
+
+If any of you currently harvest metadata from Cranfield QUEprints - the
+Cranfield University institutional repository - please note the
+following change...
+ 
+We've just upgraded QUEprints to the latest version of DSpace, which
+means our baseURL has changed to:
+
+http://dspace.lib.cranfield.ac.uk/dspace-oai/request
+
+Regards
+Paul A S Needham
+------------------------------------
+Electronic Information Specialist
+Kings Norton Library
+Cranfield University
+------------------------------------
+
+-- 
+No virus found in this outgoing message.
+Checked by AVG Anti-Virus.
+Version: 7.0.323 / Virus Database: 267.8.2/29 - Release Date: 27/06/2005
+ 
+
+

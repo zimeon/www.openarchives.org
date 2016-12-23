@@ -1,0 +1,435 @@
+From simeon at cs.cornell.edu  Mon May  1 09:38:05 2006
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Mon May  1 09:38:41 2006
+Subject: [OAI-implementers] Harvesting- how to efficiently poll?
+In-Reply-To: <20060430023941.40804.qmail@web38505.mail.mud.yahoo.com>
+References: <20060430023941.40804.qmail@web38505.mail.mud.yahoo.com>
+Message-ID: <Pine.LNX.4.64.0605010932490.11864@dhcp103-124.cs.cornell.edu>
+
+
+I'm not sure I understand your question properly. However, I think it 
+would be reasonable to assume that any repository that exposes only day 
+granularity datestamps is not updated more frequently than daily. I'd poll 
+at most once a day (for which you specify a 'from' parameter equal to the 
+previous day -- one increment of overlap is necessary to ensure nothing is 
+missed).
+
+(As an aside, it is amazing to see how many RSS clients poll arXiv.org 
+very frequently when we do include the standard headers saying that we 
+update daily and give a time. One might have hoped that these headers 
+would increase efficiency but that does not seem to be playing out in 
+practice.)
+
+-- 
+Simeon
+
+
+On Sat, 29 Apr 2006, steve racker wrote:
+> If the granularity of an archive is YYYY-MM-DD and there are
+> many records per day, how can one efficiently poll for the
+> newest records?  I would have expected there to be a way to
+> specify the last seen record and get any newer records, but
+> it appears the only method is to first make a request with the
+> date then keep requesting on any encountered resumptionTokens.
+> when a response is received with no resumptionToken, keep
+> it until it expires, then the next poll starts with the date
+> again.  Is this correct? That seems to generate much repeated
+> data in responses when polling with the last resumptionToken.
+>
+>
+> ---------------------------------
+> Yahoo! Messenger with Voice. Make PC-to-Phone Calls to the US (and 30+ countries) for 2¢/min or less.
+From sperr at nelinet.net  Wed May  3 15:11:02 2006
+From: sperr at nelinet.net (Sperr, Edwin)
+Date: Wed May  3 15:11:39 2006
+Subject: [OAI-implementers] Turnkey Harvester?
+Message-ID: <3147686DE3EDFF4EB9041934ACEE3F44327B92@file-srv.nelinetinc.nelinet.lan>
+
+Is there a currently-supported turnkey OAI harvesting package that folks
+can recommend?  I want to harvest a number of repositories and aggregate
+them into a single search interface.  I'd also like to do as little
+wheel-reinventing as possible.
+
+Thanks!  
+
+Ed Sperr
+Digital Services Consultant
+NELINET, Inc.
+153 Cordaville Rd. Suite 200  Southborough, MA 
+(508) 597-1931  |  (800) 635-4638 x1931  
+
+From mjordan at sfu.ca  Wed May  3 15:36:42 2006
+From: mjordan at sfu.ca (Mark Jordan)
+Date: Wed May  3 15:36:58 2006
+Subject: [OAI-implementers] Turnkey Harvester?
+In-Reply-To: <3147686DE3EDFF4EB9041934ACEE3F44327B92@file-srv.nelinetinc.nelinet.lan>
+References: <3147686DE3EDFF4EB9041934ACEE3F44327B92@file-srv.nelinetinc.nelinet.lan>
+Message-ID: <4459064A.1040700@sfu.ca>
+
+Hi Ed,
+
+We are about to release a completely redeveloped version of the PKP 
+Metadata Harvester (http://pkp.sfu.ca/pkp-harvester/). Features will 
+include:
+
+-Ability to harvest OAI metadata in a variety of schemas (will come with 
+uDC, MODS, and MARCXML).
+
+-Flexible search interface that allows simple searching and advanced 
+searching using crosswalked fields from all harvested archives. Advanced 
+searching of archives that share the same schema will be possible using 
+fields as defined in the schema. When creating crosswalks for searching, 
+admins can define elements are text, date, or HTML multiple select 
+interface widgets.
+
+-Ability to perform granular harvesting using setSpec and timestamps.
+
+-Ability to perform post-harvest and pre-indexing 
+filtering/normalization on metadata.
+
+-Ability to theme user interface and add plugins for extending 
+functionality.
+
+-Searching is highly scalable (creates an inverted index for searching).
+
+We're just finishing up some last minute internal testing and 
+documentation (technical document and administrator's guide). I'll post 
+to this list when it is available, which should be by the end of this 
+month. The Harvester is a PHP application with a MySQL backend, and we 
+are working on adding postgres support.
+
+Mark
+
+-- 
+Mark Jordan
+Head of Library Systems
+W.A.C. Bennett Library, Simon Fraser University
+Burnaby, British Columbia, V5A 1S6, Canada
+Phone (604) 291 5753 / Fax (604) 291 3023
+mjordan@sfu.ca / http://www.sfu.ca/~mjordan/
+
+Sperr, Edwin wrote:
+> Is there a currently-supported turnkey OAI harvesting package that folks
+> can recommend?  I want to harvest a number of repositories and aggregate
+> them into a single search interface.  I'd also like to do as little
+> wheel-reinventing as possible.
+> 
+> Thanks!  
+> 
+> Ed Sperr
+> Digital Services Consultant
+> NELINET, Inc.
+> 153 Cordaville Rd. Suite 200  Southborough, MA 
+> (508) 597-1931  |  (800) 635-4638 x1931  
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From rob.tice at k-int.com  Thu May  4 05:07:45 2006
+From: rob.tice at k-int.com (Rob Tice)
+Date: Thu May  4 05:11:18 2006
+Subject: [OAI-implementers] Turnkey Harvester?
+In-Reply-To: <3147686DE3EDFF4EB9041934ACEE3F44327B92@file-srv.nelinetinc.nelinet.lan>
+Message-ID: <43A98897000507D2@gps14-c14d5.vodafone.net> (added by
+	postmaster@vodafone.net)
+
+Hi Edwin
+
+Knowledge Integration Ltd (www.k-int.com) maintain a complete open source
+(GPL) solution to your requirement.
+
+It is a portal solution which aggregates OAI data sources and presents them
+for searching under a single search point (It also allows inclusion of
+distributed resources (e.g. srw, sru z39.50). Harvests are re-executed
+incrementally at a user defined intervals.
+
+It is used in a variety of projects in the UK including the UK wide peoples
+network discover service (www.peoplesnetwork.gov.uk/discover). This
+aggregates numerous cultural OAI feeds for the UK Museums, libraries and
+archives and presents them alongside live searchable targets in a single
+search interface.
+
+Drop me a line off list if you would like more info.
+
+Hope this helps
+
+Rob Tice
+
+Knowledge Integration Ltd
+
+
+
+
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Sperr, Edwin
+Sent: 03 May 2006 20:11
+To: oai-implementers@openarchives.org
+Subject: [OAI-implementers] Turnkey Harvester?
+
+Is there a currently-supported turnkey OAI harvesting package that folks
+can recommend?  I want to harvest a number of repositories and aggregate
+them into a single search interface.  I'd also like to do as little
+wheel-reinventing as possible.
+
+Thanks!  
+
+Ed Sperr
+Digital Services Consultant
+NELINET, Inc.
+153 Cordaville Rd. Suite 200  Southborough, MA 
+(508) 597-1931  |  (800) 635-4638 x1931  
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From teapen at ryerson.ca  Fri May 19 17:35:02 2006
+From: teapen at ryerson.ca (Tim Eapen)
+Date: Fri May 19 17:35:04 2006
+Subject: [OAI-implementers] Bad Argument 'resumptionToken'
+Message-ID: <2f2b62f2f2ad9d.2f2ad9d2f2b62f@ryerson.ca>
+
+Hello everybody:
+
+I am trying to harvest some data from the Pubmed Central.  I make the
+following request:
+
+http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&metadataPrefix=oai_dc
+
+I receive the following resumption token:
+
+<resumptionToken>oai%3Apubmedcentral.gov%3A14546!!!oai_dc!</resumptionToken>
+
+When I try and use the token as follows:
+
+http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=oai%3Apubmedcentral.gov%3A14546!!!oai_dc!
+
+I recieve the following:
+  <error code="badArgument">Bad Argument: 'resumptionToken'.</error>.
+
+Any help would be appreciated.
+
+Tim
+
+From thabing at uiuc.edu  Fri May 19 17:47:04 2006
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Fri May 19 17:47:06 2006
+Subject: [OAI-implementers] Bad Argument 'resumptionToken'
+In-Reply-To: <2f2b62f2f2ad9d.2f2ad9d2f2b62f@ryerson.ca>
+References: <2f2b62f2f2ad9d.2f2ad9d2f2b62f@ryerson.ca>
+Message-ID: <446E3CD8.9030308@uiuc.edu>
+
+Do not repeat any of the parameters except for the verb and 
+resumptionToken.  Get rid of the metadataPrefix, something like this:
+
+http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&resumptionToken=oai%3Apubmedcentral.gov%3A14546!!!oai_dc!
+
+Tom
+
+Tim Eapen wrote:
+> Hello everybody:
+> 
+> I am trying to harvest some data from the Pubmed Central.  I make the
+> following request:
+> 
+> http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&metadataPrefix=oai_dc
+> 
+> I receive the following resumption token:
+> 
+> <resumptionToken>oai%3Apubmedcentral.gov%3A14546!!!oai_dc!</resumptionToken>
+> 
+> When I try and use the token as follows:
+> 
+> http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=oai%3Apubmedcentral.gov%3A14546!!!oai_dc!
+> 
+> I recieve the following:
+>   <error code="badArgument">Bad Argument: 'resumptionToken'.</error>.
+> 
+> Any help would be appreciated.
+> 
+> Tim
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: thabing.vcf
+Type: text/x-vcard
+Size: 319 bytes
+Desc: not available
+Url : http://openarchives.org/pipermail/oai-implementers/attachments/20060519/e46a4ae4/thabing.vcf
+From teapen at ryerson.ca  Fri May 19 22:03:23 2006
+From: teapen at ryerson.ca (Tim Eapen)
+Date: Fri May 19 22:03:26 2006
+Subject: [OAI-implementers] Bad Argument 'resumptionToken'
+Message-ID: <2f3cd452f38c99.2f38c992f3cd45@ryerson.ca>
+
+Thank you Tom and everybody - At work we are trying to write a program
+to harvest some of this data.  I'll ask again if I have any more problems.
+
+Cheers!
+
+----- Original Message -----
+From: "Thomas G. Habing" <thabing@uiuc.edu>
+Date: Friday, May 19, 2006 5:47 pm
+Subject: Re: [OAI-implementers] Bad Argument 'resumptionToken'
+
+> Do not repeat any of the parameters except for the verb and 
+> resumptionToken.  Get rid of the metadataPrefix, something like this:
+> 
+>
+http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&resumptionToken=oai%3Apubmedcentral.gov%3A14546!!!oai_dc!
+> 
+> Tom
+> 
+> Tim Eapen wrote:
+> > Hello everybody:
+> > 
+> > I am trying to harvest some data from the Pubmed Central.  I make 
+> the> following request:
+> > 
+> > 
+>
+http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&metadataPrefix=oai_dc>
+
+> > I receive the following resumption token:
+> > 
+> > 
+>
+<resumptionToken>oai%3Apubmedcentral.gov%3A14546!!!oai_dc!</resumptionToken>>
+
+> > When I try and use the token as follows:
+> > 
+> > 
+>
+http://www.pubmedcentral.gov/oai/oai.cgi?verb=ListRecords&metadataPrefix=oai_dc&resumptionToken=oai%3Apubmedcentral.gov%3A14546!!!oai_dc!>
+
+> > I recieve the following:
+> >   <error code="badArgument">Bad Argument: 
+> 'resumptionToken'.</error>.> 
+> > Any help would be appreciated.
+> > 
+> > Tim
+> > 
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> > 
+> 
+> 
+
+From Frederic.Merceur at ifremer.fr  Tue May 23 10:20:03 2006
+From: Frederic.Merceur at ifremer.fr (Frederic MERCEUR)
+Date: Tue May 23 10:20:05 2006
+Subject: [OAI-implementers] JAVA UIUC Harvesting Tool
+Message-ID: <44731A13.50709@ifremer.fr>
+
+Hello,
+
+I am developing a specialised OAI Harvester. I then try to install and 
+configure the JAVA UIUC Harvesting Tool Version 2.0 B5 available on the 
+sourceforge.net WEB site.
+
+During my tests, I found a few bugs in this release. Since the 
+University of Illinois does not seem to support this product any more, I 
+would like to know if some of you are using this tool. If yes, could you 
+please tell me your experience with this tool?
+
+Thanks for your help,
+
+Kind regards,
+Fred
+
+-- 
+Fred Merceur
+Ifremer / Biblioth?que La P?rouse
+http://www.ifremer.fr/blp/ <http://wwww.ifremer.fr/blp/>
+T?l : 02-98-49-88-69
+Fax : 02-98-49-88-84
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060523/f5570d8f/attachment-0001.htm
+From simeon at cs.cornell.edu  Thu May 25 11:50:13 2006
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Thu May 25 11:50:51 2006
+Subject: [OAI-implementers] https (Re: validation)
+In-Reply-To: <44743F50.1000108@iata.csic.es>
+References: <44743F50.1000108@iata.csic.es>
+Message-ID: <Pine.LNX.4.64.0605251138260.29050@dhcp103-124.cs.cornell.edu>
+
+
+Hi Reme,
+
+No HTTPS URLs are validated/registered via the OAI site. The way the 
+OAI-PMH protocol is currently written, HTTP is mandated.
+
+There was a rather inconclusive discussion of whether OAI-PMH should allow 
+HTTPS last year:
+
+http://www.openarchives.org/pipermail/oai-implementers/2005-February/001416.html
+
+The consensus I saw was that harvesters should not be forced to implement 
+HTTPS, which implies repositories should always support HTTP. Hence I 
+still validate only HTTP baseURLs. Of course, I have no control over the 
+use of parallel HTTPS versions.
+
+I forward this to the oai-implementers list to see if there are more 
+opinions.
+
+Cheers,
+Simeon
+
+
+On Wed, 24 May 2006, Reme Melero wrote:
+> Dear friends,
+>
+> When I try to validate the following repository: 
+> https://repcsic.iata.csic.es/dspace/
+> we get the folowing errror message:
+>
+> Error - `https://repcsic.iata.csic.es/dspace/' does not appear to be an HTTP 
+> URL and therefore cannot be a valid OAI-PMH baseURL
+>
+> Please, could you help us to solve it, it seems that it is because the URL is 
+> not http but https but as I have checked many Dspace use  this  URLs and they 
+> are registered as OAI.
+> Thank you in advance
+> Reme
+>
+> IATA, CSIC
+> PO BOX 73 46100 Burjasot, Valencia, Spain
+> TEl +34 96 390 00 22. Fax 96 363 63 01
+> E-mail rmelero@iata.csic.es
+
+From sb at csse.unimelb.edu.au  Sat May 27 17:21:39 2006
+From: sb at csse.unimelb.edu.au (Steven Bird)
+Date: Sat May 27 17:21:50 2006
+Subject: [OAI-implementers] Status of OAI-PMH/Z39.50 Gateway Profile
+Message-ID: <97e4e62e0605271421m50ffd53ew4dbeb4c1fffd86d9@mail.gmail.com>
+
+The LOC Z39.50 site [1] lists an OAI/Z39.50 gateway, and links to [2]
+(dated March 2003).  However, this latter site doesn't seem to exist
+any more.  Can anyone tell me if there is an OAI gateway to Z39.50, or
+better still, an aggregation service over libraries [3] that exposes
+oai_dc records?  I'm aware of WorldCat, but it looks like there's only
+a one-directional flow of information from OAI to WorldCat.  Thanks
+for any advice.
+
+[1] http://www.loc.gov/z3950/agency/profiles/profiles.html
+[2] http://frasier.library.uiuc.edu/research.htm
+[3] http://www.loc.gov/z3950/
+
+-Steven Bird
+

@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] RE: [Dspace-tech] OAI validation - withdrawn
+	items, new dc types
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20RE%3A%20%5BDspace-tech%5D%20OAI%20validation%20-%20withdrawn%0A%09items%2C%20new%20dc%20types&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001540.html">
+   <LINK REL="Next"  HREF="001542.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] RE: [Dspace-tech] OAI validation - withdrawn
+	items, new dc types</H1>
+    <B>Tansley, Robert</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20RE%3A%20%5BDspace-tech%5D%20OAI%20validation%20-%20withdrawn%0A%09items%2C%20new%20dc%20types&In-Reply-To="
+       TITLE="[OAI-implementers] RE: [Dspace-tech] OAI validation - withdrawn
+	items, new dc types">robert.tansley at hp.com
+       </A><BR>
+    <I>Tue Nov  8 20:06:04 EST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001540.html">[OAI-implementers] Please help me to fill the questionnaire
+	--Survey on Common Interface Frameworks for Online Libraries
+</A></li>
+        <LI>Next message: <A HREF="001542.html">[OAI-implementers] Re: [Dspace-tech] OAI validation - withdrawn
+	items, new dc types
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1541">[ date ]</a>
+              <a href="thread.html#1541">[ thread ]</a>
+              <a href="subject.html#1541">[ subject ]</a>
+              <a href="author.html#1541">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Liam,
+
+Actually it's a weird corner case where it's not clear to me what the
+'right' thing to do is.  It could be that the repository explorer is
+wrong, or DSpace.
+
+Basically
+<A HREF="http://demo.openrepository.com/demo-oai/request?verb=ListIdentifiers&amp;met">http://demo.openrepository.com/demo-oai/request?verb=ListIdentifiers&amp;met</A>
+adataPrefix=oai_dc asks for all records which have oai_dc metadata.  You
+*have* to ask for a particular metadata prefix with ListIdentifiers.
+
+But when you actually ask for the oai_dc metadata on a deleted item,
+DSpace reports there is no oai_dc metadata for that item.  Because there
+isn't.  Because it's been deleted.
+
+However, if DSpace simply didn't include &lt;record status=&quot;deleted&quot;&gt; for
+that item in the ListIdentifiers response, harvesters would never know
+the record had actually been deleted.
+
+DSpace could simply claim to have oai_dc metadata for deleted items in a
+ListMetadataFormats response, but this doesn't seem right.
+
+Alternatively, it could give an 'idDoesNotExist' error code, but this
+doesn't feel right either.  ListMetadataFormats doesn't provide any
+means to indicate something like status=&quot;deleted&quot;.
+
+I've CC'd this to oai-implementers, in case anyone there can give us
+some pointers -- what's the appropriate behaviour?
+
+ Robert TANSLEY / HP Labs / MIT Visiting Researcher
+ <A HREF="http://www.hpl.hp.com/personal/Robert_Tansley/">http://www.hpl.hp.com/personal/Robert_Tansley/</A>
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">dspace-tech-admin at lists.sourceforge.net</A> 
+</I>&gt;<i> [mailto:<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">dspace-tech-admin at lists.sourceforge.net</A>] On Behalf Of 
+</I>&gt;<i> Liam Lynch
+</I>&gt;<i> Sent: 03 November 2005 11:26
+</I>&gt;<i> To: Dspace-Tech (E-mail)
+</I>&gt;<i> Subject: [Dspace-tech] OAI validation - withdrawn items, new dc types
+</I>&gt;<i> 
+</I>&gt;<i> Hi all -
+</I>&gt;<i> 
+</I>&gt;<i> Just testing out our OAI-PMH capabilities on a demo 
+</I>&gt;<i> repository using the OAI repository explorer (i.e. using this 
+</I>&gt;<i> <A HREF="http://re.cs.uct.ac.za/">http://re.cs.uct.ac.za/</A> ) and I have a couple of validation 
+</I>&gt;<i> errors. I've searched back in the lists and haven't found 
+</I>&gt;<i> anything obvious about these issues, so wondering if anyone 
+</I>&gt;<i> can help ....
+</I>&gt;<i> 
+</I>&gt;<i> One problem seems to relate to this feature of DSpace -
+</I>&gt;<i> 
+</I>&gt;<i> &quot;DSpace's OAI service does support the exposing of deletion 
+</I>&gt;<i> information for withdrawn items, but not for items that are 
+</I>&gt;<i> 'expunged' ( see above 
+</I>&gt;<i> &lt;<A HREF="http://www.dspace.org/technology/system-docs/functional.html#">http://www.dspace.org/technology/system-docs/functional.html#</A>
+</I>&gt;<i> deletions&gt;). &quot;
+</I>&gt;<i> 
+</I>&gt;<i> If you look at this xml from a ListIdentifiers request, 
+</I>&gt;<i> you'll notice how the first item is deleted (i.e. withdrawn) -
+</I>&gt;<i> <A HREF="http://demo.openrepository.com/demo-oai/request?verb=ListIdent">http://demo.openrepository.com/demo-oai/request?verb=ListIdent</A>
+</I>ifiers&amp;metadataPrefix=oai_dc
+&gt;<i> 
+</I>&gt;<i> i.e. this bit -
+</I>&gt;<i> 
+</I>&gt;<i> &lt;header status=&quot;deleted&quot;&gt;
+</I>&gt;<i> &lt;identifier&gt;oai:demo.openrepository.com:123456789/9&lt;/identifier&gt;
+</I>&gt;<i> &lt;datestamp&gt;2005-05-19T10:38:31Z&lt;/datestamp&gt;
+</I>&gt;<i> &lt;/header&gt;
+</I>&gt;<i> 
+</I>&gt;<i> The OAI explorer test uses this particular item for a 
+</I>&gt;<i> ListMetadataFormats request - and it doesn't like what it gets back -
+</I>&gt;<i> 
+</I>&gt;<i> (22) Testing : ListMetadataFormats (identifier)
+</I>&gt;<i> URL : 
+</I>&gt;<i> <A HREF="http://demo.openrepository.com/demo-oai/request?verb=ListMetad">http://demo.openrepository.com/demo-oai/request?verb=ListMetad</A>
+</I>ataFormats&amp;identifier=oai:demo.openrepository.com:123456789/9
+&gt;<i> ------ Start of XML Response ------
+</I>&gt;<i> &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;&lt;OAI-PMH 
+</I>&gt;<i> xmlns=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/&quot;">http://www.openarchives.org/OAI/2.0/&quot;</A> 
+</I>&gt;<i> xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance&quot;">http://www.w3.org/2001/XMLSchema-instance&quot;</A> 
+</I>&gt;<i> xsi:schemaLocation=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/">http://www.openarchives.org/OAI/2.0/</A> 
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;">http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;</A>&gt;&lt;responseDate
+</I>&gt;<i>2005-11-03T14:28:13Z&lt;/responseDate&gt;&lt;request &gt;
+</I>identifier=&quot;oai:demo.openrepository.com:123456789/9&quot; 
+&gt;<i> verb=&quot;ListMetadataFormats&quot;&gt;<A HREF="http://demo.openrepository.com/demo">http://demo.openrepository.com/demo</A>
+</I>&gt;<i> -oai/request&lt;/request&gt;&lt;error code=&quot;noMetadataFormats&quot;&gt;There 
+</I>&gt;<i> are no metadata formats available for the specified 
+</I>&gt;<i> item.&lt;/error&gt;&lt;/OAI-PMH&gt;
+</I>&gt;<i> ------- End of XML Response -------
+</I>&gt;<i> Test Result : FAIL!
+</I>&gt;<i> **** [ERROR] Error tag found but not expected : noMetadataFormats
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> So what do you reckon - it doesn't understand what 
+</I>&gt;<i> status=&quot;deleted&quot; means, and that if it did it wouldn't try 
+</I>&gt;<i> this test? Is this a problem with the xml DSpace produces or 
+</I>&gt;<i> more with the OAI explorer testing utility?
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> The next problem relates to these new DC types we've added - 
+</I>&gt;<i> basically, it doesn't like 'em (see below). And no there's 
+</I>&gt;<i> reason why it should, I guess - it's got it's own schema, it 
+</I>&gt;<i> knows what it likes. So as we've customised our repository to 
+</I>&gt;<i> add some dc types, we need to change the OAIDCCrosswalk class 
+</I>&gt;<i> to not put these in the oai_dc XML, right?  That's fine, but 
+</I>&gt;<i> I guess it would be better if only dc fields that would be 
+</I>&gt;<i> accepted by the OAI_DC schema are actually put in generally - 
+</I>&gt;<i> i.e. if it only puts in elements that are in [title, creator, 
+</I>&gt;<i> subject, description, publisher, contributor, date, type, 
+</I>&gt;<i> format, identifier, source, relation, coverage, rights]. If 
+</I>&gt;<i> so no extra effort would be needed when new dc types are 
+</I>&gt;<i> added.  Would it make sense to change OAIDCCrosswalk to do this?
+</I>&gt;<i> 
+</I>&gt;<i> Any thoughts much appreciated.
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Liam
+</I>&gt;<i> 
+</I>&gt;<i> validation message -
+</I>&gt;<i> 
+</I>&gt;<i> (41) Testing : GetRecord (identifier, oai_dc)
+</I>&gt;<i> URL : 
+</I>&gt;<i> <A HREF="http://demo.openrepository.com/demo-oai/request?verb=GetRecord">http://demo.openrepository.com/demo-oai/request?verb=GetRecord</A>
+</I>&amp;identifier=oai:demo.openrepository.com:123456789/224&amp;metadataPrefix=oai
+_dc
+&gt;<i> ------ Response from Xerces Schema Validation ------
+</I>&gt;<i> [Error] re.0NiDLV:1:3495: cvc-complex-type.2.4.a: Invalid 
+</I>&gt;<i> content was found starting with element 'dc:entrez'. One of 
+</I>&gt;<i> '{&quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:title,">http://purl.org/dc/elements/1.1/&quot;:title,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:creator,">http://purl.org/dc/elements/1.1/&quot;:creator,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:subject,">http://purl.org/dc/elements/1.1/&quot;:subject,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:description,">http://purl.org/dc/elements/1.1/&quot;:description,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:publisher,">http://purl.org/dc/elements/1.1/&quot;:publisher,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:contributor,">http://purl.org/dc/elements/1.1/&quot;:contributor,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:date,">http://purl.org/dc/elements/1.1/&quot;:date,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:type,">http://purl.org/dc/elements/1.1/&quot;:type,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:format,">http://purl.org/dc/elements/1.1/&quot;:format,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:identifier,">http://purl.org/dc/elements/1.1/&quot;:identifier,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:source,">http://purl.org/dc/elements/1.1/&quot;:source,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:language,">http://purl.org/dc/elements/1.1/&quot;:language,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:relation,">http://purl.org/dc/elements/1.1/&quot;:relation,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:coverage,">http://purl.org/dc/elements/1.1/&quot;:coverage,</A> 
+</I>&gt;<i> &quot;<A HREF="http://purl.org/dc/elements/1.1/&quot;:rights}'">http://purl.org/dc/elements/1.1/&quot;:rights}'</A> is expected.
+</I>&gt;<i> /tmp/re.0NiDLV: 777;11;0 ms (35 elems, 10 attrs, 0 spaces, 2388 chars)
+</I>&gt;<i> ------- End of Xerces Schema Validation Report  -------
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> This email has been scanned by Postini.
+</I>&gt;<i> For more information please visit <A HREF="http://www.postini.com">http://www.postini.com</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> -------------------------------------------------------
+</I>&gt;<i> SF.Net email is sponsored by:
+</I>&gt;<i> Tame your development challenges with Apache's Geronimo App 
+</I>&gt;<i> Server. Download
+</I>&gt;<i> it for free - -and be entered to win a 42&quot; plasma tv or your very own
+</I>&gt;<i> Sony(tm)PSP.  Click here to play: <A HREF="http://sourceforge.net/geronimo.php">http://sourceforge.net/geronimo.php</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> DSpace-tech mailing list
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">DSpace-tech at lists.sourceforge.net</A>
+</I>&gt;<i> <A HREF="https://lists.sourceforge.net/lists/listinfo/dspace-tech">https://lists.sourceforge.net/lists/listinfo/dspace-tech</A>
+</I>&gt;<i> 
+</I>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001540.html">[OAI-implementers] Please help me to fill the questionnaire
+	--Survey on Common Interface Frameworks for Online Libraries
+</A></li>
+	<LI>Next message: <A HREF="001542.html">[OAI-implementers] Re: [Dspace-tech] OAI validation - withdrawn
+	items, new dc types
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1541">[ date ]</a>
+              <a href="thread.html#1541">[ thread ]</a>
+              <a href="subject.html#1541">[ subject ]</a>
+              <a href="author.html#1541">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

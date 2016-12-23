@@ -1,0 +1,585 @@
+From herbertv@lanl.gov  Sun Dec  7 15:45:26 2003
+From: herbertv@lanl.gov (herbert van de sompel)
+Date: Sun, 07 Dec 2003 08:45:26 -0700
+Subject: [OAI-implementers] "info" URI update
+Message-ID: <3FD34B16.F1253B8F@lanl.gov>
+
+Hi All:
+
+Following our announcement of the "info" URI scheme a couple months back
+[1] we would like to notify the list of a revision to the I-D which has
+now been posted on the I-D repository [2]. The revision targets three key
+areas which further simplify the "info" URI scheme as a facilitator for
+referencing information assets:
+
+      a) "info" now excludes any dereference capability
+         Consequence: no resolution systems are to be associated with "info"
+URIs
+
+      b) "info" now includes support for full hierarchy
+         Consequence: the identifier component of an "info" URI may include "/"
+chars
+
+      c) "info" now includes support for URI fragments
+         Consequence: secondary resources may be indirectly identified by "info"
+URIs
+
+Additionally, three other changes have also been made:
+
+      d) The BNF now reuses many of the RFC2396bis productions
+         Consequence: facilitates comparison with future generic URI syntax
+
+      e) Some of the examples have been changed for simplification
+         Consequence: removes possible confusion with other works in progres
+
+      f) Section 7 "Rationale" has been improved
+         Consequence: clearer justification why "info" URI scheme is required
+
+Together with this new I-D we are pleased to announce that an early
+implementation of the "info" URI Registry is now available online at the
+"info" website [3]. The namespace registration records are human/machine
+accessible and can be harvested using the OAI-PMH protocol [4].
+Alternative disclosures of registration records using e.g. RSS may be
+made available at a future time.
+
+Two additional documents are also made available on the "info" website
+[3]:
+
+      1. A comprehensive FAQ which answers common questions re "info"
+        (Follow the link <About "info" URI> on the menu bar)
+
+      2. An "info" Registry policy document
+        (Follow the link <Registry Policy> on the menu bar
+
+Please note that both documents are currently evolving and are being made
+available at this time for discussion purposes. They should not be treated
+as authoritative but will be improved through comments received. [Also
+note that the link to the I-D on the "info" website points to the previous
+version ('-00'), not the current version ('-01') - we will amend this.]
+
+We would like to invite feedback on the Registry and associated documents
+and any comments on the revised I-D.
+
+One particular question we have regards the use of the BNF productions
+from the draft RFC2396bis [5] rather than from the reference RFC2396 [6]
+itself. The reasons are twofold: i) we would like to futureproof this
+specification, and ii) the "segment" production in RFC2396 is overly
+restrictive, and has now been generalized in the work ongoing in the
+successor to that RFC. We believe this is the correct approach - and seems
+to follow the approach taken in the IRI work [7].
+
+Herbert Van de Sompel - Los Alamos National Laboratory
+Tony Hammond - Elsevier
+Eamonn Neylon - Manifest Solutions
+Stuart L. Weibel - OCLC
+
+[1] http://lists.w3.org/Archives/Public/uri/2003Sep/0100.html
+[2] http://www.ietf.org/internet-drafts/draft-vandesompel-info-uri-01.txt
+[3] http://info-uri.info/
+[4] http://www.openarchives.org/OAI/openarchivesprotocol.html
+[5]
+http://www.ietf.org/internet-drafts/draft-fielding-uri-rfc2396bis-03.txt
+[6] http://www.ietf.org/rfc/rfc2396.txt
+[7] http://www.ietf.org/internet-drafts/draft-duerst-iri-05.txt
+
+--
+Herbert Van de Sompel
+digital library research & prototyping
+Los Alamos National Laboratory - Research Library
++ 1 (505) 667 1267 / http://lib-www.lanl.gov/~herbertv/
+
+"met gestreken jeans de dansvloer penetreren"
+
+
+
+From deridder@aztec.lib.utk.edu  Mon Dec  8 14:19:32 2003
+From: deridder@aztec.lib.utk.edu (Jody DeRidder)
+Date: Mon, 8 Dec 2003 09:19:32 -0500 (EST)
+Subject: [OAI-implementers] notification of duplicate files
+Message-ID: <3065.160.36.192.134.1070893172.squirrel@aztec.lib.utk.edu>
+
+For those of you running harvesters on both UTK Libraries and UTK
+Sunsite repositories, I've gathered a list of the oai identifiers of
+records available via the Sunsite repository that have since been
+reworked, corrected, expanded (etc.) and made available via the UTK
+Library repository. (Sunsite provided our testbed.)
+
+  If you would like to avoid duplication within your harvested records,
+this should be of interest to you:
+  http://diglib.lib.utk.edu/oai/duplicates.html
+
+Holler at me if you have questions.
+
+     --jody
+
+-- 
+  Jody DeRidder
+  IT Administrator II
+  Digital Library Center
+  648A John C. Hodges Library
+  University of Tennessee
+  Knoxville, TN 37996
+
+  Phone: (865) 974-4796
+  Email: deridder@aztec.lib.utk.edu
+
+
+From ehs@pobox.com  Thu Dec 11 22:33:10 2003
+From: ehs@pobox.com (Ed Summers)
+Date: Thu, 11 Dec 2003 16:33:10 -0600
+Subject: [OAI-implementers] Net::OAI::Harvester v0.94
+Message-ID: <20031211223310.GA27937@chloe.inkdroid.org>
+
+A bit of news about the Net::OAI::Harvester CPAN module.
+
+In addition to the standard 6 verbs, Net::OAI::Harvester v0.94 [1] has 
+two new methods listAllRecords() and listAllIdentifiers() which provide
+seamless resumption token usage:
+
+    my $harvester = Net::OAI::Harvester->new( 
+	baseURL	=> 'http://memory.loc.gov/cgi-bin/oai2_0' 
+    );
+
+    my $list = $harvester->getAllRecords(
+	metadataPrefix	    => 'oai_dc',
+	set		    => 'lcphotos'
+    );
+
+    while ( my $record = $list->next() ) { 
+	print $record->metadata()->title(),"\n";
+    }
+
+It should be making it's way around CPAN [2] mirrors right now.
+
+//Ed
+
+[1] http://search.cpan.org/perldoc?Net::OAI::Harvester
+[2] http://www.cpan.org
+
+From david.loy@ucop.edu  Fri Dec 12 17:03:13 2003
+From: david.loy@ucop.edu (David Loy)
+Date: Fri, 12 Dec 2003 09:03:13 -0800
+Subject: [OAI-implementers] OAI identifiers
+Message-ID: <5.2.0.9.0.20031212084510.0275b6f8@popserv.ucop.edu>
+
+--=====================_148163628==.ALT
+Content-Type: text/plain; charset="us-ascii"; format=flowed
+
+This is the first time I've written to this list.
+
+I am trying to get a better understanding of identifier as used in OAI 
+protocol.
+
+According to the standard (I'm using 
+http://www.openarchives.org/OAI/openarchivesprotocol.htm#UniqueIdentifier) 
+, a unique identifier is defined as a URI which by definition contains 
+ftp:, http:, oai: etc.
+
+We use an ark as our persistent URI (see 
+http://www.cdlib.org/inside/diglib/ark/):
+http://findaid.oac.cdlib.org/findaid/ark:/13030/ft2s200504
+
+My question is how to set up the description element of the Identity 
+response to describe this non-oai identifier.
+
+Any help would be terrific.
+
+Thanks
+David Loy 
+--=====================_148163628==.ALT
+Content-Type: text/html; charset="us-ascii"
+
+<html>
+<body>
+This is the first time I've written to this list. <br><br>
+I am trying to get a better understanding of identifier as used in OAI
+protocol.<br><br>
+According to the standard (I'm using
+http://www.openarchives.org/OAI/openarchivesprotocol.htm#UniqueIdentifier)
+, a unique identifier is defined as a URI which by definition contains
+ftp:, http:, oai: etc.<br><br>
+We use an ark as our persistent URI (see
+http://www.cdlib.org/inside/diglib/ark/):<br>
+<pre><a href="http://findaid.oac.cdlib.org/findaid/ark:/13030/ft2s200504" eudora="autourl">http://findaid.oac.cdlib.org/findaid/ark:/13030/ft2s200504
+
+</a></pre>My question is how to set up the description element of the
+Identity response to describe this non-oai identifier.<br><br>
+Any help would be terrific.<br><br>
+Thanks<br>
+David Loy</body>
+</html>
+
+--=====================_148163628==.ALT--
+
+
+From simeon@cs.cornell.edu  Fri Dec 12 18:15:32 2003
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Fri, 12 Dec 2003 13:15:32 -0500 (EST)
+Subject: [OAI-implementers] OAI identifiers
+In-Reply-To: <5.2.0.9.0.20031212084510.0275b6f8@popserv.ucop.edu>
+Message-ID: <Pine.LNX.4.44.0312121306020.2086-100000@ice.cs.cornell.edu>
+
+If you are not using oai-identifiers then you must not include an
+oai-identifier description block in your Identify response. The
+oai-identifier description container (defined by the schema
+http://www.openarchives.org/OAI/2.0/oai-identifier.xsd) is specific 
+to the oai-identifier scheme.
+
+>From an OAI standpoint, your ARK's should be treated as opaque identifiers
+within your repository by any service provider that doesn't recognize and
+understand them.
+
+Cheers,
+Simeon.
+
+
+On Fri, 12 Dec 2003, David Loy wrote:
+> This is the first time I've written to this list.
+> 
+> I am trying to get a better understanding of identifier as used in OAI 
+> protocol.
+> 
+> According to the standard (I'm using 
+> http://www.openarchives.org/OAI/openarchivesprotocol.htm#UniqueIdentifier) 
+> , a unique identifier is defined as a URI which by definition contains 
+> ftp:, http:, oai: etc.
+> 
+> We use an ark as our persistent URI (see 
+> http://www.cdlib.org/inside/diglib/ark/):
+> http://findaid.oac.cdlib.org/findaid/ark:/13030/ft2s200504
+> 
+> My question is how to set up the description element of the Identity 
+> response to describe this non-oai identifier.
+> 
+> Any help would be terrific.
+> 
+> Thanks
+> David Loy 
+
+
+From Naomi@cs.cornell.edu  Fri Dec 12 18:29:00 2003
+From: Naomi@cs.cornell.edu (Naomi Dushay)
+Date: Fri, 12 Dec 2003 13:29:00 -0500
+Subject: [OAI-implementers] OAI identifiers
+Message-ID: <B1D41F4ABBC45949BC3539F5831D4425653C3D@EXCHVS2.cs.cornell.edu>
+
+It's also important to distinguish between the identifier for the
+RESOURCE, which would go in a dc:identifier (for Dublin core metadata)
+field, and the identifier for the OAI ITEM, which would be in the OAI
+record header, and would be the value for the OAI identifier argument
+(for GetRecord verb, for example).
+
+It's unusual to have a full URL (starting "http://") as the identifier
+of an OAI ITEM, while it is common to have a full URL in a dc:identifier
+field.
+
+- Naomi
+
+> -----Original Message-----
+> From: Simeon Warner
+> Sent: Friday, December 12, 2003 1:16 PM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] OAI identifiers
+> 
+> 
+> If you are not using oai-identifiers then you must not include an
+> oai-identifier description block in your Identify response. The
+> oai-identifier description container (defined by the schema
+> http://www.openarchives.org/OAI/2.0/oai-identifier.xsd) is specific
+> to the oai-identifier scheme.
+> 
+> From an OAI standpoint, your ARK's should be treated as opaque
+identifiers
+> within your repository by any service provider that doesn't recognize
+and
+> understand them.
+> 
+> Cheers,
+> Simeon.
+> 
+> 
+> On Fri, 12 Dec 2003, David Loy wrote:
+> > This is the first time I've written to this list.
+> >
+> > I am trying to get a better understanding of identifier as used in
+OAI
+> > protocol.
+> >
+> > According to the standard (I'm using
+> >
+>
+http://www.openarchives.org/OAI/openarchivesprotocol.htm#UniqueIdentifie
+r)
+> > , a unique identifier is defined as a URI which by definition
+contains
+> > ftp:, http:, oai: etc.
+> >
+> > We use an ark as our persistent URI (see
+> > http://www.cdlib.org/inside/diglib/ark/):
+> > http://findaid.oac.cdlib.org/findaid/ark:/13030/ft2s200504
+> >
+> > My question is how to set up the description element of the Identity
+> > response to describe this non-oai identifier.
+> >
+> > Any help would be terrific.
+> >
+> > Thanks
+> > David Loy
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+From hussein@cs.uct.ac.za  Sat Dec 13 17:17:49 2003
+From: hussein@cs.uct.ac.za (Hussein Suleman)
+Date: Sat, 13 Dec 2003 19:17:49 +0200
+Subject: [OAI-implementers] OAI identifiers
+In-Reply-To: <Pine.LNX.4.44.0312121306020.2086-100000@ice.cs.cornell.edu>
+References: <Pine.LNX.4.44.0312121306020.2086-100000@ice.cs.cornell.edu>
+Message-ID: <3FDB49BD.2020106@cs.uct.ac.za>
+
+hi
+
+a random observation ...
+
+i just looked at the schema for oai-identifier and realised that, yes, 
+it will only work for "oai" identifiers (something i didnt realise 
+myself until now). two of the fields seem to be required but with fixed 
+values, while the sampleIdentifier embeds additional copies of the 
+repositoryIdentifier, schema and delimiter.
+
+in future, for network bandwidth, minimalism and normalisation reasons, 
+lets try to avoid this unnecessary duplication ... i know people will 
+say bandwidth is cheap but that argument only works if u're living in 
+some countries of the world and definitely not in south africa :)
+
+on a different note, Naomi made a comment about URLs being unusual as 
+oai identifiers. i just wanted to add that it is not inconceivable to 
+create an oai identifier by prepending "oai:<repositoryId>:" to a URL to 
+denote the item describing a URL-accesssible resource. if i am not 
+mistaken, PhysNet did (or still does) this. it is a neat trick to expose 
+a collection of web pages as oai records, thereby enabling you to 
+integrate web pages with other oai collections in local service providers!
+
+ttfn,
+----hussein
+
+
+Simeon Warner wrote:
+> If you are not using oai-identifiers then you must not include an
+> oai-identifier description block in your Identify response. The
+> oai-identifier description container (defined by the schema
+> http://www.openarchives.org/OAI/2.0/oai-identifier.xsd) is specific 
+> to the oai-identifier scheme.
+> 
+> From an OAI standpoint, your ARK's should be treated as opaque identifiers
+> within your repository by any service provider that doesn't recognize and
+> understand them.
+> 
+> Cheers,
+> Simeon.
+> 
+> 
+> On Fri, 12 Dec 2003, David Loy wrote:
+> 
+>>This is the first time I've written to this list.
+>>
+>>I am trying to get a better understanding of identifier as used in OAI 
+>>protocol.
+>>
+>>According to the standard (I'm using 
+>>http://www.openarchives.org/OAI/openarchivesprotocol.htm#UniqueIdentifier) 
+>>, a unique identifier is defined as a URI which by definition contains 
+>>ftp:, http:, oai: etc.
+>>
+>>We use an ark as our persistent URI (see 
+>>http://www.cdlib.org/inside/diglib/ark/):
+>>http://findaid.oac.cdlib.org/findaid/ark:/13030/ft2s200504
+>>
+>>My question is how to set up the description element of the Identity 
+>>response to describe this non-oai identifier.
+>>
+>>Any help would be terrific.
+>>
+>>Thanks
+>>David Loy 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From crawley@dstc.edu.au  Sun Dec 14 23:50:25 2003
+From: crawley@dstc.edu.au (Stephen Crawley)
+Date: Mon, 15 Dec 2003 09:50:25 +1000
+Subject: [OAI-implementers] OAI identifiers
+In-Reply-To: Message from Hussein Suleman <hussein@cs.uct.ac.za>
+ of "Sat, 13 Dec 2003 19:17:49 +0200." <3FDB49BD.2020106@cs.uct.ac.za>
+Message-ID: <200312142349.hBENnvdD006466@piglet.dstc.edu.au>
+
+
+hussein@cs.uct.ac.za said:
+> a random observation ...
+> i just looked at the schema for oai-identifier and realised that, yes,
+>  it will only work for "oai" identifiers (something i didnt realise
+> myself until now). two of the fields seem to be required but with
+> fixed  values, while the sampleIdentifier embeds additional copies of
+> the  repositoryIdentifier, schema and delimiter.
+
+> in future, for network bandwidth, minimalism and normalisation
+> reasons,  lets try to avoid this unnecessary duplication ... i know
+> people will  say bandwidth is cheap but that argument only works if
+> u're living in  some countries of the world and definitely not in
+> south africa :) 
+
+The OAI 2.0 protocol supports the compression of OAI response messages.
+Compression algorithms like the one used in 'gzip' are extremely good at
+eliminating this sort of redundancy.
+
+-- Steve
+
+
+From jyoung@oclc.org  Mon Dec 15 16:12:22 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Mon, 15 Dec 2003 11:12:22 -0500
+Subject: [OAI-implementers] RSS is now available for repositories listed in the OAI registry
+ at UIUC
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98063326AC@oa3-server.oa.oclc.org>
+
+The ERRoL service now provides an RSS view for any repository registered in
+the OAI registry at UIUC (assuming a unique repository identifier is defined
+there). The pattern for the RSS URL is "http://errol.oclc.org/" +
+repositoryIdentifier + ".rss" (e.g.
+http://errol.oclc.org/xmlregistry.oclc.org.rss). Optional arguments include
+"set" and "metadataPrefix", which will restrict the RSS feed to the
+corresponding OAI subsets (e.g.
+http://errol.oclc.org/xmlregistry.oclc.org.rss?set=Projects:OAIViewer&metada
+taPrefix=xsl. There is plenty of room for improvement and customization, so
+contact me if you think this service is useful and could be improved.
+
+BTW, the OAI Viewer service has also been expanded and improved
+substantially and can be accessed from http://errol.oclc.org/. The OAI
+Viewer service provides interactive browser access to OAI repositories
+listed in the UIUC registry . Context sensitive RSS icons/links appears in
+the OAI Viewer displays as well.
+
+Jeff
+
+---
+Jeffrey A. Young
+Software Architect
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From david.loy@ucop.edu  Wed Dec 17 22:02:53 2003
+From: david.loy@ucop.edu (David Loy)
+Date: Wed, 17 Dec 2003 14:02:53 -0800
+Subject: [OAI-implementers] repositoryIdentifier
+Message-ID: <5.2.0.9.0.20031217135327.02998000@popserv.ucop.edu>
+
+Sorry to bug the list on something like this but what exactly does the 
+repositoryIdentifier represent?
+
+Is it an organizational id (e.g. cdlib.org) or is it an identifier specific 
+to the oai service (e.g. oai.cdlib.org)?
+
+Does the id have any  special functional meaning - used in some list of 
+providers etc.
+
+Is there  a document (etc.) that describes  the semantics of these elements 
+- so I won't have to bug the list?
+
+Thanks!
+David Loy
+
+
+From jyoung@oclc.org  Wed Dec 17 22:21:42 2003
+From: jyoung@oclc.org (Young,Jeff)
+Date: Wed, 17 Dec 2003 17:21:42 -0500
+Subject: [OAI-implementers] repositoryIdentifier
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98063326D3@oa3-server.oa.oclc.org>
+
+Hi David,
+
+Repository identifiers derive mainly from their use in "oai-identifiers",
+which are described at
+http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm. Both of
+your examples are suitable, but the second one is a little better since it
+allows you to distinguish between multiple OAI servers that your institution
+may want to host eventually. Actually, "oai.cdlib.org" isn't so good at this
+though since it's too generic. Something better would be IDs like
+theses.cdlib.org or eprints.cdlib.org or maps.cdlib.org and so forth.
+
+If you're not using the oai-identifier scheme, there is no requirement for
+you to create a repository identifier. They are mainly there as a clue to
+where the OAI records came from. For example, if you register your
+repository with the OAI Registry at UIUC
+(http://gita.grainger.uiuc.edu/registry/) people can take your
+oai-identifiers and easily find the home repository where it came from.
+
+One advantage to registering a repository identifier with UIUC is that it
+allows you to take advantage of the ERRoL services that I'm developing
+(http://errol.oclc.org/). The ERRoL service provides extended functionality
+to any OAI repository registered at UIUC (that has a repository identifier
+defined). Examples of these services are an OAI to RSS conversion, browser
+navigation of the repository, and a variety of persistent URLs to content in
+and related to records in OAI repositories. Other services are planned.
+These services are only available, though, for OAI repositories that
+register a repository identifier at UIUC.
+
+Hope this helps.
+
+Jeff
+
+>  -----Original Message-----
+>  From: David Loy [mailto:david.loy@ucop.edu]
+>  Sent: Wednesday, December 17, 2003 5:03 PM
+>  To: oai-implementers@oaisrv.nsdl.cornell.edu
+>  Subject: [OAI-implementers] repositoryIdentifier
+>  
+>  
+>  Sorry to bug the list on something like this but what 
+>  exactly does the 
+>  repositoryIdentifier represent?
+>  
+>  Is it an organizational id (e.g. cdlib.org) or is it an 
+>  identifier specific 
+>  to the oai service (e.g. oai.cdlib.org)?
+>  
+>  Does the id have any  special functional meaning - used in 
+>  some list of 
+>  providers etc.
+>  
+>  Is there  a document (etc.) that describes  the semantics of 
+>  these elements 
+>  - so I won't have to bug the list?
+>  
+>  Thanks!
+>  David Loy
+>  
+>  _______________________________________________
+>  OAI-implementers mailing list
+>  List information, archives, preferences and to unsubscribe:
+>  http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>  
+

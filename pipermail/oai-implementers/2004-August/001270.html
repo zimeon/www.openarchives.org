@@ -1,0 +1,189 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Qualified Dublin Core 
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=t-cole3%40uiuc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001269.html">
+   <LINK REL="Next"  HREF="001272.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Qualified Dublin Core </H1>
+    <B>Stephen Crawley</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=t-cole3%40uiuc.edu"
+       TITLE="[OAI-implementers] Qualified Dublin Core ">crawley at dstc.edu.au
+       </A><BR>
+    <I>Thu Aug 12 22:33:21 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001269.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+        <LI>Next message: <A HREF="001272.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1270">[ date ]</a>
+              <a href="thread.html#1270">[ thread ]</a>
+              <a href="subject.html#1270">[ subject ]</a>
+              <a href="author.html#1270">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Hi Tim,
+
+&gt;<i> I'm not sure what is meant here. Seem to be implying a way that I can send
+</I>&gt;<i> OAI harvesters metadata consisting entirely of elements that have no
+</I>&gt;<i> community-standard semantic labels, which seems counter-intuitive. Even if
+</I>&gt;<i> some of my metadata elements make sense only to my local application, don't
+</I>&gt;<i> I want to label at least those other elements in my record that do
+</I>&gt;<i> correspond to community-standard semantics with the namespace and element
+</I>&gt;<i> names of that standard semantic schema(s)?  
+</I>
+That is not how it works.
+
+The schema identifier supplied with the harvested record IMPLICITLY
+takes you to a set of community-standard semantic labels for element
+names, encodings and language that are used in the record.  Provided
+that you / your software understands this space, you then (try to)
+map from the semantic space of labels (and values) of the harvest
+record to the semantic space of your own metadata schema.  If you
+can't, then the record is not immediately useful to you.
+
+&gt;<i> &gt; In the simple model, 
+</I>&gt;<i> &gt; the OAI repository assembles XML records containing whatever 
+</I>&gt;<i> &gt; elements it is prepared to publish. The OAI client would then 
+</I>&gt;<i> &gt; sort through the supplied elements, throwing away any that it 
+</I>&gt;<i> &gt; doesn't want / understand, and massaging others as required.
+</I>&gt;<i> &gt; Then the client validates the filtered records against its 
+</I>&gt;<i> &gt; own metadata schema before it decides what to do with them.
+</I>&gt;<i> 
+</I>&gt;<i> I agree with Jeff to this extent, if none of the metadata elements in a
+</I>&gt;<i> harvested metadata record are labeled with an element name I know prefixed
+</I>&gt;<i> by a metadata schema namespace I know, I'll have to throw all the elements
+</I>&gt;<i> away, and the record will therefore be worthless to me.
+</I>
+Agreed.
+
+&gt;<i> &gt; The problem of elements meaning different things in different 
+</I>&gt;<i> &gt; schemas is a bit tricky.  
+</I>&gt;<i> 
+</I>&gt;<i> Yes, an element called &lt;spatial&gt; might mean one thing in metadata schema A
+</I>&gt;<i> and something quite different in metadata schema B. As a harvester, if I
+</I>&gt;<i> encounter an element &lt;spatial&gt; that is not tied to the dcterms schema and
+</I>&gt;<i> namespace (or some other namespace I know) I would always discard it rather
+</I>&gt;<i> than assume it means the same thing as &lt;dcterms:spatial&gt;. It's not a safe
+</I>&gt;<i> assumption that just because something is labeled &lt;spatial&gt; in a local
+</I>&gt;<i> schema it means the same thing as &lt;spatial&gt; in dcterms. 
+</I>
+Obviously!  Performing ANY mapping / filtering when you do not know
+the relationship between the schema of the source and target schemas
+is fundamentally unsound.
+
+&gt;<i> ... That's why XML
+</I>&gt;<i> namespaces are so handy. The data provider can explicitly and unambiguously
+</I>&gt;<i> tie an element in his or her record to one specific, community-standard
+</I>&gt;<i> metadata semantic set.
+</I>
+I disagree.  The XML namespaces (i.e. OAI record formats) are actually a
+LOSSY way of expressing semantics.  Or at least that's what happens in
+practice ... when people try to shoe-horn metadata into some existing
+OAI record schema that isn't quite right.
+
+My point is that a real metadata schema includes something that says
+what the elements, refinements, encodings, etc all mean.   Currently,
+that something is usually English text, but in the future it might
+be augmented with machine readable cross-references to standard thesauri,
+ontologies, etcetera.
+
+Current day OAI-style XML schemas are not metadata schemas.  Rather they
+are formats for transporting metadata records that may (or may not)
+fully conform to some real metadata schema.   Other formats include RDF,
+HTML meta tags, domain specific formats as in MARC and ANZLIC, and even
+clunky ad-hoc mappings to spread-sheets.
+
+&gt;<i> &gt; However, you can get some traction 
+</I>&gt;<i> &gt; if each record's metadata schema identifier is included in the record.
+</I>&gt;<i> &gt;
+</I>&gt;<i>  
+</I>&gt;<i> But XML and XML Schema Language already have standard, well-defined
+</I>&gt;<i> mechanisms (namespaces and the ability to import or include other XSDs
+</I>&gt;<i> within you XSD) that make it easy to identify the semantic set with which
+</I>&gt;<i> any given element in a metadata instance is associated. Why not just use
+</I>&gt;<i> those XML standard approaches?
+</I>
+See above.  XML schemas are not metadata schemas.  And namespace importing
+is not rich enough to express the subtle semantic relationships that can
+exist between different metadata schemas.
+
+If we were to treat XML schemas as defacto metadata schemas, then anyone
+who manages the &quot;primary production&quot; of metadata might need to define
+their own XML schema.  Imagine what impact this would have in terms of
+&quot;balkanization&quot; of the OAI harvesting world.
+
+(Note: this is a real issue.  Nearly all of our customers have defined
+their own metadata schemas. These are typically based on DCQ or AGLS,
+but most have additional elements and / or encoding schemes, and most
+refine the meaning of the standard elements in subtle ways.)
+
+What I am proposing is a way to avoid this balkanization by defining a
+way to interchange metadata independent of its metadata schema. What an
+OAI client does with this metadata is ... up to the client. If the
+client understands the source metadata schema, it could try to map the
+records elements, etcetera.  Alternatively, the client could simply
+store the records as is including the elements, encodings, and values
+that it does not understand or that it thinks are invalid.  
+
+&gt;<i> Well the schema you attached failed XML well-formedness (apparent typos on
+</I>&gt;<i> lines 64, 102, and 110, also appear to have left out the attribute name
+</I>&gt;<i> [i.e., &quot;value&quot;] on lines 110, 111, and 117). There also appears to be a
+</I>&gt;<i> glitch (at least according to XSV) with complexType definition of
+</I>&gt;<i> REG:RecordType. So, I'm not sure I exactly understand what you're trying to
+</I>&gt;<i> do with your schema. But from looking at it and from what you said about in
+</I>&gt;<i> your note, it seems to me like just another way to do much the same thing
+</I>&gt;<i> that can be done in a more XML standard way by importing/including other
+</I>&gt;<i> schemas and namespaces of interest in your local XSD and labeling the
+</I>&gt;<i> elements in your metadata record instances accordingly. 
+</I>
+All I can say is that it is sufficiently well-formed for the XML parsers
+in JDK 1.4.2 / jaxp-1.2 to understand it ...
+
+-- Steve
+
++----------------------------------+----------------------------------------
+|<i> Stephen Crawley                  | MetaSuite Project Leader
+</I>|<i> Level 7, GP South Building (78)  | Distributed Systems Technology CRC
+</I>|<i> Staff House Road                 | Tel   : +61 7 3365 4310
+</I>|<i> The University of Queensland     | Fax   : +61 7 3365 4311
+</I>|<i> Queensland 4072                  | Email : <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">crawley at dstc.edu.au</A>
+</I>|<i> Australia                        | WWW   : <A HREF="http://www.dstc.edu.au">http://www.dstc.edu.au</A>
+</I>|<i>                                  | DSTC is the Australian W3C Office
+</I>+----------------------------------+----------------------------------------
+
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001269.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+	<LI>Next message: <A HREF="001272.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1270">[ date ]</a>
+              <a href="thread.html#1270">[ thread ]</a>
+              <a href="subject.html#1270">[ subject ]</a>
+              <a href="author.html#1270">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

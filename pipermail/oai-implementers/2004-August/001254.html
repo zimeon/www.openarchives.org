@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Qualified Dublin Core
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core&In-Reply-To=E5431CF93E29F9478878F623E5B9CE9809DF74CF%40oa3-server.oa.oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001253.html">
+   <LINK REL="Next"  HREF="001257.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Qualified Dublin Core</H1>
+    <B>Timothy W. Cole</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core&In-Reply-To=E5431CF93E29F9478878F623E5B9CE9809DF74CF%40oa3-server.oa.oclc.org"
+       TITLE="[OAI-implementers] Qualified Dublin Core">t-cole3 at uiuc.edu
+       </A><BR>
+    <I>Tue Aug 10 15:46:31 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001253.html">[OAI-implementers] Qualified Dublin Core
+</A></li>
+        <LI>Next message: <A HREF="001257.html">[OAI-implementers] Qualified Dublin Core
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1254">[ date ]</a>
+              <a href="thread.html#1254">[ thread ]</a>
+              <a href="subject.html#1254">[ subject ]</a>
+              <a href="author.html#1254">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I take your point, Jeff, and Simeon's as well, but I still don't entirely
+agree. Let me preface my response as follows:
+
+There seem to be three major arguments (at least) that have been advanced
+for why OAI should host a canonical container XSD for qualified DC similar
+to the oai_dc.xsd currently hosted by OAI for simple DC:
+
+reason 1. It would facilitate OAI metadata providers who want to provide
+metadata records in qualified DC and it is uncertain when or even whether
+DCMI will ever choose to assign a top-level DCQ namespace and make an XSD
+usable for that purpose. For the reasons Pete discussed, DCMI doesn't seem
+inclined to want to do this.
+
+reason 2. It would cut down on redundancies in namespaces and schemas, and
+thereby facilitate development of web services / automatic crosswalk
+applications like the ones you're building.
+
+reason 3. Harvesters need the assurance that harvesting records only in
+canonical formats brings.
+
+I'm becoming convinced of the strength of reason 1. Though I still have
+qualms about whether OAI really is the best location for canonical metadata
+schemas and namespaces of this sort, at least the XSD we're talking about,
+since it imports namespaces and schemas that are maintained on the DCMI
+site, would be relatively simple and low maintenance. So, maybe adding an
+OAI-blessed XSD for qualified DC wouldn't be a bad idea in and of itself
+(though of course it sets a pesky precedent, and I have no idea how those
+closer to day-to-day maintenance of the OAI site feel about doing this).
+
+I'm unconvinced of reasons 2 and 3, based on the following:
+
+- There are that I know of offhand 5 XSDs currently being used by OAI
+metadata providers for metadata formats based on qualified DC. They are (in
+order of frequency of use):
+
+<A HREF="http://www.language-archives.org/OLAC/1.0/olac.xsd">http://www.language-archives.org/OLAC/1.0/olac.xsd</A>
+
+<A HREF="http://ns.nsdl.org/schemas/nsdl_dc/nsdl_dc_v1.02.xsd">http://ns.nsdl.org/schemas/nsdl_dc/nsdl_dc_v1.02.xsd</A>
+(I'm treating the v1.00 and v1.01 versions of the NSDL XSD as congruent with
+v1.02 for this discussion.) 
+
+<A HREF="http://IMLSDCC.grainger.uiuc.edu/schemas/cdp_dc_v1.00.xsd">http://IMLSDCC.grainger.uiuc.edu/schemas/cdp_dc_v1.00.xsd</A>
+
+<A HREF="http://cicharvest.grainger.uiuc.edu/schemas/QDC/2004/07/14/CICQualifiedDC.xs">http://cicharvest.grainger.uiuc.edu/schemas/QDC/2004/07/14/CICQualifiedDC.xs</A>
+d
+
+<A HREF="http://epubs.cclrc.ac.uk/xsd/qdc.xsd">http://epubs.cclrc.ac.uk/xsd/qdc.xsd</A>
+
+The first three XSDs all add to qualified DC, that is they all include
+additional elements, refinements, and/or encoding schemes not included in
+the dc, dcterms, or dcmitypes namespaces. So sites using the first 3 schemas
+would likely not be able to switch over to a &quot;pure&quot; canonical qualified DC
+schema even if one were available. The 4th XSD on the list is for a project
+we're just starting here at Illinois with partners in the CIC. At present
+our CIC qualified DC schema does not augment qualified DC, but my
+expectation is that it will do so soon, so again, we'll likely not be able
+to switch over to a pure canonical XSD for qualified DC even if one becomes
+available.
+
+This suggests to me that we're going to see a large number of instances
+where projects choose to extend qualified DC, in most cases for reasons and
+needs very specific to their local projects. The most frequent additional
+extensions needed seem to be in the form of added encoding schemes. 
+
+So I'm not sure how successful posting a canonical XSD for qualified DC will
+be in keeping a lid on the number of XSDs and namespaces used in the OAI
+universe, and I'm not sure harvesters can count on (or really should ask)
+providers to export both in their extended qualified DC and a canonical form
+of qualified DC. Doing so might simplify (slightly) the service providers
+task, but I'm not sure it's a compelling case, especially from the
+perspective of the data provider. (A complicating consideration is that any
+of the above schemas could actually be used by someone who did just have
+pure qualified DC -- since all augmentations are entirely optional).
+
+Hence my suggestion that harvesters, cross-walks, transformations, and other
+such services might do better to key off of embedded namespaces rather than
+specific XSD or even top-level namespaces. And though clearly data providers
+could go out of their way to import qualified DC namespaces into their local
+XSDs and then not use those namespaces, that seems unlikely -- so I disagree
+with Simeon that harvesters should steer clear of locally augmented formats
+based on qualified DC on such an assumption or for fear they won't be able
+to extract enough useful information from records that maybe do contain
+additional content in other namespaces. Possibly there's some risk, but it
+seems to me that a dc:title element or dcterms:created refinement still
+means much the same whether embedded in a canonical qualified DC record or
+in a CDP DC augmented qualified DC record.
+
+And I don't see why you couldn't write an XSLT to crosswalk from qualified
+DC to MARC that could be applied not only to records of &quot;pure&quot; qualified DC,
+but also to OLAC DC or NSDL DC, or CDP DC. Obviously such a generic
+crosswalk would drop local encoding schemes like olac:linguistic-type,
+olac:linguistic-field, and nsdl:GEM, and refinements like
+cdp:holdingInstitutions and cdp:thumbnailIdentifier, but for many purposes
+that would be okay, especially if the XSLT were smart enough to take
+advantage of any xs:substitutionGroup information contained in the XSDs
+referenced by the instances (e.g., so as to know that
+cdp:thumbnailIdentifier was a refinement of dc:identifier). 
+
+It may be a little more work, but given the actual trend to date of data
+providers wanting to augment qualified DC with local semantics, I think
+we'll need to build our applications smart enough to deal with such
+diversity. And if we do that, it doesn't really matter if there is a
+multiplicity of top-level container schemas for qualified DC (as long as
+they all reference the appropriate DCMI component namespaces).
+
+Tim Cole
+University of Illinois at UC 
+
+-----Original Message-----
+From: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>
+[mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>] On Behalf Of Young,Jeff
+Sent: Tuesday, August 10, 2004 8:51 AM
+To: Simeon Warner; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at oaisrv.nsdl.cornell.edu</A>
+Subject: RE: [OAI-implementers] Qualified Dublin Core
+
+I agree with Simeon. Lately I've been creating dynamically configured web
+applications built with distributed independent web services (OAI and SRW in
+particular). The more schemas and protocols they have in common, the more
+magic that can happen. DCQ elements hidden behind differing namespace
+containers and schemas would greatly diminish its value. 
+
+For example, I am working with Jean Godby on a catalog of XSLT crosswalks
+(<A HREF="http://errol.oclc.org/schemaTrans.oclc.org.search">http://errol.oclc.org/schemaTrans.oclc.org.search</A>). Redundant namespaces
+will only clutter it up and make it harder for people to choose an
+appropriate crosswalk from a list when then need one.
+
+Jeff
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Simeon Warner [mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">simeon at cs.cornell.edu</A>]
+</I>&gt;<i> Sent: Monday, August 09, 2004 7:02 PM
+</I>&gt;<i> To: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: RE: [OAI-implementers] Qualified Dublin Core
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> I think the problem with &quot;standard elements in any wrapper&quot; approach 
+</I>&gt;<i> is that a harvester has no easy way to know up-front what it might be 
+</I>&gt;<i> getting if it harvests records in a particular format. Harvesting a 
+</I>&gt;<i> metadata format understood to be &quot;only QDC elements&quot; (nothing else, no 
+</I>&gt;<i> funny
+</I>&gt;<i> business) gives rather more assurance of intelligibility to a 
+</I>&gt;<i> harvester that understands QDC. A canonical schema seems the simplest 
+</I>&gt;<i> way to indicate this (notwithstanding versioning issues mentioned 
+</I>&gt;<i> earlier by Pete Johnston).
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Simeon
+</I>&gt;<i> 
+</I>&gt;<i> On Mon, 9 Aug 2004, Timothy W. Cole wrote:
+</I>&gt;<i> &gt; Jeff-
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; My take is that OAI shouldn't want to get back in business of 
+</I>&gt;<i> &gt; hosting schemas or namespaces for metadata formats. We went to some 
+</I>&gt;<i> &gt; trouble to
+</I>&gt;<i> get
+</I>&gt;<i> &gt; away from that when transitioning from 1.1 to 2.0. A blessed 
+</I>&gt;<i> &gt; application namespaces for qualified DC should be left up to the DCMI.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; While DCMI decides how they want to handle things (and I know they 
+</I>&gt;<i> &gt; won't
+</I>&gt;<i> be
+</I>&gt;<i> &gt; quick), solutions like the one at CCLRC (we've done much the same 
+</I>&gt;<i> &gt; here
+</I>&gt;<i> for a
+</I>&gt;<i> &gt; couple of projects) and NSDL are fine. Any namespace-aware OAI
+</I>&gt;<i> application
+</I>&gt;<i> &gt; should ignore the locally created namespace and hone in on the dc,
+</I>&gt;<i> dcterms,
+</I>&gt;<i> &gt; and dcmitype namespaces and thereby be able to use those elements
+</I>&gt;<i> without
+</I>&gt;<i> &gt; any problems. If your OAI service provider respects namespaces, it
+</I>&gt;<i> shouldn't
+</I>&gt;<i> &gt; matter what namespace the container element is in -- that's why the 
+</I>&gt;<i> &gt; XML Schemas posted on the DCMI Website were done that way.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Isn't that good enough for harvesting purposes? Are am I missing a
+</I>&gt;<i> subtle
+</I>&gt;<i> &gt; consideration that requires a canonical namespace for the container
+</I>&gt;<i> element?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Tim Cole
+</I>&gt;<i> &gt; University of Illinois at UC
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; -----Original Message-----
+</I>&gt;<i> &gt; From: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>
+</I>&gt;<i> &gt; [mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>] On Behalf Of
+</I>&gt;<i> Young,Jeff
+</I>&gt;<i> &gt; Sent: Monday, August 09, 2004 10:33 AM
+</I>&gt;<i> &gt; To: Mascord, M (Matthew) ; Young,Jeff; 
+</I>&gt;<i> &gt; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; Cc: LeVan,Ralph; Hickey,Thom
+</I>&gt;<i> &gt; Subject: RE: [OAI-implementers] Qualified Dublin Core
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Yes, this is the problem. Now I have two to choose from. This one, 
+</I>&gt;<i> &gt; and
+</I>&gt;<i> the
+</I>&gt;<i> &gt; one created by NSDL. I'm sure there are others out there. For the 
+</I>&gt;<i> &gt; sake
+</I>&gt;<i> of
+</I>&gt;<i> &gt; interoperability, it seems to me that the OAI community should bless
+</I>&gt;<i> (and
+</I>&gt;<i> &gt; host?) such an &quot;application profile&quot; schema.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Jeff
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt; -----Original Message-----
+</I>&gt;<i> &gt; &gt; From: Mascord, M (Matthew) [mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">M.Mascord at rl.ac.uk</A>]
+</I>&gt;<i> &gt; &gt; Sent: Monday, August 09, 2004 11:21 AM
+</I>&gt;<i> &gt; &gt; To: 'Young,Jeff'; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; &gt; Cc: LeVan,Ralph; Hickey,Thom
+</I>&gt;<i> &gt; &gt; Subject: RE: [OAI-implementers] Qualified Dublin Core
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Hi -
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; I am the developer of an OAI compatible institutional repository 
+</I>&gt;<i> &gt; &gt; for the UK research council CCLRC.  The URL is
+</I><A HREF="http://epubs.cclrc.ac.uk.">http://epubs.cclrc.ac.uk.</A>
+&gt;<i> &gt; &gt; We are attempting to capture &amp; make publicly accessible any 
+</I>&gt;<i> &gt; &gt; scientific research that has benefitted from the use of CCLRC's 
+</I>&gt;<i> &gt; &gt; facilities or expertise.  We recently went live on the OAI repository
+</I>network:
+&gt;<i> &gt; &gt; <A HREF="http://epubs.cclrc.ac.uk/oai?verb=Identify.">http://epubs.cclrc.ac.uk/oai?verb=Identify.</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; We provide metadata in both Simple and Qualified Dublin Core but 
+</I>&gt;<i> &gt; &gt; had the same problem as you in finding an authoritative XML schema 
+</I>&gt;<i> &gt; &gt; for Qualified Dublin Core.  In the end we created our own that 
+</I>&gt;<i> &gt; &gt; includes the schema defined at 
+</I>&gt;<i> &gt; &gt; <A HREF="http://dublincore.org/schemas/xmls/qdc/2003/04/02/qualifieddc.xsd">http://dublincore.org/schemas/xmls/qdc/2003/04/02/qualifieddc.xsd</A> 
+</I>&gt;<i> &gt; &gt; and described in the Dublin Core Note at 
+</I>&gt;<i> &gt; &gt; <A HREF="http://dublincore.org/schemas/xmls/qdc/2003/04/02/notes/.">http://dublincore.org/schemas/xmls/qdc/2003/04/02/notes/.</A>  This 
+</I>&gt;<i> &gt; &gt; defines a container element into which elements from the dcterms 
+</I>&gt;<i> &gt; &gt; and dc namespaces may be placed.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; I'm not sure if this is the best approach so would appreciate any 
+</I>&gt;<i> &gt; &gt; feedback on this.  Our OAI implementation can be tested at 
+</I>&gt;<i> &gt; &gt; <A HREF="http://epubs.cclrc.ac.uk/oaitest.">http://epubs.cclrc.ac.uk/oaitest.</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Kind Regards,
+</I>&gt;<i> &gt; &gt; Matthew Mascord
+</I>&gt;<i> &gt; &gt; e-Library Software Developer, CCLRC, UK
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; -----Original Message-----
+</I>&gt;<i> &gt; &gt; &gt; From: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>
+</I>&gt;<i> &gt; &gt; &gt; [mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>]On Behalf Of 
+</I>&gt;<i> &gt; &gt; &gt; Young,Jeff
+</I>&gt;<i> &gt; &gt; &gt; Sent: 09 August 2004 16:03
+</I>&gt;<i> &gt; &gt; &gt; To: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; &gt; &gt; Cc: LeVan,Ralph; Hickey,Thom
+</I>&gt;<i> &gt; &gt; &gt; Subject: [OAI-implementers] Qualified Dublin Core
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; I'm looking for an XML Schema for Qualified Dublin Core for use 
+</I>&gt;<i> &gt; &gt; &gt; in OAI repositories. I poked around the UIUC OAI Registry, but 
+</I>&gt;<i> &gt; &gt; &gt; all I found was a couple of ad hoc schemas used by repositories 
+</I>&gt;<i> &gt; &gt; &gt; that appear to be defunct.
+</I>&gt;<i> &gt; &gt; &gt; Ideally, though, the existence and use of such a schema should 
+</I>&gt;<i> &gt; &gt; &gt; be shared across a broad community and not ad hoc.
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Next, I searched in Google and OAForum but all I found was a 
+</I>&gt;<i> &gt; &gt; &gt; reference to a preliminary effort to establish such a schema 
+</I>&gt;<i> &gt; &gt; &gt; (<A HREF="http://www.ukoln.ac.uk/metadata/dcmi/xmlschema/">http://www.ukoln.ac.uk/metadata/dcmi/xmlschema/</A>). This 
+</I>&gt;<i> &gt; &gt; &gt; particular document discusses a sample application schema for a 
+</I>&gt;<i> &gt; &gt; &gt; DCQ container, but the implication is that the final schema must 
+</I>&gt;<i> &gt; &gt; &gt; be decided by the specific application (e.g OAI?). Apparently, 
+</I>&gt;<i> &gt; &gt; &gt; this has never been done.
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Can someone provide some guidance for doing this?
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Thanks.
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Jeff
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; ---
+</I>&gt;<i> &gt; &gt; &gt; Jeffrey A. Young
+</I>&gt;<i> &gt; &gt; &gt; Software Architect
+</I>&gt;<i> &gt; &gt; &gt; Office of Research, Mail Code 710 OCLC Online Computer Library 
+</I>&gt;<i> &gt; &gt; &gt; Center, Inc.
+</I>&gt;<i> &gt; &gt; &gt; 6565 Frantz Rd.
+</I>&gt;<i> &gt; &gt; &gt; Dublin, OH 43017-3395
+</I>&gt;<i> &gt; &gt; &gt; www.oclc.org
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Voice: 614-764-4342
+</I>&gt;<i> &gt; &gt; &gt; Voice: 800-848-5878, ext. 4342
+</I>&gt;<i> &gt; &gt; &gt; Fax: 614-718-7477
+</I>&gt;<i> &gt; &gt; &gt; Email: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">jyoung at oclc.org</A>
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; &gt; &gt; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001253.html">[OAI-implementers] Qualified Dublin Core
+</A></li>
+	<LI>Next message: <A HREF="001257.html">[OAI-implementers] Qualified Dublin Core
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1254">[ date ]</a>
+              <a href="thread.html#1254">[ thread ]</a>
+              <a href="subject.html#1254">[ subject ]</a>
+              <a href="author.html#1254">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

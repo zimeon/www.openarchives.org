@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Bad resumptionToken, implementation of it,
+ or user error?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000734.html">
+   <LINK REL="Next"  HREF="000736.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Bad resumptionToken, implementation of it,
+ or user error?
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] Bad resumptionToken, implementation of it,
+ or user error?">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Wed, 18 Dec 2002 09:55:51 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000734.html">[OAI-implementers] Bad resumptionToken, implementation of it, or user error?
+</A></li>
+        <LI> Next message: <A HREF="000736.html">[OAI-implementers] Bad resumptionToken, implementation of it,
+ or user error?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#735">[ date ]</a>
+              <a href="thread.html#735">[ thread ]</a>
+              <a href="subject.html#735">[ subject ]</a>
+              <a href="author.html#735">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>resumptionToken is no a verb, it is an exclusive argument for 
+ListIdentifiers or ListRecords. Your request should look something 
+like:
+
+GET baseURL?verb=ListRecords&amp;resumptionToken=APPROPRIATELY_ENCODED_RT_HERE
+
+where APPROPRIATELY_ENCODED_RT_HERE is the URL-encoded resumptionToken.
+
+As far as I can see, this site works fine:
+
+oaiharvest.pl: Harvest from <A HREF="http://services.nsdl.org:8080/nsdloai/OAI">http://services.nsdl.org:8080/nsdloai/OAI</A> using GET
+OAIGet: Doing GET to <A HREF="http://services.nsdl.org:8080/nsdloai/OAI">http://services.nsdl.org:8080/nsdloai/OAI</A> args: verb=Identify
+OAIGet: Got 200 OK (1249bytes )
+oaiharvest.pl: Identify reports OAI-PMH version 2.0
+oaiharvest.pl: Doing complete harvest.
+OAIGet: Doing GET to <A HREF="http://services.nsdl.org:8080/nsdloai/OAI">http://services.nsdl.org:8080/nsdloai/OAI</A> args: verb=ListMetadataFormats
+OAIGet: Got 200 OK (1455bytes )
+OAIGet: Doing GET to <A HREF="http://services.nsdl.org:8080/nsdloai/OAI">http://services.nsdl.org:8080/nsdloai/OAI</A> args: verb=ListSets
+OAIGet: Got 200 OK (11405bytes )
+OAIGet: Doing GET to <A HREF="http://services.nsdl.org:8080/nsdloai/OAI">http://services.nsdl.org:8080/nsdloai/OAI</A> args: metadataPrefix=oai_dc&amp;verb=ListRecords
+OAIGet: Got 200 OK (1044772bytes )
+oaiharvest.pl: Got 250 records (running total: 250)
+oaiharvest.pl: Got resumptionToken: `metadataPrefix=oai_dc&amp;origRequestTime=2002-12-18T14:52:25Z&amp;expireOnUpdate=false&amp;resumeAfter=oai:nsdl.org:Alexandria:O3311517.SWS'
+OAIGet: Doing GET to <A HREF="http://services.nsdl.org:8080/nsdloai/OAI">http://services.nsdl.org:8080/nsdloai/OAI</A> args: resumptionToken=metadataPrefix%3Doai_dc%26origRequestTime%3D2002-12-18T14%3A52%3A25Z%26expireOnUpdate%3Dfalse%26resumeAfter%3Doai%3Ansdl.org%3AAlexandria%3AO3311517.SWS&amp;verb=ListRecords
+OAIGet: Got 200 OK (1055218bytes )
+oaiharvest.pl: Got 250 records (running total: 500)
+...
+
+Cheers,
+Simeon.
+
+
+On Wed, 18 Dec 2002, Thor Anderson wrote:
+&gt;<i>  Hi,
+</I>&gt;<i> 
+</I>&gt;<i> I've been trying out the OAI 2.0 protocol on the NSDL repository at <A HREF="http://services.nsdl.org:8080/nsdloai/OAI">http://services.nsdl.org:8080/nsdloai/OAI</A>  When I send the following request &quot;<A HREF="http://services.nsdl.org:8080/nsdloai/OAI?verb=ListRecords&from=2002-01-01&metadataPrefix=oai_dc"">http://services.nsdl.org:8080/nsdloai/OAI?verb=ListRecords&amp;from=2002-01-01&amp;metadataPrefix=oai_dc&quot;</A> 
+</I>&gt;<i> I get back an imcomplete list of 250 records and the following resumption token 
+</I>&gt;<i> &quot;from=2002-01-01&amp;amp;metadataPrefix=oai_dc&amp;amp;origRequestTime=2002-12-16T19:43:00Z&amp;amp;
+</I>expireOnUpdate=false&amp;amp;resumeAfter=oai:nsdl.org:Alexandria:O3311517.SWS&quot;
+&gt;<i> 
+</I>&gt;<i> When I try to use the resumptionToken verb and give it this token 
+</I>&gt;<i> (whether encoded or not), I get &quot;resumptionToken is not a legal OAI-PMH 
+</I>&gt;<i> 2.0 verb.&quot; which seems untrue based upon the OAI protocol document I'm 
+</I>&gt;<i> reading.  I can't tell whether that is really an illegal verb or the 
+</I>&gt;<i> NSDL implementation is wrong or I'm not using the resumptionToken verb 
+</I>&gt;<i> properly.
+</I>&gt;<i> 
+</I>&gt;<i> Any help would be greatly appreciated.
+</I>&gt;<i> 
+</I>&gt;<i> Thor Anderson
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________ OAI-implementers mailing list <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000734.html">[OAI-implementers] Bad resumptionToken, implementation of it, or user error?
+</A></li>
+	<LI> Next message: <A HREF="000736.html">[OAI-implementers] Bad resumptionToken, implementation of it,
+ or user error?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#735">[ date ]</a>
+              <a href="thread.html#735">[ thread ]</a>
+              <a href="subject.html#735">[ subject ]</a>
+              <a href="author.html#735">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

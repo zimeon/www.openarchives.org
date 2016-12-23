@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Records getting out of sets
+	and	repository/harvester implementation
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Records%20getting%20out%20of%20sets%0A%09and%09repository/harvester%20implementation&In-Reply-To=1287061604.800.20.camel%40pcuds35">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002032.html">
+   <LINK REL="Next"  HREF="002034.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Records getting out of sets
+	and	repository/harvester implementation</H1>
+    <B>Diogo Mena Reis</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Records%20getting%20out%20of%20sets%0A%09and%09repository/harvester%20implementation&In-Reply-To=1287061604.800.20.camel%40pcuds35"
+       TITLE="[OAI-implementers] Records getting out of sets
+	and	repository/harvester implementation">diogo.menareis at ist.utl.pt
+       </A><BR>
+    <I>Fri Oct 15 16:13:23 EDT 2010</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002032.html">[OAI-implementers] Records getting out of sets and
+	repository/harvester implementation
+</A></li>
+        <LI>Next message: <A HREF="002034.html">[OAI-implementers] oai schema for book review?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2033">[ date ]</a>
+              <a href="thread.html#2033">[ thread ]</a>
+              <a href="subject.html#2033">[ subject ]</a>
+              <a href="author.html#2033">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear Samuele,
+
+Wow, that is a real borderline scenario.
+
+It seems you problem is a semantic one, but my understanding is that it's not contemplated in the protocol. Maybe implicitly. From the spec <A HREF="http://www.openarchives.org/OAI/openarchivesprotocol.html#deletion">http://www.openarchives.org/OAI/openarchivesprotocol.html#deletion</A> you only have the deleted bit, not the set associated.
+
+On 14/Oct 2:06 PM, Samuele Kaplun wrote:
+&gt;<i> Now suppose an item belongs to both setA and setB at some point in time.
+</I>&gt;<i> But then because of a change in the definition of setA (or because of an
+</I>&gt;<i> update of the record metadata) the record does no longer belong to setA,
+</I>&gt;<i> but continues to belong to setB.
+</I>&gt;<i>
+</I>&gt;<i> How can this information be given to harvester?
+</I>
+So, if you want to make sure that in the case where a harvester:
+1. Harvests set B where record exists
+2. Harvests set A where record was deleted
+
+The record should be deleted in the set A in the harvester if it kept the same identifier for both (which it doesn't have to, so you can't tell). I think your best option in this case is to keep replying with the record in set B as updated for some time (weeks or months) even if it stays the same, to ensure that the following harvest retrieves the record again. If you only reply the record as belonging to set B, the harvester will never know it was removed from A.
+
+&gt;<i> Another possibility is that the record is instead returned as such both
+</I>&gt;<i> when harvested via setB but also via setA, but the&lt;setSpec&gt;  in both
+</I>&gt;<i> harvesting session, for the given record, should only mention setB (as
+</I>&gt;<i> the record now belongs only to setB and no longer to setA).
+</I>
+That is a little subtle I think. I doubt anyone implements that. Getting a record that does not say it was deleted and checking if the set asked is not included is a little far fetched. I would first guess there was a bug in the server's implementation =) And I think I didn't get any reference to that in the spec.
+
+&gt;<i> A smart harvester would then do the right thing, i.e. delete the record
+</I>&gt;<i> if it knows it is not harvesting setB or ignoring the record (as it will
+</I>&gt;<i> receive it anyway when it will harvest setB later)
+</I>
+Like I said I think it's not in the spec, so a smart harvester would send you an email telling you that you're giving records from the wrong set.
+
+Actually I think there is an important gap in the OAI-PMH spec for &quot;dirty&quot; sets. Imagine that you: 1. must change all record identifiers (either by mistake or change in id policy) or 2. must change one field in all the records. There should be a way to tell: this set is dirty, harvest from scratch. What you must do (according to the spec) if you support persistent deleted records is 1. list ALL the records as deleted and list all the records with new ids and 2. List all the records as updated from the change date onward. If you have 10 million records in that set, that is a big change log you must keep. Forever.
+
+Best,
+
+Diogo
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002032.html">[OAI-implementers] Records getting out of sets and
+	repository/harvester implementation
+</A></li>
+	<LI>Next message: <A HREF="002034.html">[OAI-implementers] oai schema for book review?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2033">[ date ]</a>
+              <a href="thread.html#2033">[ thread ]</a>
+              <a href="subject.html#2033">[ subject ]</a>
+              <a href="author.html#2033">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

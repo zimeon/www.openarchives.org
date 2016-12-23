@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <title>OAI-PMH Implementation Guidelines - Conveying rights expressions about metadata in the OAI-PMH framework</title>
+<style type="text/css" id="internalStyle">>
+  body { color: black; background: white; }
+  code, pre { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+  em { color: red; }
+  table { background: #CCCCCC; }
+  th { font-weight: bold; font-size: 120%; }
+  table.header { background: white; }
+  </style>
+<META content="Open Archives Initiative - Protocol for Metadata Harvesting - Conveying rights expressions about metadata in the OAI-PMH framework" name=DC.title>
+<META content="Lagoze, Carl" name=DC.creator>
+<META content="Van de Sompel, Herbert" name=DC.creator>
+<META content="Nelson, Michael" name=DC.creator>
+<META content="Warner, Simeon" name=DC.creator>
+<META content="2004/06/16T15:34:00Z" name=DC.date>
+</head>
+<body>
+<table class="header" summary="Logo and heading" border="0" width="100%">
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%">
+<font size="+2"><b>Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting</b></font>
+</td>
+</tr>
+<tr>
+<td align="center">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" height="70" width="100"/></a>
+</td>
+<td align="left" width="87%">
+  <h1>Conveying rights expressions about metadata in the OAI-PMH framework</h1>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%" height="38">
+  <b>Protocol Version 2.0 of 2002-06-14<br />
+  Document Version 2004/06/16T15:34:00Z<br />
+  http://www.openarchives.org/OAI/2.0/guidelines-rights.htm<br /><font size=6 color=#FF0000>DRAFT VERSION</font></b></td>
+</tr>
+</table>
+
+<p><b>Editors</b></p>
+<p>
+<a href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</a>  
+(<a href="http://www.openarchives.org/organization/index.html">OAI Executive</a>;
+<a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a>) 
+<br />
+
+<a href="mailto:herbertv@lanl.gov">Herbert Van de Sompel</a>
+(<a href="http://www.openarchives.org/organization/index.html">OAI Executive</a>;
+<a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research Library</a>)
+<br />
+<a href="mailto:mln@cs.odu.edu">Michael Nelson</a>
+(<a href="http://www.cs.odu.edu/">Old Dominion University - Computer Science</a>)
+<br />
+<a href="mailto:simeon@cs.cornell.edu">Simeon Warner</a> 
+(<a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a>)
+</p>
+
+<p><b>
+This document is one part of the 
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h4>Table of Contents</h4>
+<p>
+<a href="#intro">1. Introduction and Scope</a><br />
+<a href="#granularity">2. Rights expressions and the OAI-PMH data model</a><br />
+<a href="#record_level">3. Conveying rights expressions at the record level</a><br />
+<a href="#aggregation_level">4. Conveying a manifest of rights expressions at the repository and set levels</a><br />
+&nbsp;&nbsp;<a href="#repository_level">4.1 Repository level rights expressions</a><br />
+&nbsp;&nbsp;<a href="#set_level">4.2 Set level rights expressions</a><br />
+<a href="#harvester_responsibilities">5. Responsibilities of clients harvesting
+metadata with associated rights expressions</a><br />
+<a href="#acknowledgements">Acknowledgements</a>
+
+<h2>1. <a name="#intro">Introduction and Scope</a></h2>
+
+<p>The <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.html">Open 
+Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH) provides 
+a mechanism for <i>data providers</i> to expose metadata for harvesting over the Web.
+This metadata is disseminated in the form of 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Record">OAI-PMH 
+records</a>. Metadata harvested from one or more data providers using the OAI-PMH 
+can be used by <i>service providers</i> for the creation of services (e.g. search, browse)
+across the harvested data.</p>
+
+<p>Typically, an OAI-PMH record contains descriptive metadata about a resource. 
+However, use-cases have emerged where records contain non-bibliographic metadata 
+such as usage logs and XML-based representations of content.
+In order to accommodate such emerging uses of the OAI-PMH, 
+in the remainder of this document the term &quot;metadata&quot; must be 
+interpreted broadly to mean XML-formatted data pertaining to a resource, 
+which are transmitted in OAI-PMH as the contents of the <code>&lt;metadata&gt;</code> 
+element in OAI-PMH 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#GetRecord">GetRecord</a> and 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ListRecords">ListRecords</a> 
+responses.</p>
+
+<p>Regardless of the nature of the  metadata in an OAI-PMH record, data providers might 
+want to associate <i>rights expressions</i> with it as a means to convey 
+how the metadata may be used after it has been harvested, including how it 
+may be shared, modified, and used as the basis for derivative 
+products. This specification defines how such 
+rights information can be conveyed in responses to OAI-PMH protocol 
+requests. The described technique:</p>
+<ul>
+<li>Is based 
+  on delivering rights expressions that apply to metadata contained in OAI-PMH 
+  protocol responses using the optional containers that have been defined as 
+  part of the OAI-PMH specification. As a result, no changes to the 
+  <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">protocol</a> 
+  are made, and compatibility with all existing OAI-PMH implementations 
+  is maintained.</li>
+<li>Is not tied to any particular rights expression 
+  language. Examples throughout this document make use of 
+  <a href="http://creativecommons.org/">Creative Commons</a>
+  licenses, but the use of this specific language is for 
+  illustrative purposes only.</li>
+</ul>
+<p>In this document the key words &quot;<b>must</b>&quot;, &quot;<b>must
+not</b>&quot;, &quot;<b> required</b>&quot;, &quot;<b>shall</b>&quot;, 
+&quot;<b>shall not</b>&quot;, &quot;<b>should</b>&quot;, 
+&quot;<b>should not</b>&quot;, &quot;<b>recommended</b>&quot;,
+&quot;<b>may</b>&quot;, and &quot;<b>optional</b> &quot; in <b>bold face</b> are
+to be interpreted as described in 
+<a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a>. 
+An implementation is not conformant if it fails to satisfy one or
+more of the &quot;<b>must</b>&quot; or &quot;<b>required</b>&quot; level
+requirements.</p>
+
+<h2><a name="granularity">2. Rights expressions and the OAI-PMH data model</a></h2>
+
+<p>The OAI-PMH data model defines a number of entities, some 
+of which aggregate other entities. These entities are as follows 
+and are illustrated in the figure below:</p>
+
+<ul>
+<li><b><a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Repository">repository</a></b> - 
+  A network accessible server that can process the six OAI-PMH requests, 
+  and thereby makes metadata harvestable.</li>
+<li><b><a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Resource">resource</a></b> - 
+  An object that the harvestable metadata is &quot;about&quot;.</li>
+<li><b><a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Item">item</a></b> - 
+  An abstract constituent of a repository from which metadata,
+  potentially in multiple formats, about a resource can be harvested using 
+  the OAI-PMH.</li>
+<li><b><a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Record">record</a></b> - 
+  A container for metadata in a single format returned in response to an OAI-PMH harvesting
+  request. A record consists of header information, the metadata, and  may include addition 
+  information about the metadata.</li>
+<li><b><a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set">set</a></b> - 
+  A grouping of items for the purpose of selective harvesting.  
+  Set membership for items is not required: an item may be in no sets. Set 
+  membership is also non-exclusive: an item may be in more than one set.</li>
+</ul>
+
+<p><img src="guidelines-rights-fig1.jpg" width="509" height="602" alt="OAI-PMH data model figure"></p>
+
+<p>This document specifies the mechanisms by which rights expressions can 
+be conveyed at the record level (<a href="#record_level">section 3</a>), and at the 
+repository and set aggregation levels (<a href="#aggregation_level">section 4</a>).
+These mechanisms can be summarized as follows:</p>
+<ul>
+<li><a href="#record_level">record level</a> - 
+  Metadata returned in OAI-PMH 
+  <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ListRecords"><code>ListRecords</code></a> 
+  and <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ListRecords"><code>GetRecords</code></a> 
+  responses is packaged in <code>&lt;record&gt;</code> elements. Each 
+  <code>&lt;record&gt;</code> may include one or more <code>&lt;about&gt;</code> 
+  containers that provide information about the metadata. A rights expression can be 
+  associated with the metadata by including a <code>&lt;rights&gt;</code> 
+  package in an <code>&lt;about&gt; container</code>. This specification defines an 
+  XML schema to which such <code>&lt;rights&gt;</code> packages <b>must</b> 
+  conform. The schema allows for actual rights expressions to be specified 
+  in-line within a <code>&lt;rights&gt;</code> package, or by-reference via 
+  a URL to a network-accessible rights expression.</li>
+<li><a href="#repository_level">repository level</a> - 
+  The response to the OAI-PMH 
+  <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Identify"><code>Identify</code></a> 
+  request contains information about the repository.
+  This response may include one or more <code>&lt;description&gt;</code> 
+  containers which provide an extensible mechanism for repository 
+  description.
+  This specification defines an <b>optional</b> mechanism for delivering, within the 
+  <code>&lt;description&gt;</code> container, a&nbsp; manifest of the rights expressions used in the repository&nbsp; 
+.&nbsp; The purpose of this manifest is to provide a convenient way for 
+harvesters to determine the rights expressions associated with records 
+disseminated by a repository.&nbsp; This specification defines an XML schema to 
+which the rights manifest packages <b>must</b> conform.</li>
+<li><a href="#set_level">set level</a> - 
+  The response to the OAI-PMH
+  <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ListSets"><code>ListSets</code></a> 
+  request contains information about the set structure of the repository. Sets 
+are a mechanism to provide
+<a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#SelectiveHarvestingandSets">
+selective harvesting</a> from a repository.&nbsp; This response may include one or more <code>&lt;setDescription&gt;</code> 
+  containers which provide an extensible mechanism for set description.
+  This specification defines an <b>optional</b> mechanism for delivering, within the <code>&lt;setDescription&gt;</code> 
+  container, a&nbsp; manifest of the rights expressions associated with records 
+disseminated by harvesting requests with a set selection.&nbsp; The purpose of 
+this manifest is to provide a convenient way for harvesters to determine the 
+rights expressions associated with records delivered by a particular set 
+selection.&nbsp; This specification defines an XML schema to which the rights 
+manifest packages <b>must</b> conform.</li>
+</ul>
+
+<p><font color="#FF0000"><i>Repositories may associate different rights expressions with records 
+in different metedata formats from the same item. Manifests <b>should</b> 
+include rights expressions for all records from the items in the 
+appropriate repository or set. </i>(CARL: I just don't like this paragraph.&nbsp; 
+It is unnecessary and confusing information that is implicit in the nature of a 
+record, which is metadata in a specific format. Also, by strarting to talk about 
+metadata formats at this point we mess up the generality of metadata/content 
+that we set up at the beginning of the specification).</font></p>
+
+<p>The specification in this document provides a generic method for delivery of 
+rights expressions about metadata in OAI-PMH.&nbsp; As such, it <b>should be </b>
+the mechanism used by data providers desiring such functionality and <b>should
+</b>be recognized by harvesters that consume metadata delivered by OAI-PMH.&nbsp; 
+Other mechanisms, such as incorporating rights expressions within metadata 
+itself are possible, but <b>should </b>be considered non-generic and hence 
+possibly not recognized by many harvesters.</p>
+
+<h2><a name="record_level">3. Conveying rights expressions at the record level</a></h2>
+
+<p>The XML schema shown below defines the format for a <code>&lt;rights&gt;</code> 
+package that can be used to include a rights expression within an <code>&lt;about&gt;</code> 
+container as part of a record returned from a 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ListRecords"><code>ListRecords</code></a> 
+or <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ListRecords"><code>GetRecord</code></a> 
+request. Such a rights expression pertains only to the <code>&lt;metadata&gt;</code> 
+part of the record.</p>
+
+<p>The schema provides two mutually exclusive alternatives for specifying a rights 
+expression:</p>
+<ul>
+<li><i>in-line</i> - 
+  The rights expression is contained in XML syntax within 
+  the <code>&lt;rightsDefinition&gt;</code> child element of the <code>&lt;rights&gt;</code> 
+  element. The XML elements and attributes used in the rights expression 
+  <b>must</b> be defined in a namespace distinct from that of the OAI-PMH XML 
+  elements and attributes. The schema requires only that the contents of 
+  the <code>&lt;rights&gt;</code> element are well-formed XML. However,
+  the contained rights expression <b>may</b> be subject to validation with 
+  some external schema.
+<li><i>by-reference</i> - 
+  The rights expression is referenced via a URL contained in
+  <code>&lt;rightsReference&gt;</code> child element of the <code>&lt;rights&gt;</code> 
+  element. There are no restrictions on the nature of the resource referenced 
+  by this URL. However, to facilitate machine processing, the <b>recommended</b>
+  format for referenced rights expressions is XML. Data providers 
+  that disseminate records with by-reference rights expressions <b>should</b> 
+  be aware of persistence issues related to URL references. 
+  Specifically, the possible latency between the dissemination of metadata 
+  with a by-reference rights expression and the eventual use of that metadata, 
+  and resolution of the reference, may result in a failed reference or even 
+  a reference to a changed rights expression with different meaning. Therefore, 
+  it is <b>recommended</b> that data providers concerned with truly static 
+  rights expressions employ the in-line method.</li>
+</ul>
+
+<table summary="XML schema for rights information" border="2" width="80%">
+<tr><td><pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;schema targetNamespace="http://www.openarchives.org/OAI/2.0/rights/" 
+        xmlns="http://www.w3.org/2001/XMLSchema" 
+        xmlns:rights="http://www.openarchives.org/OAI/2.0/rights/"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"&gt;
+
+  &lt;annotation&gt;
+    &lt;documentation&gt;
+    Schema for rights statement to be included either by-reference or
+    in-line. In-line statements may be in any namespace and are to be
+    skipped by XML Schema validators so that rdf and non-W3C schemas
+    may be used.
+    Carl Lagoze and Simeon Warner (Cornell University)
+    $Date: 2004/06/10 03:11:23 $
+    &lt;/documentation&gt;
+  &lt;/annotation&gt;
+ 
+  
+  &lt;element name="rights" type="rights:rightsStatementType"/&gt;
+
+  &lt;complexType name="rightsStatementType"&gt;
+    &lt;choice&gt;
+      &lt;element name="rightsReference"&gt;
+        &lt;complexType&gt;
+          &lt;attribute name="ref" type="anyURI" use="required"/&gt;
+        &lt;/complexType&gt;
+      &lt;/element&gt;
+      &lt;element name="rightsDefinition"&gt;
+        &lt;complexType&gt;
+   	  &lt;sequence&gt;
+ 	    &lt;any namespace="##other" processContents="skip"/&gt;
+  	  &lt;/sequence&gt;
+        &lt;/complexType&gt;
+      &lt;/element&gt;
+    &lt;/choice&gt;
+  &lt;/complexType&gt;
+
+&lt;/schema&gt;
+</pre></td></tr>
+<tr> 
+<td>This schema is available at 
+<a href="http://www.openarchives.org/OAI/2.0/rights.xsd">http://www.openarchives.org/OAI/2.0/rights.xsd</a></td>
+</tr>
+</table>
+
+<p>The following example shows the use of a <code>&lt;rights&gt;</code> 
+element to convey an in-line rights expression. The rights expression 
+in this example is the RDF/XML for the 
+<a href="http://www.creativecommons.org">Creative Commons</a> license 
+that can be displayed in human-readable form at 
+<code><a href="http://creativecommons.org/licenses/by/2.0/">http://creativecommons.org/licenses/by/2.0/</a></code>.</p>
+
+<table summary="In-line rights expression example" border="2" width="80%">
+<tr><td><pre>&lt;about&gt;
+  &lt;rights xmlns="http://www.openarchives.org/OAI/2.0/rights/"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/rights/
+                        http://www.openarchives.org/OAI/2.0/rights.xsd"&gt;
+    &lt;rightsDefinition&gt;
+      &lt;rdf:RDF xmlns="http://web.resource.org/cc/" 
+        xmlns:dc="http://purl.org/dc/elements/1.1/" 
+        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"&gt;
+        &lt;Work rdf:about=""&gt;
+          &lt;dc:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+          &lt;license rdf:resource="http://creativecommons.org/licenses/by/2.0/"/&gt;
+        &lt;/Work&gt;
+        &lt;License rdf:about="http://creativecommons.org/licenses/by/2.0/"&gt;
+          &lt;permits rdf:resource="http://web.resource.org/cc/Reproduction"/&gt;
+          &lt;permits rdf:resource="http://web.resource.org/cc/Distribution"/&gt;
+          &lt;requires rdf:resource="http://web.resource.org/cc/Notice"/&gt;
+          &lt;requires rdf:resource="http://web.resource.org/cc/Attribution"/&gt;
+          &lt;permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/&gt;
+        &lt;/License&gt;
+      &lt;/rdf:RDF&gt;
+    &lt;/rightsDefinition&gt;
+  &lt;/rights&gt;
+&lt;/about&gt;
+</pre></td></tr>
+</table>
+
+<p>The following example shows the use of a <code>&lt;rights&gt;</code> element 
+to convey a rights expression by-reference.</p>
+
+<table summary="By reference rights expression example" border="2" width="80%">
+<tr><td><pre>&lt;about&gt;
+  &lt;rights xmlns="http://www.openarchives.org/OAI/2.0/rights/"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/rights/
+                        http://www.openarchives.org/OAI/2.0/rights.xsd"&gt;
+    &lt;rightsReference ref="http://creativecommons.org/licenses/by/2.0/"/&gt;
+  &lt;/rights&gt;
+&lt;/about&gt;
+</pre></td></tr>
+</table>
+  
+<h2><a name="aggregation_level">4. Conveying a manifest of rights expressions at the repository and set levels</a></h2>
+
+<p>Manifests of rights expressions that apply to the repository and set 
+aggregations may be included using the <b>optional</b> <code>&lt;rightsManifest&gt;</code> 
+package. Details of application at the 
+repository level (<a href="#repository_level">section 4.1</a>) 
+and the
+set level (<a href="#set_level">section 4.2</a>) are given separately.</p>
+
+<p>The XML schema below defines the format of the 
+<code>&lt;rightsManifest&gt;</code> package.
+The schema allows one or more <code>&lt;rights&gt;</code> child elements. 
+The individual <code>&lt;rights&gt;</code> elements are 
+identical to those included at the <a href="#record_level">record level</a>,
+and <b>must</b> contain a single rights expression either in-line or by-reference.
+The <code>&lt;rightsManifest&gt;</code> element has a single attribute, 
+<code>appliesTo</code>, which <b>must</b> have the value <code>metadata</code>. 
+This attribute is included as a mechanism for future expansion.</p>
+
+<table summary="XML schema for a rights manifest" border="2" width="80%">
+<tr><td><pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;schema targetNamespace="http://www.openarchives.org/OAI/2.0/rights/"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        xmlns:rights="http://www.openarchives.org/OAI/2.0/rights/"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"&gt;
+
+  &lt;annotation&gt;
+    &lt;documentation&gt;
+    Schema for a manifest of rights statements to be included in the
+    Identify and ListSets responses of an OAI server. The appliesTo
+    attribute permits only the value 'metadata' but is included in
+    anticipation of later extension.
+    Carl Lagoze and Simeon Warner (Cornell University)
+    $Date: 2004/06/10 22:04:54 $
+    &lt;/documentation&gt;
+  &lt;/annotation&gt;
+
+
+  &lt;include schemaLocation="http://www.openarchives.org/OAI/2.0/rights.xsd"/&gt;
+
+  &lt;element name="rightsManifest" type="rights:rightsManifestType"/&gt;
+
+  &lt;complexType name="rightsManifestType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="rights" type="rights:rightsStatementType" maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="appliesTo" type="rights:appliesToType"/&gt;
+  &lt;/complexType&gt;
+
+
+  &lt;simpleType name="appliesToType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="metadata"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+&lt;/schema&gt;
+</pre></td></tr>
+<tr> 
+<td>This schema is available at 
+<a href="http://www.openarchives.org/OAI/2.0/rightsManifest.xsd">http://www.openarchives.org/OAI/2.0/rightsManifest.xsd</a></td>
+</tr>
+</table>
+
+<h2><a name="repository_level">4.1 Repository level rights expressions</a></h2>
+
+<p>The <b>optional</b> <code>&lt;rightsManifest&gt;</code> package may be
+included in a <code>&lt;description&gt;</code> container in the response to 
+an <code><a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Identify">Identify</a></code> 
+request. The purpose of the <code>&lt;rightsManifest&gt;</code> package at the 
+repository level is to provide a list of all the rights expressions that 
+apply to metadata disseminated by the repository.</p> 
+
+<p>A typical use of this manifest is the case where all metadata
+disseminated by the repository is covered by a small set of rights expressions. 
+When this small set of rights expressions is packaged as a manifest within 
+the <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Identify">Identify</a> 
+response, harvesting clients can quickly determine the rights expressions 
+associated with the metadata disseminated by the repository and decide whether to 
+proceed with harvesting. While the completeness and correctness of this 
+manifest is not mandated by this specification, it is highly <b>recommended</b>
+that data providers maintain its accuracy since its contents may affect 
+decisions by harvesters to collect metadata from the repository.</p>
+
+<p>The following example shows the use of a <code>&lt;rightsManifest&gt;</code>
+container within a <code>&lt;description&gt;</code> element in an
+<code>Identify</code> response.</p>
+
+<table summary="Example of rightsManifest within Identify response" border="2" width="80%">
+<tr><td><pre>&lt;description&gt;
+  &lt;rightsManifest
+    xmlns="http://www.openarchives.org/OAI/2.0/rights/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/rights/ 
+                        http://www.openarchives.org/OAI/2.0/rightsManifest.xsd"
+    appliesTo="metadata"&gt;
+    &lt;rights&gt;
+      &lt;rightsDefinition&gt;
+        &lt;rdf:RDF xmlns="http://web.resource.org/cc/" 
+          xmlns:dc="http://purl.org/dc/elements/1.1/" 
+          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"&gt;
+          &lt;Work rdf:about=""&gt;
+            &lt;dc:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+            &lt;license rdf:resource="http://creativecommons.org/licenses/by/2.0/"/&gt;
+          &lt;/Work&gt;
+          &lt;License rdf:about="http://creativecommons.org/licenses/by/2.0/"&gt;
+            &lt;permits rdf:resource="http://web.resource.org/cc/Reproduction"/&gt;
+            &lt;permits rdf:resource="http://web.resource.org/cc/Distribution"/&gt;
+            &lt;requires rdf:resource="http://web.resource.org/cc/Notice"/&gt;
+            &lt;requires rdf:resource="http://web.resource.org/cc/Attribution"/&gt;
+            &lt;permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/&gt;
+          &lt;/License&gt;
+        &lt;/rdf:RDF&gt;
+      &lt;/rightsDefinition&gt;
+    &lt;/rights&gt;
+    &lt;rights&gt;
+      &lt;rightsDefinition&gt;
+        &lt;rdf:RDF xmlns="http://web.resource.org/cc/" 
+          xmlns:dc="http://purl.org/dc/elements/1.1/" 
+          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"&gt;
+          &lt;Work rdf:about=""&gt;
+            &lt;dc:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+            &lt;license rdf:resource="http://creativecommons.org/licenses/by-nc/2.0/"/&gt;
+          &lt;/Work&gt;
+          &lt;License rdf:about="http://creativecommons.org/licenses/by-nc/2.0/"&gt;
+            &lt;permits rdf:resource="http://web.resource.org/cc/Reproduction"/&gt;
+            &lt;permits rdf:resource="http://web.resource.org/cc/Distribution"/&gt;
+            &lt;requires rdf:resource="http://web.resource.org/cc/Notice"/&gt;
+            &lt;requires rdf:resource="http://web.resource.org/cc/Attribution"/&gt;
+            &lt;prohibits rdf:resource="http://web.resource.org/cc/CommercialUse"/&gt;
+            &lt;permits rdf:resource="http://web.resource.org/cc/DerivativeWorks"/&gt;
+          &lt;/License&gt;
+        &lt;/rdf:RDF&gt;
+      &lt;/rightsDefinition&gt;
+    &lt;/rights&gt;
+    &lt;rights&gt;
+      &lt;rightsReference ref="http://creativecommons.org/licenses/by-nd/2.0/"/&gt;
+    &lt;/rights&gt;
+  &lt;/rightsManifest&gt;
+&lt;/description&gt;
+</pre></td></tr>
+</table>
+
+<h2><a name="set_level">4.2 Set level rights expressions</a></h2>
+
+<p>Sets are an <b>optional</b> mechanism to support selective harvesting within
+OAI-PMH. Repositories may or may not implement sets. Some repositories may use 
+sets as a mechanism for allowing selective havesting by rights associated with 
+the metadata (e.g., placing all metadata available &quot;without restriction&quot; in one 
+set and all metadata encumbered in some manner in another set).&nbsp; Set level 
+rights expressions provide a mechanism for associating a rights manifest with 
+particular sets to provide harvesters with information about this use of sets.&nbsp; </p> 
+
+<p>The <b>optional</b> <code>&lt;rightsManifest&gt;</code> package may be
+included in <code>&lt;setDescription&gt;</code> containers in the response to a 
+<code><a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#ListSets">ListSets</a></code>
+request, as a means of conveying rights expressions associated with the set. 
+A data provider <b>may</b> find it appropriate to include manifests for some 
+sets even when it is not feasible or appropriate for the entire repository.
+Data providers <b>should not</b> include set level rights manifests unless
+they provide complete, accurate and unambiguous information about rights
+expressions pertaining to metadata for items within a set.</p>
+
+<p>The following example shows the use of a <code>&lt;rightsManifest&gt;</code>
+container within a <code>&lt;setDescription&gt;</code> element for one of four
+sets described in a <code>ListSets</code> response.</p>
+
+<table summary="Example of rightsManifest within ListSets response" border="2" width="80%">
+<tr><td><pre>&lt;ListSets&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;music&lt;/setSpec&gt;
+    &lt;setName&gt;Music collection&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;music:(muzak)&lt;/setSpec&gt;
+    &lt;setName&gt;Muzak collection&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;music:(elec)&lt;/setSpec&gt;
+    &lt;setName&gt;Electronic Music Collection&lt;/setName&gt;
+    &lt;setDescription&gt;
+      &lt;rightsManifest 
+        xmlns="http://www.openarchives.org/OAI/2.0/rights/" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/rights/ 
+                            http://www.openarchives.org/OAI/2.0/rightsManifest.xsd"
+        appliesTo="metadata"&gt;
+        &lt;rights&gt;
+          &lt;rightsReference ref="http://creativecommons.org/licenses/by-nd/2.0/"/&gt;
+        &lt;/rights&gt;
+        &lt;rights&gt;
+          &lt;rightsReference ref="http://creativecommons.org/licenses/by-nc/2.0/"/&gt;
+        &lt;/rights&gt;
+      &lt;/rightsManifest&gt;
+    &lt;/setDescription&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;video&lt;/setSpec&gt;
+    &lt;setName&gt;Video Collection&lt;/setName&gt;
+  &lt;/set&gt;
+&lt;/ListSets&gt;
+</pre></td></tr>
+</table>
+
+<h2><a name="harvester_responsibilities">5. Responsibilities of clients harvesting 
+metadata with associated rights expressions</a></h2>
+
+<p>This specification aims to provide a canonical mechanism for the 
+inclusion of rights expressions in OAI-PMH records. Harvesters <b>should</b> 
+look for and abide by the contents of any rights expressions included using 
+this mechanism within records they harvest.</p>
+
+<p>The mechanisms described in this document are not intended to provide 
+any level of enforcement of rights expressions. Nevertheless, consumers 
+of metadata with which these rights expressions are associated <b>should</b>
+act in good faith and abide by the conditions as stated. Actions in 
+response to a failure of a harvester to abide by rights expressions are 
+outside the scope of this specification.</p>
+
+<h2><a name="acknowledgements">Acknowledgements</a></h2>
+
+<p>Support for the development of the OAI-PMH and for other Open Archives 
+Initiative activities comes from the <a href="http://www.diglib.org/">Digital 
+Library Federation</a>, the <a href="http://www.cni.org/">Coalition for 
+Networked Information</a>, and from the National Science Foundation through 
+Grant No. IIS-9817416. Individuals who have played a significant role in 
+the development of OAI-PMH version 2.0 are 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged 
+in the protocol document</a>.</p>
+
+<h2><a name="DocumentHistory">Document History</a></h2>
+<p>
+<b>2004-05-27</b>: First draft of this document.<br/>
+<b>2004-06-02</b>: Second draft with substantive changes<br/>
+<b>2004-06-08</b>: Third draft with substantive changes</p>
+
+<!--START-FOOTER-->
+</body>
+</html></body>
+</html>

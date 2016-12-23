@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Sets Proposal (from DLF) 
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Sets%20Proposal%20%28from%20DLF%29%20&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001467.html">
+   <LINK REL="Next"  HREF="001466.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Sets Proposal (from DLF) </H1>
+    <B>Dr Robert Sanderson</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Sets%20Proposal%20%28from%20DLF%29%20&In-Reply-To="
+       TITLE="[OAI-implementers] Sets Proposal (from DLF) ">azaroth at liverpool.ac.uk
+       </A><BR>
+    <I>Fri Apr 22 13:15:51 EDT 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001467.html">[OAI-implementers] Sets Proposal (from DLF)
+</A></li>
+        <LI>Next message: <A HREF="001466.html">[OAI-implementers] Re: OAI sets as new instances (Sets Proposal
+	(from DLF))
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1465">[ date ]</a>
+              <a href="thread.html#1465">[ thread ]</a>
+              <a href="subject.html#1465">[ subject ]</a>
+              <a href="author.html#1465">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+At DLF last week in one of the Birds of a Feather sessions some of the issues 
+that people had with sets were discussed.  The following is a proposal for how 
+these issues might be addressed without changing the OAI protocol.
+
+Your comments are very welcome.
+
+Thanks to Ralph and Jeff for their additional material incorporated below and 
+to Tom Habing for his comments.
+
+Rob Sanderson
+
+[resent for crazy UoL email address mapping]
+
+-------
+
+*** OAI Set Proposal: Devolve Sets to Subsidiary URL Access Points ***
+
+Author:  	Rob Sanderson (<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">azaroth at liv.ac.uk</A>)
+Contributors:  	Ralph Levan   (<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">levan at oclc.org</A>)
+ 		Jeff Young    (<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">jyoung at oclc.org</A>)
+
+
+Problem:
+
+There have been many issues identified by the OAI community with the 
+interoperability of sets, set descriptions and the out-of-band communications 
+between data provider and service provider required to either create new sets 
+or determine the nature of sets if the description is insufficient or not 
+present.
+Furthermore, given the present set specification, there has yet to be a 
+consistent approach described to having a hierarchical structure of sets, nor a 
+way to specify that a record has been deleted from a set, but not from the 
+repository as a whole.
+When populating set descriptions, it is possible to have some subsets make 
+their records available in a different set of schemas to other subsets and it 
+is not clear that this should be permitted at all, and if it should, how to 
+unambiguously specify the set's capabilities.
+
+
+Proposal:
+
+Instead of furthering the misconception that sets are a weak form of search, 
+due primarily to the lack of explicit semantics as to how sets should be 
+defined, sub-collections could instead be treated as separate OAI repositories 
+without any change to the existing protocol.  These subsidiary repositories 
+typically would be an extended path from the base provider's URL.
+
+For example, an OAI interface might be available at:
+ 	<A HREF="http://oai.cheshire3.org/liverpoolArchives/">http://oai.cheshire3.org/liverpoolArchives/</A>
+The server might then support sub-collections of the full archives at:
+ 	<A HREF="http://oai.cheshire3.org/liverpoolArchives/gypsy/">http://oai.cheshire3.org/liverpoolArchives/gypsy/</A>
+ 	<A HREF="http://oai.cheshire3.org/liverpoolArchives/cunard/">http://oai.cheshire3.org/liverpoolArchives/cunard/</A> and
+ 	<A HREF="http://oai.cheshire3.org/liverpoolArchives/cunard/titanic/">http://oai.cheshire3.org/liverpoolArchives/cunard/titanic/</A>
+
+
+Commentary:
+
+Additional URL paths are free for practically all intents and purposes. Once a 
+service can be made to listen at one URL, additional listening points below are 
+much easier.  Thus the infrastructure of the web is made to assume part of the 
+technical requirements of the protocol.
+
+Not only does this shift a part of the burden on to the infrastructure, it 
+enables various implementation strategies not currently available. Instead of 
+one repository maintaining the complete collection and all of the sets, 
+sub-collections could be handled either by one repository implementation or by 
+running a new instance for each subsidiary URL/set. This second method lowers 
+the barrier-to-entry for supporting sub-collections as a data provider.
+
+This solves the tree-of-sets issue with no additional requirements. Because 
+there is no (practical) limit on the length of a URL path, the depth of the 
+sub-collections is likewise not technically limited.  The context is also more 
+apparent, as it is present in the URL.
+
+It also solves the problem of not being able to signal the deletion of records 
+out of sets when they have not been deleted from the repository. For example, 
+if a record were moved from one set into another, the record could be flagged 
+as deleted in the repository maintaining the first set, and recently added to 
+its new location.  This is not currently possible and requires periodic 
+complete reharvesting.
+
+The misperception regarding sets as a filter or search, rather than access to a 
+well defined sub-collection is greatly lessened by the proposal. Instead of 
+having a parameter carried in the request, which can easily be abused, the new 
+URLs imply much more strongly that this is a well defined OAI service, 
+especially as it is one.  This lessens the likelihood that service providers 
+will contact the data provider asking for new sets [whether or not that is an 
+advantage is easily debatable], and also the likelihood that searches will be 
+crushed into the set parameter.
+
+Benefits also accrue for the service providers as they do not have to implement 
+set handling for the approximately half of the total data providers that 
+support them [as per Thomas Habing's registry].  The move from the set 
+specification to linked services also means that service providers will 
+actually process the friends information, which otherwise may be ignored.
+
+If there is one record which appears in multiple sets, then it will appear in 
+each OAI repository instance.  Also, the records should all appear at the base 
+OAI repository.  Even though these are different instances, the sets should 
+have the same unique identifier such that they can be deduplicated if and when 
+necessary.  The protocol specifically allows for common identifier schemes to 
+be defined, so there seems to be no technical issue with this.
+
+
+Technical Requirements:
+
+The technical requirement for discovering these sets would be done via a 
+slightly enhanced version of the Friends schema.  Each repository instance 
+would maintain the next lowest level of sets.  In the examples given in the 
+description, liverpoolArchives would link to gypsy and cunard. Cunard would 
+then link to its sub-set about the Titanic.  Each set would also link upwards 
+to its super-set.
+
+Each friend entry needs to identify the relationship between the current 
+repository instance and the friend.  As an example, this could be accomplished 
+by a type attribute, with a default value of 'relatedCollection' for backwards 
+compatibility.
+
+&lt;f:friends type=subCollection&gt;
+ 	<A HREF="http://oai.cheshire3.org/liverpoolArchives/cunard/titanic">http://oai.cheshire3.org/liverpoolArchives/cunard/titanic</A>
+&lt;/f:friends&gt;
+&lt;f:friends type=superCollection&gt;
+ 	<A HREF="http://oai.cheshire3.org/liverpoolArchives/">http://oai.cheshire3.org/liverpoolArchives/</A>
+&lt;/f:friends&gt;
+&lt;f:friends type=relatedCollection&gt;
+ 	<A HREF="http://some.other.repository.edu/path/to/oai/">http://some.other.repository.edu/path/to/oai/</A>
+&lt;/f:friends&gt;
+
+The need for the link upwards is that the services may be provided by systems 
+that do not work by url path elements, and instead use some other system. For 
+example a less sophisticated, but equally valid approach would be to name CGI 
+scripts with increasingly long names within the same directory.  For example:
+ 	<A HREF="http://www.cheshire3.org/cgi/oai-liverpool.cgi">http://www.cheshire3.org/cgi/oai-liverpool.cgi</A>
+ 	<A HREF="http://www.cheshire3.org/cgi/oai-liverpool-gypsy.cgi">http://www.cheshire3.org/cgi/oai-liverpool-gypsy.cgi</A>
+ 	<A HREF="http://www.cheshire3.org/cgi/oai-liverpool-cunard-titanic.cgi">http://www.cheshire3.org/cgi/oai-liverpool-cunard-titanic.cgi</A>
+
+The sub-collection description would then be moved into the Identify response 
+from the listSets response.  This has the advantage of only requiring service 
+providers to process one sort of collection/service description rather than 
+two.  Secondly it means that the best practices regarding the Identify response 
+would also apply to any sub-collections, increasing the likelihood of content 
+providers describing their sets appropriately.
+
+---------
+
+       ,'/:.          Dr Robert Sanderson (<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">azaroth at liverpool.ac.uk</A>)
+     ,'-/::::.        <A HREF="http://www.csc.liv.ac.uk/~azaroth/">http://www.csc.liv.ac.uk/~azaroth/</A>
+   ,'--/::(@)::.      Dept. of Computer Science, Room 805
+,'---/::::::::::.    University of Liverpool
+____/:::::::::::::. I L L U M I N A T I  Cheshire3 IR System: 
+<A HREF="http://www.cheshire3.org/">http://www.cheshire3.org/</A>
+
+</PRE>
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001467.html">[OAI-implementers] Sets Proposal (from DLF)
+</A></li>
+	<LI>Next message: <A HREF="001466.html">[OAI-implementers] Re: OAI sets as new instances (Sets Proposal
+	(from DLF))
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1465">[ date ]</a>
+              <a href="thread.html#1465">[ thread ]</a>
+              <a href="subject.html#1465">[ subject ]</a>
+              <a href="author.html#1465">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> RES: [OAI-implementers] set spect error
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ramon%40ibict.br">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000855.html">
+   <LINK REL="Next"  HREF="000859.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>RES: [OAI-implementers] set spect error
+   </H1>
+    <B>Ramon Martins Sodoma da Fonseca
+    </B> 
+    <A HREF="mailto:ramon%40ibict.br"
+       TITLE="RES: [OAI-implementers] set spect error">ramon@ibict.br
+       </A><BR>
+    <I>Wed, 23 Apr 2003 12:47:43 -0300</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000855.html">[OAI-implementers] (no subject)
+</A></li>
+        <LI> Next message: <A HREF="000859.html">RES: [OAI-implementers] set spect error
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#858">[ date ]</a>
+              <a href="thread.html#858">[ thread ]</a>
+              <a href="subject.html#858">[ subject ]</a>
+              <a href="author.html#858">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I noticed that, but I really don´t know what could be wrong.
+
+My guess is that even though we implemented a table with the sets, and each
+record has a set, they are not implemented correctly...
+
+thanks for everything..
+
+............................................................................
+...
+Ramón Martins S. da Fonseca
+Desenvolvimento Web
+IBICT - Instituto Brasileiro de Informação em Ciência e Tecnologia
++55 61 217 6443 / 6347
+............................................................................
+...
+
+
+-----Mensagem original-----
+De: Tim Brody [mailto:<A HREF="mailto:tim@tim.brody.btinternet.co.uk">tim@tim.brody.btinternet.co.uk</A>]
+Enviada em: quarta-feira, 23 de abril de 2003 12:41
+Para: Ramon Martins Sodoma da Fonseca; Oai-Implementers (E-mail)
+Assunto: Re: [OAI-implementers] set spect error
+
+
+You aren't returning any records for your set:
+<A HREF="http://www.ibict.br/cgi-bin/ibict/oai.pl?verb=ListIdentifiers&set=cience&met">http://www.ibict.br/cgi-bin/ibict/oai.pl?verb=ListIdentifiers&amp;set=cience&amp;met</A>
+adataPrefix=oai_dc
+
+Only a resumptionToken. The clue is in &quot;(header+,resumptionToken?)&quot;, which
+is regular expression speak for match header 1 or more times, match
+resumption token 0 or 1 times.
+
+You should be returning a noRecordsMatch error if there are no records that
+match the OAI query.
+
+To sum-up: Every OAI response should either be an error, a complete list, or
+a partial list (records+resumption token).
+
+All the best,
+Tim.
+
+----- Original Message -----
+From: &quot;Ramon Martins Sodoma da Fonseca&quot; &lt;<A HREF="mailto:ramon@ibict.br">ramon@ibict.br</A>&gt;
+To: &quot;Oai-Implementers (E-mail)&quot; &lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+Sent: Tuesday, April 22, 2003 5:52 PM
+Subject: [OAI-implementers] set spect error
+
+
+Dear fellow implementers..
+
+we have been working on the protocol and doing the fine tuning (I hope)
+
+we had the setSpec work, but when I click on the set link on the OAI
+Explorer, which I believe shows all the records of that set, it shows me the
+following error
+
+&quot;
+Parsed Output
+XML Schema Validation Error !
+[Error] fileS0qUiQ:10:20: The content of element type &quot;ListIdentifiers&quot; must
+match &quot;(header+,resumptionToken?)&quot;.
+/tmp/fileS0qUiQ: 1106 ms (5 elems, 8 attrs, 9 spaces, 77 chars)
+
+XML Output
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&lt;OAI-PMH xmlns=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/"">http://www.openarchives.org/OAI/2.0/&quot;</A>
+xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>
+xsi:schemaLocation=&quot;<A HREF="http://www.openarchives.org/OAI/2.0/">http://www.openarchives.org/OAI/2.0/</A>
+<A HREF="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"">http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;</A>&gt;
+
+&lt;responseDate&gt;2003-04-22T16:43:58Z&lt;/responseDate&gt;
+&lt;request verb=&quot;ListIdentifiers&quot; metadataPrefix=&quot;oai_dc&quot;
+set=&quot;cience&quot;&gt;<A HREF="http://www.ibict.br/cgi-bin/ibict/oai.pl</request">http://www.ibict.br/cgi-bin/ibict/oai.pl&lt;/request</A>&gt;
+
+&lt;ListIdentifiers&gt;
+&lt;resumptionToken cursor=&quot;0&quot;
+completeListSize=&quot;6&quot;&gt;cience!!!oai_dc!3&lt;/resumptionToken&gt;
+&lt;/ListIdentifiers&gt;
+
+&lt;/OAI-PMH&gt;
+
+&quot;
+
+this is how it shows when asking for the listSets verb:
+&quot;
+List of Sets
+Click on the link to list the contents
+Ciência e Informação &lt;&gt;
+
+set description:
+   dc:
+      description: Teses e Dissertações Eletrônicas sobre ciência e ciência
+da informação
+
+Request : <A HREF="http://www.ibict.br/cgi-bin/ibict/oai.pl,">http://www.ibict.br/cgi-bin/ibict/oai.pl,</A> verb=ListSets
+Response Date : 2003-04-22T16:41:01Z
+&quot;
+
+this is the base url for testing:
+<A HREF="http://www.ibict.br/cgi-bin/ibict/oai.pl">http://www.ibict.br/cgi-bin/ibict/oai.pl</A>
+
+any input is welcome...
+
+thank you
+............................................................................
+.................................................
+Ramón Martins S. da Fonseca
+Desenvolvimento Web
+IBICT - Instituto Brasileiro de Informação em Ciência e Tecnologia
++55 61 217 6443 / 6347
+............................................................................
+.................................................
+
+_______________________________________________
+OAI-implementers mailing list
+<A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000855.html">[OAI-implementers] (no subject)
+</A></li>
+	<LI> Next message: <A HREF="000859.html">RES: [OAI-implementers] set spect error
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#858">[ date ]</a>
+              <a href="thread.html#858">[ thread ]</a>
+              <a href="subject.html#858">[ subject ]</a>
+              <a href="author.html#858">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

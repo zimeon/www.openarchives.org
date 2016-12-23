@@ -1,0 +1,186 @@
+From timo at proescholdt.de  Fri Sep 23 08:28:59 2011
+From: timo at proescholdt.de (Timo Proescholdt)
+Date: Fri Sep 23 08:29:10 2011
+Subject: [OAI-implementers] same xml namespace declaration in header and
+	payload
+Message-ID: <fd1758c322e34f2dc5c3d714341aff69.squirrel@webmail.ifi.lmu.de>
+
+Dear all,
+
+the XML payload of an OAI response (GetRecord,ListRecords) can in certain
+circumstances contain the same namespace declaration as the OAI header. If
+the whole document (skeleton and payload) is treated as one DOM by the
+provider, the additional namespace declaration in the payload is removed
+(by any smart DOM library). A naive harvester, that only textwise cuts out
+the payload out of the OAI response, will then encounter an invalid XML
+document (with missing namespace declarations).
+
+For instance, the OAI-PMH root element declares
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance". This is likely to
+be also present in a XML document that is embedded as payload.
+
+Considering that it is impossible to rid the world of naive harvesters,
+the question is how an OAI provider should deal with this. Should it leave
+two namespace declarations in the response? It is surprisingly difficult
+to do this, because most DOM libraries automatically remove redundant
+declarations.
+
+how is this problem addressed out there?
+
+thanks and best regards
+Timo
+
+
+From jyoung at oclc.org  Fri Sep 23 12:24:33 2011
+From: jyoung at oclc.org (Young,Jeff (OR))
+Date: Fri Sep 23 12:25:29 2011
+Subject: [OAI-implementers] same xml namespace declaration in header
+	andpayload
+In-Reply-To: <fd1758c322e34f2dc5c3d714341aff69.squirrel@webmail.ifi.lmu.de>
+References: <fd1758c322e34f2dc5c3d714341aff69.squirrel@webmail.ifi.lmu.de>
+Message-ID: <52E301F960B30049ADEFBCCF1CCAEF590DD76EB2@OAEXCH4SERVER.oa.oclc.org>
+
+Timo,
+
+One solution would be to deliver RDF/XML as an OAI "metadata format".
+Since RDF is statement-based rather than record-based, you wouldn't have
+to worry about xsi:schemaLocation or its namespace.
+
+Jeff
+
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org [mailto:oai-
+> implementers-bounces@openarchives.org] On Behalf Of Timo Proescholdt
+> Sent: Friday, September 23, 2011 8:29 AM
+> To: oai-implementers@openarchives.org
+> Subject: [OAI-implementers] same xml namespace declaration in header
+> andpayload
+> 
+> Dear all,
+> 
+> the XML payload of an OAI response (GetRecord,ListRecords) can in
+> certain
+> circumstances contain the same namespace declaration as the OAI
+header.
+> If
+> the whole document (skeleton and payload) is treated as one DOM by the
+> provider, the additional namespace declaration in the payload is
+> removed
+> (by any smart DOM library). A naive harvester, that only textwise cuts
+> out
+> the payload out of the OAI response, will then encounter an invalid
+XML
+> document (with missing namespace declarations).
+> 
+> For instance, the OAI-PMH root element declares
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance". This is likely
+> to
+> be also present in a XML document that is embedded as payload.
+> 
+> Considering that it is impossible to rid the world of naive
+harvesters,
+> the question is how an OAI provider should deal with this. Should it
+> leave
+> two namespace declarations in the response? It is surprisingly
+> difficult
+> to do this, because most DOM libraries automatically remove redundant
+> declarations.
+> 
+> how is this problem addressed out there?
+> 
+> thanks and best regards
+> Timo
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+
+From ksclarke at gmail.com  Fri Sep 23 12:48:50 2011
+From: ksclarke at gmail.com (Kevin S. Clarke)
+Date: Fri Sep 23 12:50:03 2011
+Subject: [OAI-implementers] same xml namespace declaration in header
+	andpayload
+In-Reply-To: <52E301F960B30049ADEFBCCF1CCAEF590DD76EB2@OAEXCH4SERVER.oa.oclc.org>
+References: <fd1758c322e34f2dc5c3d714341aff69.squirrel@webmail.ifi.lmu.de>
+	<52E301F960B30049ADEFBCCF1CCAEF590DD76EB2@OAEXCH4SERVER.oa.oclc.org>
+Message-ID: <CAE6YT8TvTO972aMYPokk53AjT_2pWYTCxj7KStX5QCDUUfWBuw@mail.gmail.com>
+
+>> Considering that it is impossible to rid the world of naive
+> harvesters,
+>> the question is how an OAI provider should deal with this. Should it
+>> leave
+>> two namespace declarations in the response?
+
+Not to be obnoxious, but isn't this problem of the naive harvester
+rather than the OAI provider?  The provider is doing the Right
+Thing(TM).  If someone is using a naive (i.e. broken) harvester
+shouldn't they be the one to work around the problems this causes?
+
+Kevin
+
+From jyoung at oclc.org  Fri Sep 23 12:56:33 2011
+From: jyoung at oclc.org (Young,Jeff (OR))
+Date: Fri Sep 23 12:57:13 2011
+Subject: [OAI-implementers] same xml namespace declaration in
+	headerandpayload
+In-Reply-To: <CAE6YT8TvTO972aMYPokk53AjT_2pWYTCxj7KStX5QCDUUfWBuw@mail.gmail.com>
+References: <fd1758c322e34f2dc5c3d714341aff69.squirrel@webmail.ifi.lmu.de><52E301F960B30049ADEFBCCF1CCAEF590DD76EB2@OAEXCH4SERVER.oa.oclc.org>
+	<CAE6YT8TvTO972aMYPokk53AjT_2pWYTCxj7KStX5QCDUUfWBuw@mail.gmail.com>
+Message-ID: <52E301F960B30049ADEFBCCF1CCAEF590DD76EE2@OAEXCH4SERVER.oa.oclc.org>
+
+I would argue that OAI-PMH is to blame here for forcing OAI wrappers on consumers who only care about the data. I think it would be healthy to have a conversation about how OAI-PMH could be improved after all these years.
+
+Jeff
+
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org [mailto:oai-
+> implementers-bounces@openarchives.org] On Behalf Of Kevin S. Clarke
+> Sent: Friday, September 23, 2011 12:49 PM
+> To: oai-implementers@openarchives.org
+> Subject: Re: [OAI-implementers] same xml namespace declaration in
+> headerandpayload
+> 
+> >> Considering that it is impossible to rid the world of naive
+> > harvesters,
+> >> the question is how an OAI provider should deal with this. Should it
+> >> leave
+> >> two namespace declarations in the response?
+> 
+> Not to be obnoxious, but isn't this problem of the naive harvester
+> rather than the OAI provider?  The provider is doing the Right
+> Thing(TM).  If someone is using a naive (i.e. broken) harvester
+> shouldn't they be the one to work around the problems this causes?
+> 
+> Kevin
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+From ksclarke at gmail.com  Fri Sep 23 13:10:58 2011
+From: ksclarke at gmail.com (Kevin S. Clarke)
+Date: Fri Sep 23 13:11:50 2011
+Subject: [OAI-implementers] same xml namespace declaration in
+	headerandpayload
+In-Reply-To: <52E301F960B30049ADEFBCCF1CCAEF590DD76EE2@OAEXCH4SERVER.oa.oclc.org>
+References: <fd1758c322e34f2dc5c3d714341aff69.squirrel@webmail.ifi.lmu.de>
+	<52E301F960B30049ADEFBCCF1CCAEF590DD76EB2@OAEXCH4SERVER.oa.oclc.org>
+	<CAE6YT8TvTO972aMYPokk53AjT_2pWYTCxj7KStX5QCDUUfWBuw@mail.gmail.com>
+	<52E301F960B30049ADEFBCCF1CCAEF590DD76EE2@OAEXCH4SERVER.oa.oclc.org>
+Message-ID: <CAE6YT8QQ_A+2MjU4eBdBZ4aSFgKnZnjut4kEmffmG6G8OEzdQA@mail.gmail.com>
+
+On Fri, Sep 23, 2011 at 12:56 PM, Young,Jeff (OR) <jyoung@oclc.org> wrote:
+> I think it would be healthy to have a conversation about how OAI-PMH could be improved after all these years.
+
+Or, even, whether there are more standard standards that might/should
+be used instead.
+
+Kevin
+

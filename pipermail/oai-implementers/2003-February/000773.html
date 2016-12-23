@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> regular expressions for cleanup was: Re: [OAI-implementers] XML encoding problems with DSpace at MIT
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:btingle%40hades.ucop.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000768.html">
+   <LINK REL="Next"  HREF="000778.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>regular expressions for cleanup was: Re: [OAI-implementers] XML encoding problems with DSpace at MIT
+   </H1>
+    <B>Brian Tingle
+    </B> 
+    <A HREF="mailto:btingle%40hades.ucop.edu"
+       TITLE="regular expressions for cleanup was: Re: [OAI-implementers] XML encoding problems with DSpace at MIT">btingle@hades.ucop.edu
+       </A><BR>
+    <I>Mon, 17 Feb 2003 05:44:47 -0800 (PST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000768.html">[OAI-implementers] XML encoding problems with DSpace at MIT
+</A></li>
+        <LI> Next message: <A HREF="000778.html">regular expressions for cleanup was: Re: [OAI-implementers] XML
+ encoding problems with DSpace at MIT
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#773">[ date ]</a>
+              <a href="thread.html#773">[ thread ]</a>
+              <a href="subject.html#773">[ subject ]</a>
+              <a href="author.html#773">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>The most common problems I've had as a provider so far have had to do 
+with the ampersands in non-XML data that I want to expose.
+
+This regular expression is what I use to take non-XML data that has lots 
+of ampersands and turn them to &amp;amp; but it will not &quot;duouble&quot; escape
+&amp;quot; &amp;c. that might allready be in there allready.
+
+$content =
+(Dad&amp; &amp;Mac &amp; &amp;quot;Jake&amp;quot; JonesMr. A. Birch--S.U.B.&amp;T; B.&amp;T. &amp;T.; Co.  :127a) 
+
+turns to $content=
+(Dad&amp;amp; &amp;amp;Mac &amp;amp; &amp;quot;Jake&amp;quot; JonesMr. A. Birch--S.U.B.&amp;amp;T; B.&amp;amp;T. &amp;amp;T.; Co.  :127a)
+
+        my $ident = '[:_A-Za-z][:A-Za-z0-9\-\_]+';
+        $content =~ s,\&amp;(?!$ident;),&amp;amp;,sg;
+
+
+Heinrich Stamerjohanns &lt;<A HREF="mailto:stamer@uni-oldenburg.de">stamer@uni-oldenburg.de</A>&gt; wrote:
+&gt;<i> The most common problem seems to me (I cannot get to arc.cs.odu.edu, to
+</I>&gt;<i> see the parsing errors) that people create Unicode from their databases
+</I>&gt;<i> but forget to remove ISO-control characters, which are not valid in XML
+</I>&gt;<i> (the comment in XML 1.0 spec was irritating and has been changed in XML
+</I>&gt;<i> 1.1 spec). Maybe this should be explicitly pointed out in the
+</I>&gt;<i> documentation of the protocol.
+</I>&gt;<i> 
+</I>&gt;<i> So to produce valid xml, something like this should be applied before 
+</I>you
+&gt;<i> send out the data (this is in php, but is a perlre pattern):
+</I>&gt;<i> 
+</I>&gt;<i>   
+</I>&gt;<i>         // just remove invalid characters
+</I>&gt;<i>         $pattern =&quot;/[\x-\x8\xb-\xc\xe-\x1f]/&quot;;
+</I>&gt;<i>         $string = preg_replace($pattern,'',$string);
+</I>
+
+
+
+On Mon, 17 Feb 2003, Heinrich Stamerjohanns wrote:
+
+&gt;<i> On Sat, 15 Feb 2003, Hussein Suleman wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt;  &gt; The question is, the more harvesters implement fixes the less pressure
+</I>&gt;<i> &gt;  &gt; there is on repositories to fix their output, so should harvesters
+</I>&gt;<i> &gt;  &gt; accept bad-XML?
+</I>&gt;<i> 
+</I>&gt;<i> &gt; hi
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; i think Tim poses a very relevant question: do we deal with the
+</I>&gt;<i> &gt; so-called &quot;real-world&quot; encoding problems or do we try to encourage
+</I>&gt;<i> &gt; people to fix their implementations? (of course, for research purposes,
+</I>&gt;<i> &gt; we may end up doing both :))
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> If you want a working protocol, you must insist that the data-providers
+</I>&gt;<i> deliver valid XML.
+</I>&gt;<i> If they don't deliver valid XML, they are not OAI-compliant, thus some
+</I>&gt;<i> harvesters will choke, some who try to fix the XML, might not.
+</I>&gt;<i> 
+</I>&gt;<i> The most common problem seems to me (I cannot get to arc.cs.odu.edu, to
+</I>&gt;<i> see the parsing errors) that people create Unicode from their databases
+</I>&gt;<i> but forget to remove ISO-control characters, which are not valid in XML
+</I>&gt;<i> (the comment in XML 1.0 spec was irritating and has been changed in XML
+</I>&gt;<i> 1.1 spec). Maybe this should be explicitly pointed out in the
+</I>&gt;<i> documentation of the protocol.
+</I>&gt;<i> 
+</I>&gt;<i> So to produce valid xml, something like this should be applied before you
+</I>&gt;<i> send out the data (this is in php, but is a perlre pattern):
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>         // just remove invalid characters
+</I>&gt;<i>         $pattern =&quot;/[\x-\x8\xb-\xc\xe-\x1f]/&quot;;
+</I>&gt;<i>         $string = preg_replace($pattern,'',$string);
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Greetings, Heinrich
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i>   Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+</I>&gt;<i>   Institute for Science Networking  <A HREF="mailto:stamer@uni-oldenburg.de">stamer@uni-oldenburg.de</A>
+</I>&gt;<i>   University of Oldenburg           <A HREF="http://isn.uni-oldenburg.de/~stamer">http://isn.uni-oldenburg.de/~stamer</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000768.html">[OAI-implementers] XML encoding problems with DSpace at MIT
+</A></li>
+	<LI> Next message: <A HREF="000778.html">regular expressions for cleanup was: Re: [OAI-implementers] XML
+ encoding problems with DSpace at MIT
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#773">[ date ]</a>
+              <a href="thread.html#773">[ thread ]</a>
+              <a href="subject.html#773">[ subject ]</a>
+              <a href="author.html#773">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

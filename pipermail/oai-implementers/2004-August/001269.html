@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Qualified Dublin Core 
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001268.html">
+   <LINK REL="Next"  HREF="001270.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Qualified Dublin Core </H1>
+    <B>Stephen Crawley</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Qualified%20Dublin%20Core%20&In-Reply-To=jyoung%40oclc.org"
+       TITLE="[OAI-implementers] Qualified Dublin Core ">crawley at dstc.edu.au
+       </A><BR>
+    <I>Thu Aug 12 21:09:09 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001268.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+        <LI>Next message: <A HREF="001270.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1269">[ date ]</a>
+              <a href="thread.html#1269">[ thread ]</a>
+              <a href="subject.html#1269">[ subject ]</a>
+              <a href="author.html#1269">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+Hi Jeff,
+
+You wrote:
+&gt;<i> Speaking only for myself as a service provider, I doubt that I will be
+</I>&gt;<i> interested in a generic container of &quot;things&quot;. I simply don't have the
+</I>&gt;<i> time or patience to figure out what's what in a blob of data.
+</I>&gt;<i> Including a &quot;schema&quot; attribute and &quot;element&quot; element might help, but
+</I>&gt;<i> the investigation still sounds difficult. In addition, my sense is
+</I>&gt;<i> that taking the easy route and blindly pulling DC and DCQ elements
+</I>&gt;<i> from the blob (or elements from any other namespace) will produce a
+</I>&gt;<i> meaningless jumble 9 times out of 10. I could be wrong, though.
+</I>
+I agree that it would be silly to do what you describe.  But that's
+not what I'm talking about.
+
+1)  I am not talking about random blobs of data.  I'm talking about
+    &quot;DC-like&quot; metadata which consists of:	
+
+       *  one (or more) published schema identifiers,
+       *  a collection of element/encoding/language/value tuples
+	  where the element name, encoding and language tags are
+          defined by the schema.
+
+    If I recognize the schema identifier as identifying a schema that
+    is derived from DCQ [+], then I have a reasonable basis for inferring 
+    the meaning of an element whose name is (say) DC.date.published.
+
+2)  I am not talking about randomly pulling out elements.  I'm talking
+    about extracting elements that are meaningful to my metadata collection
+    from records whose schema identifiers my software recognizes.  Indeed,
+    I may well use different filtering for different schemas, or even
+    for different source repositories.
+ 
+    The validation step then decides if the filtered record is acceptable.
+    For example it checks
+
+       *  that all elements required BY MY SCHEMA are present,
+       *  that all encodings, language known, and
+       *  that the values for the elements acceptable according to 
+          the specified encodings.
+
+2a) Another alternative is to retain the &quot;unknown&quot; elements from the 
+    harvested records.  You can separately decide whether or not to 
+    show them to end-users or to pass them on to other repositories.
+    
+    This is the roughly model we use in HotMeta / MetaSuite.  Our
+    repository understands multiple metadata schemas, and can store 
+    records that conform to any ... or none of them.  When an end-user
+    does a metadata query, the results show a configurable context
+    dependent subset of the available elements.
+
+3)  I am not talking about harvesting metadata from random places.
+    Rather, I'm talking about harvesting from reputable metadata 
+    repositories. I'm assuming that:
+
+       *  the repository owner is not going to wantonly abuse the
+          schemas he/she purports to use; e.g. systematically putting 
+          the author name in the DC.Title, and
+       *  the repository owner has adequate quality control in place
+          to ensure that the element values are reasonably accurate.
+
+    If these are not true, it is not sensible to harvest metadata from
+    the repository in question. 
+
+[+]  If you send me a schema identifier for some schema FNORD that I've
+never heard of, I probably cannot do anything with your metadata. If you
+&gt;&gt;<i>also&lt;&lt; send me that schema identifier for DCQ, I know that the records
+</I>are DCQ compatible (if you ignore non-DCQ elements).  Alternatively, if
+the schema identifier for FNORD points at a schema definition that says
+the FNORD is an extension to DCQ, I can work this out for myself, either
+manually or (maybe in the future) automatically.  Then I can configure
+my software to treat FNORD records as DCQ records ... or do something
+else. 
+
+Obviously, this will work better if there is an agreed standard for
+specifying schemas that includes some way of specifying the parentage of
+a schema and the semantic relationships with elements in the ancestor
+schemas.  We don't need a complete semantic information, just sufficient
+to say that (say) that the meaning of DC.Title in an DC record subsumes
+the meaning of DC.Title in AGLS (or vice-versa).
+
+-- Steve
+
++----------------------------------+----------------------------------------
+|<i> Stephen Crawley                  | MetaSuite Project Leader
+</I>|<i> Level 7, GP South Building (78)  | Distributed Systems Technology CRC
+</I>|<i> Staff House Road                 | Tel   : +61 7 3365 4310
+</I>|<i> The University of Queensland     | Fax   : +61 7 3365 4311
+</I>|<i> Queensland 4072                  | Email : <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">crawley at dstc.edu.au</A>
+</I>|<i> Australia                        | WWW   : <A HREF="http://www.dstc.edu.au">http://www.dstc.edu.au</A>
+</I>|<i>                                  | DSTC is the Australian W3C Office
+</I>+----------------------------------+----------------------------------------
+
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001268.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+	<LI>Next message: <A HREF="001270.html">[OAI-implementers] Qualified Dublin Core 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1269">[ date ]</a>
+              <a href="thread.html#1269">[ thread ]</a>
+              <a href="subject.html#1269">[ subject ]</a>
+              <a href="author.html#1269">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

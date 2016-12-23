@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] resumptionToken Implementation
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20resumptionToken%20Implementation&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001301.html">
+   <LINK REL="Next"  HREF="001305.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] resumptionToken Implementation</H1>
+    <B>Chris Wilper</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20resumptionToken%20Implementation&In-Reply-To="
+       TITLE="[OAI-implementers] resumptionToken Implementation">cwilper at cs.cornell.edu
+       </A><BR>
+    <I>Tue Sep 28 14:01:55 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001301.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+        <LI>Next message: <A HREF="001305.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1304">[ date ]</a>
+              <a href="thread.html#1304">[ thread ]</a>
+              <a href="subject.html#1304">[ subject ]</a>
+              <a href="author.html#1304">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In Fedora, we use the following approach: The query is run once against the
+database.  After iterating through the first chunk of results, the ResultSet
+object is just put into Map, keyed by a unique string (which is also the
+resumptionToken).  If no one comes back to continue getting results within
+some period of time, the ResultSet is removed from the Map and close()d.  If
+they do come back, we can immediately start doing next()s.
+
+The advantage is that there's very little latency on subsequent requests in a
+series of resumptions.... the drawback being that DB connections from our
+connectionpool are kept open until someone comes back, or our resumption
+token timeout kicks in.
+
+- Chris
+
+-----Original Message-----
+From: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>
+[mailto:<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>] On Behalf Of Jeff Pearson
+Sent: Tuesday, September 28, 2004 12:32 PM
+To: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at openarchives.org</A>
+Subject: Re: [OAI-implementers] resumptionToken Implementation
+
+I guess I misstated my query last time. I understand the implementations as
+defined in the spec; either create a data result cache and hit that or
+regenerate the query each time. What I was wondering was which people were
+choosing to implement and why.
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+<A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001301.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+	<LI>Next message: <A HREF="001305.html">[OAI-implementers] resumptionToken Implementation
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1304">[ date ]</a>
+              <a href="thread.html#1304">[ thread ]</a>
+              <a href="subject.html#1304">[ subject ]</a>
+              <a href="author.html#1304">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

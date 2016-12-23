@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Support for Tim Cole's comments
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ajk%40mds.rmit.edu.au">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000353.html">
+   <LINK REL="Next"  HREF="000355.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Support for Tim Cole's comments
+   </H1>
+    <B>Alan Kent
+    </B> 
+    <A HREF="mailto:ajk%40mds.rmit.edu.au"
+       TITLE="[OAI-implementers] Support for Tim Cole's comments">ajk@mds.rmit.edu.au
+       </A><BR>
+    <I>Wed, 13 Feb 2002 11:29:03 +1100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000353.html">[OAI-implementers] Support for Tim Cole's comments
+</A></li>
+        <LI> Next message: <A HREF="000355.html">[OAI-implementers] Support for Tim Cole's comments
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#354">[ date ]</a>
+              <a href="thread.html#354">[ thread ]</a>
+              <a href="subject.html#354">[ subject ]</a>
+              <a href="author.html#354">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Feb 12, 2002 at 01:13:01PM -0500, Caroline Arms wrote:
+&gt;<i> We would certainly be interested in hearing from harvesters if our chunks
+</I>&gt;<i> are annoyingly small and if our short expiry times are causing problems.  
+</I>&gt;<i> We made implementation decisions for these based on no information and
+</I>&gt;<i> would be happy to reconsider based on real experience.
+</I>
+I don't have any hard evidence at present, but here are my initial
+impressions (personal opinions! :-).
+
+I have not yet experienced any problems with timeouts (that looked 
+like problems with timeouts) - except one, where the data provider
+told me that was what a problem was due to.
+
+Different sites have used different chunk sizes. I think the smallest
+was 5 records and the largest 7,500 records (the whole collection!).
+Both worked. 100 to 200 seemed more common.
+
+It terms of network bandwidth, since records tend to be 1k to 2k long
+on average (with DC metadata anyway in my limited experience), 100
+records forming a 100kb packet seems fine when connecting from here
+in Australia over to all the other countries tried.
+
+As a (play) harvester, I would rather not see packets get too big.
+For the site with 7,500 records, that would have been around a single
+7.5mb packet. This is starting to get on the large size in terms
+of memory management etc.
+
+The counter side however is that remotely, network delays are
+substantial. That is, the length of time to do a round trip across
+the globe is significant. To download a site with 5 records per
+packet (5kb) for a very large site may never finish! Most time
+would be spent waiting rather than transferring.
+
+One thing that I think sometimes people forget is that there are
+really two distinct phases to havesting. OAI is designed well
+for the second phase of keeping up to date with metadata on the
+site. 5 records per packet is probably fine for many sites because
+the sites are pretty static. Only one or two packets per day are
+probably needed. But the first phase is where you add a new site
+to the list of sites you manage. At this time, you have to get
+everything. OAI (in my opinion) does not do a very good job here
+yet. Because the harvester does not know the date/time stamp 
+distribution of data on the source site, it is hard to automatically
+ask for multiple requests to get data from=X to=Y to get reasonable
+chunk sites (for recovery purposes). Instead, I would rather a
+harvester be able to say 'give me everything', but be given hints
+to help with recovery in case things go wrong before finishing the
+whole transfer. (Hence my suggested optional 'there is more coming,
+but you have everything up to this date guaranteed in case you need
+to start again with a network failure.)
+
+So 100 to 1000 records per chunk seems like a good compromise to me,
+even for static sites where only 1 or 2 updates are expected per
+progressive update. I would not be daunted by 1000 records per packet
+(if records are about 1kb) because 1mb is not really that much data
+these days (others might disagree). Going beyond that I suspect the
+overheads of multiple HTTP requests wont impact performance too much
+so there is not much need to go bigger.
+
+But others with more experience may have other suggestions. All this
+sort of thing surely has been worked out before with protocols such
+as FTP.
+
+Alan
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000353.html">[OAI-implementers] Support for Tim Cole's comments
+</A></li>
+	<LI> Next message: <A HREF="000355.html">[OAI-implementers] Support for Tim Cole's comments
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#354">[ date ]</a>
+              <a href="thread.html#354">[ thread ]</a>
+              <a href="subject.html#354">[ subject ]</a>
+              <a href="author.html#354">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

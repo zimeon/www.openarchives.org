@@ -1,0 +1,635 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XSD file for qualified DC
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:herbertv%40lanl.gov">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000525.html">
+   <LINK REL="Next"  HREF="000528.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XSD file for qualified DC
+   </H1>
+    <B>herbert van de sompel
+    </B> 
+    <A HREF="mailto:herbertv%40lanl.gov"
+       TITLE="[OAI-implementers] XSD file for qualified DC">herbertv@lanl.gov
+       </A><BR>
+    <I>Tue, 18 Jun 2002 09:32:54 -0600</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000525.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+        <LI> Next message: <A HREF="000528.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#526">[ date ]</a>
+              <a href="thread.html#526">[ thread ]</a>
+              <a href="subject.html#526">[ subject ]</a>
+              <a href="author.html#526">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+--------------F8A0500043BC647AD6F9C99A
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+hi all,
+
+Let me try to summarize:
+
+1. In the context of the OAI-PMH, it would make a lot of sense to treat
+citations as a parallel metadata format.  The unqualified DC record describes
+the &quot;paper&quot;, whereas another record (under the same item) describes all the
+citations made in the &quot;paper&quot;.  That is what Carl suggested in his mail.  And
+that is the approach that Stevan Harnad and I discussed at last year's
+OAI-related conference in Geneva.  This approach makes sense in that it is
+extensible: it allows other stuff related to the &quot;paper&quot; (for instance usage
+logs, certification metadata, preservation metadata, etc.) to be treated in yet
+other parallel records under the same item.
+
+2. When it comes to choosing a &quot;metadata format&quot; to describe those citations,
+looking at OpenURL makes a lot of sense.  Not only because it is becoming a
+standard, but because its purpose really IS to describe stuff (read &quot;citations&quot;
+in this context) by building on a broad range of identifier-namespaces and a
+multitude of metadata formats.  Moreover, OpenURL allows not only for the
+description of a &quot;citation&quot; but (optionally) also of entities that make up the
+context in which the &quot;citation&quot; appears.  That is very significant when thinking
+about the possibility of open linking at the level of OAI service providers.
+And it is significant when thinking of using &quot;OpenURL&quot; as a parallel metadata
+format, as it allows the citation to remain attached to the thing in which it is
+cited.
+
+Last weekend, I have been working on an XML encoding that I hope will find its
+way into the OpenURL standard (I X my fingers).  The thing being encoded is the
+context-object.  That is the thing described in the Bison-Fute paper
+(<A HREF="http://www.dlib.org/dlib/july01/vandesompel/07vandesompel.html">http://www.dlib.org/dlib/july01/vandesompel/07vandesompel.html</A>), that contains
+descriptions of the &quot;cited thing&quot; (referent in OpenURL terminology), the
+referring-entity (the thing in which the citation is made), the referrer (the
+system that provides the description of the referent), etc.  Several
+context-objects (read contextual descriptions of cited things) can be bundled in
+a context-container.  that context-container might be the parallel metadata
+format in which citations could be bundled for OAI-PMH.  the context-container
+format is fomalized by means of an XML Schema at
+<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd</A> (experimental!).
+
+Let's take the following example:
+
+The D-Lib Magazine paper:
+
+(a) Van de Sompel, Herbert and Oren Beit-Arie. 2001. &quot;Open Linking in the
+Scholarly Information Environment Using the OpenURL Framework.&quot; D-Lib Magazine.
+7(3). &lt;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html</A>&gt; &lt;doi
+10.1045/march2001-vandesompel&gt;
+
+Cites:
+
+(b) Caplan, Priscilla and Arms, William Y. 1999. Reference Linking for Journal
+Articles. D-Lib Magazine. 5(7/8).
+&lt;<A HREF="http://www.dlib.org/dlib/july99/caplan/07caplan.html">http://www.dlib.org/dlib/july99/caplan/07caplan.html</A>&gt; &lt;doi
+10.1045/july99-caplan&gt;
+
+(c) Van de Sompel, Herbert and Hochstenbach, Patrick. 1999b. Reference Linking
+in a Hybrid Library Environment. Part 2:SFX, a Generic
+  Linking Solution. D-Lib Magazine. 5(4).
+&lt;<A HREF="http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html">http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html</A>&gt; &lt;doi
+10.1045/april99-van_de_sompel-pt2&gt;
+
+In OpenURL terminology:
+- paper (b) is a referent
+- paper (c) is a referent
+- paper (a) is a referring-entity (it references a and b)
+- D-Lib Magazine is the referrer, as in this example it provides the &quot;OpenURL&quot;
+
+Using the context-container encoding, the above citations could be rendered as
+follows:
+
+Version 1
+======
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;context-container xmlns=&quot;<A HREF="http://www.niso.org/context-object"">http://www.niso.org/context-object&quot;</A>
+
+xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>
+
+xsi:schemaLocation=&quot;<A HREF="http://www.niso.org/context-object">http://www.niso.org/context-object</A>
+
+<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd"">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&quot;</A>
+                             timestamp=&quot;2002-06-14&quot; version=&quot;Z39.nn-xml&quot;&gt;
+&lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+  &lt;referent&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/july99-caplan&lt;/id&gt;
+    &lt;id type=&quot;uri&quot;&gt;<A HREF="http://www.dlib.org/dlib/july99/caplan/07caplan.html</id">http://www.dlib.org/dlib/july99/caplan/07caplan.html&lt;/id</A>&gt;
+    &lt;metadata&gt;
+      &lt;ja:jarticle xmlns:ja=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/"">http://www.niso.org/OpenURL/jarticle/&quot;</A>
+                       xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>
+                       xsi:schemaLocation=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/">http://www.niso.org/OpenURL/jarticle/</A>
+
+                       <A HREF="http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd"">http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd&quot;</A>&gt;
+        &lt;ja:ISSN&gt;10829873&lt;/ja:ISSN&gt;
+        &lt;ja:volume&gt;5&lt;/ja:volume&gt;
+        &lt;ja:issue&gt;7/8&lt;/ja:issue&gt;
+        &lt;ja:aulast&gt;caplan&lt;/ja:aulast&gt;
+        &lt;ja:aufirst&gt;priscilla&lt;/ja:aufirst&gt;
+        &lt;ja:atitle&gt;Reference Linking for Journal Articles&lt;/ja:atitle&gt;
+        &lt;/ja:jarticle&gt;
+    &lt;/metadata&gt;
+  &lt;/referent&gt;
+  &lt;referrer&gt;
+    &lt;id type=&quot;openurl&quot;&gt;dbid:dlib.org:D-Lib Magazine&lt;/id&gt;
+  &lt;/referrer&gt;
+  &lt;referring-entity&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&lt;/id&gt;
+    &lt;id
+type=&quot;uri&quot;&gt;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html</id">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&lt;/id</A>&gt;
+  &lt;/referring-entity&gt;
+&lt;/context-object&gt;
+&lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+  &lt;referent&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/april99-van_de_sompel-pt2&lt;/id&gt;
+    &lt;id
+type=&quot;uri&quot;&gt;<A HREF="http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html</id">http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html&lt;/id</A>&gt;
+
+    &lt;metadata&gt;
+      &lt;ja:jarticle xmlns:ja=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/"">http://www.niso.org/OpenURL/jarticle/&quot;</A>
+                       xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>
+                       xsi:schemaLocation=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/">http://www.niso.org/OpenURL/jarticle/</A>
+
+                       <A HREF="http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd"">http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd&quot;</A>&gt;
+        &lt;ja:ISSN&gt;10829873&lt;/ja:ISSN&gt;
+        &lt;ja:volume&gt;5&lt;/ja:volume&gt;
+        &lt;ja:issue&gt;4&lt;/ja:issue&gt;
+        &lt;ja:aulast&gt;van de sompel&lt;/ja:aulast&gt;
+        &lt;ja:aufirst&gt;herbert&lt;/ja:aufirst&gt;
+        &lt;ja:atitle&gt;Reference Linking in a Hybrid Library Environment. Part
+2:SFX, a Generic Linking Solution&lt;/ja:atitle&gt;
+        &lt;/ja:jarticle&gt;
+    &lt;/metadata&gt;
+  &lt;/referent&gt;
+  &lt;referrer&gt;
+    &lt;id type=&quot;openurl&quot;&gt;dbid:dlib.org:D-Lib Magazine&lt;/id&gt;
+  &lt;/referrer&gt;
+  &lt;referring-entity&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&lt;/id&gt;
+    &lt;id
+type=&quot;uri&quot;&gt;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html</id">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&lt;/id</A>&gt;
+  &lt;/referring-entity&gt;
+&lt;/context-object&gt;
+&lt;/context-container&gt;
+
+The same 2 citations could be rendered in a much shorter way:
+
+Version 2
+======
+
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;context-container xmlns=&quot;<A HREF="http://www.niso.org/context-object"">http://www.niso.org/context-object&quot;</A>
+
+xmlns:xsi=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>
+
+xsi:schemaLocation=&quot;<A HREF="http://www.niso.org/context-object">http://www.niso.org/context-object</A>
+
+<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd"">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&quot;</A>
+                             timestamp=&quot;2002-06-14&quot; version=&quot;Z39.nn-xml&quot;&gt;
+&lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+  &lt;referent&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/july99-caplan&lt;/id&gt;
+  &lt;/referent&gt;
+  &lt;referring-entity&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&lt;/id&gt;
+  &lt;/referring-entity&gt;
+&lt;/context-object&gt;
+&lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+  &lt;referent&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/april99-van_de_sompel-pt2&lt;/id&gt;
+  &lt;/referent&gt;
+  &lt;referring-entity&gt;
+    &lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&lt;/id&gt;
+  &lt;/referring-entity&gt;
+&lt;/context-object&gt;
+&lt;/context-container&gt;
+
+greetings
+
+herbert
+
+Ann Apps wrote:
+
+&gt;<i> Carl, Herbert,
+</I>&gt;<i>
+</I>&gt;<i> I agree with Carl's proposal here. But I think that any XML schemas
+</I>&gt;<i> to cover citations should be based on the work Herbert is doing for
+</I>&gt;<i> OpenURL, rather than more of us cooking something up. Otherwise
+</I>&gt;<i> we would be in danger of duplicating effort again, and OpenURL is
+</I>&gt;<i> heading towards standardisation. Then we could include citation
+</I>&gt;<i> information within an openurl namespace in OAI-PMH, so we could
+</I>&gt;<i> have something like:
+</I>&gt;<i>
+</I>&gt;<i> &lt;dcterms:citation&gt;
+</I>&gt;<i>   &lt;openurl:jtitle&gt;Lecture Notes in Computer Science&lt;/openurl:jtitle&gt;
+</I>&gt;<i>   &lt;openurl:atitle&gt;Dublin Core Metadata for Electronic
+</I>&gt;<i> Journals&lt;/openurl:atitle&gt;
+</I>&gt;<i>   &lt;openurl:aulast&gt;Apps&lt;/openurl:aulast&gt;
+</I>&gt;<i>     etc
+</I>&gt;<i>   &lt;openurl:admin_ver&gt;Z39.XX-NN&lt;/openurl:admin_ver&gt;
+</I>&gt;<i> &lt;/dcterms:citation&gt;
+</I>&gt;<i>
+</I>&gt;<i> or wrapped by &lt;dcterms:references&gt; for references [and making
+</I>&gt;<i> assumptions about dcterms:citation, otherwise wrapped by
+</I>&gt;<i> dc:identifier]
+</I>&gt;<i>
+</I>&gt;<i> Herbert, please correct me if I have got this wrong! I assume we
+</I>&gt;<i> could use an OpenURL namspace before it becomes a 'real'
+</I>&gt;<i> standard. And that we can do this as part of OpenURL version 1.0
+</I>&gt;<i> (because it would not have a resolver).
+</I>&gt;<i>
+</I>&gt;<i> If we utilise an OpenURL schema, we can immediately do citations
+</I>&gt;<i> for more than just journal articles, such as conference papers,
+</I>&gt;<i> books and parts, patents, etc.
+</I>&gt;<i>
+</I>&gt;<i> I think it would still need some agreement with DCMI, that the
+</I>&gt;<i> OpenURL schema could be used within the particular DC
+</I>&gt;<i> elements, but hopefully this would be acceptable because it
+</I>&gt;<i> doesn't depend on a DC structured value. [However I do still
+</I>&gt;<i> advocate a DCSV for the literal string citation, being less cryptic
+</I>&gt;<i> than OpenURL for human reading, but that is outside the scope of
+</I>&gt;<i> OAI.]
+</I>&gt;<i>
+</I>&gt;<i> Best wishes,
+</I>&gt;<i>         Ann
+</I>&gt;<i>
+</I>&gt;<i> Subject:                RE: [OAI-implementers] XSD file for qualified DC
+</I>&gt;<i> Date sent:              Thu, 13 Jun 2002 14:53:48 -0400
+</I>&gt;<i> From:                   &quot;Carl Lagoze&quot; &lt;<A HREF="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt;
+</I>&gt;<i> To:                     &lt;<A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>&gt;,
+</I>&gt;<i>         &quot;Tim Brody&quot; &lt;<A HREF="mailto:tim@tim.brody.btinternet.co.uk">tim@tim.brody.btinternet.co.uk</A>&gt;
+</I>&gt;<i> Copies to:              &lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+</I>&gt;<i>
+</I>&gt;<i> &gt; Interesting discussions from all.  As Herbert points out in another
+</I>&gt;<i> &gt; mail, this is an opportunity for some interesting cooperative work.  I
+</I>&gt;<i> &gt; think we all agree that 'citation-type' metadata is useful.  Tim's
+</I>&gt;<i> &gt; example at
+</I>&gt;<i> &gt; <A HREF="http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&metadataPrefix=">http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&amp;metadataPrefix=</A>
+</I>&gt;<i> &gt; dcq&amp;identifier=oai:arXiv:hep-th/0102001 demonstrates how one might
+</I>&gt;<i> &gt; make available for harvesting not only the citation data for a
+</I>&gt;<i> &gt; resource but its list of references.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; My personal perspective is that trying to shoehorn these requirments
+</I>&gt;<i> &gt; into the DC element structure is probably the wrong approach.  It
+</I>&gt;<i> &gt; relies on a notion of DC Structured Values, the status of which is
+</I>&gt;<i> &gt; pretty uncertain with in DCMI and for which there is no well-defined
+</I>&gt;<i> &gt; data model. It also seems to take the approach of DC as a root format
+</I>&gt;<i> &gt; on which to build further expressive structrues, rather than as one
+</I>&gt;<i> &gt; metadata format among many. Wouldn't a better approach be to exploit
+</I>&gt;<i> &gt; the reality we now have realized in OAI: that is, availability of
+</I>&gt;<i> &gt; multiple parallel metadata formats?  SHouldn't citation and reference
+</I>&gt;<i> &gt; metadata be packaged as a metadata format parallel to DC (qualified or
+</I>&gt;<i> &gt; unqualified)?  Sure there is some duplication of information with DC
+</I>&gt;<i> &gt; (e.g., yes a citation has a title) but, taking the view that the
+</I>&gt;<i> &gt; metadata format exposed for harvesting is just a database view, I
+</I>&gt;<i> &gt; don't think that this is really a relevant argument.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; So, a proposal.  Let's move this reference/citations metadata
+</I>&gt;<i> &gt; requirement out from under the notion of 'application profile' for DC
+</I>&gt;<i> &gt; or qualifiers for DC and see if there can be some agreement on a good
+</I>&gt;<i> &gt; XML schema (profile) for making this information harvestable via
+</I>&gt;<i> &gt; OAI-PMH.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Probably if people like Tim and Ann put there heads together on this,
+</I>&gt;<i> &gt; possibly with the contributions of Simeon Warner and Thomas Krickel,
+</I>&gt;<i> &gt; we could come up with something that could fit into a revised version
+</I>&gt;<i> &gt; of the OAI implementation guidelines document.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Carl
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Carl Lagoze
+</I>&gt;<i> &gt; Senior Research Associate, Computing and Information Science, Cornell
+</I>&gt;<i> &gt; University Director of Technology, National Science Digital Library
+</I>&gt;<i> &gt; Open Archives Initiative Executive Upson Hall Ithaca, NY 14853 Phone:
+</I>&gt;<i> &gt; 607-255-6046 FAX: 607-255-4428 URL: <A HREF="http://www.cs.cornell.edu/lagoze">http://www.cs.cornell.edu/lagoze</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> --------------------------------------------------------------------------
+</I>&gt;<i> Mrs. Ann Apps. Senior Analyst - Research &amp; Development, MIMAS,
+</I>&gt;<i>      University of Manchester, Oxford Road, Manchester, M13 9PL, UK
+</I>&gt;<i> Tel: +44 (0) 161 275 6039    Fax: +44 (0) 0161 275 6040
+</I>&gt;<i> Email: <A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>  WWW: <A HREF="http://epub.mimas.ac.uk/ann.html">http://epub.mimas.ac.uk/ann.html</A>
+</I>&gt;<i> --------------------------------------------------------------------------
+</I>
+--
+Herbert Van de Sompel
+digital library research &amp; prototyping
+Los Alamos National Laboratory - Research Library
++ 1 (505) 667 1267 / <A HREF="http://lib-www.lanl.gov/~herbertv/">http://lib-www.lanl.gov/~herbertv/</A>
+
+objects on mirror sites are closer than they appear
+
+
+--------------F8A0500043BC647AD6F9C99A
+Content-Type: text/html; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+&lt;!doctype html public &quot;-//w3c//dtd html 4.0 transitional//en&quot;&gt;
+&lt;html&gt;
+hi all,
+&lt;p&gt;Let me try to summarize:
+&lt;p&gt;1. In the context of the OAI-PMH, it would make a lot of sense to treat
+citations as a parallel metadata format.&amp;nbsp; The unqualified DC record
+describes the &quot;paper&quot;, whereas another record (under the same item) describes
+all the citations made in the &quot;paper&quot;.&amp;nbsp; That is what Carl suggested
+in his mail.&amp;nbsp; And that is the approach that Stevan Harnad and I discussed
+at last year's OAI-related conference in Geneva.&amp;nbsp; This approach makes
+sense in that it is extensible: it allows other stuff related to the &quot;paper&quot;
+(for instance usage logs, certification metadata, preservation metadata,
+etc.) to be treated in yet other parallel records under the same item.
+&lt;p&gt;2. When it comes to choosing a &quot;metadata format&quot; to describe those citations,
+looking at OpenURL makes a lot of sense.&amp;nbsp; Not only because it is becoming
+a standard, but because its purpose really IS to describe stuff (read &quot;citations&quot;
+in this context) by building on a broad range of identifier-namespaces
+and a multitude of metadata formats.&amp;nbsp; Moreover, OpenURL allows not
+only for the description of a &quot;citation&quot; but (optionally) also of entities
+that make up the context in which the &quot;citation&quot; appears.&amp;nbsp; That is
+very significant when thinking about the possibility of open linking at
+the level of OAI service providers.&amp;nbsp; And it is significant when thinking
+of using &quot;OpenURL&quot; as a parallel metadata format, as it allows the citation
+to remain attached to the thing in which it is cited.
+&lt;p&gt;Last weekend, I have been working on an XML encoding that I hope will
+find its way into the OpenURL standard (I X my fingers).&amp;nbsp; The thing
+being encoded is the context-object.&amp;nbsp; That is the thing described
+in the Bison-Fute paper (&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/july01/vandesompel/07vandesompel.html"">http://www.dlib.org/dlib/july01/vandesompel/07vandesompel.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/july01/vandesompel/07vandesompel.html</A">http://www.dlib.org/dlib/july01/vandesompel/07vandesompel.html&lt;/A</A>&gt;),
+that contains descriptions of the &quot;cited thing&quot; (referent in OpenURL terminology),
+the referring-entity (the thing in which the citation is made), the referrer
+(the system that provides the description of the referent), etc.&amp;nbsp;
+Several context-objects (read contextual descriptions of cited things)
+can be bundled in a context-container.&amp;nbsp; that context-container might
+be the parallel metadata format in which citations could be bundled for
+OAI-PMH.&amp;nbsp; the context-container format is fomalized by means of an
+XML Schema at &lt;A HREF=&quot;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd"">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&quot;</A>&gt;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd</A">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&lt;/A</A>&gt;
+(experimental!).
+&lt;p&gt;Let's take the following example:
+&lt;p&gt;The D-Lib Magazine paper:
+&lt;p&gt;(a) Van de Sompel, Herbert and Oren Beit-Arie. 2001. &quot;Open Linking in
+the Scholarly Information Environment Using the OpenURL Framework.&quot; D-Lib
+Magazine. 7(3). &amp;lt;&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html"">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html</A">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&lt;/A</A>&gt;&gt;
+&amp;lt;doi 10.1045/march2001-vandesompel&gt;
+&lt;p&gt;Cites:
+&lt;p&gt;(b) Caplan, Priscilla and Arms, William Y. 1999. Reference Linking for
+Journal Articles. D-Lib Magazine. 5(7/8). &amp;lt;&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/july99/caplan/07caplan.html"">http://www.dlib.org/dlib/july99/caplan/07caplan.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/july99/caplan/07caplan.html</A">http://www.dlib.org/dlib/july99/caplan/07caplan.html&lt;/A</A>&gt;&gt;
+&amp;lt;doi 10.1045/july99-caplan&gt;
+&lt;p&gt;(c) Van de Sompel, Herbert and Hochstenbach, Patrick. 1999b. Reference
+Linking in a Hybrid Library Environment. Part 2:SFX, a Generic
+&lt;br&gt;&amp;nbsp; Linking Solution. D-Lib Magazine. 5(4). &amp;lt;&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html"">http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html</A">http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html&lt;/A</A>&gt;&gt;
+&amp;lt;doi 10.1045/april99-van_de_sompel-pt2&gt;
+&lt;p&gt;In OpenURL terminology:
+&lt;br&gt;- paper (b) is a referent
+&lt;br&gt;- paper (c) is a referent
+&lt;br&gt;- paper (a) is a referring-entity (it references a and b)
+&lt;br&gt;- D-Lib Magazine is the referrer, as in this example it provides the
+&quot;OpenURL&quot;
+&lt;p&gt;Using the context-container encoding, the above citations could be rendered
+as follows:
+&lt;p&gt;Version 1
+&lt;br&gt;======
+&lt;p&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;br&gt;&amp;lt;context-container xmlns=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/context-object"">http://www.niso.org/context-object&quot;</A>&gt;<A HREF="http://www.niso.org/context-object</A">http://www.niso.org/context-object&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xmlns:xsi=&quot;&lt;A HREF=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>&gt;<A HREF="http://www.w3.org/2001/XMLSchema-instance</A">http://www.w3.org/2001/XMLSchema-instance&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xsi:schemaLocation=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/context-object"">http://www.niso.org/context-object&quot;</A>&gt;<A HREF="http://www.niso.org/context-object</A">http://www.niso.org/context-object&lt;/A</A>&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;A HREF=&quot;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd"">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&quot;</A>&gt;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd</A">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+timestamp=&quot;2002-06-14&quot; version=&quot;Z39.nn-xml&quot;&gt;
+&lt;br&gt;&amp;lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referent&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/july99-caplan&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;uri&quot;&gt;&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/july99/caplan/07caplan.html"">http://www.dlib.org/dlib/july99/caplan/07caplan.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/july99/caplan/07caplan.html</A">http://www.dlib.org/dlib/july99/caplan/07caplan.html&lt;/A</A>&gt;&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;metadata&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:jarticle xmlns:ja=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/"">http://www.niso.org/OpenURL/jarticle/&quot;</A>&gt;<A HREF="http://www.niso.org/OpenURL/jarticle/</A">http://www.niso.org/OpenURL/jarticle/&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xmlns:xsi=&quot;&lt;A HREF=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>&gt;<A HREF="http://www.w3.org/2001/XMLSchema-instance</A">http://www.w3.org/2001/XMLSchema-instance&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xsi:schemaLocation=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/"">http://www.niso.org/OpenURL/jarticle/&quot;</A>&gt;<A HREF="http://www.niso.org/OpenURL/jarticle/</A">http://www.niso.org/OpenURL/jarticle/&lt;/A</A>&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;A HREF=&quot;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd"">http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd&quot;</A>&gt;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd</A">http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd&lt;/A</A>&gt;&quot;&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:ISSN&gt;10829873&amp;lt;/ja:ISSN&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:volume&gt;5&amp;lt;/ja:volume&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:issue&gt;7/8&amp;lt;/ja:issue&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:aulast&gt;caplan&amp;lt;/ja:aulast&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:aufirst&gt;priscilla&amp;lt;/ja:aufirst&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:atitle&gt;Reference
+Linking for Journal Articles&amp;lt;/ja:atitle&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/ja:jarticle&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/metadata&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referent&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referrer&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;dbid:dlib.org:D-Lib Magazine&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referrer&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referring-entity&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;uri&quot;&gt;&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html"">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html</A">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&lt;/A</A>&gt;&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referring-entity&gt;
+&lt;br&gt;&amp;lt;/context-object&gt;
+&lt;br&gt;&amp;lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referent&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/april99-van_de_sompel-pt2&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;uri&quot;&gt;&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html"">http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html</A">http://www.dlib.org/dlib/april99/van_de_sompel/04van_de_sompel-pt2.html&lt;/A</A>&gt;&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;metadata&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:jarticle xmlns:ja=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/"">http://www.niso.org/OpenURL/jarticle/&quot;</A>&gt;<A HREF="http://www.niso.org/OpenURL/jarticle/</A">http://www.niso.org/OpenURL/jarticle/&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xmlns:xsi=&quot;&lt;A HREF=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>&gt;<A HREF="http://www.w3.org/2001/XMLSchema-instance</A">http://www.w3.org/2001/XMLSchema-instance&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xsi:schemaLocation=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/OpenURL/jarticle/"">http://www.niso.org/OpenURL/jarticle/&quot;</A>&gt;<A HREF="http://www.niso.org/OpenURL/jarticle/</A">http://www.niso.org/OpenURL/jarticle/&lt;/A</A>&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;A HREF=&quot;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd"">http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd&quot;</A>&gt;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd</A">http://lib-www.lanl.gov/~herbertv/niso/jarticle.xsd&lt;/A</A>&gt;&quot;&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:ISSN&gt;10829873&amp;lt;/ja:ISSN&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:volume&gt;5&amp;lt;/ja:volume&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:issue&gt;4&amp;lt;/ja:issue&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:aulast&gt;van de sompel&amp;lt;/ja:aulast&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:aufirst&gt;herbert&amp;lt;/ja:aufirst&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;ja:atitle&gt;Reference
+Linking in a Hybrid Library Environment. Part 2:SFX, a Generic Linking
+Solution&amp;lt;/ja:atitle&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/ja:jarticle&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;/metadata&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referent&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referrer&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;dbid:dlib.org:D-Lib Magazine&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referrer&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referring-entity&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;uri&quot;&gt;&lt;A HREF=&quot;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html"">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&quot;</A>&gt;<A HREF="http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html</A">http://www.dlib.org/dlib/march01/vandesompel/03vandesompel.html&lt;/A</A>&gt;&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referring-entity&gt;
+&lt;br&gt;&amp;lt;/context-object&gt;
+&lt;br&gt;&amp;lt;/context-container&gt;
+&lt;p&gt;The same 2 citations could be rendered in a much shorter way:
+&lt;p&gt;Version 2
+&lt;br&gt;======
+&lt;p&gt;&amp;lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
+&lt;br&gt;&amp;lt;context-container xmlns=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/context-object"">http://www.niso.org/context-object&quot;</A>&gt;<A HREF="http://www.niso.org/context-object</A">http://www.niso.org/context-object&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xmlns:xsi=&quot;&lt;A HREF=&quot;<A HREF="http://www.w3.org/2001/XMLSchema-instance"">http://www.w3.org/2001/XMLSchema-instance&quot;</A>&gt;<A HREF="http://www.w3.org/2001/XMLSchema-instance</A">http://www.w3.org/2001/XMLSchema-instance&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+xsi:schemaLocation=&quot;&lt;A HREF=&quot;<A HREF="http://www.niso.org/context-object"">http://www.niso.org/context-object&quot;</A>&gt;<A HREF="http://www.niso.org/context-object</A">http://www.niso.org/context-object&lt;/A</A>&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;A HREF=&quot;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd"">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&quot;</A>&gt;<A HREF="http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd</A">http://lib-www.lanl.gov/~herbertv/niso/context-container.xsd&lt;/A</A>&gt;&quot;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+timestamp=&quot;2002-06-14&quot; version=&quot;Z39.nn-xml&quot;&gt;
+&lt;br&gt;&amp;lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referent&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/july99-caplan&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referent&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referring-entity&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referring-entity&gt;
+&lt;br&gt;&amp;lt;/context-object&gt;
+&lt;br&gt;&amp;lt;context-object timestamp=&quot;2002-06-14T12:13:00Z&quot;&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referent&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/april99-van_de_sompel-pt2&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referent&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;referring-entity&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &amp;lt;id type=&quot;openurl&quot;&gt;doi:10.1045/march2001-vandesompel&amp;lt;/id&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;/referring-entity&gt;
+&lt;br&gt;&amp;lt;/context-object&gt;
+&lt;br&gt;&amp;lt;/context-container&gt;
+&lt;p&gt;greetings
+&lt;p&gt;herbert
+&lt;p&gt;Ann Apps wrote:
+&lt;blockquote TYPE=CITE&gt;Carl, Herbert,
+&lt;p&gt;I agree with Carl's proposal here. But I think that any XML schemas
+&lt;br&gt;to cover citations should be based on the work Herbert is doing for
+&lt;br&gt;OpenURL, rather than more of us cooking something up. Otherwise
+&lt;br&gt;we would be in danger of duplicating effort again, and OpenURL is
+&lt;br&gt;heading towards standardisation. Then we could include citation
+&lt;br&gt;information within an openurl namespace in OAI-PMH, so we could
+&lt;br&gt;have something like:
+&lt;p&gt;&amp;lt;dcterms:citation&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;openurl:jtitle&gt;Lecture Notes in Computer Science&amp;lt;/openurl:jtitle&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;openurl:atitle&gt;Dublin Core Metadata for Electronic
+&lt;br&gt;Journals&amp;lt;/openurl:atitle&gt;
+&lt;br&gt;&amp;nbsp; &amp;lt;openurl:aulast&gt;Apps&amp;lt;/openurl:aulast&gt;
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; etc
+&lt;br&gt;&amp;nbsp; &amp;lt;openurl:admin_ver&gt;Z39.XX-NN&amp;lt;/openurl:admin_ver&gt;
+&lt;br&gt;&amp;lt;/dcterms:citation&gt;
+&lt;p&gt;or wrapped by &amp;lt;dcterms:references&gt; for references [and making
+&lt;br&gt;assumptions about dcterms:citation, otherwise wrapped by
+&lt;br&gt;dc:identifier]
+&lt;p&gt;Herbert, please correct me if I have got this wrong! I assume we
+&lt;br&gt;could use an OpenURL namspace before it becomes a 'real'
+&lt;br&gt;standard. And that we can do this as part of OpenURL version 1.0
+&lt;br&gt;(because it would not have a resolver).
+&lt;p&gt;If we utilise an OpenURL schema, we can immediately do citations
+&lt;br&gt;for more than just journal articles, such as conference papers,
+&lt;br&gt;books and parts, patents, etc.
+&lt;p&gt;I think it would still need some agreement with DCMI, that the
+&lt;br&gt;OpenURL schema could be used within the particular DC
+&lt;br&gt;elements, but hopefully this would be acceptable because it
+&lt;br&gt;doesn't depend on a DC structured value. [However I do still
+&lt;br&gt;advocate a DCSV for the literal string citation, being less cryptic
+&lt;br&gt;than OpenURL for human reading, but that is outside the scope of
+&lt;br&gt;OAI.]
+&lt;p&gt;Best wishes,
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; Ann
+&lt;p&gt;Subject:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+RE: [OAI-implementers] XSD file for qualified DC
+&lt;br&gt;Date sent:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+Thu, 13 Jun 2002 14:53:48 -0400
+&lt;br&gt;From:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&quot;Carl Lagoze&quot; &amp;lt;<A HREF="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt;
+&lt;br&gt;To:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&amp;lt;<A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>&gt;,
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &quot;Tim Brody&quot; &amp;lt;<A HREF="mailto:tim@tim.brody.btinternet.co.uk">tim@tim.brody.btinternet.co.uk</A>&gt;
+&lt;br&gt;Copies to:&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&amp;lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+&lt;p&gt;&gt; Interesting discussions from all.&amp;nbsp; As Herbert points out in another
+&lt;br&gt;&gt; mail, this is an opportunity for some interesting cooperative work.&amp;nbsp;
+I
+&lt;br&gt;&gt; think we all agree that 'citation-type' metadata is useful.&amp;nbsp;
+Tim's
+&lt;br&gt;&gt; example at
+&lt;br&gt;&gt; &lt;a href=&quot;<A HREF="http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&metadataPrefix="">http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&amp;metadataPrefix=&quot;</A>&gt;<A HREF="http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&amp;metadataPrefix=</a">http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&amp;amp;metadataPrefix=&lt;/a</A>&gt;
+&lt;br&gt;&gt; dcq&amp;amp;identifier=oai:arXiv:hep-th/0102001 demonstrates how one
+might
+&lt;br&gt;&gt; make available for harvesting not only the citation data for a
+&lt;br&gt;&gt; resource but its list of references.
+&lt;br&gt;&gt;
+&lt;br&gt;&gt; My personal perspective is that trying to shoehorn these requirments
+&lt;br&gt;&gt; into the DC element structure is probably the wrong approach.&amp;nbsp;
+It
+&lt;br&gt;&gt; relies on a notion of DC Structured Values, the status of which is
+&lt;br&gt;&gt; pretty uncertain with in DCMI and for which there is no well-defined
+&lt;br&gt;&gt; data model. It also seems to take the approach of DC as a root format
+&lt;br&gt;&gt; on which to build further expressive structrues, rather than as one
+&lt;br&gt;&gt; metadata format among many. Wouldn't a better approach be to exploit
+&lt;br&gt;&gt; the reality we now have realized in OAI: that is, availability of
+&lt;br&gt;&gt; multiple parallel metadata formats?&amp;nbsp; SHouldn't citation and
+reference
+&lt;br&gt;&gt; metadata be packaged as a metadata format parallel to DC (qualified
+or
+&lt;br&gt;&gt; unqualified)?&amp;nbsp; Sure there is some duplication of information
+with DC
+&lt;br&gt;&gt; (e.g., yes a citation has a title) but, taking the view that the
+&lt;br&gt;&gt; metadata format exposed for harvesting is just a database view, I
+&lt;br&gt;&gt; don't think that this is really a relevant argument.
+&lt;br&gt;&gt;
+&lt;br&gt;&gt; So, a proposal.&amp;nbsp; Let's move this reference/citations metadata
+&lt;br&gt;&gt; requirement out from under the notion of 'application profile' for
+DC
+&lt;br&gt;&gt; or qualifiers for DC and see if there can be some agreement on a
+good
+&lt;br&gt;&gt; XML schema (profile) for making this information harvestable via
+&lt;br&gt;&gt; OAI-PMH.
+&lt;br&gt;&gt;
+&lt;br&gt;&gt; Probably if people like Tim and Ann put there heads together on this,
+&lt;br&gt;&gt; possibly with the contributions of Simeon Warner and Thomas Krickel,
+&lt;br&gt;&gt; we could come up with something that could fit into a revised version
+&lt;br&gt;&gt; of the OAI implementation guidelines document.
+&lt;br&gt;&gt;
+&lt;br&gt;&gt; Carl
+&lt;br&gt;&gt;
+&lt;br&gt;&gt; Carl Lagoze
+&lt;br&gt;&gt; Senior Research Associate, Computing and Information Science, Cornell
+&lt;br&gt;&gt; University Director of Technology, National Science Digital Library
+&lt;br&gt;&gt; Open Archives Initiative Executive Upson Hall Ithaca, NY 14853 Phone:
+&lt;br&gt;&gt; 607-255-6046 FAX: 607-255-4428 URL: &lt;a href=&quot;<A HREF="http://www.cs.cornell.edu/lagoze"">http://www.cs.cornell.edu/lagoze&quot;</A>&gt;<A HREF="http://www.cs.cornell.edu/lagoze</a">http://www.cs.cornell.edu/lagoze&lt;/a</A>&gt;
+&lt;br&gt;&gt;
+&lt;p&gt;--------------------------------------------------------------------------
+&lt;br&gt;Mrs. Ann Apps. Senior Analyst - Research &amp;amp; Development, MIMAS,
+&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; University of Manchester, Oxford Road, Manchester,
+M13 9PL, UK
+&lt;br&gt;Tel: +44 (0) 161 275 6039&amp;nbsp;&amp;nbsp;&amp;nbsp; Fax: +44 (0) 0161 275 6040
+&lt;br&gt;Email: <A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>&amp;nbsp; WWW: &lt;a href=&quot;<A HREF="http://epub.mimas.ac.uk/ann.html"">http://epub.mimas.ac.uk/ann.html&quot;</A>&gt;<A HREF="http://epub.mimas.ac.uk/ann.html</a">http://epub.mimas.ac.uk/ann.html&lt;/a</A>&gt;
+&lt;br&gt;--------------------------------------------------------------------------&lt;/blockquote&gt;
+
+&lt;p&gt;--
+&lt;br&gt;Herbert Van de Sompel
+&lt;br&gt;digital library research &amp;amp; prototyping
+&lt;br&gt;Los Alamos National Laboratory - Research Library
+&lt;br&gt;+ 1 (505) 667 1267 / &lt;A HREF=&quot;<A HREF="http://lib-www.lanl.gov/~herbertv/"">http://lib-www.lanl.gov/~herbertv/&quot;</A>&gt;<A HREF="http://lib-www.lanl.gov/~herbertv/</A">http://lib-www.lanl.gov/~herbertv/&lt;/A</A>&gt;
+&lt;p&gt;objects on mirror sites are closer than they appear
+&lt;br&gt;&amp;nbsp;&lt;/html&gt;
+
+--------------F8A0500043BC647AD6F9C99A--
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000525.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+	<LI> Next message: <A HREF="000528.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#526">[ date ]</a>
+              <a href="thread.html#526">[ thread ]</a>
+              <a href="subject.html#526">[ subject ]</a>
+              <a href="author.html#526">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

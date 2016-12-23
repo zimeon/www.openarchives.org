@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] OAI-PMH baseURL discovery
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20OAI-PMH%20baseURL%20discovery&In-Reply-To=Pine.GSO.4.58.0502131503160.4712%40tango.cs.odu.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001408.html">
+   <LINK REL="Next"  HREF="001410.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] OAI-PMH baseURL discovery</H1>
+    <B>Andy Powell</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20OAI-PMH%20baseURL%20discovery&In-Reply-To=Pine.GSO.4.58.0502131503160.4712%40tango.cs.odu.edu"
+       TITLE="[OAI-implementers] OAI-PMH baseURL discovery">a.powell at ukoln.ac.uk
+       </A><BR>
+    <I>Sun Feb 13 16:03:32 EST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001408.html">[OAI-implementers] OAI-PMH baseURL discovery
+</A></li>
+        <LI>Next message: <A HREF="001410.html">[OAI-implementers] OAI-PMH baseURL discovery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1409">[ date ]</a>
+              <a href="thread.html#1409">[ thread ]</a>
+              <a href="subject.html#1409">[ subject ]</a>
+              <a href="author.html#1409">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I agree with your conclusion that it is sensible to adopt both approaches
+#2 and #3.
+
+I'm not sure what mechanisms are available for updating the REP though?
+The REP pages are at
+
+<A HREF="http://www.robotstxt.org/wc/robots.html">http://www.robotstxt.org/wc/robots.html</A>
+
+and the original REP author (I think) is Martijn Koster
+
+<A HREF="http://www.greenhills.co.uk/mak/mak.html">http://www.greenhills.co.uk/mak/mak.html</A>
+
+The spec looks very... err... stable?!
+
+I disagree with your implied preference for using &lt;meta&gt; rather than
+&lt;link&gt;.  In this case, we clearly want to provide a link to another
+resource - therefore the semantics of the &lt;link&gt; tag are much more
+appropriate than the semantics of the &lt;meta&gt; tag.
+
+I also suspect that your suggested use of
+
+OAIPMHbaseURL=&quot;...&quot;
+
+and
+
+OAIPMHrecord=&quot;...&quot;
+
+break the (X)HTML specs (though I haven't checked)?
+
+Andy.
+
+On Sun, 13 Feb 2005, Michael Nelson wrote:
+
+&gt;<i>
+</I>&gt;<i> (this is in response to Andy's mesg:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/pipermail/oai-implementers/2005-February/001407.html">http://www.openarchives.org/pipermail/oai-implementers/2005-February/001407.html</A>)
+</I>&gt;<i>
+</I>&gt;<i> Drawing from our experience with mod_oai, we see at least 4 possible
+</I>&gt;<i> ways for robots to &quot;automatically&quot; discover OAI-PMH baseURLs:
+</I>&gt;<i>
+</I>&gt;<i> 1.  develop a separate file, oaimph.txt, similar in spirit to robots.txt
+</I>&gt;<i>
+</I>&gt;<i> 2.  add to the existing robots.txt file
+</I>&gt;<i>
+</I>&gt;<i> 3.  use HTML link or META tags for robots
+</I>&gt;<i>
+</I>&gt;<i> 4.  use the &lt;friends&gt; component in the Identify response.
+</I>&gt;<i>
+</I>&gt;<i> We do not prefer #1 - a separate file for robots to check seems unlikely
+</I>&gt;<i> to encourage widespread adoption.
+</I>&gt;<i>
+</I>&gt;<i> We prefer #2 because it injects OAI-PMH into the regular web
+</I>&gt;<i> mechanics where it belongs.  Robots already look for this file -
+</I>&gt;<i> why not put OAI-PMH statements where they expect to find guidance?
+</I>&gt;<i> Similarly, a robots.txt file is easy to install and edit (certainly
+</I>&gt;<i> easier than installing most repository software packages), so there
+</I>&gt;<i> will be no additional burden on a repository administrator.
+</I>&gt;<i>
+</I>&gt;<i> #3 can be used in some cases, but it makes an assumption that every
+</I>&gt;<i> repository we would like a robot to find has an HTML presence.  #2 and #3
+</I>&gt;<i> can be used separately since they address separate use cases.
+</I>&gt;<i>
+</I>&gt;<i> #4 is important and needs to be reinforced as a way of repositories
+</I>&gt;<i> &quot;pointing&quot; to each other.  You can't bootstrap baseURL discovery via
+</I>&gt;<i> &lt;friends&gt;, but once a robot knows about a single baseURL, it should be
+</I>&gt;<i> able to assemble a list of cooperating repositories.  No new functionality
+</I>&gt;<i> is needed for &lt;friends&gt;, but the robot scenario increases the importance
+</I>&gt;<i> of its use.
+</I>&gt;<i>
+</I>&gt;<i> robots.txt
+</I>&gt;<i> ----------
+</I>&gt;<i>
+</I>&gt;<i> The &quot;problem&quot; with robots.txt is that the syntax is very simple and is
+</I>&gt;<i> focused on telling robots what they can't do and not on what they should
+</I>&gt;<i> do.  So in addition to having a line such as:
+</I>&gt;<i>
+</I>&gt;<i> OAIPMHbaseURL: <A HREF="http://cs1.ist.psu.edu/cgi-bin/oai.cgi">http://cs1.ist.psu.edu/cgi-bin/oai.cgi</A>
+</I>&gt;<i>
+</I>&gt;<i> We would like to expand the syntax of the &quot;Disalllow:&quot; tag to include
+</I>&gt;<i> alternatives:
+</I>&gt;<i>
+</I>&gt;<i> Disallow: /citations/ OAIPMHbaseURL:
+</I>&gt;<i> <A HREF="http://cs1.ist.psu.edu/cgi-bin/oai.cgi">http://cs1.ist.psu.edu/cgi-bin/oai.cgi</A>
+</I>&gt;<i>
+</I>&gt;<i> Where the 2nd line is the alternate access for how to get at the
+</I>&gt;<i> information prohibited in the Disallow.  Depending on how robust
+</I>&gt;<i> robots are with respect to extended syntax, we could repeat the line
+</I>&gt;<i> in case the extended line is not understood:
+</I>&gt;<i>
+</I>&gt;<i> Disallow: /citations/
+</I>&gt;<i> Disallow: /citations/  OAIPMHbaseURL:
+</I>&gt;<i> <A HREF="http://cs1.ist.psu.edu/cgi-bin/oai.cgi">http://cs1.ist.psu.edu/cgi-bin/oai.cgi</A>
+</I>&gt;<i>
+</I>&gt;<i> HTML Tags for Robots
+</I>&gt;<i> --------------------
+</I>&gt;<i>
+</I>&gt;<i> It would be useful to tie an existing HTML page back to the original
+</I>&gt;<i> OAI-PMH repository from which it came, such as:
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="http://uk.arxiv.org/abs/astro-ph/0502028">http://uk.arxiv.org/abs/astro-ph/0502028</A>
+</I>&gt;<i>
+</I>&gt;<i> having something like:
+</I>&gt;<i>
+</I>&gt;<i> &lt;META NAME=&quot;ROBOTS&quot; OAIPMHbaseURL=&quot;<A HREF="http://www.arxiv.org/oai2&quot;">http://www.arxiv.org/oai2&quot;</A>&gt;
+</I>&gt;<i>
+</I>&gt;<i> It would also be useful to tie the HTML representation back to
+</I>&gt;<i> the structured metadata from which it came:
+</I>&gt;<i>
+</I>&gt;<i> &lt;META NAME=&quot;ROBOTS&quot;
+</I>&gt;<i> OAIPMHrecord=&quot;<A HREF="http://www.arxiv.org/oai2?verb=GetRecord&amp;metad">http://www.arxiv.org/oai2?verb=GetRecord&amp;metad</A>
+</I>&gt;<i> ataPrefix=oai_dc&amp;identifier=oai:arXiv.org:astro-ph/0502028&quot;&gt;
+</I>&gt;<i>
+</I>&gt;<i> &lt;META NAME=&quot;ROBOTS&quot;
+</I>&gt;<i> OAIPMHrecord=&quot;<A HREF="http://www.arxiv.org/oai2?verb=GetRecord&amp;metad">http://www.arxiv.org/oai2?verb=GetRecord&amp;metad</A>
+</I>&gt;<i> ataPrefix=oai_marc&amp;identifier=oai:arXiv.org:astro-ph/0502028&quot;&gt;
+</I>&gt;<i>
+</I>&gt;<i> This is similar to inverse of a DC.Identifier field -- instead of mapping
+</I>&gt;<i> from structured to un/semi-strucutred, it maps from un/semi-strucutred
+</I>&gt;<i> to structured.
+</I>&gt;<i>
+</I>&gt;<i> comments welcome,
+</I>&gt;<i>
+</I>&gt;<i> Michael Nelson &amp; Herbert Van de Sompel
+</I>&gt;<i>
+</I>&gt;<i> ----
+</I>&gt;<i> Michael L. Nelson <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">mln at cs.odu.edu</A> <A HREF="http://www.cs.odu.edu/~mln/">http://www.cs.odu.edu/~mln/</A>
+</I>&gt;<i> Dept of Computer Science, Old Dominion University, Norfolk VA 23529
+</I>&gt;<i> +1 757 683 6393 +1 757 683 4900 (f)
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+Andy
+--
+Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+<A HREF="http://www.ukoln.ac.uk/ukoln/staff/a.powell/">http://www.ukoln.ac.uk/ukoln/staff/a.powell/</A>      +44 1225 383933
+Resource Discovery Network <A HREF="http://www.rdn.ac.uk/">http://www.rdn.ac.uk/</A>
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001408.html">[OAI-implementers] OAI-PMH baseURL discovery
+</A></li>
+	<LI>Next message: <A HREF="001410.html">[OAI-implementers] OAI-PMH baseURL discovery
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1409">[ date ]</a>
+              <a href="thread.html#1409">[ thread ]</a>
+              <a href="subject.html#1409">[ subject ]</a>
+              <a href="author.html#1409">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

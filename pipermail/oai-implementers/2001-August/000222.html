@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Error in Request:GetRecord
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:henry%40stern.ca">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000221.html">
+   <LINK REL="Next"  HREF="000223.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Error in Request:GetRecord
+   </H1>
+    <B>Henry Stern
+    </B> 
+    <A HREF="mailto:henry%40stern.ca"
+       TITLE="[OAI-implementers] Error in Request:GetRecord">henry@stern.ca
+       </A><BR>
+    <I>Sat, 18 Aug 2001 09:34:02 -0300</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000221.html">[OAI-implementers] Error in Request:GetRecord
+</A></li>
+        <LI> Next message: <A HREF="000223.html">[OAI-implementers] SetSpec RegExp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#222">[ date ]</a>
+              <a href="thread.html#222">[ thread ]</a>
+              <a href="subject.html#222">[ subject ]</a>
+              <a href="author.html#222">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>There is a slightly more elegant solution that you can use to encode the
+multi-byte unicode characters.  I'll paste an excerpt from Bert
+Degenhart Drenth's paper &quot;Report on the CIMI XML Dublin Core DTD.&quot;
+
+---
+
+UTF-8 encoding (RFC2044)
+In UTF-8 encoding wide characters, such as 16 bit Unicode are coded as
+multiple single bytes. The most significant bit of the characters is
+playing an important role in the encoding in the following way:
+ 
+1.		ASCII characters in the range of 0 – 127 remain
+unchanged.
+2.		Characters with values higher than 127 start with a
+character that has a number of bits on the left side set to one,
+followed by a single 0 bit. The number of bits that are set to 1
+determine the total number of bytes in the character e.g. 110 means two
+bytes, 1110 means three bytes etc.
+3.		All continuation bytes have their left two bits set to
+‘10’
+4.		The remaining unused bits contain the bits of the
+character, written from left to right.
+ 
+An example:
+ 
+Byte 1		Byte 2
+110 00011	10111100    decodes as     000 1111 1100  (Hexadecimal
+FC or ü)
+(byte one starts with 110, meaning a total of two bytes, byte 2 has the
+left two bits set to 10 meaning that it is a continuation bit, the rest
+contains the ü)
+
+---
+
+Since you use Java (I notice the .jsp extension on your repository), you
+don't even have to worry about this.  When the OutputStreamWriter for
+your response is created, you can tell it which encoding to use.  For
+example:
+
+PrintWriter out = new PrintWriter ( new OutputStreamWriter ( 
+	response.getOutputStream (), &quot;UTF8&quot; ) );
+
+Caveat Emptor:  This approach may eat up your CPU time.  To get around
+it with the repository that I wrote, I stored the DC records as Unicode
+byte-strings in a BLOB in my database.  To correctly write it back out,
+I used a PrintStream with OutputStream.write (byte[], int, int) instead
+of a PrintWriter.
+
+I wish you the best of luck with your thesis!
+
+Kind regards,
+Henry Stern
+
+---
+Flon's Law:
+	There is not now, and never will be, a language in
+	which it is the least bit difficult to write bad programs.
+ 
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="mailto:oai-implementers-admin@oaisrv.nsdl.cornell.edu">oai-implementers-admin@oaisrv.nsdl.cornell.edu</A> 
+</I>&gt;<i> [mailto:<A HREF="mailto:oai-implementers-admin@oaisrv.nsdl.cornell.edu">oai-implementers-admin@oaisrv.nsdl.cornell.edu</A>] On 
+</I>&gt;<i> Behalf Of Hussein Suleman
+</I>&gt;<i> Sent: August 17, 2001 1:28 PM
+</I>&gt;<i> To: NAVA M SANDRA EDITH
+</I>&gt;<i> Cc: <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: Re: [OAI-implementers] Error in Request:GetRecord
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> hi
+</I>&gt;<i> 
+</I>&gt;<i> NAVA M SANDRA EDITH wrote:
+</I>&gt;<i> &gt; now i have a problem with the GetRecord request, i try to use as 
+</I>&gt;<i> &gt; metadata format xml, and i have defined my xml.xsd, but 
+</I>&gt;<i> when i checked 
+</I>&gt;<i> &gt; in Repository Explorer i have an error:
+</I>&gt;<i> 
+</I>&gt;<i> its a very common pitfall ... your XML is in UTF-8 but you 
+</I>&gt;<i> have a Latin-1 entity in your author field ...
+</I>&gt;<i> 
+</I>&gt;<i>   &lt;author&gt;Issa Paola V&amp;aacute;zquez Guti&amp;eacute;rrez&lt;/author&gt;
+</I>&gt;<i> 
+</I>&gt;<i> for maximum portability, it is recommended that you convert 
+</I>&gt;<i> the Latin-1 entities to Unicode (if you use Perl, as part of 
+</I>&gt;<i> my Perl OAI-DP implementation available from the OAI website 
+</I>&gt;<i> there is a Utility.pm module that addresses lots of XML 
+</I>&gt;<i> issues, including this conversion)
+</I>&gt;<i> 
+</I>&gt;<i> ultimately you want to get something like:
+</I>&gt;<i>   &lt;author&gt;Issa Paola V&amp;#x00E1;zquez Guti&amp;#x00E9;rrez&lt;/author&gt;
+</I>&gt;<i> 
+</I>&gt;<i> a cheap alternative is to escape all ampersands to pass the 
+</I>&gt;<i> Latin-1 entities unconverted ... but thats cheating :)
+</I>&gt;<i> 
+</I>&gt;<i> ttfn
+</I>&gt;<i> ----hussein
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> ==============================================================
+</I>&gt;<i> ==========
+</I>&gt;<i> hussein suleman -- <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> -- vtcs -- 
+</I>&gt;<i> <A HREF="http://purl.org/net/hussein">http://purl.org/net/hussein</A> 
+</I>&gt;<i> ==============================================================
+</I>&gt;<i> ==========
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000221.html">[OAI-implementers] Error in Request:GetRecord
+</A></li>
+	<LI> Next message: <A HREF="000223.html">[OAI-implementers] SetSpec RegExp
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#222">[ date ]</a>
+              <a href="thread.html#222">[ thread ]</a>
+              <a href="subject.html#222">[ subject ]</a>
+              <a href="author.html#222">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

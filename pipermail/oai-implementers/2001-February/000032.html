@@ -1,0 +1,302 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] re: ListMetadataFormats problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:thabing%40uiuc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000031.html">
+   <LINK REL="Next"  HREF="000033.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] re: ListMetadataFormats problem
+   </H1>
+    <B>Thomas G. Habing
+    </B> 
+    <A HREF="mailto:thabing%40uiuc.edu"
+       TITLE="[OAI-implementers] re: ListMetadataFormats problem">thabing@uiuc.edu
+       </A><BR>
+    <I>Fri, 09 Feb 2001 16:10:09 -0600</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000031.html">[OAI-implementers] Universal Identifiers
+</A></li>
+        <LI> Next message: <A HREF="000033.html">[OAI-implementers] MARC to Dublin Core Crosswalk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#32">[ date ]</a>
+              <a href="thread.html#32">[ thread ]</a>
+              <a href="subject.html#32">[ subject ]</a>
+              <a href="author.html#32">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Herbert:
+
+While the current OAI spec is clearly workable for the time being using
+techniques such as what you and Carl suggest, we do think that it would be
+desirable in a future revision to allow for references to multiple
+namespaces and XSDs per metadataPrefix in a response ListMetadataFormats.  
+
+For instance, the response to XML Schemas Last Call item 12
+(<A HREF="http://www.w3.org/2000/05/12-xmlschema-lcissues.html#exporting-attributes">http://www.w3.org/2000/05/12-xmlschema-lcissues.html#exporting-attributes</A>)
+talks about the desirability of writing schemas to allow later extensions
+unknown to the original schema using other techniques than import statements
+within an XSD. (See specifically Dan Connolly's comment: &quot;I think it's
+clearly preferable to have one schema for XHTML, one for SMIL, one for SVG,
+and one for MathML that can be used together in compound documents; rather
+than one for XHTML+MathML, one for XHTML+MathML+SVG, etc. for a total of N!
+schemas.&quot;) 
+
+In the meantime we can build for use with OAI brief XSDs that import and
+merge other canonical metadata XSDs as necessary.
+
+Tom Habing
+Tim Cole
+University of Illinois
+
+herbert van de sompel wrote:
+&gt;<i> 
+</I>&gt;<i> I am completely on the same line of thinking with Carl, here.  There
+</I>&gt;<i> needs to be a one-to-one relationship between a metadataPrefix and the
+</I>&gt;<i> location of a schema describing the metadataformat represented by that
+</I>&gt;<i> metadataPrefix.  If that metadataformats wants to draw from multiple
+</I>&gt;<i> namespaces, that is fine, but that should be declared in the schema for
+</I>&gt;<i> the metadataformat as Carl indicates.  Building on Carl's example, a
+</I>&gt;<i> repo working with the CARL metadataformat would reply to the
+</I>&gt;<i> ListMetadataFormat verb as:
+</I>&gt;<i> 
+</I>&gt;<i> &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+</I>&gt;<i>   &lt;ListMetadataFormats
+</I>&gt;<i> 
+</I>&gt;<i> xmlns=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats"">http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats&quot;</A>
+</I>&gt;<i>       xmlns:xsi=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema-instance"">http://www.w3.org/2000/10/XMLSchema-instance&quot;</A>
+</I>&gt;<i> 
+</I>&gt;<i> xsi:schemaLocation=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats">http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats</A>
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats.xsd"">http://www.openarchives.org/OAI/1.0/OAI_ListMetadataFormats.xsd&quot;</A>&gt;
+</I>&gt;<i>     &lt;responseDate&gt;2000-10-01T19:20:30-04:00&lt;/responseDate&gt;
+</I>&gt;<i>     &lt;requestURL&gt;<A HREF="http://an.oa.org/OAI-script?verb=ListMetadataFormats">http://an.oa.org/OAI-script?verb=ListMetadataFormats</A>
+</I>&gt;<i> 
+</I>&gt;<i> &amp;amp;identifier=oai%3AarXiv%3Ahep-th%2F9901001&lt;/requestURL&gt;
+</I>&gt;<i>     &lt;metadataFormat&gt;
+</I>&gt;<i>       &lt;metadataPrefix&gt;oai_CARL&lt;/metadataPrefix&gt;
+</I>&gt;<i>       &lt;schema&gt;<A HREF="http://foo.org/carlmeta.xsd</schema">http://foo.org/carlmeta.xsd&lt;/schema</A>&gt;
+</I>&gt;<i>       &lt;metadataNamespace&gt;<A HREF="http://foo.org/carlmeta</metadataNamespace">http://foo.org/carlmeta&lt;/metadataNamespace</A>&gt;
+</I>&gt;<i>     &lt;/metadataFormat&gt;
+</I>&gt;<i>     &lt;metadataFormat&gt;
+</I>&gt;<i>       &lt;metadataPrefix&gt;oai_dc&lt;/metadataPrefix&gt;
+</I>&gt;<i>       &lt;schema&gt;<A HREF="http://www.openarchives.org/OAI/dc.xsd</schema">http://www.openarchives.org/OAI/dc.xsd&lt;/schema</A>&gt;
+</I>&gt;<i> 
+</I>&gt;<i> &lt;metadataNamespace&gt;<A HREF="http://purl.org/dc/elements/1.1/</metadataNamespace">http://purl.org/dc/elements/1.1/&lt;/metadataNamespace</A>&gt;
+</I>&gt;<i>     &lt;/metadataFormat&gt;
+</I>&gt;<i> &lt;/ListMetadataFormats&gt;
+</I>&gt;<i> 
+</I>&gt;<i> That is, the repo undertands oai_CARL as a metadataPrefix, and it points
+</I>&gt;<i> at <A HREF="http://foo.org/carlmeta.xsd">http://foo.org/carlmeta.xsd</A> as the location of the corresponding
+</I>&gt;<i> schema.  That carlmetadata.xsd schema will declare the import of
+</I>&gt;<i> whichever other metadataformats it wants to build upon.  See XML Primer
+</I>&gt;<i> section &quot;5. Advanced Concepts III: The Quarterly Report&quot;
+</I>&gt;<i> (<A HREF="http://www.w3.org/TR/xmlschema-0/#quartelyReport">http://www.w3.org/TR/xmlschema-0/#quartelyReport</A>) for an example
+</I>&gt;<i> (report.xsd) that shows how this can be done.
+</I>&gt;<i> 
+</I>&gt;<i> If, in our example, the CARL formats want to use DC elements, I think
+</I>&gt;<i> that the top part of the carlmetadata.xsd schema would look like:
+</I>&gt;<i> 
+</I>&gt;<i> &lt;schema targetNamespace=&quot;<A HREF="http://foo.org/carlmeta"">http://foo.org/carlmeta&quot;</A>
+</I>&gt;<i>                       xmlns=&quot;<A HREF="http://www.w3.org/2000/08/XMLSchema"">http://www.w3.org/2000/08/XMLSchema&quot;</A>
+</I>&gt;<i>                       xmlns:carl=&quot;<A HREF="http://foo.org/carlmeta"">http://foo.org/carlmeta&quot;</A>
+</I>&gt;<i>                       xmlns:dc=&quot;<A HREF="http://purl.org/dc/elements/1.1/"">http://purl.org/dc/elements/1.1/&quot;</A>
+</I>&gt;<i>                       elementFormDefault=&quot;qualified&quot;&gt;
+</I>&gt;<i> 
+</I>&gt;<i> &lt;!-- import DC --&gt;
+</I>&gt;<i> &lt;import namespace=&quot;<A HREF="http://purl.org/dc/elements/1.1/"/">http://purl.org/dc/elements/1.1/&quot;/</A>&gt;
+</I>&gt;<i> 
+</I>&gt;<i> &lt;element name=&quot;oai_carl&quot; type=carl:carlType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> &lt;complexType name=&quot;carlType&quot;&gt;
+</I>&gt;<i>  &lt;sequence&gt;
+</I>&gt;<i>    &lt;element name=&quot;element1&quot; type=&quot;string&quot;/&gt;
+</I>&gt;<i>    &lt;element name=&quot;element2&quot; type=&quot;carl:element2Type&quot;/&gt;
+</I>&gt;<i>    &lt;element name=&quot;element3&quot; type=&quot;dc:creator&quot;/&gt;
+</I>&gt;<i>  &lt;/sequence&gt;
+</I>&gt;<i> &lt;/complexType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> ....
+</I>&gt;<i> 
+</I>&gt;<i> greetings
+</I>&gt;<i> 
+</I>&gt;<i> herbert
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="mailto:lagoze@CS.Cornell.EDU">lagoze@CS.Cornell.EDU</A> wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Jeff, I think you've got the wrong approach here.  Having spent the last
+</I>&gt;<i> &gt; hour or so staring at the xml schema primer at
+</I>&gt;<i> &gt; <A HREF="http://www.w3.org/TR/xmlschema-0">http://www.w3.org/TR/xmlschema-0</A>  I found the explanation on importing
+</I>&gt;<i> &gt; types at <A HREF="http://www.w3.org/TR/xmlschema-0/#import.">http://www.w3.org/TR/xmlschema-0/#import.</A>  Using this mechanism
+</I>&gt;<i> &gt; you can pull in types (elements) from another namespace.  E.g., you
+</I>&gt;<i> &gt; could define a schema carlmeta.xsd with a target namespace
+</I>&gt;<i> &gt; <A HREF="http://foo.org/carlmeta">http://foo.org/carlmeta</A> with an import of
+</I>&gt;<i> &gt; <A HREF="http://purl.org/dc/elements/1.1.">http://purl.org/dc/elements/1.1.</A>  I quote the primer:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; When schema components are imported from multiple namespaces, each
+</I>&gt;<i> &gt; namespace must be identified with a separate import element. The import
+</I>&gt;<i> &gt; elements themselves must appear as the first children of the schema
+</I>&gt;<i> &gt; element. Furthermore, each namespace must be associated with a prefix,
+</I>&gt;<i> &gt; using a standard namespace declaration, and that prefix is used to
+</I>&gt;<i> &gt; qualify references to any schema components belonging to that namespace.
+</I>&gt;<i> &gt; Finally, import elements optionally contain a schemaLocation attribute
+</I>&gt;<i> &gt; to help locate resources associated with the namespaces.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Don't have time now to experiment with this but coming up with an
+</I>&gt;<i> &gt; example shouldn't be too hard.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Carl
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt; -----Original Message-----
+</I>&gt;<i> &gt; &gt; From: Young,Jeff [mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>]
+</I>&gt;<i> &gt; &gt; Sent: Tuesday, January 30, 2001 4:58 PM
+</I>&gt;<i> &gt; &gt; To: '<A HREF="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>'
+</I>&gt;<i> &gt; &gt; Subject: FW: [OAI-implementers] ListMetadataFormats problem
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Hi Carl,
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; I don't think things are as simple as I'd hoped. I want to
+</I>&gt;<i> &gt; &gt; check with you
+</I>&gt;<i> &gt; &gt; first, though, before I stir up more confusion in the
+</I>&gt;<i> &gt; &gt; listserv. Apparently,
+</I>&gt;<i> &gt; &gt; the xsi:schemaLocation element expects namespaces to be
+</I>&gt;<i> &gt; &gt; paired with schema
+</I>&gt;<i> &gt; &gt; locations. If this is true, then a single schema won't work for the
+</I>&gt;<i> &gt; &gt; application I described below. Is there any reason that
+</I>&gt;<i> &gt; &gt; schemas can't be
+</I>&gt;<i> &gt; &gt; repeatable as well as namespaces in relation to metadata formats?
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Jeff
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; -----Original Message-----
+</I>&gt;<i> &gt; &gt; &gt; From: Young,Jeff [mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>]
+</I>&gt;<i> &gt; &gt; &gt; Sent: Tuesday, January 30, 2001 4:01 PM
+</I>&gt;<i> &gt; &gt; &gt; To: 'OAI-implementers'
+</I>&gt;<i> &gt; &gt; &gt; Subject: [OAI-implementers] ListMetadataFormats problem
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; I'm working on an OAI repository for a group that wants to
+</I>&gt;<i> &gt; &gt; &gt; define it's own
+</I>&gt;<i> &gt; &gt; &gt; metadata format. The trick is, this format will be a
+</I>&gt;<i> &gt; &gt; &gt; combination of Dublin
+</I>&gt;<i> &gt; &gt; &gt; Core elements and some new elements yet to be defined. The
+</I>&gt;<i> &gt; &gt; &gt; examples in the
+</I>&gt;<i> &gt; &gt; &gt; OAI specs, however, all assume that the metadata will consist
+</I>&gt;<i> &gt; &gt; &gt; of elements
+</I>&gt;<i> &gt; &gt; &gt; from a single namespace. I believe, for the most part, that
+</I>&gt;<i> &gt; &gt; &gt; the OAI spec
+</I>&gt;<i> &gt; &gt; &gt; doesn't preclude the use of multiple namespaces. For example,
+</I>&gt;<i> &gt; &gt; &gt; I imagine that
+</I>&gt;<i> &gt; &gt; &gt; the following XML fragment is likely to be acceptable:
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; &lt;combined xmlns:dc=&quot;<A HREF="http://purl.org/dc/elements/1.1/"">http://purl.org/dc/elements/1.1/&quot;</A>
+</I>&gt;<i> &gt; &gt; &gt;     xmlns:myelems=&quot;<A HREF="http://www.myelems.com/"">http://www.myelems.com/&quot;</A>
+</I>&gt;<i> &gt; &gt; &gt;     xmlns:xsi=&quot;...&quot;
+</I>&gt;<i> &gt; &gt; &gt;     xsi:schemaLocation=&quot;<A HREF="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</A>
+</I>&gt;<i> &gt; &gt; &gt;             <A HREF="http://www.myelems.com/">http://www.myelems.com/</A>
+</I>&gt;<i> &gt; &gt; &gt;             <A HREF="http://www.myelems.com/combined.xsd"">http://www.myelems.com/combined.xsd&quot;</A>&gt;
+</I>&gt;<i> &gt; &gt; &gt;   &lt;dc:title&gt;This is the title&lt;/dc:title&gt;
+</I>&gt;<i> &gt; &gt; &gt;   &lt;myelems:shoesize&gt;12&lt;/myelems:shoesize&gt;
+</I>&gt;<i> &gt; &gt; &gt; &lt;/combined&gt;
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; (As far as I can tell, specifying multiple namespaces in the
+</I>&gt;<i> &gt; &gt; &gt; xsi:schemaLocation attribute is perfectly valid.)
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Assuming no one sees any problems with this, I do think I see
+</I>&gt;<i> &gt; &gt; &gt; a problem with
+</I>&gt;<i> &gt; &gt; &gt; ListMetadataFormats.xsd. Now that multiple namespaces are
+</I>&gt;<i> &gt; &gt; &gt; involved, I expect
+</I>&gt;<i> &gt; &gt; &gt; that ListMetadataFormats will need to accommodate them with multiple
+</I>&gt;<i> &gt; &gt; &gt; metadataNamespace elements. The XML schema for
+</I>&gt;<i> &gt; &gt; &gt; ListMetadataFormats, however,
+</I>&gt;<i> &gt; &gt; &gt; sets the maxOccurs for metadataNamespace to one. I suspect
+</I>&gt;<i> &gt; &gt; &gt; this is easily
+</I>&gt;<i> &gt; &gt; &gt; changed to unbounded.
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Hopefully, the problem is no more involved than this, but
+</I>&gt;<i> &gt; &gt; &gt; someone may want
+</I>&gt;<i> &gt; &gt; &gt; to check my assumptions.
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Thanks,
+</I>&gt;<i> &gt; &gt; &gt; Jeff
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; ---
+</I>&gt;<i> &gt; &gt; &gt; Jeffrey A. Young
+</I>&gt;<i> &gt; &gt; &gt; Senior Consulting Systems Analyst
+</I>&gt;<i> &gt; &gt; &gt; Office of Research, Mail Code 710
+</I>&gt;<i> &gt; &gt; &gt; OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> &gt; &gt; &gt; 6565 Frantz Road
+</I>&gt;<i> &gt; &gt; &gt; Dublin, OH   43017-3395
+</I>&gt;<i> &gt; &gt; &gt; www.oclc.org
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Voice:      614-764-4342
+</I>&gt;<i> &gt; &gt; &gt; Fax:                614-764-2344
+</I>&gt;<i> &gt; &gt; &gt; Email:      <A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; &gt; &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i> Herbert Van de Sompel
+</I>&gt;<i> Visiting Assistant Professor
+</I>&gt;<i> Cornell University -- Computer Science
+</I>&gt;<i> tel + 1 - 607 - 255 - 3085
+</I>&gt;<i> fax + 1 - 607 - 255 - 4428
+</I>&gt;<i> <A HREF="http://www.cs.cornell.edu/people/herbertv/">http://www.cs.cornell.edu/people/herbertv/</A>
+</I>&gt;<i> digital life in libraries used to be primitive
+</I>&gt;<i> --
+</I>&gt;<i> Herbert Van de Sompel
+</I>&gt;<i> Visiting Assistant Professor
+</I>&gt;<i> Cornell University -- Computer Science
+</I>&gt;<i> tel + 1 - 607 - 255 - 3085
+</I>&gt;<i> fax + 1 - 607 - 255 - 4428
+</I>&gt;<i> <A HREF="http://www.cs.cornell.edu/people/herbertv/">http://www.cs.cornell.edu/people/herbertv/</A>
+</I>&gt;<i> digital life in libraries used to be primitive
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+<A HREF="mailto:thabing@uiuc.edu">thabing@uiuc.edu</A>, (217) 244-7809
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000031.html">[OAI-implementers] Universal Identifiers
+</A></li>
+	<LI> Next message: <A HREF="000033.html">[OAI-implementers] MARC to Dublin Core Crosswalk
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#32">[ date ]</a>
+              <a href="thread.html#32">[ thread ]</a>
+              <a href="subject.html#32">[ subject ]</a>
+              <a href="author.html#32">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

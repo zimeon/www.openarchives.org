@@ -1,0 +1,2900 @@
+From eric_morgan@ncsu.edu  Tue May  1 01:53:20 2001
+From: eric_morgan@ncsu.edu (Eric Lease Morgan)
+Date: Mon, 30 Apr 2001 20:53:20 -0400
+Subject: [OAI-implementers] rdf
+In-Reply-To: <3AEDDCE5.EBB4C2F0@uiuc.edu>
+Message-ID: <B7138140.5DBE%eric_morgan@ncsu.edu>
+
+Thomas G. Habing <thabing@uiuc.edu> wrote:
+
+>> It sort of sounds to me that in order to create alternative metadata formats
+>> to be used in OAI one must create an XSD -- a schema, and RDF does not
+>> cleanly fit into schemas. Correct?
+>> 
+> Yes and not entirely sure yet.  OAI requires an XML Schema be available in
+> order to validate (check the correctness) of any alternate metadata formats.
+> But, after sending the previous message, I was able to find an XML Schema for
+> RDF (http://www.w3.org/2000/07/rdf.xsd), but I haven't had a chance to test it
+> yet.  I suspect it will require some tweaking in order to work with the latest
+> XML Schema spec (a moving target).  Plus, schemas for any other namespaces
+> that you intend to embed in the RDF will also have to be developed.
+> 
+> Anyway, this is something that we are actively pursuing, and are happy to
+> share once we figure out more ourselves.
+
+This looks promising. I will explore it as well. Thank you, and don't
+hesitate to pass along anything you happen to learn.
+
+-- 
+Eric Lease Morgan
+
+
+From lagoze@cs.cornell.edu  Wed May  2 12:15:19 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Wed, 2 May 2001 07:15:19 -0400
+Subject: [OAI-implementers] rdf
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA4EF@opus.cs.cornell.edu>
+
+Sorry to enter this dialog a little late, I was out of town.
+
+I have a question about the goal here of "passing RDF" via OAI
+protocols. 
+
+A quick catch up to make sure we're all on the same page: RDF, first and
+foremost, as described in the RDF model and syntax document (M+S)
+http://www.w3.org/TR/REC-rdf-syntax/, is a data model describing typed
+relationships between uniquely identified entities.  This data model is
+often described in terms of a directed acyclic graph, but can also be
+expressed in a number of other representations; e.g. triples with  a
+subject, verb and object.  Among these representations there is an XML
+syntax for serialize RDF graphs that makes use of the RDF M+S namespace
+at http://www.w3.org/1999/02/22-rdf-syntax-ns#.  
+
+In addition, there is a an RDF schema specification at
+http://www.w3.org/TR/2000/CR-rdf-schema-20000327/ that uses the notions
+in RDF M+S to express knowledge about semantic relationships.  I'll
+quickly note that while RDF "schema" and XML "schema" are both "schema",
+comparing them is a little like doing the same for apples and oranges.
+XML schema can generally be thought of as a data validation tool,
+allowing one to specify the structure of an XML data stream, with the
+ability to express rather detailed contraints on tree structure, data
+types, etc.  RDF schema should be thought of as a tool for ontology
+definition, making it possible to express class, sub-class
+relatioinships and property, sub-property relationships.  For example,
+in RDF schema one could state that a concept from one namespace (e.g., a
+"CREATOR" in dublin core) is a "type of" a concept in another
+relationship (e.g., an "AGENT").  There are some constraint mechanisms
+in RDF schema, but they are farily week and not the major goal of RDF
+schema.  
+
+My colleague Jane Hunter did an excellent job comparing the
+functionality of the tool schema mechanisms in a paper she is presenting
+at WWW10 this week in Hong Kong, it is available at
+http://archive.dstc.edu.au/RDU/staff/jane-hunter/www10/paper.html.  
+
+I should state that there are other "schema languages" floating around
+related to XML schema: Schematron, RELAX, and of course good old DTDs.
+
+We have employed XML schema at two levels in the OAI protocol:
+
+1. To define the format of responses to all OAI protocol requests.
+2. To define the format of metadata streams embedded in the GetRecord
+and ListRecords responses.  
+
+In both cases our goal was to provide a mechanism for some degree of
+data validation.  I say "some degree" since conformance to a schema does
+not guarantee the integrity of the data (e.g. I can create Dublin Core
+that is complete nonsense even though it conforms to the oai-dc schema).
+
+
+Now onto the issue of "passing RDF metadata in OAI responses", in
+particular.  I need to understand the motivation for this as I evaluate,
+with Herbert and other people in the OAI community, our choices in OAI.
+Is it:
+
+1. A desire to mix multiple namespaces in a metadata record (e.g., mix
+dc tags with GEM tags).  In the DC community this is currently called
+devising an "application profile".
+2. A concern that xml schema are too tightly constraining.  This has
+been a concern raised in a number of mail lists where the issue is that
+the concept Dublin Core (that expressed by a namespace URI) is distinct
+from a particular data formating. (these identity issues run around the
+AI community, e.g. Carl the child and Carl the adult have different
+forms but are the same concept).
+3. The fact that some places have metadata stored in XML RDF and just
+want to expose that without further processing.  By this I mean that the
+metadata looks like:
+
+<RDF xmlns = "http://www.w3.org/TR/WD-rdf-syntax#"
+           xmlns:dc = "http://purl.org/dc/elements/1.0/">
+   <Description about = "URI:R">
+     <dc:Title> CIMI Presentation </dc:Title>
+     <dc:Creator> Eric Miller </dc:Creator>
+   </Description>
+</RDF>
+
+4. A desire to use other primitives in the RDF and/or RDFS namespace
+such as the container primitives (alt, seq, etc.).
+
+Adressing each of these:
+
+1. It is not necessary to use RDF to mix elements from multiple
+namespaces.  One can write an XML schema to allow this.  
+2. A colleague closely involved in the RDF community has criticized the
+OAI protocol on this basis.  His claim is that XML schema is criticized
+both due to its complexity and the fact that data format validation is
+much less important than concept identity (i.e., for a thing to be
+Dublin Core it shouldn't have to look one exact way).  In fact, the
+distinction between namespaces and schema expressions demonstrates this.
+A namespace URI is a different animal that the URL of a schema.  The
+former is a unique identity for a concept, not necessarily resolvable to
+any concrete expression.  The latter is a concrete meta-definition of
+that concept.  Developing technologies like RDDL express the fact that
+an abstract concept (Dublin Core) can have multiple concrete
+meta-definitions (e.g., as a natural language description, an RDF
+schema, a schematron schema, 2 xml schema, etc.).  
+3. Wrapping a metadata in RDF tags doesn't make it "RDF".  As said
+earlier, RDF is really much more than a set of XML tags.  IF this is
+indeed the motivation here, I'd humbly suggest stripping off the outer
+RDF tags before embedding in an OAI response.
+4. The use of other RDF primitives in the metadata description starts to
+make this more interesting and I'd like to understand more of the
+particulars.  
+
+In closing, creating an XML schema for an RDF stream so it can embedded
+in an OAI protocol requests seems, in my opinion, to not be the best
+approach.  It has the flavor of mixing apples and oranges.  If, indeed,
+the desire is to use some of the semantic expression functinality of
+RDF, then we in the OAI community need to consider our rather tight
+commitment to XML schema.  I'd love to see continued discussion about
+this.
+
+I hope this all helps.  Sorry for the very long note but there are some
+many intertwined issues, that trying to make them explicit is often the
+best approach.
+
+Carl
+
+> -----Original Message-----
+> From: Eric Lease Morgan [mailto:eric_morgan@ncsu.edu]
+> Sent: Monday, April 30, 2001 8:53 PM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] rdf
+> 
+> 
+> Thomas G. Habing <thabing@uiuc.edu> wrote:
+> 
+> >> It sort of sounds to me that in order to create 
+> alternative metadata formats
+> >> to be used in OAI one must create an XSD -- a schema, and 
+> RDF does not
+> >> cleanly fit into schemas. Correct?
+> >> 
+> > Yes and not entirely sure yet.  OAI requires an XML Schema 
+> be available in
+> > order to validate (check the correctness) of any alternate 
+> metadata formats.
+> > But, after sending the previous message, I was able to find 
+> an XML Schema for
+> > RDF (http://www.w3.org/2000/07/rdf.xsd), but I haven't had 
+> a chance to test it
+> > yet.  I suspect it will require some tweaking in order to 
+> work with the latest
+> > XML Schema spec (a moving target).  Plus, schemas for any 
+> other namespaces
+> > that you intend to embed in the RDF will also have to be developed.
+> > 
+> > Anyway, this is something that we are actively pursuing, 
+> and are happy to
+> > share once we figure out more ourselves.
+> 
+> This looks promising. I will explore it as well. Thank you, and don't
+> hesitate to pass along anything you happen to learn.
+> 
+> -- 
+> Eric Lease Morgan
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From eric_morgan@ncsu.edu  Wed May  2 14:01:58 2001
+From: eric_morgan@ncsu.edu (Eric Lease Morgan)
+Date: Wed, 02 May 2001 09:01:58 -0400
+Subject: [OAI-implementers] rdf
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D43015AA4EF@opus.cs.cornell.edu>
+Message-ID: <B7157D86.5E1F%eric_morgan@ncsu.edu>
+
+lagoze@cs.cornell.edu <lagoze@cs.cornell.edu> wrote:
+
+> My colleague Jane Hunter did an excellent job comparing the functionality of
+> the tool schema mechanisms in a paper she is presenting at WWW10 this week in
+> Hong Kong, it is available at
+> http://archive.dstc.edu.au/RDU/staff/jane-hunter/www10/paper.html.
+
+I have briefly taken a look at this paper. It clarifies the distinction
+between XML "schema" and RDF "schema", and well as presenting possibilities
+of combining their strengths to "enhance metadata interoperability". Thank
+you for passing it along.
+
+ 
+> Now onto the issue of "passing RDF metadata in OAI responses", in particular.
+> I need to understand the motivation for this as I evaluate, with Herbert and
+> other people in the OAI community, our choices in OAI. Is it:
+> 
+> 1. A desire to mix multiple namespaces in a metadata record (e.g., mix dc tags
+> with GEM tags).  In the DC community this is currently called devising an
+> "application profile"....
+> 
+> 3. The fact that some places have metadata stored in XML RDF and just want to
+> expose that without further processing.  By this I mean that the metadata
+> looks like...
+> 
+> 4. A desire to use other primitives in the RDF and/or RDFS namespace such as
+> the container primitives (alt, seq, etc.).
+> 
+> Adressing each of these:
+> 
+> 1. It is not necessary to use RDF to mix elements from multiple namespaces.
+> One can write an XML schema to allow this....
+> 
+> 3. Wrapping a metadata in RDF tags doesn't make it "RDF".  As said earlier,
+> RDF is really much more than a set of XML tags.  IF this is indeed the
+> motivation here, I'd humbly suggest stripping off the outer RDF tags before
+> embedding in an OAI response.
+> 
+> 4. The use of other RDF primitives in the metadata description starts to make
+> this more interesting and I'd like to understand more of the particulars.
+> 
+> In closing, creating an XML schema for an RDF stream so it can embedded
+> in an OAI protocol requests seems, in my opinion, to not be the best
+> approach.  It has the flavor of mixing apples and oranges.  If, indeed,
+> the desire is to use some of the semantic expression functinality of
+> RDF, then we in the OAI community need to consider our rather tight
+> commitment to XML schema.  I'd love to see continued discussion about
+> this.
+
+I am interested in passing RDF in the metadata element of an OAI GetRecords
+response so when I write a harvesting application and can pass the content
+of the metadata element off to an RDF storage tool (like Redland, RDFStore,
+or rdfdb) without further processing.
+
+I am rather new to this whole thing, so please excuse my ignorance. I am not
+interested, at the present time, in any AI applications. AI has come and
+gone so many times since computers were used predict where bombs would fall
+that I am a bit jaded by the whole idea.
+
+As a librarian who does applied R&D I am interested in exploring how to
+collect, organize, archive, and disseminate data and information. RDF
+provides guidelines for describing data/information -- the triples. It seems
+to provide these guidelines in an extensible manner, and it is not tied to
+any particular vocabulary. In fact, it provides the means for extending
+existing vocabularies. It is used as a container for metadata. OAI provides
+a means for querying a repository and getting back sets of metadata.
+
+Why couldn't the metadata returned by a GetRecords response be represented
+in an RDF format? If RDF is a good way to describe metadata, and databases
+were designed to hold this metadata, then OAI harvesters could directly save
+RDF from the GetRecords response to the these databases.
+
+For example, it seems possible for me to convert the entire corpus of the
+Open Directory Project into RDF. I could then save this data into some sort
+of database application such as Redland, RDFStore, or rdfdb. Once in one of
+these sorts of applications I can provide searching and reporting mechanisms
+against them. I could then use OAI to harvest the content of the "deep Web"
+-- the content of databases, have the metadata returned in RDF, and then
+save this data to Redland, RDFStore, or rdfdb as well. OAI strengths seems
+to be the provision of an API for querying remote resources for their
+metadata. RDF's strength lies in describing how that metadata is structured.
+Why not combine them?
+
+More to the point, I believe I am more interested in #1, #3, and #4 above. I
+would like to leverage the ability to mix and enhance Dublin Core tags, akin
+to the use of exploiting RDF primitives, and I would like to expose my
+metadata in RDF for further processing.
+
+-- 
+Eric Lease Morgan
+Digital Library Initiatives, NCSU Libraries
+http://www.lib.ncsu.edu/staff/morgan/
+
+
+
+From thabing@uiuc.edu  Wed May  2 16:01:08 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Wed, 02 May 2001 10:01:08 -0500
+Subject: [OAI-implementers] rdf
+References: <B7157D86.5E1F%eric_morgan@ncsu.edu>
+Message-ID: <3AF02134.D1D86B9A@uiuc.edu>
+
+Hi all,
+
+I would like to concur with Eric's statements, and also to solicit
+criticisms or comments regarding some sample RDF metadata files we have
+created for our DLib project.  (These are all well-formed XML that pass the
+SiRPAC RDF parser, but we don't have an XML schema for them yet.)  A sample
+is available at
+http://dli.grainger.uiuc.edu/publications/05_lecuyer_full.met, and more can
+be made available upon request.  Note:  We have taken extensive liberties
+with the Dublin Core Qualifiers (DCQ), creating some of our own refinements
+and encodings, plus we have utilized a version of the Dublin Core Agents
+standard, which we realize may never be officially sanctioned.  This is all
+still very experimental on our part, and we are deliberately pushing the
+standards as much as we can.
+
+Like Eric we are not that interested in AI, ontologies, and the semantic web
+per se, but we are interested in using RDF's model and syntax (not RDF
+schema, at least yet) as a _standard_ way to express relations between
+metadata (i.e. RDF containers, statements about statements, mixing
+namespaces both for use in creating the RDF graphs (parseType="Resource")
+and also for use as literals (parseType="Literal" -- see our use of MathML
+in the above example).   We also like the ability to extract triples from
+the RDF in a standard way, so as to create searchable databases.  (We also
+have an experimental search interface that utilizes this.)
+
+I too think that RDF (at least, model and syntax) and OAI would make a nice
+match.
+
+Kind regards,
+	Tom
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+Eric Lease Morgan wrote:
+> 
+> 
+> I am interested in passing RDF in the metadata element of an OAI GetRecords
+> response so when I write a harvesting application and can pass the content
+> of the metadata element off to an RDF storage tool (like Redland, RDFStore,
+> or rdfdb) without further processing.
+> 
+> I am rather new to this whole thing, so please excuse my ignorance. I am not
+> interested, at the present time, in any AI applications. AI has come and
+> gone so many times since computers were used predict where bombs would fall
+> that I am a bit jaded by the whole idea.
+> 
+> As a librarian who does applied R&D I am interested in exploring how to
+> collect, organize, archive, and disseminate data and information. RDF
+> provides guidelines for describing data/information -- the triples. It seems
+> to provide these guidelines in an extensible manner, and it is not tied to
+> any particular vocabulary. In fact, it provides the means for extending
+> existing vocabularies. It is used as a container for metadata. OAI provides
+> a means for querying a repository and getting back sets of metadata.
+> 
+> Why couldn't the metadata returned by a GetRecords response be represented
+> in an RDF format? If RDF is a good way to describe metadata, and databases
+> were designed to hold this metadata, then OAI harvesters could directly save
+> RDF from the GetRecords response to the these databases.
+> 
+> For example, it seems possible for me to convert the entire corpus of the
+> Open Directory Project into RDF. I could then save this data into some sort
+> of database application such as Redland, RDFStore, or rdfdb. Once in one of
+> these sorts of applications I can provide searching and reporting mechanisms
+> against them. I could then use OAI to harvest the content of the "deep Web"
+> -- the content of databases, have the metadata returned in RDF, and then
+> save this data to Redland, RDFStore, or rdfdb as well. OAI strengths seems
+> to be the provision of an API for querying remote resources for their
+> metadata. RDF's strength lies in describing how that metadata is structured.
+> Why not combine them?
+> 
+> More to the point, I believe I am more interested in #1, #3, and #4 above. I
+> would like to leverage the ability to mix and enhance Dublin Core tags, akin
+> to the use of exploiting RDF primitives, and I would like to expose my
+> metadata in RDF for further processing.
+> 
+> --
+> Eric Lease Morgan
+> Digital Library Initiatives, NCSU Libraries
+> http://www.lib.ncsu.edu/staff/morgan/
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+From lagoze@cs.cornell.edu  Wed May  2 20:56:50 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Wed, 2 May 2001 15:56:50 -0400
+Subject: [OAI-implementers] rdf
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA4FF@opus.cs.cornell.edu>
+
+Comments inserted below and some text deleted.
+
+> -----Original Message-----
+> From: Eric Lease Morgan [mailto:eric_morgan@ncsu.edu]
+> Sent: Wednesday, May 02, 2001 9:02 AM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] rdf
+> 
+> 
+> 
+> I am interested in passing RDF in the metadata element of an 
+> OAI GetRecords
+> response so when I write a harvesting application and can 
+> pass the content
+> of the metadata element off to an RDF storage tool (like 
+> Redland, RDFStore,
+> or rdfdb) without further processing.
+
+You are going to have to do some processing anyway, right?  You'll have
+to pull out the metadata package from the larger OAI protocol response.
+The step of "turning that into RDF", wrapping it in the RDF tags, is
+minimal.  
+
+I think the idea of exploiting RDF is sensible, I don't think that
+embedding the XML data in an OAI response in RDF tags is a great idea.
+
+Let me be more specific.  In OAI we have essentially established a
+protocol for the Warwick Framework concept, explained in
+http://cs-tr.cs.cornell.edu/Dienst/UI/2.0/Describe/ncstrl.cornell/TR96-1
+593?abstract= - making distinct packages of metadata available.  What we
+haven't done is dealt at all with the relationships among those multiple
+packages - e.g., what does a MARC xxx field have to do with a DC foobar
+element.  IMHO, this is an issue better left to the service level rather
+than the provider leve.  Why?  1) Because there are possibly multiple
+intepretations of such relationships 2) Because understanding and
+expressing such ontological thingies is usually not the area of
+expertise of the average archive/repository manager.  OAI is targeted at
+the kind of folks who usually don't dwell at that level.  
+
+Now, I think that it is entirely reasonable to create a metadata
+integrator service.  Such a service might devise a set of RDF schema (or
+other mechanism) that express metadata vocabulary interrelationships.
+That service could then harvest different metadata packages (in diff.
+vocabs.) from data providers and populate a database of canonicalized
+metadata, that could then be expressed in other formats or vocabularies
+(again derived via something like RDF schema).  
+
+This is actually the kind of thing we have been playing with in our
+Harmony project http://www.ilrt.bris.ac.uk/discovery/harmony/ and in a
+metadata model called ABC.
+
+> For example, it seems possible for me to convert the entire 
+> corpus of the
+> Open Directory Project into RDF. I could then save this data 
+> into some sort
+> of database application such as Redland, RDFStore, or rdfdb. 
+> Once in one of
+> these sorts of applications I can provide searching and 
+> reporting mechanisms
+> against them. I could then use OAI to harvest the content of 
+> the "deep Web"
+> -- the content of databases, have the metadata returned in 
+> RDF, and then
+> save this data to Redland, RDFStore, or rdfdb as well. OAI 
+> strengths seems
+> to be the provision of an API for querying remote resources for their
+> metadata. RDF's strength lies in describing how that metadata 
+> is structured.
+> Why not combine them?
+
+RDF doesn't describe how "metadata is structured".  It merely provides a
+set of primitives for modeling resource relationships and types.  As
+said above, its not that I think that RDF is a bad idea - I think it
+makes great sense.  However, it may be more appropriate at a higher
+level (service level) than what we've defined OAI for.
+
+Carl
+
+> 
+> More to the point, I believe I am more interested in #1, #3, 
+> and #4 above. I
+> would like to leverage the ability to mix and enhance Dublin 
+> Core tags, akin
+> to the use of exploiting RDF primitives, and I would like to expose my
+> metadata in RDF for further processing.
+> 
+> -- 
+> Eric Lease Morgan
+> Digital Library Initiatives, NCSU Libraries
+> http://www.lib.ncsu.edu/staff/morgan/
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From lagoze@cs.cornell.edu  Wed May  2 21:15:39 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Wed, 2 May 2001 16:15:39 -0400
+Subject: [OAI-implementers] rdf
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA502@opus.cs.cornell.edu>
+
+Tom,  Thanks for an example that illustrates your points.  This is
+indeed very interesting to look at.  I need to stare at this for a while
+and think about the issues you've brought up.
+
+Carl
+
+> -----Original Message-----
+> From: Thomas G. Habing [mailto:thabing@uiuc.edu]
+> Sent: Wednesday, May 02, 2001 11:01 AM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] rdf
+> 
+> 
+> Hi all,
+> 
+> I would like to concur with Eric's statements, and also to solicit
+> criticisms or comments regarding some sample RDF metadata 
+> files we have
+> created for our DLib project.  (These are all well-formed XML 
+> that pass the
+> SiRPAC RDF parser, but we don't have an XML schema for them 
+> yet.)  A sample
+> is available at
+> http://dli.grainger.uiuc.edu/publications/05_lecuyer_full.met,
+>  and more can
+> be made available upon request.  Note:  We have taken 
+> extensive liberties
+> with the Dublin Core Qualifiers (DCQ), creating some of our 
+> own refinements
+> and encodings, plus we have utilized a version of the Dublin 
+> Core Agents
+> standard, which we realize may never be officially 
+> sanctioned.  This is all
+> still very experimental on our part, and we are deliberately 
+> pushing the
+> standards as much as we can.
+> 
+> Like Eric we are not that interested in AI, ontologies, and 
+> the semantic web
+> per se, but we are interested in using RDF's model and syntax (not RDF
+> schema, at least yet) as a _standard_ way to express relations between
+> metadata (i.e. RDF containers, statements about statements, mixing
+> namespaces both for use in creating the RDF graphs 
+> (parseType="Resource")
+> and also for use as literals (parseType="Literal" -- see our 
+> use of MathML
+> in the above example).   We also like the ability to extract 
+> triples from
+> the RDF in a standard way, so as to create searchable 
+> databases.  (We also
+> have an experimental search interface that utilizes this.)
+> 
+> I too think that RDF (at least, model and syntax) and OAI 
+> would make a nice
+> match.
+> 
+> Kind regards,
+> 	Tom
+> 
+> -- 
+> Thomas G. Habing
+> Research Programmer, Digital Library Initiative
+> University of Illinois at Urbana-Champaign
+> 052 Grainger Engineering Library, MC-274
+> thabing@uiuc.edu, (217) 244-7809
+> 
+> Eric Lease Morgan wrote:
+> > 
+> > 
+> > I am interested in passing RDF in the metadata element of 
+> an OAI GetRecords
+> > response so when I write a harvesting application and can 
+> pass the content
+> > of the metadata element off to an RDF storage tool (like 
+> Redland, RDFStore,
+> > or rdfdb) without further processing.
+> > 
+> > I am rather new to this whole thing, so please excuse my 
+> ignorance. I am not
+> > interested, at the present time, in any AI applications. AI 
+> has come and
+> > gone so many times since computers were used predict where 
+> bombs would fall
+> > that I am a bit jaded by the whole idea.
+> > 
+> > As a librarian who does applied R&D I am interested in 
+> exploring how to
+> > collect, organize, archive, and disseminate data and 
+> information. RDF
+> > provides guidelines for describing data/information -- the 
+> triples. It seems
+> > to provide these guidelines in an extensible manner, and it 
+> is not tied to
+> > any particular vocabulary. In fact, it provides the means 
+> for extending
+> > existing vocabularies. It is used as a container for 
+> metadata. OAI provides
+> > a means for querying a repository and getting back sets of metadata.
+> > 
+> > Why couldn't the metadata returned by a GetRecords response 
+> be represented
+> > in an RDF format? If RDF is a good way to describe 
+> metadata, and databases
+> > were designed to hold this metadata, then OAI harvesters 
+> could directly save
+> > RDF from the GetRecords response to the these databases.
+> > 
+> > For example, it seems possible for me to convert the entire 
+> corpus of the
+> > Open Directory Project into RDF. I could then save this 
+> data into some sort
+> > of database application such as Redland, RDFStore, or 
+> rdfdb. Once in one of
+> > these sorts of applications I can provide searching and 
+> reporting mechanisms
+> > against them. I could then use OAI to harvest the content 
+> of the "deep Web"
+> > -- the content of databases, have the metadata returned in 
+> RDF, and then
+> > save this data to Redland, RDFStore, or rdfdb as well. OAI 
+> strengths seems
+> > to be the provision of an API for querying remote resources 
+> for their
+> > metadata. RDF's strength lies in describing how that 
+> metadata is structured.
+> > Why not combine them?
+> > 
+> > More to the point, I believe I am more interested in #1, 
+> #3, and #4 above. I
+> > would like to leverage the ability to mix and enhance 
+> Dublin Core tags, akin
+> > to the use of exploiting RDF primitives, and I would like 
+> to expose my
+> > metadata in RDF for further processing.
+> > 
+> > --
+> > Eric Lease Morgan
+> > Digital Library Initiatives, NCSU Libraries
+> > http://www.lib.ncsu.edu/staff/morgan/
+> > 
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From Tim Cole" <t-cole3@uiuc.edu  Thu May  3 01:29:17 2001
+From: Tim Cole" <t-cole3@uiuc.edu (Tim Cole)
+Date: Wed, 2 May 2001 19:29:17 -0500
+Subject: [OAI-implementers] rdf
+References: <706871B20764CD449DB0E8E3D81C4D43015AA4FF@opus.cs.cornell.edu>
+Message-ID: <0db601c0d368$16d17860$e6237e82@library.uiuc.edu>
+
+Carl-
+
+I agree that it's probably not worth going to a lot of effort solely to
+have an RDF metadata format option on an OAI Provider site.  While the W3C
+RDF specs contain numerous examples of how to encode DC metadata within RDF
+structures, the RDF development community now seems to have a focus well
+beyond simple metadata interchange.  A bit of a "religious war" between the
+RDF Schema Language and XML Schema Language camps has developed.   OCLC's
+involvement in RDF seems to have dropped off a little, there's still
+ambiguity (and not enough good examples) about best practices for using RDF
+in a metadata sharing application, it is harder to do, and it's not clear
+to me what near-term role (if any) RDF will have with regard to metadata
+for most of us, especially in regard to the type of bibliographic metadata
+of prime interest to libraries and the like.  So I agree that these
+ambiguities in combination with the difficulty level will likely inhibit
+most OAI providers for now at least.  These factors also make it difficult
+to develop anytime soon an OAI Harvesting application that could expect to
+do a good job aggregating metadata provided in RDF -- which means even if
+you offer RDF metadata format on your OAI Provider site, you may or may not
+get any takers for your records in that metadata format.
+
+That said, an OAI provider may have other reasons to store the metadata
+that it reveals in RDF.  The metadata we're generating is multi-purposed,
+i.e., it's designed to be used in a variety of applications both parochial
+and collaborative.  We're experimenting with RDF and ancillary DC semantics
+in order to experiment locally with different search architectures and
+interfaces.  Since it's relatively easy to "dumb-down" complex XML metadata
+records using XSLT (or other approaches), we've been able to generate the
+OAI metadata records we reveal directly from our more complex RDF metadata
+records with relatively little difficulty.  The RDF versions of our records
+remain available for local system use and/or sharing by other
+interoperability mechanisms, while just the DC content from the RDF records
+goes into the OAI GetRecord and ListRecords responses.
+
+Of course in this situation there's a natural temptation to want to reveal,
+using OAI, our metadata in their most complex version (partly just to see
+if it can be done).  We're at the stage where we're beginning to get a feel
+for RDF and multiple namespaces (note, the example Tom references is still
+very much a work in progress), and so naturally we've started thinking
+about how it might be possible to reveal RDF records using OAI.  I think
+it'll be a useful effort for us to try this, even though we don't really
+expect it to go anywhere in the near term.
+
+Tim Cole
+Chair, Library Information Technology Committee
+University of Illinois at Urbana-Champaign
+
+----- Original Message -----
+From: <lagoze@cs.cornell.edu>
+To: <eric_morgan@ncsu.edu>; <oai-implementers@oaisrv.nsdl.cornell.edu>
+Sent: Wednesday, May 02, 2001 2:56 PM
+Subject: RE: [OAI-implementers] rdf
+
+
+> Comments inserted below and some text deleted.
+>
+> > -----Original Message-----
+> > From: Eric Lease Morgan [mailto:eric_morgan@ncsu.edu]
+> > Sent: Wednesday, May 02, 2001 9:02 AM
+> > To: oai-implementers@oaisrv.nsdl.cornell.edu
+> > Subject: Re: [OAI-implementers] rdf
+> >
+> >
+> >
+> > I am interested in passing RDF in the metadata element of an
+> > OAI GetRecords
+> > response so when I write a harvesting application and can
+> > pass the content
+> > of the metadata element off to an RDF storage tool (like
+> > Redland, RDFStore,
+> > or rdfdb) without further processing.
+>
+> You are going to have to do some processing anyway, right?  You'll have
+> to pull out the metadata package from the larger OAI protocol response.
+> The step of "turning that into RDF", wrapping it in the RDF tags, is
+> minimal.
+>
+> I think the idea of exploiting RDF is sensible, I don't think that
+> embedding the XML data in an OAI response in RDF tags is a great idea.
+>
+> Let me be more specific.  In OAI we have essentially established a
+> protocol for the Warwick Framework concept, explained in
+> http://cs-tr.cs.cornell.edu/Dienst/UI/2.0/Describe/ncstrl.cornell/TR96-1
+> 593?abstract= - making distinct packages of metadata available.  What we
+> haven't done is dealt at all with the relationships among those multiple
+> packages - e.g., what does a MARC xxx field have to do with a DC foobar
+> element.  IMHO, this is an issue better left to the service level rather
+> than the provider leve.  Why?  1) Because there are possibly multiple
+> intepretations of such relationships 2) Because understanding and
+> expressing such ontological thingies is usually not the area of
+> expertise of the average archive/repository manager.  OAI is targeted at
+> the kind of folks who usually don't dwell at that level.
+>
+> Now, I think that it is entirely reasonable to create a metadata
+> integrator service.  Such a service might devise a set of RDF schema (or
+> other mechanism) that express metadata vocabulary interrelationships.
+> That service could then harvest different metadata packages (in diff.
+> vocabs.) from data providers and populate a database of canonicalized
+> metadata, that could then be expressed in other formats or vocabularies
+> (again derived via something like RDF schema).
+>
+> This is actually the kind of thing we have been playing with in our
+> Harmony project http://www.ilrt.bris.ac.uk/discovery/harmony/ and in a
+> metadata model called ABC.
+>
+> > For example, it seems possible for me to convert the entire
+> > corpus of the
+> > Open Directory Project into RDF. I could then save this data
+> > into some sort
+> > of database application such as Redland, RDFStore, or rdfdb.
+> > Once in one of
+> > these sorts of applications I can provide searching and
+> > reporting mechanisms
+> > against them. I could then use OAI to harvest the content of
+> > the "deep Web"
+> > -- the content of databases, have the metadata returned in
+> > RDF, and then
+> > save this data to Redland, RDFStore, or rdfdb as well. OAI
+> > strengths seems
+> > to be the provision of an API for querying remote resources for their
+> > metadata. RDF's strength lies in describing how that metadata
+> > is structured.
+> > Why not combine them?
+>
+> RDF doesn't describe how "metadata is structured".  It merely provides a
+> set of primitives for modeling resource relationships and types.  As
+> said above, its not that I think that RDF is a bad idea - I think it
+> makes great sense.  However, it may be more appropriate at a higher
+> level (service level) than what we've defined OAI for.
+>
+> Carl
+>
+> >
+> > More to the point, I believe I am more interested in #1, #3,
+> > and #4 above. I
+> > would like to leverage the ability to mix and enhance Dublin
+> > Core tags, akin
+> > to the use of exploiting RDF primitives, and I would like to expose my
+> > metadata in RDF for further processing.
+> >
+> > --
+> > Eric Lease Morgan
+> > Digital Library Initiatives, NCSU Libraries
+> > http://www.lib.ncsu.edu/staff/morgan/
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>
+
+
+From hickey@oclc.org  Thu May  3 14:38:41 2001
+From: hickey@oclc.org (Hickey,Thom)
+Date: Thu, 3 May 2001 09:38:41 -0400
+Subject: [OAI-implementers] rdf
+Message-ID: <E5431CF93E29F9478878F623E5B9CE980AAB0F@OA3-SERVER.oa.oclc.org>
+
+Although Tim's characterization is probably accurate with the departure of
+Eric Miller to W3C, we're still doing quite a bit with RDF, including
+supporting the EOR toolkit.  The more we use it, the more we like it,
+although the lack of widespread acceptance is discouraging.
+
+--Th
+
+-----Original Message-----
+From: Tim Cole [mailto:t-cole3@uiuc.edu]
+Sent: Wednesday, May 02, 2001 8:29 PM
+To: oai-implementers@oaisrv.nsdl.cornell.edu
+Subject: Re: [OAI-implementers] rdf
+
+
+	...A bit of a "religious war" between the
+	RDF Schema Language and XML Schema Language camps has developed.
+OCLC's
+	involvement in RDF seems to have dropped off a little, there's
+still...
+
+From jyoung@oclc.org  Thu May  3 15:06:41 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Thu, 3 May 2001 10:06:41 -0400
+Subject: [OAI-implementers] rdf
+Message-ID: <E5431CF93E29F9478878F623E5B9CE983420B5@OA3-SERVER.oa.oclc.org>
+
+I appreciate this discussion on RDF since I'm currently working on an
+application of OAI where I plan to use it. The implementation plan defers
+the RDF aspect to a later stage, however, so I haven't given much thought to
+the complexities related to OAI. A colleague has suggested that I could use
+XLink as an alternative, so I'm trusting that somewhere there is a canned
+solution that will work for me when the time comes.
+
+Tim states that most OAI developers probably don't need RDF early on, which
+is probably true. As an example of a way it might play a role, however, I
+thought I'd pass along some information about how I plan to use it.
+
+The Networked Digital Library of Theses and Dissertations project (NDLTD)
+has asked OCLC to develop a name authority linking mechanism for their
+theses and dissertations records. The proposal for this mechanism can be
+found at http://purl.org/alcme/ndltd/AuthLink.html. The implementation plan
+is at http://purl.org/alcme/ndltd/AuthLinkImpl.html.
+
+To summarize the proposal, we plan to create a distributed name authority
+database using the OAI protocol. Participants can create records in their
+local repository and share them with other repositories around the world
+using OAI. Since authority control can sometimes be a subtle endeavor, we
+expect that the creators of these records will want some level of control
+over them. On the other hand, other institutions may have additional
+information and/or alternative forms of the names that their communities
+prefer. My plan is to use the RDF reification feature
+(http://www.w3.org/TR/REC-rdf-syntax/#higherorder) to allow any user around
+the world to directly annotate records created by another participant and
+then redistribute those records asynchronously with other institutions'
+annotations. An RDF-aware harvester would pick off any annotations they
+don't already have and incorporate them into their local copy of the record.
+
+I'm close to finishing stage 1 of the implementation plan. Note that the
+proposed scheme isn't necessarily limited to the NDLTD application. Comments
+and suggestions are welcome.
+
+Jeff
+
+---
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From thabing@uiuc.edu  Fri May  4 22:37:41 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Fri, 04 May 2001 16:37:41 -0500
+Subject: [OAI-implementers] rdf
+References: <706871B20764CD449DB0E8E3D81C4D43015AA502@opus.cs.cornell.edu>
+Message-ID: <3AF32125.78AA1042@uiuc.edu>
+
+To anyone who may have been looking at our example RDF:
+
+http://dli.grainger.uiuc.edu/publications/05_lecuyer_full.met
+
+We just corrected some errors. The tag <rdf:seq> should have been <rdf:Seq>
+-- uppercase S.  Sirpac didn't catch this because it treated <rdf:seq> just
+like any regular property element.  Correcting this also caused us to
+discover that the way we were nesting property elements inside the sequence
+was incorrect:
+
+<rdf:seq>
+ <rdf:li>
+   <dc:Creator>
+      ....
+   </dc:Creator>
+ </rdf:li>
+ <rdf:li>
+   <dc:Creator>
+      ....
+   </dc:Creator>
+ </rdf:li>
+</rdf:seq>
+
+should be
+
+<dc:Creator>
+ <rdf:Seq>
+  <rdf:li>
+      ....
+  </rdf:li>
+  <rdf:li>
+      ....
+  </rdf:li>
+ </rdf:Seq>
+</dc:Creator>
+
+Anyway, this is corrected, but don't be surprised if you find other errors,
+just please let us know about them.
+
+Thanks,
+	Tom
+
+
+lagoze@cs.cornell.edu wrote:
+> 
+> Tom,  Thanks for an example that illustrates your points.  This is
+> indeed very interesting to look at.  I need to stare at this for a while
+> and think about the issues you've brought up.
+> 
+> Carl
+> 
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From lagoze@cs.cornell.edu  Mon May  7 10:59:58 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Mon, 7 May 2001 05:59:58 -0400
+Subject: [OAI-implementers] rdf
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA526@opus.cs.cornell.edu>
+
+Tim,
+
+Thanks for this reflection on the status of affairs regarding OAI, DC,
+and RDF.  I'm in strong agreement with you on a number of issues.  I
+find the whole concept of the Semantic Web
+http://www.sciam.com/2001/0501issue/0501berners-lee.html intriguing.
+However, IMHO the RDF community seems to have leaped beyond the
+depoyability and proof of worth of simple metadata to the concept of a
+distributed knowledge base.  I think that RDF (and Dublin Core) have
+huge potential, but that potential is severely compromised by hard
+evidence of how they work for large deployments and lack of commitment
+among their communities to finish the details so that such evidence can
+be established.
+
+Carl
+
+> -----Original Message-----
+> From: Tim Cole [mailto:t-cole3@uiuc.edu]
+> Sent: Wednesday, May 02, 2001 8:29 PM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] rdf
+> 
+> 
+> Carl-
+> 
+> I agree that it's probably not worth going to a lot of effort 
+> solely to
+> have an RDF metadata format option on an OAI Provider site.  
+> While the W3C
+> RDF specs contain numerous examples of how to encode DC 
+> metadata within RDF
+> structures, the RDF development community now seems to have a 
+> focus well
+> beyond simple metadata interchange.  A bit of a "religious 
+> war" between the
+> RDF Schema Language and XML Schema Language camps has 
+> developed.   OCLC's
+> involvement in RDF seems to have dropped off a little, there's still
+> ambiguity (and not enough good examples) about best practices 
+> for using RDF
+> in a metadata sharing application, it is harder to do, and 
+> it's not clear
+> to me what near-term role (if any) RDF will have with regard 
+> to metadata
+> for most of us, especially in regard to the type of 
+> bibliographic metadata
+> of prime interest to libraries and the like.  So I agree that these
+> ambiguities in combination with the difficulty level will 
+> likely inhibit
+> most OAI providers for now at least.  These factors also make 
+> it difficult
+> to develop anytime soon an OAI Harvesting application that 
+> could expect to
+> do a good job aggregating metadata provided in RDF -- which 
+> means even if
+> you offer RDF metadata format on your OAI Provider site, you 
+> may or may not
+> get any takers for your records in that metadata format.
+> 
+> That said, an OAI provider may have other reasons to store 
+> the metadata
+> that it reveals in RDF.  The metadata we're generating is 
+> multi-purposed,
+> i.e., it's designed to be used in a variety of applications 
+> both parochial
+> and collaborative.  We're experimenting with RDF and 
+> ancillary DC semantics
+> in order to experiment locally with different search architectures and
+> interfaces.  Since it's relatively easy to "dumb-down" 
+> complex XML metadata
+> records using XSLT (or other approaches), we've been able to 
+> generate the
+> OAI metadata records we reveal directly from our more complex 
+> RDF metadata
+> records with relatively little difficulty.  The RDF versions 
+> of our records
+> remain available for local system use and/or sharing by other
+> interoperability mechanisms, while just the DC content from 
+> the RDF records
+> goes into the OAI GetRecord and ListRecords responses.
+> 
+> Of course in this situation there's a natural temptation to 
+> want to reveal,
+> using OAI, our metadata in their most complex version (partly 
+> just to see
+> if it can be done).  We're at the stage where we're beginning 
+> to get a feel
+> for RDF and multiple namespaces (note, the example Tom 
+> references is still
+> very much a work in progress), and so naturally we've started thinking
+> about how it might be possible to reveal RDF records using 
+> OAI.  I think
+> it'll be a useful effort for us to try this, even though we 
+> don't really
+> expect it to go anywhere in the near term.
+> 
+> Tim Cole
+> Chair, Library Information Technology Committee
+> University of Illinois at Urbana-Champaign
+> 
+> ----- Original Message -----
+> From: <lagoze@cs.cornell.edu>
+> To: <eric_morgan@ncsu.edu>; <oai-implementers@oaisrv.nsdl.cornell.edu>
+> Sent: Wednesday, May 02, 2001 2:56 PM
+> Subject: RE: [OAI-implementers] rdf
+> 
+> 
+> > Comments inserted below and some text deleted.
+> >
+> > > -----Original Message-----
+> > > From: Eric Lease Morgan [mailto:eric_morgan@ncsu.edu]
+> > > Sent: Wednesday, May 02, 2001 9:02 AM
+> > > To: oai-implementers@oaisrv.nsdl.cornell.edu
+> > > Subject: Re: [OAI-implementers] rdf
+> > >
+> > >
+> > >
+> > > I am interested in passing RDF in the metadata element of an
+> > > OAI GetRecords
+> > > response so when I write a harvesting application and can
+> > > pass the content
+> > > of the metadata element off to an RDF storage tool (like
+> > > Redland, RDFStore,
+> > > or rdfdb) without further processing.
+> >
+> > You are going to have to do some processing anyway, right?  
+> You'll have
+> > to pull out the metadata package from the larger OAI 
+> protocol response.
+> > The step of "turning that into RDF", wrapping it in the RDF tags, is
+> > minimal.
+> >
+> > I think the idea of exploiting RDF is sensible, I don't think that
+> > embedding the XML data in an OAI response in RDF tags is a 
+> great idea.
+> >
+> > Let me be more specific.  In OAI we have essentially established a
+> > protocol for the Warwick Framework concept, explained in
+> > 
+> http://cs-tr.cs.cornell.edu/Dienst/UI/2.0/Describe/ncstrl.corn
+> ell/TR96-1
+> > 593?abstract= - making distinct packages of metadata 
+> available.  What we
+> > haven't done is dealt at all with the relationships among 
+> those multiple
+> > packages - e.g., what does a MARC xxx field have to do with 
+> a DC foobar
+> > element.  IMHO, this is an issue better left to the service 
+> level rather
+> > than the provider leve.  Why?  1) Because there are 
+> possibly multiple
+> > intepretations of such relationships 2) Because understanding and
+> > expressing such ontological thingies is usually not the area of
+> > expertise of the average archive/repository manager.  OAI 
+> is targeted at
+> > the kind of folks who usually don't dwell at that level.
+> >
+> > Now, I think that it is entirely reasonable to create a metadata
+> > integrator service.  Such a service might devise a set of 
+> RDF schema (or
+> > other mechanism) that express metadata vocabulary 
+> interrelationships.
+> > That service could then harvest different metadata packages 
+> (in diff.
+> > vocabs.) from data providers and populate a database of 
+> canonicalized
+> > metadata, that could then be expressed in other formats or 
+> vocabularies
+> > (again derived via something like RDF schema).
+> >
+> > This is actually the kind of thing we have been playing with in our
+> > Harmony project 
+http://www.ilrt.bris.ac.uk/discovery/harmony/ and in a
+> metadata model called ABC.
+>
+> > For example, it seems possible for me to convert the entire
+> > corpus of the
+> > Open Directory Project into RDF. I could then save this data
+> > into some sort
+> > of database application such as Redland, RDFStore, or rdfdb.
+> > Once in one of
+> > these sorts of applications I can provide searching and
+> > reporting mechanisms
+> > against them. I could then use OAI to harvest the content of
+> > the "deep Web"
+> > -- the content of databases, have the metadata returned in
+> > RDF, and then
+> > save this data to Redland, RDFStore, or rdfdb as well. OAI
+> > strengths seems
+> > to be the provision of an API for querying remote resources for
+their
+> > metadata. RDF's strength lies in describing how that metadata
+> > is structured.
+> > Why not combine them?
+>
+> RDF doesn't describe how "metadata is structured".  It merely provides
+a
+> set of primitives for modeling resource relationships and types.  As
+> said above, its not that I think that RDF is a bad idea - I think it
+> makes great sense.  However, it may be more appropriate at a higher
+> level (service level) than what we've defined OAI for.
+>
+> Carl
+>
+> >
+> > More to the point, I believe I am more interested in #1, #3,
+> > and #4 above. I
+> > would like to leverage the ability to mix and enhance Dublin
+> > Core tags, akin
+> > to the use of exploiting RDF primitives, and I would like to expose
+my
+> > metadata in RDF for further processing.
+> >
+> > --
+> > Eric Lease Morgan
+> > Digital Library Initiatives, NCSU Libraries
+> > http://www.lib.ncsu.edu/staff/morgan/
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>
+
+_______________________________________________
+OAI-implementers mailing list
+OAI-implementers@oaisrv.nsdl.cornell.edu
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+From jozef@nl.adlibsoft.com  Mon May  7 15:06:48 2001
+From: jozef@nl.adlibsoft.com (Jozef Kruger)
+Date: Mon, 7 May 2001 16:06:48 +0200
+Subject: [OAI-implementers] Error reporting from OAI implementations
+Message-ID: <CBB8FF9CD986D311A1730090278AC9A91CC0B4@venus.nl.adlibsoft.com>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_001_01C0D6FE.F56D04F6
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+Hello everybody,
+ 
+As a programmer for Adlib Information Systems (the Netherlands), I am
+implementing the OAI protocol for our database. I have a question about the
+error reporting. When an OAI-call is done, with for instance the wrong
+parameters (e.g. metadataPrefix is missing), how do I correctly report the
+error. Is there a standard way for doing this? And if so, what way? :)
+ 
+thanks very much.
+ 
+Jozef Kruger
+
+------_=_NextPart_001_01C0D6FE.F56D04F6
+Content-Type: text/html;
+	charset="iso-8859-1"
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+
+<META content="MSHTML 5.00.2920.0" name=GENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=Arial size=2><SPAN class=972410214-07052001>Hello 
+everybody,</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=972410214-07052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=972410214-07052001>As a programmer for 
+Adlib Information Systems (the Netherlands), I am implementing the OAI protocol 
+for our database. I have a question about the error reporting. When an OAI-call 
+is done, with for instance the wrong parameters (e.g. metadataPrefix is 
+missing), how do I correctly report the error. Is there a standard way for doing 
+this? And if so, what way? :)</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=972410214-07052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=972410214-07052001>thanks very 
+much.</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=972410214-07052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=972410214-07052001>Jozef 
+Kruger</SPAN></FONT></DIV></BODY></HTML>
+
+------_=_NextPart_001_01C0D6FE.F56D04F6--
+
+From herbertv@cs.cornell.edu  Mon May  7 15:55:33 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Mon, 07 May 2001 10:55:33 -0400
+Subject: [OAI-implementers] Error reporting from OAI implementations
+References: <CBB8FF9CD986D311A1730090278AC9A91CC0B4@venus.nl.adlibsoft.com>
+Message-ID: <3AF6B765.E390CBE@cs.cornell.edu>
+
+hi Jozef,
+
+This exception-handling issue has come up a while ago.  There is a
+thread on oai-implementers at
+http://oaisrv.nsdl.cornell.edu/pipermail/oai-implementers/2001-January/000007.html
+.
+
+I think it is fair to say that the consensus resulting from that the
+discussion can be summarized as follows:
+
+- illegal protocol syntax (usage of illegal verbs and illegal arguments)
+results in status-code 400
+- something wrong with argument values from the protocol perspective
+(e.g.  "dates" that are not expressed by means of the prescribed
+Complete date variant of ISO860; identifiers that do not match the XML
+Schema type of uriReference, ... ) result in status-code 400
+- something wrong with argument values from the repository perspective
+(e.g. use of a metadataPrefix value that has a correct syntax, but is
+not supported by the repository) results in a valid protocol reply
+(which will however not contain real data, since the repository doesn't
+support the metadataPrefix).
+
+This whole discussion revealed that the exception-handling for protocol
+requests is not unambigiously defined in the OAI protocol. A few weeks
+ago, I used this fact as an inspiration for an assignment for my
+students of the digital library course that I teach.  Please look at
+Assignment 3 at
+http://www.cs.cornell.edu/courses/cs502/2001SP/assignments.htm for more
+information.  It is my intention to share some results of that
+assingnment with this list, because they are very interesting and highly
+relevant in light of:
+* providing a formal definition of valid OAI protocol requests;
+* the eventual evolution of the OAI protocol into a SOAP direction.
+
+cheers
+
+herbert
+ 
+
+> Jozef Kruger wrote:
+> 
+> Hello everybody,
+> 
+> As a programmer for Adlib Information Systems (the Netherlands), I am
+> implementing the OAI protocol for our database. I have a question
+> about the error reporting. When an OAI-call is done, with for instance
+> the wrong parameters (e.g. metadataPrefix is missing), how do I
+> correctly report the error. Is there a standard way for doing this?
+> And if so, what way? :)
+> 
+> thanks very much.
+> 
+> Jozef Kruger
+
+From tdb198@ecs.soton.ac.uk  Mon May  7 15:57:52 2001
+From: tdb198@ecs.soton.ac.uk (Tim Brody)
+Date: Mon, 7 May 2001 15:57:52 +0100 (BST)
+Subject: [OAI-implementers] Error reporting from OAI implementations
+In-Reply-To: <CBB8FF9CD986D311A1730090278AC9A91CC0B4@venus.nl.adlibsoft.com>
+Message-ID: <Pine.LNX.4.21.0105071552310.24672-100000@peters.ecs.soton.ac.uk>
+
+> As a programmer for Adlib Information Systems (the Netherlands), I am
+> implementing the OAI protocol for our database. I have a question about the
+> error reporting. When an OAI-call is done, with for instance the wrong
+> parameters (e.g. metadataPrefix is missing), how do I correctly report the
+> error. Is there a standard way for doing this? And if so, what way? :)
+
+Hi,
+
+You would probably be interested in the section "status-codes" under "HTTP
+Response Format" in the OAI 1.0 spec.
+
+Basically if you can't give a response due to bad verb or missing/invalid
+variables you should generate an HTTP response with status-code 400. The
+HTTP response should be human-readable, much like the HTTP 404 error.
+
+In addition status codes 302 and 503 can be used for re-direction and
+temporary unavailability respectively.
+
+All the best,
+Tim Brody
+
+
+From thabing@uiuc.edu  Mon May  7 15:58:51 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Mon, 07 May 2001 09:58:51 -0500
+Subject: [OAI-implementers] Error reporting from OAI implementations
+References: <CBB8FF9CD986D311A1730090278AC9A91CC0B4@venus.nl.adlibsoft.com>
+Message-ID: <3AF6B82B.FE7F5EC6@uiuc.edu>
+
+Hi Jozef,
+
+Check section 3.1.2.2, Status-Code, in the OAI spec.  Essentially this error
+would require that you return an HTTP status code of 400.  However, in
+addition to the HTTP Status-Code you may also want to send a human-readable
+Reason-Phrase (See section 6.1, Status-Line, in the HTTP protocol spec:
+ftp://ftp.isi.edu/in-notes/rfc2616.txt).
+
+In the case of a missing metadataPrefix, I use:
+
+  400 Bad Request ('metadataPrefix' is a required parameter)
+
+Just for good measure I also send an error message in the body of the HTML
+response, such as:
+
+<?xml version="1.0" encoding="UTF-8" ?> 
+ <html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+   <title>400 Bad Request ('metadataPrefix' is a required parameter)</title> 
+  </head>
+  <body>
+   <h4>400 Bad Request ('metadataPrefix' is a required parameter)</h4> 
+  
+<p>http://bolder.grainger.uiuc.edu/oaisimple/oai.asp?verb=GetRecord&identifier=oai:uiuc:184500</p> 
+  </body>
+ </html>
+
+but this probably isn't that useful in a protocol which is mostly for
+machine consumption.
+
+Does anyone else think it might be useful to define some standard (or
+recommended) HTTP Reason-Phrases in the OAI spec?  This might make it easier
+to diagnose problems from web logs; instead of error '400' or '400 Bad
+Request', you've got '400 Missing metadatPrefix'.  Plus it would give
+protocol implementers one less thing to have to think about.
+
+Kind regards,
+		Tom
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+
+> Jozef Kruger wrote:
+> 
+> Hello everybody,
+> 
+> As a programmer for Adlib Information Systems (the Netherlands), I am
+> implementing the OAI protocol for our database. I have a question about
+> the error reporting. When an OAI-call is done, with for instance the wrong
+> parameters (e.g. metadataPrefix is missing), how do I correctly report the
+> error. Is there a standard way for doing this? And if so, what way? :)
+> 
+> thanks very much.
+> 
+> Jozef Kruger
+
+From jozef@nl.adlibsoft.com  Tue May  8 10:16:44 2001
+From: jozef@nl.adlibsoft.com (Jozef Kruger)
+Date: Tue, 8 May 2001 11:16:44 +0200
+Subject: [OAI-implementers] Overriding http headers
+Message-ID: <CBB8FF9CD986D311A1730090278AC9A91CC0B8@venus.nl.adlibsoft.com>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_001_01C0D79F.99F5758A
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+Hello everybody,
+ 
+again it's me with a question about http headers. The problem is now that I
+don't know how to override the HTTP headers that the webserver (IIS in my
+case) generates. I know that it's possible, but I just don't know how. I'm
+writing the application in c++.
+ 
+thanks for your help.
+ 
+Jozef
+-----------------------------------------------
+
+Jozef Kruger, junior programmer.
+
+    Adlib Information Systems
+
+-----------------------------------------------
+
+------_=_NextPart_001_01C0D79F.99F5758A
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+
+
+<META content=3D"MSHTML 5.00.2920.0" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D672004708-08052001>Hello =
+
+everybody,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D672004708-08052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D672004708-08052001>again =
+it's me with a=20
+question about http headers. The problem is now that I don't know how =
+to=20
+override the HTTP headers that the webserver (IIS in my case) =
+generates. I know=20
+that it's possible, but I just don't know how. I'm writing the =
+application in=20
+c++.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D672004708-08052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN =
+class=3D672004708-08052001>thanks for your=20
+help.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D672004708-08052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D672004708-08052001>Jozef</SPAN></FONT></DIV>
+<DIV>
+<DIV align=3Dleft><PRE align=3D"left"><FONT face=3DArial><FONT =
+size=3D2>-------</FONT>------------------------------------<FONT =
+size=3D2>----</FONT></FONT><FONT face=3DArial size=3D2>
+Jozef Kruger, junior programmer.
+    Adlib Information Systems
+-----------------------------------------------</FONT></PRE></DIV></DIV>=
+</BODY></HTML>
+
+------_=_NextPart_001_01C0D79F.99F5758A--
+
+From jozef@nl.adlibsoft.com  Tue May  8 12:28:18 2001
+From: jozef@nl.adlibsoft.com (Jozef Kruger)
+Date: Tue, 8 May 2001 13:28:18 +0200
+Subject: [OAI-implementers] overriding HTTP status code (solved)
+Message-ID: <CBB8FF9CD986D311A1730090278AC9A91CC0B9@venus.nl.adlibsoft.com>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_001_01C0D7B1.FB1F1D7C
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+Hi everybody,
+ 
+I finally solved my problem, so no need to respond to my last mail anymore.
+This is what I had to do (for anybody who might have to deal with the same
+problem):
+    cout << "Status-Code: " << statCode << " " << mesg << endl;
+    cout << "Content-Type: text/html" << endl  << endl;
+ 
+So no need to reply to my last mail anymore, but thanks anyway.
+ 
+all the best,
+Jozef Kruger
+ 
+ 
+ 
+ 
+
+------_=_NextPart_001_01C0D7B1.FB1F1D7C
+Content-Type: text/html;
+	charset="iso-8859-1"
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+
+
+<META content="MSHTML 5.00.2920.0" name=GENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001>Hi everybody,</SPAN></SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001></SPAN></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001>I finally solved my problem, so no need to respond to 
+my last mail anymore.</SPAN></SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001>This is what I had to do (for anybody who might have to 
+deal with the same problem):</SPAN></SPAN></FONT></DIV>
+<DIV><FONT size=2><FONT face=Arial><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001>&nbsp;&nbsp;&nbsp; </SPAN>cout &lt;&lt; "Status-Code: " 
+&lt;&lt; statCode &lt;&lt; " " &lt;&lt; mesg &lt;&lt; 
+endl;</SPAN></FONT></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001>&nbsp;&nbsp;&nbsp; cout &lt;&lt; "Content-Type: 
+text/html" &lt;&lt; endl&nbsp; &lt;&lt; endl;</SPAN></SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001></SPAN></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001>So no need to reply to my last mail anymore, but thanks 
+anyway.</SPAN></SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001></SPAN></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN class=363482511-08052001>all the 
+best,</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=363482511-08052001>Jozef 
+Kruger</SPAN></FONT></DIV>
+<DIV><FONT face=Arial size=2><SPAN class=415282311-08052001><SPAN 
+class=363482511-08052001></SPAN></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT size=2><FONT face=Arial><SPAN 
+class=415282311-08052001></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT size=2><FONT face=Arial><SPAN 
+class=415282311-08052001></SPAN></FONT></FONT>&nbsp;</DIV>
+<DIV><FONT face=Arial size=2><SPAN 
+class=415282311-08052001></SPAN></FONT>&nbsp;</DIV></BODY></HTML>
+
+------_=_NextPart_001_01C0D7B1.FB1F1D7C--
+
+From lagoze@cs.cornell.edu  Thu May 17 12:23:11 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Thu, 17 May 2001 07:23:11 -0400
+Subject: [OAI-implementers] RE: RDF, OAI, and application within Libraries
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA608@opus.cs.cornell.edu>
+
+Dave,  Thanks for this clear note.  I especially like the point:
+
+> It is perfectly possible to define a simple XML syntax for 
+> RDF which is
+> XML-schema validatable, so long as you don't want any deep 
+> meaning to the
+> validation (e.g. serialize property names just as text, into 
+> attribute values
+> or into element bodies).
+
+This more succinctly expresses my, as usual, long-winded comments in
+[1].  As you say, yes we certainly could come up with an XML schema for
+a XML encoding of RDF triples, but the result would oddly impose a
+strongly contrained data format tool onto a data model whose raison
+d'etre is flexible ontology and relationship intermixing.  
+
+A few more comments:
+
+1. As stated in the earlier note, I think that we in OAI need to be open
+to questioning our use of XML schema for defining and validating the
+metadata passed back in responses to OAI requests (distinct from using
+XML schema as means of defining the format of the packaging protocol
+response itself).  It may be that such a strict data formating approach
+may indeed be inappropriate and too constraining and we should examine
+and possibly provide the option for permitting other validation
+definition mechanisms for the metadata - e.g., schematron, relax, RDF
+schema, etc. all of which have numerous attributes that have been
+discussed in xmlhack, etc.  
+2. At the same time that we examine other options we need to be prudent
+about the tradeoffs between providing choices and flexibility (e.g.,
+allowing multiple schema mechanisms for metadata) vs. the ease of use
+for the average user.  The two are not necessarily incompatible but it
+is certainly true that each option or choice that you make available to
+the user community makes it more difficult for them to use/implement
+(all of our feature rich Microsoft goodies demonstrate this well!).  Our
+choice in OAI was to aim as low-barrier as possible while providing a
+reasonable level of functionality for the broadest application.  Such a
+choice necessarily excludes a portion of the user community interested
+in richer applications. Obviously, we need to understand whether the OAI
+has, by choosing single solutions like XML schema, made the
+feature/complexity choice at the wrong place.  
+
+That all said, let's keep discussing the positioning of RDF vis-a-vis
+OAI. We have, after all, made a public commitment to a 12-18 month
+experimentation period with the existing OAI protocol, and such
+questions are extremely relevant to the experiement.  An outstanding
+question for me is to understand where RDF sits in the OAI data provider
+and service provider dichotomy.  It may be that the vast majority of
+data providers don't need (or even understand) RDF and are mainly
+interested in exposing metadata as simple attribute value pairs or
+simple trees for which XML is perfectly appropriate.  It may be that
+some service providers want then to combine that relatively fixed data
+from multiple data providers, process it into some triple store, and use
+the power of RDF to express relationships among the distributed data.
+This reflects of my thinking of how OAI fits into the Harmony
+(http://www.ilrt.bris.ac.uk/discovery/harmony/) project, in which Jane
+Hunter Dan Brickley and I are working on modeling and metadata
+interoperability and using RDF as the mechanism for doing this.  It may
+be that my perception is wrong and that RDF is indeed much more
+appropriate at the data provider level in which case we should
+reconsider some of our choices in OAI.
+
+Carl
+
+[1]
+http://oaisrv.nsdl.cornell.edu/pipermail/oai-implementers/2001-May/00011
+6.html
+
+> -----Original Message-----
+> From: Dave Reynolds [mailto:der@hplb.hpl.hp.com]
+> Sent: Thursday, May 17, 2001 4:50 AM
+> To: Peter Breton
+> Cc: Mick Bass; www-rdf-dspace@w3.org; Brian McBride (E-mail)
+> Subject: Re: RDF, OAI, and application within Libraries
+> 
+> 
+> Peter Breton wrote:
+> 
+> > It seems to me that at least part of the problem seems to 
+> be that RDF is
+> > format-agnostic (RDF is the same whether it's expressed as 
+> triples, in a
+> > visual graph, or in XML serialization -- and there are 
+> multiple possible
+> > XML serializations), whereas the intent of OAI is to be directly
+> > parsable and usable.
+> 
+> Actually I'm not sure that that is the main problem with RDF in OAI.
+> 
+> The problem, as I see it, is that OAI requires not just 
+> well-formed XML but
+> XML validatable by a fixed XML-Schema. The whole point of RDF 
+> is to be able
+> to combine metadata formats and thus properties drawn from different
+> namespaces can appear in the same set of assertions. So while 
+> is it possible
+> to define an XML-Schema for, say, Dublin Core in RDF it is 
+> not obvious that
+> you can have a fixed XML-Schema that would validate arbitrary 
+> RDF conforming
+> to the M&S spec. It is this flexibility of property name 
+> spaces rather than
+> format-agnosticism which I see as the issue. The latter is 
+> actually the
+> solution.
+> 
+> > Would a specific OAI-blessed canonical XMLserialization 
+> fly, d'you think?
+> 
+> Exactly.
+> 
+> It is perfectly possible to define a simple XML syntax for 
+> RDF which is
+> XML-schema validatable, so long as you don't want any deep 
+> meaning to the
+> validation (e.g. serialize property names just as text, into 
+> attribute values
+> or into element bodies). Both Sergey Melnik and Brian McBride 
+> (and probably
+> others) have proposed raw RDF-triple-in-XML syntaxes which 
+> either do, or
+> could easily be adapted to, meet this need.
+> 
+> It is conceivable that the new W3C RDF Core working group 
+> might specify a raw
+> triple syntax which meets the constraints of XML Schema 
+> validation. OAI could
+> define/bless such a serialization anyway.
+> 
+> Dave
+> 
+> 
+
+From lagoze@cs.cornell.edu  Fri May 18 12:44:32 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Fri, 18 May 2001 07:44:32 -0400
+Subject: [OAI-implementers] RE: RDF, OAI, and application within Libraries
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA619@opus.cs.cornell.edu>
+
+Dave,
+
+A few brief comments.  Please don't overly interpret my comments as
+"OAIs positioning".  I am but one of several voices in the OAI
+"think-tank" ;-)  Certainly Herbert Van de Sompel's thinking on this is
+as important as mine - I'm confident that he agrees with my broad points
+but am uncomfortable having my exact words taken as the OAI gospel.  
+
+That aside, I think that you and I are pretty much on the same page
+about all this.  Especially about the long-term need to support
+semi-structured data formats and incompatibility of the basic goal of
+XML schema vis-a-vis that.  Ditto for the importance of RDF in all of
+this.  The big problem, as I see it, is getting people to even
+understand metadata at all and why any structuring of data is important.
+Its been amazing for us at Cornell who are involved in the National
+Science Digital Library project to see how many respectable content
+providers out there simply don't understand the basics about metadata.
+My personal experience within DCMI is that mixing this up with scarey
+things like nodes, arcs, namespaces, etc. defeats the goal.  My personal
+philosophy, which may be wrong, is the best way to get the message out
+to as many neophytes as possible is via a simple cookbook rather than a
+list of options.  Others may differ on this approach.
+
+Regarding your data/service provider discussion.  Yes, I agree that an
+individual party can play both roles, as you point out.  In fact, in our
+above mentioned NSDL project we are doing exactly what you are saying -
+pulling in or using heuristics to extract very sloppy metadata from
+"level 0" data providers, processing it with computers and humans and
+then exposing via OAI as "normalized" metadata.  This two-tier structure
+of data providers is very interesting to us in the sense that it
+provides a hierarchy for metadata enhancement - certainly an environment
+in which RDF plays an important role.
+
+Carl
+
+> -----Original Message-----
+> From: Dave Reynolds [mailto:der@hplb.hpl.hp.com]
+> Sent: Thursday, May 17, 2001 12:54 PM
+> To: lagoze@CS.Cornell.EDU
+> Cc: pbreton@mit.edu; bass@mit.edu; www-rdf-dspace@w3.org;
+> bwm@hplb.hpl.hp.com; oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: RDF, OAI, and application within Libraries
+> 
+> 
+> Carl,
+> 
+> Many thanks for this - it helps me understand OAI's 
+> positioning much better.
+> 
+> Let me paraphrase and respond to your points.
+> 
+> > [1] It is plausible to support non XML Schema means of 
+> validating metadata
+> passed back from OAI queries but [2] too many options actually limits
+> flexibility by being too complex.
+> 
+> Agreed. You are right there are a lot of alternatives (Relax, 
+> Schematron,
+> RDFS, DAML ...) and supporting everything it just too complex 
+> and costly. In
+> my naive view of the world there are two useful extremes to support.
+> 
+> Firstly, one wants a tightly constrained validatable format suited to
+> typical metadata records. For that, XML Schema seems entirely 
+> appropriate
+> and it's not obvious that going further and supporting Relax 
+> or whatever
+> adds much.
+> 
+> Secondly, I believe that for future proofing we also need to 
+> support less
+> formal semi-structured data formats. Semi-structured data 
+> arises in many
+> ways - merging of multiple data sources, sparse user 
+> annotations, rapidly
+> evolving schemas specific to given communities. In my simple 
+> view of the
+> world RDF is a good foundation for a wide variety of 
+> semi-structured data so
+> supporting that would be a useful complement to the highly structured
+> formats.
+> 
+> If this meant changing OAI to support an extra format I can 
+> see that as an
+> extra complication. However, by using the sort of shallow (XML Schema
+> compatible) encoding we were discussing in this thread it 
+> seems like RDF
+> could be supported as an incremental addition, within the 
+> current framework,
+> and need not complicate implementations. There is the issue of using
+> RDFS/DAML schemas  for interpreting the RDF when you get it. 
+> However, even
+> these need not affect the OAI protocol since they are (a) 
+> somewhat optional,
+> (b) can sometimes be inferred out of band e.g. from the 
+> namespaces used in
+> the RDF properties, (c) could be included in the RDF payload.
+> 
+> To me these two extremes are sufficient between them to cover 
+> most needs.
+> 
+> >   An outstanding
+> > question for me is to understand where RDF sits in the OAI 
+> data provider
+> > and service provider dichotomy.
+> 
+> An excellent point. Perhaps I am confused on the distinction 
+> between data
+> providers and service providers but I can see repositories like DSpace
+> wanting to combine metadata from multiple sources and "smush" 
+> them together
+> and also to support less structured metadata such as user or 
+> small community
+> annotations. Their data provider role makes it appropriate 
+> for them to use
+> OAI to export metadata access but they also have attributes 
+> of a service
+> provider, or at least a clearing house for various metadata, 
+> and so have
+> some role for these flexible semi-tructured metadata formats.
+> 
+> Dave
+> 
+> 
+> 
+
+From der@hplb.hpl.hp.com  Thu May 17 17:54:21 2001
+From: der@hplb.hpl.hp.com (Dave Reynolds)
+Date: Thu, 17 May 2001 17:54:21 +0100
+Subject: [OAI-implementers] Re: RDF, OAI, and application within Libraries
+References: <706871B20764CD449DB0E8E3D81C4D43015AA608@opus.cs.cornell.edu>
+Message-ID: <3B04023D.9147DFEA@hplb.hpl.hp.com>
+
+Carl,
+
+Many thanks for this - it helps me understand OAI's positioning much better.
+
+Let me paraphrase and respond to your points.
+
+> [1] It is plausible to support non XML Schema means of validating metadata
+passed back from OAI queries but [2] too many options actually limits
+flexibility by being too complex.
+
+Agreed. You are right there are a lot of alternatives (Relax, Schematron,
+RDFS, DAML ...) and supporting everything it just too complex and costly. In
+my naive view of the world there are two useful extremes to support.
+
+Firstly, one wants a tightly constrained validatable format suited to
+typical metadata records. For that, XML Schema seems entirely appropriate
+and it's not obvious that going further and supporting Relax or whatever
+adds much.
+
+Secondly, I believe that for future proofing we also need to support less
+formal semi-structured data formats. Semi-structured data arises in many
+ways - merging of multiple data sources, sparse user annotations, rapidly
+evolving schemas specific to given communities. In my simple view of the
+world RDF is a good foundation for a wide variety of semi-structured data so
+supporting that would be a useful complement to the highly structured
+formats.
+
+If this meant changing OAI to support an extra format I can see that as an
+extra complication. However, by using the sort of shallow (XML Schema
+compatible) encoding we were discussing in this thread it seems like RDF
+could be supported as an incremental addition, within the current framework,
+and need not complicate implementations. There is the issue of using
+RDFS/DAML schemas  for interpreting the RDF when you get it. However, even
+these need not affect the OAI protocol since they are (a) somewhat optional,
+(b) can sometimes be inferred out of band e.g. from the namespaces used in
+the RDF properties, (c) could be included in the RDF payload.
+
+To me these two extremes are sufficient between them to cover most needs.
+
+>   An outstanding
+> question for me is to understand where RDF sits in the OAI data provider
+> and service provider dichotomy.
+
+An excellent point. Perhaps I am confused on the distinction between data
+providers and service providers but I can see repositories like DSpace
+wanting to combine metadata from multiple sources and "smush" them together
+and also to support less structured metadata such as user or small community
+annotations. Their data provider role makes it appropriate for them to use
+OAI to export metadata access but they also have attributes of a service
+provider, or at least a clearing house for various metadata, and so have
+some role for these flexible semi-tructured metadata formats.
+
+Dave
+
+
+
+
+From ben@biomedcentral.com  Mon May 21 17:56:12 2001
+From: ben@biomedcentral.com (Ben Henley)
+Date: Mon, 21 May 2001 17:56:12 +0100
+Subject: [OAI-implementers] dealing with non-existent Sets
+Message-ID: <B630B725359AD411967B00508BFC8E9001624A8A@severin.cursci.co.uk>
+
+	Stupid question:
+
+	I'm not clear from the protocol specs how I'm supposed to handle
+non-existent Sets.
+	If a client makes a request with a set argument which is a well
+formed setSpec but doesn't exist in my repository, should I:
+
+	(a) return a 400 Status-Code
+	(b) return an empty response element
+
+	I think it's (b), but I'm not sure - if the Set doesn't exist,
+should I treat it as an illegal argument or just reply "No records match the
+request"?
+
+	Thanks.
+
+Ben Henley <mailto:ben@biomedcentral.com>                    
+Special Projects Editor
+BioMed Central    
+http://www.biomedcentral.com
+
+
+
+
+From thabing@uiuc.edu  Mon May 21 18:16:48 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Mon, 21 May 2001 12:16:48 -0500
+Subject: [OAI-implementers] dealing with non-existent Sets
+References: <B630B725359AD411967B00508BFC8E9001624A8A@severin.cursci.co.uk>
+Message-ID: <3B094D80.70A49300@uiuc.edu>
+
+Hi Ben,
+
+In general, if the OAI request is correct in every way except that your
+repository does not have the item(s) being requested, either 'no such set',
+'nothing in the given date range', 'no such record identifier', etc., the
+correct response is to return a valid OAI response, but with no data.  For
+example,
+
+Request:
+
+verb=ListIdentifiers&set=there:is:no:set
+
+Response:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<ListIdentifiers 
+xmlns="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+xsi:schemaLocation="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers   
+http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers.xsd">
+
+    <responseDate>2000-10-01T19:20:30-04:00</responseDate>
+    <requestURL>http://an.oa.org/OAI-script?verb=ListIdentifiers
+           &amp;setSpec=there:is:no:set</requestURL>
+
+</ListIdentifiers>
+
+Kind regards,
+	Tom
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+
+Ben Henley wrote:
+> 
+>         Stupid question:
+> 
+>         I'm not clear from the protocol specs how I'm supposed to handle
+> non-existent Sets.
+>         If a client makes a request with a set argument which is a well
+> formed setSpec but doesn't exist in my repository, should I:
+> 
+>         (a) return a 400 Status-Code
+>         (b) return an empty response element
+> 
+>         I think it's (b), but I'm not sure - if the Set doesn't exist,
+> should I treat it as an illegal argument or just reply "No records match the
+> request"?
+> 
+>         Thanks.
+> 
+> Ben Henley <mailto:ben@biomedcentral.com>
+> Special Projects Editor
+> BioMed Central
+> http://www.biomedcentral.com
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+From Joe Futrelle <futrelle@ncsa.uiuc.edu>  Mon May 21 18:30:38 2001
+From: Joe Futrelle <futrelle@ncsa.uiuc.edu> (Joe Futrelle)
+Date: Mon, 21 May 2001 12:30:38 -0500
+Subject: [OAI-implementers] RE: RDF, OAI, and application within Libraries
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D43015AA619@opus.cs.cornell.edu>; from lagoze@cs.cornell.edu on Fri, May 18, 2001 at 07:44:32AM -0400
+References: <706871B20764CD449DB0E8E3D81C4D43015AA619@opus.cs.cornell.edu>
+Message-ID: <20010521123038.A2383@ncsa.uiuc.edu>
+
+Exactly, and in fact in a distributed system there may be more than
+one "normalized" format that metadata needs to be translated into.  In
+general, each "level 0" (maybe "level 1") tool will require a specific
+format and may need to talk to other such tools through mediators
+which can translate MD.  The point is to maintain the semantics across
+these translations.  Thus whether or not a tool supports format X is
+not critical; what's critical is whether it supports the relevant
+semantics of format X, making translation possible.
+
+On Fri, May 18, 2001 at 07:44:32AM -0400, lagoze@cs.cornell.edu wrote:
+...
+> Regarding your data/service provider discussion.  Yes, I agree that an
+> individual party can play both roles, as you point out.  In fact, in our
+> above mentioned NSDL project we are doing exactly what you are saying -
+> pulling in or using heuristics to extract very sloppy metadata from
+> "level 0" data providers, processing it with computers and humans and
+> then exposing via OAI as "normalized" metadata.  This two-tier structure
+> of data providers is very interesting to us in the sense that it
+> provides a hierarchy for metadata enhancement - certainly an environment
+> in which RDF plays an important role.
+> 
+> Carl
+> 
+> > -----Original Message-----
+> > From: Dave Reynolds [mailto:der@hplb.hpl.hp.com]
+> > Sent: Thursday, May 17, 2001 12:54 PM
+> > To: lagoze@CS.Cornell.EDU
+> > Cc: pbreton@mit.edu; bass@mit.edu; www-rdf-dspace@w3.org;
+> > bwm@hplb.hpl.hp.com; oai-implementers@oaisrv.nsdl.cornell.edu
+> > Subject: Re: RDF, OAI, and application within Libraries
+> > 
+> > 
+> > Carl,
+> > 
+> > Many thanks for this - it helps me understand OAI's 
+> > positioning much better.
+> > 
+> > Let me paraphrase and respond to your points.
+> > 
+> > > [1] It is plausible to support non XML Schema means of 
+> > validating metadata
+> > passed back from OAI queries but [2] too many options actually limits
+> > flexibility by being too complex.
+> > 
+> > Agreed. You are right there are a lot of alternatives (Relax, 
+> > Schematron,
+> > RDFS, DAML ...) and supporting everything it just too complex 
+> > and costly. In
+> > my naive view of the world there are two useful extremes to support.
+> > 
+> > Firstly, one wants a tightly constrained validatable format suited to
+> > typical metadata records. For that, XML Schema seems entirely 
+> > appropriate
+> > and it's not obvious that going further and supporting Relax 
+> > or whatever
+> > adds much.
+> > 
+> > Secondly, I believe that for future proofing we also need to 
+> > support less
+> > formal semi-structured data formats. Semi-structured data 
+> > arises in many
+> > ways - merging of multiple data sources, sparse user 
+> > annotations, rapidly
+> > evolving schemas specific to given communities. In my simple 
+> > view of the
+> > world RDF is a good foundation for a wide variety of 
+> > semi-structured data so
+> > supporting that would be a useful complement to the highly structured
+> > formats.
+> > 
+> > If this meant changing OAI to support an extra format I can 
+> > see that as an
+> > extra complication. However, by using the sort of shallow (XML Schema
+> > compatible) encoding we were discussing in this thread it 
+> > seems like RDF
+> > could be supported as an incremental addition, within the 
+> > current framework,
+> > and need not complicate implementations. There is the issue of using
+> > RDFS/DAML schemas  for interpreting the RDF when you get it. 
+> > However, even
+> > these need not affect the OAI protocol since they are (a) 
+> > somewhat optional,
+> > (b) can sometimes be inferred out of band e.g. from the 
+> > namespaces used in
+> > the RDF properties, (c) could be included in the RDF payload.
+> > 
+> > To me these two extremes are sufficient between them to cover 
+> > most needs.
+> > 
+> > >   An outstanding
+> > > question for me is to understand where RDF sits in the OAI 
+> > data provider
+> > > and service provider dichotomy.
+> > 
+> > An excellent point. Perhaps I am confused on the distinction 
+> > between data
+> > providers and service providers but I can see repositories like DSpace
+> > wanting to combine metadata from multiple sources and "smush" 
+> > them together
+> > and also to support less structured metadata such as user or 
+> > small community
+> > annotations. Their data provider role makes it appropriate 
+> > for them to use
+> > OAI to export metadata access but they also have attributes 
+> > of a service
+> > provider, or at least a clearing house for various metadata, 
+> > and so have
+> > some role for these flexible semi-tructured metadata formats.
+> > 
+> > Dave
+> > 
+> > 
+> > 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+--
+Joe Futrelle
+
+From jozef@nl.adlibsoft.com  Wed May 23 11:06:50 2001
+From: jozef@nl.adlibsoft.com (Jozef Kruger)
+Date: Wed, 23 May 2001 12:06:50 +0200
+Subject: [OAI-implementers] new records in combination with a resumptionToken
+Message-ID: <4E232B133AC9F04BB194C2AE2024EF9205C1A9@saturnus.nl.adlibsoft.com>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_001_01C0E370.16D3387C
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+Hello everybody,
+ 
+when implementing the resumptionToken-stuff, the following problem arose:
+Our database has a function startfrom-limit(n, m) which starts at the n'th
+record and get's m records.
+It ignores the first (n-1) records, the records are ordered by record
+number.
+When ListRecords is called, I return the first 10 records in my database
+(with recordnumbers 1..6, 8..11), followed by a resumptionToken.
+As follows: startfrom-limit(1, 10);
+The next second a record is added to the database and it get's record number
+7 (the lowest free record number).
+When the resumptionToken is used, I return the records 11-20 in my database,
+
+as follows: startfrom-limit(11, 10);
+but having added the record number 7, the record with record number 11 will
+be return twice.
+Is it necessary to explicitly avoid this behaviour? I ask this because I
+think this situation is quite rare (or am I wrong?).
+ 
+thanks in advance :)
+ 
+cheers,
+Jozef Kruger
+-----------------------------------------------
+Jozef Kruger, junior programmer.
+
+    Adlib Information Systems
+     www.adlibsoft.com <http://www.adlibsoft.com> 
+
+-----------------------------------------------
+ 
+
+------_=_NextPart_001_01C0E370.16D3387C
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+
+
+<META content=3D"MSHTML 5.00.2920.0" name=3DGENERATOR></HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>Hello =
+
+everybody,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D710344709-23052001></SPAN></FONT>&nbsp;</DIV><FONT face=3DArial =
+size=3D2><SPAN=20
+class=3D710344709-23052001>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>when =
+implementing=20
+the resumptionToken-stuff, the following problem =
+arose:</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>Our =
+database has a=20
+function startfrom-limit(n, m) which starts at the n'th record and =
+get's m=20
+records.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>It =
+ignores the first=20
+(n-1) records, the records are ordered by record =
+number.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>When =
+ListRecords is=20
+called, </SPAN></FONT></SPAN></FONT><FONT face=3DArial size=3D2><SPAN=20
+class=3D710344709-23052001>I return the first 10 records in my database =
+(with=20
+recordnumbers 1..6, 8..11), followed by a =
+resumptionToken.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>As =
+follows:=20
+startfrom-limit(1, 10);</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>The =
+next second a=20
+record is added to the database and it get's record number 7 (the =
+lowest free=20
+record number).</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>When =
+the=20
+resumptionToken is used, I return the records 11-20 in my database,=20
+</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>as =
+follows:=20
+startfrom-limit(11, 10);</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>but =
+having added the=20
+record number 7, the record with record number 11 will be return=20
+twice.</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>Is it =
+necessary to=20
+explicitly avoid this behaviour? I ask this because I think this =
+situation is=20
+quite rare (or am I wrong?).</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D710344709-23052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN =
+class=3D710344709-23052001>thanks in advance=20
+:)</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D710344709-23052001></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D710344709-23052001>cheers,</SPAN></FONT></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN class=3D710344709-23052001>Jozef =
+
+Kruger</SPAN></FONT></DIV>
+<DIV><SPAN class=3D710344709-23052001>
+<DIV align=3Dleft><PRE align=3D"left"><FONT face=3DArial size=3D2><SPAN =
+class=3D710344709-23052001>---------------------------------------------=
+--<BR></SPAN></FONT><FONT face=3DArial size=3D2>Jozef Kruger, junior =
+programmer.
+    Adlib Information Systems<BR><SPAN class=3D710344709-23052001>    =
+<A href=3D"http://www.adlibsoft.com">www.adlibsoft.com</A></SPAN>
+-----------------------------------------------</FONT></PRE></DIV></SPAN=
+></DIV>
+<DIV><FONT face=3DArial size=3D2><SPAN=20
+class=3D710344709-23052001></SPAN></FONT>&nbsp;</DIV></BODY></HTML>
+
+------_=_NextPart_001_01C0E370.16D3387C--
+
+From hussein@vt.edu  Thu May 24 01:32:54 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Wed, 23 May 2001 20:32:54 -0400
+Subject: [OAI-implementers] new records in combination with a
+ resumptionToken
+References: <4E232B133AC9F04BB194C2AE2024EF9205C1A9@saturnus.nl.adlibsoft.com>
+Message-ID: <3B0C56B6.8F5BDC7@vt.edu>
+
+This is a multi-part message in MIME format.
+
+--Boundary_(ID_vh2fTxevOinGESn14hp4jw)
+Content-type: text/plain; charset=us-ascii
+Content-transfer-encoding: 7bit
+
+hi
+
+this is an interesting problem so im going to share some of our
+discussions here at virginia tech that are relevant to this problem ...
+
+of course there is no general solution since i think the OAI quite
+deftly avoided handling too much complication in the protocol ... that
+said, there are two very interesting "solutions", one of which is
+probably relevant to you:
+
+firstly, i recall a while back someone (cant remember who) related how
+they implemented the protocol by making a temporary table to support
+resumptions ... this would probably solve your problem but would require
+a bit more work ...
+
+the alternative is to consider how service providers work (at least this
+is how we thought it through when building our first experimental
+harvester):
+
+a) since you can always add records at any time during the day and the
+granularity of harvesting is a day, you cannot trust data you got on the
+same day.
+
+b) since dates are local to different timezones, if the data provider is
+west of the service provider, asking for everything up until yesterday
+is not "interoperationally stable" since it could still be yesterday at
+the data provider.
+
+now there are multiple solutions to this and we tried implementing some:
+a) dont get anything newer than 2 days old
+b) always ask for a 2 day overlap ending on the current date
+c) use a 1-day overlap and operate in the timezone of the data provider
+(extract an initial responseDate from the data provider and then
+increment locally)
+
+as far as we can figure, any service provider that wants to avoid
+missing data entries has to do something like this ... since new data is
+not "stable" for harvesting it is not trusted and/or not harvested
+immediately and your problem of database updates pretty much disappears
+as long as harvesting is by date (which i trust it almost always is)
+
+ok, i know this is probably way too much detail for this question :) but
+i just wanted to share these thoughts to see if they aligned with the
+harvesting approaches used by other people building service provider
+interfaces ...
+
+any further comments will be appreciated ...
+
+ttfn
+----hussein
+
+-- 
+========================================================================
+hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+========================================================================
+
+--Boundary_(ID_vh2fTxevOinGESn14hp4jw)
+Content-type: text/x-vcard; name=hussein.vcf; charset=us-ascii
+Content-description: Card for Hussein Suleman
+Content-disposition: attachment; filename=hussein.vcf
+Content-transfer-encoding: 7bit
+
+begin:vcard 
+n:Suleman;Hussein
+tel;work:+15402313615
+x-mozilla-html:FALSE
+url:http://purl.org/net/hussein
+org:Virginia Tech;Digital Libraries Research Laboratory
+version:2.1
+email;internet:hussein@vt.edu
+adr;quoted-printable:;;2030 Torgerson Hall=0D=0A;Blacksburg;Virginia;24060;United States of America
+note;quoted-printable:http://www.dlib.vt.edu=0D=0Ahttp://www.vt.edu=0D=0A
+fn:Hussein Suleman
+end:vcard
+
+--Boundary_(ID_vh2fTxevOinGESn14hp4jw)--
+
+From henry@stern.ca  Thu May 24 13:11:44 2001
+From: henry@stern.ca (Henry Stern)
+Date: Thu, 24 May 2001 09:11:44 -0300
+Subject: [OAI-implementers] new records in combination with a resumptionToken
+In-Reply-To: <3B0C56B6.8F5BDC7@vt.edu>
+Message-ID: <CFEOKDCCIOCDJDOAGMIOKEONCAAA.henry@stern.ca>
+
+In the new version of the CIMI repository, we use temporary tables managed
+by a Java program.  Only the keys for the metadata are stored in the
+temporary table.  Every request involving a resumptionToken results in a
+LEFT JOIN on the temporary table and the metadata table with a limit and
+offset.  You can tell which records have been deleted because their metadata
+is null (because of the left join).
+
+Some sample SQL:
+CREATE TABLE temporarya83lkdsfj AS SELECT some_key FROM metadata_table WHERE
+modification_time > '2000-05-24';
+SELECT metadata_table.metadata_field FROM temporarya83lkdsf LEFT JOIN
+metadata_table ON temporarya83lkdsf.some_key = metadata_table.some_key LIMIT
+100, 100;
+
+It should be noted that the temporary table has no keys or indices, nor was
+the distinct keyword used.  It quadruples the time of the query and has no
+benefit for the left join, which obviously runs in linear time.
+
+The main advantage to this method is that the query only needs to be run
+once.  Joining a subset of a table to another table based on its primary key
+is pretty quick.
+
+The disadvantage to this method is that if a massive amount of hits come in
+at once, MySQL chokes up.  The CPU won't be working at full speed nor will
+the disk so it might be some sort of internal deadlocking issue.  It does,
+eventually, clear up.
+
+What were some other solutions?
+
+Henry
+
+> -----Original Message-----
+> From: oai-implementers-admin@oaisrv.nsdl.cornell.edu
+> [mailto:oai-implementers-admin@oaisrv.nsdl.cornell.edu]On Behalf Of
+> Hussein Suleman
+> Sent: May 23, 2001 9:33 PM
+> To: Jozef Kruger
+> Cc: OAI-impl (E-mail)
+> Subject: Re: [OAI-implementers] new records in combination with a
+> resumptionToken
+>
+>
+> hi
+>
+> this is an interesting problem so im going to share some of our
+> discussions here at virginia tech that are relevant to this problem ...
+>
+> of course there is no general solution since i think the OAI quite
+> deftly avoided handling too much complication in the protocol ... that
+> said, there are two very interesting "solutions", one of which is
+> probably relevant to you:
+>
+> firstly, i recall a while back someone (cant remember who) related how
+> they implemented the protocol by making a temporary table to support
+> resumptions ... this would probably solve your problem but would require
+> a bit more work ...
+>
+> the alternative is to consider how service providers work (at least this
+> is how we thought it through when building our first experimental
+> harvester):
+>
+> a) since you can always add records at any time during the day and the
+> granularity of harvesting is a day, you cannot trust data you got on the
+> same day.
+>
+> b) since dates are local to different timezones, if the data provider is
+> west of the service provider, asking for everything up until yesterday
+> is not "interoperationally stable" since it could still be yesterday at
+> the data provider.
+>
+> now there are multiple solutions to this and we tried implementing some:
+> a) dont get anything newer than 2 days old
+> b) always ask for a 2 day overlap ending on the current date
+> c) use a 1-day overlap and operate in the timezone of the data provider
+> (extract an initial responseDate from the data provider and then
+> increment locally)
+>
+> as far as we can figure, any service provider that wants to avoid
+> missing data entries has to do something like this ... since new data is
+> not "stable" for harvesting it is not trusted and/or not harvested
+> immediately and your problem of database updates pretty much disappears
+> as long as harvesting is by date (which i trust it almost always is)
+>
+> ok, i know this is probably way too much detail for this question :) but
+> i just wanted to share these thoughts to see if they aligned with the
+> harvesting approaches used by other people building service provider
+> interfaces ...
+>
+> any further comments will be appreciated ...
+>
+> ttfn
+> ----hussein
+>
+> --
+> ========================================================================
+> hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+> ========================================================================
+>
+
+
+From deridder@cs.utk.edu  Fri May 25 17:42:15 2001
+From: deridder@cs.utk.edu (deridder)
+Date: Fri, 25 May 2001 12:42:15 -0400 (EDT)
+Subject: [OAI-implementers] new records in combination with a resumptionToken
+In-Reply-To: <4E232B133AC9F04BB194C2AE2024EF9205C1A9@saturnus.nl.adlibsoft.com>
+Message-ID: <Pine.GSO.4.10.10105251234070.26597-100000@cetus4c.cs.utk.edu>
+
+Hi Josef!
+
+  My resumption tokens include a number which specifies how many entries 
+of a set have been already offered;  I simply skip that many on the next 
+output, print my chosen number (20), and adjust the resumption token
+accordingly.
+
+  Since I'm simply printing out a certain number of entries rather than
+specific file numbers, this works regardless of having added or deleted
+database entries.
+
+   I know, simplistic, but it works.  I belong to the KISS followers!
+
+   ---Jody
+On
+Wed, 23 May 2001, Jozef Kruger wrote:
+
+> Hello everybody,
+>  
+> when implementing the resumptionToken-stuff, the following problem arose:
+> Our database has a function startfrom-limit(n, m) which starts at the n'th
+> record and get's m records.
+> It ignores the first (n-1) records, the records are ordered by record
+> number.
+> When ListRecords is called, I return the first 10 records in my database
+> (with recordnumbers 1..6, 8..11), followed by a resumptionToken.
+> As follows: startfrom-limit(1, 10);
+> The next second a record is added to the database and it get's record number
+> 7 (the lowest free record number).
+> When the resumptionToken is used, I return the records 11-20 in my database,
+> 
+> as follows: startfrom-limit(11, 10);
+> but having added the record number 7, the record with record number 11 will
+> be return twice.
+> Is it necessary to explicitly avoid this behaviour? I ask this because I
+> think this situation is quite rare (or am I wrong?).
+>  
+> thanks in advance :)
+>  
+> cheers,
+> Jozef Kruger
+> -----------------------------------------------
+> Jozef Kruger, junior programmer.
+> 
+>     Adlib Information Systems
+>      www.adlibsoft.com <http://www.adlibsoft.com> 
+> 
+> -----------------------------------------------
+>  
+> 
+
+PGPKey: http://www.cs.utk.edu/~deridder/jd-pgp.txt
+
+
+
+From simeon@lanl.gov  Fri May 25 21:14:15 2001
+From: simeon@lanl.gov (Simeon Warner)
+Date: Fri, 25 May 2001 14:14:15 -0600 (MDT)
+Subject: [OAI-implementers] harvesting strategy
+In-Reply-To: <3B0C56B6.8F5BDC7@vt.edu>
+Message-ID: <Pine.LNX.4.10.10105251342290.2040-100000@mmm.lanl.gov>
+
+On Wed, 23 May 2001, Hussein Suleman wrote:
+> [chopped section on resumptions and data-provider tables]
+> 
+> the alternative is to consider how service providers work (at least this
+> is how we thought it through when building our first experimental
+> harvester):
+
+I've spent a little time thinking about harvesters so I thought I'd
+comment on Hussein's notes.
+
+> a) since you can always add records at any time during the day and the
+> granularity of harvesting is a day, you cannot trust data you got on the
+> same day.
+
+agreed.
+
+> b) since dates are local to different timezones, if the data provider is
+> west of the service provider, asking for everything up until yesterday
+> is not "interoperationally stable" since it could still be yesterday at
+> the data provider.
+
+agreed.
+
+> now there are multiple solutions to this and we tried implementing some:
+> a) dont get anything newer than 2 days old
+> b) always ask for a 2 day overlap ending on the current date
+> c) use a 1-day overlap and operate in the timezone of the data provider
+> (extract an initial responseDate from the data provider and then
+> increment locally)
+
+I think something like option c) is best. As Hussein said, even when
+working in the local timezone of the data-provider, one needs to harvest
+records that changed on the same day as the last harvest was performed.
+I suggest using the YYYY-MM-DD part of the responseDate from the
+first reply to the last harvest's ListRecords/ListIdentifiers request
+as the new 'from' date. I say 'first reply' to cope with ill-defined
+behaviour if set of partial responses spanned a day boundary, and I
+note that the responseDate must be in the local timezone of the
+data-provider, with the offset from UTC appended (1.0spec. sec3.2).
+The nice feature of this strategy is that it doesn't require the
+harvester to know what the time is, and is insensitive to errors in
+the repository time provided the datestamps and responseDates are
+consistent.
+
+Does anyone else have comments of different strategies?
+
+Another thing I am thinking about is when the operator of a harvester
+should be alerted to possible problems/changes requiring manual
+intervention. So far I have come up with:
+1) too many failures to reach site
+2) unexpected HTTP replies
+3) too many sequential redirect or retryAfter replies
+4) change in Identity reply (other than responseDate) 
+Comments?
+
+Cheers,
+Simeon
+
+
+> 
+> as far as we can figure, any service provider that wants to avoid
+> missing data entries has to do something like this ... since new data is
+> not "stable" for harvesting it is not trusted and/or not harvested
+> immediately and your problem of database updates pretty much disappears
+> as long as harvesting is by date (which i trust it almost always is)
+> 
+> ok, i know this is probably way too much detail for this question :) but
+> i just wanted to share these thoughts to see if they aligned with the
+> harvesting approaches used by other people building service provider
+> interfaces ...
+> 
+> any further comments will be appreciated ...
+> 
+> ttfn
+> ----hussein
+> 
+> -- 
+> ========================================================================
+> hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+> ========================================================================
+> 
+
+
+From liu_x@cs.odu.edu  Fri May 25 21:16:10 2001
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Fri, 25 May 2001 16:16:10 -0400 (EDT)
+Subject: [OAI-implementers] new records in combination with a resumptionToken
+In-Reply-To: <3B0C56B6.8F5BDC7@vt.edu>
+Message-ID: <Pine.SOL.4.10.10105251602500.3283-100000@defiant.cs.odu.edu>
+
+Hi, Hussein and Jozef,
+
+First, in the arc service provider, we actually used the method you
+mentioned below.
+
+> b) always ask for a 2 day overlap ending on the current date
+
+Except that the "2 day" is cutomizable.
+
+Secondly, about Jozef's question, I thought duplicate records also
+happen in other scenarios of OAI request.
+(a) same record belongs to different sets, and harvester harvests by set.
+(b) Record is changed since last harvest. So datestamp is changed but ID
+is intact.
+
+Harvester has to deal with duplicate records anyway, it could simply
+update local copy, or check datestamp first, then do update if necessary,
+depending on the overhead of reindex.
+
+So I believe it's not necessary to explictly avoid the scenario in your
+application.
+
+
+regards,
+liu
+
+
+ 
+
+
+
+
+On Wed, 23 May 2001, Hussein Suleman wrote:
+
+> ntent-transfer-encoding: 7bit
+> 
+> hi
+> 
+> this is an interesting problem so im going to share some of our
+> discussions here at virginia tech that are relevant to this problem ...
+> 
+> of course there is no general solution since i think the OAI quite
+> deftly avoided handling too much complication in the protocol ... that
+> said, there are two very interesting "solutions", one of which is
+> probably relevant to you:
+> 
+> firstly, i recall a while back someone (cant remember who) related how
+> they implemented the protocol by making a temporary table to support
+> resumptions ... this would probably solve your problem but would require
+> a bit more work ...
+> 
+> the alternative is to consider how service providers work (at least this
+> is how we thought it through when building our first experimental
+> harvester):
+> 
+> a) since you can always add records at any time during the day and the
+> granularity of harvesting is a day, you cannot trust data you got on the
+> same day.
+> 
+> b) since dates are local to different timezones, if the data provider is
+> west of the service provider, asking for everything up until yesterday
+> is not "interoperationally stable" since it could still be yesterday at
+> the data provider.
+> 
+> now there are multiple solutions to this and we tried implementing some:
+> a) dont get anything newer than 2 days old
+> b) always ask for a 2 day overlap ending on the current date
+> c) use a 1-day overlap and operate in the timezone of the data provider
+> (extract an initial responseDate from the data provider and then
+> increment locally)
+> 
+> as far as we can figure, any service provider that wants to avoid
+> missing data entries has to do something like this ... since new data is
+> not "stable" for harvesting it is not trusted and/or not harvested
+> immediately and your problem of database updates pretty much disappears
+> as long as harvesting is by date (which i trust it almost always is)
+> 
+> ok, i know this is probably way too much detail for this question :) but
+> i just wanted to share these thoughts to see if they aligned with the
+> harvesting approaches used by other people building service provider
+> interfaces ...
+> 
+> any further comments will be appreciated ...
+> 
+> ttfn
+> ----hussein
+> 
+> -- 
+> ========================================================================
+> hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+> =========================================
+
+
+From jyoung@oclc.org  Tue May 29 14:54:19 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Tue, 29 May 2001 09:54:19 -0400
+Subject: [OAI-implementers] new records in combination with a resumpti
+ onToken
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98342107@OA3-SERVER.oa.oclc.org>
+
+I suppose I should admit to the solution I took with our OAIHarvester and
+OAICat software. Each time the OAIHarvester is run, it naturally uses the
+'until' date from its last run as the 'from' date on the new run. If the OAI
+server takes these dates literally, it's likely that duplicate records will
+be served, as has been discussed. To get around this, I decided to have
+OAICat subtract one from the 'until' date. The upside is, I don't serve any
+duplicate records. The downside, of course, is that the server is up to a
+day behind on the repository's contents. I'm probably being too strict about
+duplicate records. Is there a best practices suggestion on this?
+
+Liu, I'd also note that there is a possibility that a record could be
+changed twice in one day; once before you harvest and once afterward. You
+mention that the harvester could discard duplicate records by comparing the
+datestamps, but that won't work in this case. Instead, you would have to
+compare the entire record to insure all changes are accounted for. Simply
+updating the local copy regardless of duplication, as you note, is perhaps
+best.
+
+Regards,
+Jeff
+
+> -----Original Message-----
+> From: Xiaoming Liu [mailto:liu_x@cs.odu.edu]
+> Sent: Friday, May 25, 2001 4:16 PM
+> To: Hussein Suleman
+> Cc: Jozef Kruger; OAI-impl (E-mail)
+> Subject: Re: [OAI-implementers] new records in combination with a
+> resumptionToken
+> 
+> 
+> Hi, Hussein and Jozef,
+> 
+> First, in the arc service provider, we actually used the method you
+> mentioned below.
+> 
+> > b) always ask for a 2 day overlap ending on the current date
+> 
+> Except that the "2 day" is cutomizable.
+> 
+> Secondly, about Jozef's question, I thought duplicate records also
+> happen in other scenarios of OAI request.
+> (a) same record belongs to different sets, and harvester 
+> harvests by set.
+> (b) Record is changed since last harvest. So datestamp is 
+> changed but ID
+> is intact.
+> 
+> Harvester has to deal with duplicate records anyway, it could simply
+> update local copy, or check datestamp first, then do update 
+> if necessary,
+> depending on the overhead of reindex.
+> 
+> So I believe it's not necessary to explictly avoid the 
+> scenario in your
+> application.
+> 
+> 
+> regards,
+> liu
+> 
+> 
+>  
+> 
+> 
+> 
+> 
+> On Wed, 23 May 2001, Hussein Suleman wrote:
+> 
+> > ntent-transfer-encoding: 7bit
+> > 
+> > hi
+> > 
+> > this is an interesting problem so im going to share some of our
+> > discussions here at virginia tech that are relevant to this 
+> problem ...
+> > 
+> > of course there is no general solution since i think the OAI quite
+> > deftly avoided handling too much complication in the 
+> protocol ... that
+> > said, there are two very interesting "solutions", one of which is
+> > probably relevant to you:
+> > 
+> > firstly, i recall a while back someone (cant remember who) 
+> related how
+> > they implemented the protocol by making a temporary table to support
+> > resumptions ... this would probably solve your problem but 
+> would require
+> > a bit more work ...
+> > 
+> > the alternative is to consider how service providers work 
+> (at least this
+> > is how we thought it through when building our first experimental
+> > harvester):
+> > 
+> > a) since you can always add records at any time during the 
+> day and the
+> > granularity of harvesting is a day, you cannot trust data 
+> you got on the
+> > same day.
+> > 
+> > b) since dates are local to different timezones, if the 
+> data provider is
+> > west of the service provider, asking for everything up 
+> until yesterday
+> > is not "interoperationally stable" since it could still be 
+> yesterday at
+> > the data provider.
+> > 
+> > now there are multiple solutions to this and we tried 
+> implementing some:
+> > a) dont get anything newer than 2 days old
+> > b) always ask for a 2 day overlap ending on the current date
+> > c) use a 1-day overlap and operate in the timezone of the 
+> data provider
+> > (extract an initial responseDate from the data provider and then
+> > increment locally)
+> > 
+> > as far as we can figure, any service provider that wants to avoid
+> > missing data entries has to do something like this ... 
+> since new data is
+> > not "stable" for harvesting it is not trusted and/or not harvested
+> > immediately and your problem of database updates pretty 
+> much disappears
+> > as long as harvesting is by date (which i trust it almost always is)
+> > 
+> > ok, i know this is probably way too much detail for this 
+> question :) but
+> > i just wanted to share these thoughts to see if they 
+> aligned with the
+> > harvesting approaches used by other people building service provider
+> > interfaces ...
+> > 
+> > any further comments will be appreciated ...
+> > 
+> > ttfn
+> > ----hussein
+> > 
+> > -- 
+> > 
+> ==============================================================
+> ==========
+> > hussein suleman -- hussein@vt.edu -- vtcs -- 
+> http://purl.org/net/hussein
+> > =========================================
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+

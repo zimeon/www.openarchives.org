@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Branding
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Branding&In-Reply-To=415EDBA2.1080008%40cs.uct.ac.za">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001319.html">
+   <LINK REL="Next"  HREF="001321.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Branding</H1>
+    <B>Jeffrey A. Young</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Branding&In-Reply-To=415EDBA2.1080008%40cs.uct.ac.za"
+       TITLE="[OAI-implementers] Branding">jyoung1 at columbus.rr.com
+       </A><BR>
+    <I>Sat Oct  2 13:17:35 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001319.html">[OAI-implementers] Branding
+</A></li>
+        <LI>Next message: <A HREF="001321.html">[OAI-implementers] Branding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1320">[ date ]</a>
+              <a href="thread.html#1320">[ thread ]</a>
+              <a href="subject.html#1320">[ subject ]</a>
+              <a href="author.html#1320">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>I vote against fragments. The reason is a little involved.
+
+The problem starts with the fact that I am not willing to run unknown
+stylesheets on my machine. As mentioned at the bottom of section 5.4 of the
+XSLT spec (<A HREF="http://www.w3.org/TR/xslt#section-Applying-Template-Rules">http://www.w3.org/TR/xslt#section-Applying-Template-Rules</A>), there
+is a denial of service risk associated with running stylesheets.
+
+The solution I've come up with is to create an XSLT processor web service
+coupled with a catalog of stylesheets that the processor service is willing
+to perform. This has been bundled into an open-source Java Servlet
+distribution named XSLTProc so anyone can set it up to support stylesheets
+they are interested in using. The parameters to this service are the same as
+they would be calling the XSLT processor from the command line.
+
+The catalog for this service will be OAI-harvestable which will allow me to
+create a union catalog and couple that with another open-source web service
+that accepts the same arguments XSLTProc does, except that instead of
+performing the transform, it will perform an HTTP redirect to a willing
+XSLTProc service instead.
+
+This solution may be less efficient than running the stylesheet directly,
+but it is the only way I can think of to manage the risk of running unknown
+stylesheets. There are many other interesting and uses for this model,
+though, that I won't go into now.
+
+Getting back to the problem with fragments, a stylesheet that produces
+fragments would be fine if I imported it locally into another stylesheet,
+for example, but I think the XSLTProc service must be bound to produce
+well-formed XML so that the client can manage the response using XML tools
+rather than being forced to treat it as a string.
+
+Sorry that this has led to such a tangent, but this is the problem and
+solution I am facing.
+
+Jeff
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A> [mailto:oai-implementers-
+</I>&gt;<i> <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">bounces at openarchives.org</A>] On Behalf Of Hussein Suleman
+</I>&gt;<i> Sent: Saturday, October 02, 2004 12:48 PM
+</I>&gt;<i> To: Young,Jeff
+</I>&gt;<i> Cc: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: Re: [OAI-implementers] Branding
+</I>&gt;<i> 
+</I>&gt;<i> hi Jeff
+</I>&gt;<i> 
+</I>&gt;<i> i would vote in favour of standalone XHTML 1.0.
+</I>&gt;<i> 
+</I>&gt;<i> at first fragments sounded nicer (for integration), but then what if the
+</I>&gt;<i> rendering is PDF or Mobile-HTML or some such thing ... and then again
+</I>&gt;<i> XHTML is sooner or later going to be v2.0 anyway. with a complete
+</I>&gt;<i> document, we can at least make the assumption of a mime type and promote
+</I>&gt;<i> this to a problem the browser mediates.
+</I>&gt;<i> 
+</I>&gt;<i> then maybe in a later &quot;bugfix&quot;, Simeon (or whoever is the maintainer)
+</I>&gt;<i> can introduce a &quot;target-mime-type&quot; attribute or some such mechanism in
+</I>&gt;<i> the metadataRendering container.
+</I>&gt;<i> 
+</I>&gt;<i> but is there a mime type for HTML fragments? if there is, then maybe the
+</I>&gt;<i> fragment is the way to go ... as long as down the road we can widen the
+</I>&gt;<i> scope without any changes. if there is no fragment mime type, maybe we
+</I>&gt;<i> can introduce one :)
+</I>&gt;<i> 
+</I>&gt;<i> ttfn,
+</I>&gt;<i> ----hussein
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Young,Jeff wrote:
+</I>&gt;<i> &gt; I have an immediate need for a best-practices description for creating
+</I>&gt;<i> XSLT
+</I>&gt;<i> &gt; stylesheets for use with the description/branding/metadataRendering
+</I>&gt;<i> element
+</I>&gt;<i> &gt; in an OAI Identify response
+</I>&gt;<i> &gt; (<A HREF="http://www.openarchives.org/OAI/2.0/guidelines-branding.htm">http://www.openarchives.org/OAI/2.0/guidelines-branding.htm</A>).
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The only guidance this specification gives regarding the stylesheet
+</I>&gt;<i> itself
+</I>&gt;<i> &gt; is &quot;the style sheet must be able to render the metadata part of a
+</I>&gt;<i> GetRecord
+</I>&gt;<i> &gt; response for the specific metadata format&quot;. Unfortunately, it doesn't
+</I>&gt;<i> say
+</I>&gt;<i> &gt; what the stylesheet should render it into. Should it be an HTML fragment
+</I>&gt;<i> &gt; suitable for dropping into the body of an HTML document? Should it be a
+</I>&gt;<i> &gt; stand-alone XHTML document ready to display in a browser? Can I depend
+</I>&gt;<i> on
+</I>&gt;<i> &gt; the result being assigned to a particular namespace? There are limits to
+</I>&gt;<i> how
+</I>&gt;<i> &gt; many variants I should have to attempt in order to parse the result and
+</I>&gt;<i> use
+</I>&gt;<i> &gt; it.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; There are only 4 repositories registered at UIUC that currently use this
+</I>&gt;<i> the
+</I>&gt;<i> &gt; metadataRendering element, two of which are mine
+</I>&gt;<i> &gt;
+</I>&gt;<i> (<A HREF="http://gita.grainger.uiuc.edu/registry/ListReposWithDesc.asp?desc=brandin">http://gita.grainger.uiuc.edu/registry/ListReposWithDesc.asp?desc=brandin</A>
+</I>&gt;<i> g)
+</I>&gt;<i> &gt; . I am on the verge, however, of creating a system that depends on them,
+</I>&gt;<i> as
+</I>&gt;<i> &gt; well as updating many of my repositories to include them.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; It would be nice to have this group's consensus before I commit to a
+</I>&gt;<i> &gt; particular solution.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Jeff
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i> =====================================================================
+</I>&gt;<i> hussein suleman ~ <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">hussein at cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+</I>&gt;<i> =====================================================================
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001319.html">[OAI-implementers] Branding
+</A></li>
+	<LI>Next message: <A HREF="001321.html">[OAI-implementers] Branding
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1320">[ date ]</a>
+              <a href="thread.html#1320">[ thread ]</a>
+              <a href="subject.html#1320">[ subject ]</a>
+              <a href="author.html#1320">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

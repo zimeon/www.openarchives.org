@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] List Id's for multiple sets
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tdb198%40ecs.soton.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000026.html">
+   <LINK REL="Next"  HREF="000024.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] List Id's for multiple sets
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tdb198%40ecs.soton.ac.uk"
+       TITLE="[OAI-implementers] List Id's for multiple sets">tdb198@ecs.soton.ac.uk
+       </A><BR>
+    <I>Fri, 9 Feb 2001 16:17:02 +0000 (GMT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000026.html">[OAI-implementers] List Id's for multiple sets
+</A></li>
+        <LI> Next message: <A HREF="000024.html">[OAI-implementers] OCLC OAI 1.0 Thesis and Dissertation Repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#27">[ date ]</a>
+              <a href="thread.html#27">[ thread ]</a>
+              <a href="subject.html#27">[ subject ]</a>
+              <a href="author.html#27">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Fri, 9 Feb 2001, deridder wrote:
+
+&gt;<i> Good gracious, Tim!  That *is* complex.  What happens if you have 40
+</I>&gt;<i> harvesters working on your program at once?  You would have multiple
+</I>&gt;<i> tables--- are you using cookies?  And do you have time limitations on
+</I>&gt;<i> accessing those temp tables?  If so, how do you implement that--- and do
+</I>&gt;<i> you remove all current temp tables on each new query?  Seems like that
+</I>&gt;<i> would mess up with several current accessess.  But unaccessed tables could
+</I>&gt;<i> build up also, so I certainly see that they would need to be periodically
+</I>&gt;<i> cleared out.
+</I>
+I have found temporary tables make life simpler ... or at least as easy as
+implementing encoding and decoding of resumptionToken strings.
+
+A more detailed explanation of what I'm doing:
+
+The resumptionToken I'm generating is a &quot;session token&quot;, that is it is
+unique to the query that generated it (and is not supposed to be harvester
+understandable).
+For each token I generate I create a table with the same name, see tmpXXX
+below. ( FYI I'm using token = offset+remote_addr+time+rand()+metadataPrefix )
+
+The resumptionToken has a limited life-span, currently I've got it set to
+30 minutes. Each time the resumptionToken is used I refresh its
+timestamp, so if a query takes longer than 30 minutes (with multiple
+resumptions) it will not timeout.
+
+Each time a query is made I clear tables older than 30 minutes. BTW The
+time to live (TTL) of tokens is unspecified by OAI (an error 400 should be
+returned if you have discarded the token - not yet implemented by me).
+
+My tables:
+tmpIndex
+========
+	tableName = The unique name of the table
+	timestamp = The last time this table was accessed
+
+tmpXXX
+======
+	pos = The index of the identifier, used for finding the offset
+		to resume from
+	identifier = The OAI identifier
+
+I have purposely not copied the metadata into the temporary table to avoid
+getting &quot;explosive&quot; growth in database size, besides it makes finding the
+offset faster and the operation to find the metadata given an identifier
+is O(1).
+
+Chris has suggested some improvements to this scheme:
+- Store the request parameters in the tmpIndex, therefore if two (or 40)
+harvesters simultaneously request the same data you need not run the same
+search more than once
+- Store the metadataPrefix in tmpIndex, therefore avoiding the need to
+encode this parameter (the resumption offset still needs to be encoded)
+
+As a last thought about timeouts:
+What do you do if a harvester requests, gets a resumptionToken, then uses
+that token a week later? My instinct would be, if the token is still
+alive, it should complete the list as it existed a week ago rather than
+putting in any alterations. But ... I can't see anything in the OAI
+protocol that makes it explicit about whether alterations to data should
+be reflected during flow control (?).
+
+&gt;<i>    And yes, I for one would like to see your OAI &quot;bits&quot;;  I'd love to
+</I>&gt;<i> compare how I'm doing things with how others are, to see if I can improve
+</I>&gt;<i> on my methods.
+</I>
+Thank you. I am coding in PERL modules - I will make an effort to get it
+all together in a web page - I fear they will not be as accomplished as
+Jeff Young's servlets!
+
+All the best,
+Tim.
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000026.html">[OAI-implementers] List Id's for multiple sets
+</A></li>
+	<LI> Next message: <A HREF="000024.html">[OAI-implementers] OCLC OAI 1.0 Thesis and Dissertation Repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#27">[ date ]</a>
+              <a href="thread.html#27">[ thread ]</a>
+              <a href="subject.html#27">[ subject ]</a>
+              <a href="author.html#27">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Lists/Flow-control/Emptiness
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tim%40tim.brody.btinternet.co.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000587.html">
+   <LINK REL="Next"  HREF="000592.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Lists/Flow-control/Emptiness
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tim%40tim.brody.btinternet.co.uk"
+       TITLE="[OAI-implementers] Lists/Flow-control/Emptiness">tim@tim.brody.btinternet.co.uk
+       </A><BR>
+    <I>Mon, 15 Jul 2002 14:58:42 +0100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000587.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+        <LI> Next message: <A HREF="000592.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#591">[ date ]</a>
+              <a href="thread.html#591">[ thread ]</a>
+              <a href="subject.html#591">[ subject ]</a>
+              <a href="author.html#591">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>----- Original Message -----
+From: &quot;Michael L. Nelson&quot; &lt;<A HREF="mailto:mln@ruby.ils.unc.edu">mln@ruby.ils.unc.edu</A>&gt;
+
+
+&gt;<i> On Thu, 11 Jul 2002, Tim Brody wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; 1) empty resumption token in complete list
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Where a result set is returned without flow control (e.g. a small list),
+</I>can
+&gt;<i> &gt; an empty resumption token be appended to this list, even if it is
+</I>&gt;<i> &gt; &quot;complete&quot;?
+</I>&gt;<i>
+</I>&gt;<i> I guess its not explicitly stated in the protocol as &quot;must not&quot;...
+</I>&gt;<i>
+</I>&gt;<i> But resumptionTokens are for incomplete lists, and including an empty
+</I>&gt;<i> resumptionToken would seem likely to confuse harvesters.  Or maybe it
+</I>&gt;<i> wouldn't confuse them, but at a miminum it is superfluous (below).
+</I>
+If the repository implementation is simpler by always including a resumption
+token element, and it doesn't cause a problem with the protocol, then it
+should be ok to do this?
+
+&gt;<i> &gt; (The logic to cope with determining the difference between the
+</I>completing
+&gt;<i> &gt; list and a complete list is not trivial)
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> check for the existence of a resumptionToken in the CGI vars.  if the
+</I>&gt;<i> harvester passed in a resumptionToken, then it is the final incomplete
+</I>&gt;<i> list.  if not, it is a complete list all by itself.
+</I>
+I came up with the same solution. But I wouldn't class this as &quot;trivial&quot;, as
+the logic intersects with other aspects of the protocol (below...).
+
+&gt;<i> &gt; 2) no-records+resumption token
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; An empty list won't validate, e.g. ListRecords without any records.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; It is possible that flow control may result in an incomplete list that
+</I>does
+&gt;<i> &gt; not contain any records, e.g.:
+</I>&gt;<i> &gt; Harvester requests (until=2002-03-04)
+</I>&gt;<i> &gt; Performs flow control, gets to last page-1
+</I>&gt;<i> &gt; Records on last page move out of result set
+</I>&gt;<i> &gt; Harvester requests final token, for which no records can be returned
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; An empty token by itself will not validate, and &quot;noRecordsMatch&quot; means
+</I>that
+&gt;<i> &gt; no records could be returned for the query, not for the resumption
+</I>token.
+&gt;<i> &gt;
+</I>&gt;<i> &gt; Change schema or return noRecordsMatch?
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> this would seem to be covered in section 3.5.1:
+</I>&gt;<i>
+</I>&gt;<i> [...] In cases where there are substantial changes to the repository, it
+</I>&gt;<i> may be appropriate for a repository to return a badResumptionToken error,
+</I>&gt;<i> signaling that the harvester should restart the list request sequence.
+</I>&gt;<i>
+</I>&gt;<i> if you have a resumptionToken *and* no records match, then something ugly
+</I>&gt;<i> did happen:  either the harvester is trying to &quot;forge&quot; the
+</I>&gt;<i> resumptionTokens, or the repository had (potentially significant) changes.
+</I>&gt;<i>
+</I>&gt;<i> I think returning both noRecordsMatch and badResumptionToken would be the
+</I>&gt;<i> safe way to handle it.
+</I>
+Ok. This is kinda &quot;overloading&quot; errors though. An error hasn't occurred - a
+change occurred in the repository that resulted in an empty list.
+
+noRecordsMatch is defined as resulting from the original query, not as a
+side-effect of flow-control, and the resumption token in question is valid?
+
+So logic is now:
+
+if( no records ) {
+    if( CGI resumption token ) {
+        add noRecordsMatch (&quot;no records match resumption token&quot;)
+        add badResumptionToken (&quot;because it doesn't match any records&quot;)
+    } else {
+        add noRecordsMatch
+    }
+} else if( no resumption Token ) {
+    add empty token
+}
+
+All the best,
+Tim.
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000587.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+	<LI> Next message: <A HREF="000592.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#591">[ date ]</a>
+              <a href="thread.html#591">[ thread ]</a>
+              <a href="subject.html#591">[ subject ]</a>
+              <a href="author.html#591">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] character encoding
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tdb01r%40ecs.soton.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001093.html">
+   <LINK REL="Next"  HREF="001095.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] character encoding
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tdb01r%40ecs.soton.ac.uk"
+       TITLE="[OAI-implementers] character encoding">tdb01r@ecs.soton.ac.uk
+       </A><BR>
+    <I>Fri, 31 Oct 2003 12:18:30 -0000</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001093.html">[OAI-implementers] character encoding
+</A></li>
+        <LI> Next message: <A HREF="001095.html">[OAI-implementers] Extensible Repository Resource Locators (E
+ RRoLs) Service
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1094">[ date ]</a>
+              <a href="thread.html#1094">[ thread ]</a>
+              <a href="subject.html#1094">[ subject ]</a>
+              <a href="author.html#1094">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>----- Original Message ----- 
+From: &quot;Todd White&quot; &lt;<A HREF="mailto:tmwhite@merit.edu">tmwhite@merit.edu</A>&gt;
+
+
+&gt;<i> i sent a message to the list some time ago and, while working on other
+</I>&gt;<i> non-XML and non-OAI projects, i've been closing watching the list in hopes
+</I>&gt;<i> of finding the solution to my encoding problem.  i'm embarrassed to admit
+</I>&gt;<i> that this encoding problem remains.
+</I>&gt;<i>
+</I>&gt;<i> perhaps i should provide some details...
+</I>&gt;<i>
+</I>&gt;<i> DATA STORAGE:  Oracle
+</I>&gt;<i> DATA DELIVERY:  DBI.pm
+</I>&gt;<i> OAI CONSTRUCTOR:  Perl script (using Embperl)
+</I>&gt;<i> WEB SERVER:  Apache
+</I>&gt;<i>
+</I>&gt;<i> in other words, i have a single Perl script, in the form an Embperl file,
+</I>&gt;<i> that draws the data from Oracle, via DBI, then i simply loop through the
+</I>&gt;<i> data and wrap each element with the appropriate XML tag before returning
+</I>&gt;<i> the whole mess through STDOUT.
+</I>&gt;<i>
+</I>&gt;<i> i'm guessing that i should encode each character to UTF-8 as it passes
+</I>&gt;<i> through the script, but as yet, i'm not sure how to best do this.
+</I>&gt;<i>
+</I>&gt;<i> any helpful tips, advice, rants, etc. will be most welcome.  i thank you
+</I>&gt;<i> in advance.
+</I>&gt;<i>
+</I>&gt;<i>  -Todd
+</I>
+I strongly urge you to use a 5.8.x version of Perl, as it has built-in
+support for UTF-8.
+
+As you are outputting via STDOUT you should use:
+binmode(STDOUT,&quot;:utf8&quot;);
+Which is pretty self-explanatory :-)
+
+You need to find out what character coding your data is in, and convert it
+into UTF-8. e.g. if your data is in ISO-8859-1 (&quot;Latin-1, West Europe&quot;) you
+would do something like:
+
+use Encode; # Functions for converting strings between encodings
+use utf8; # Tell Perl that you are using UTF-8 in your program
+
+$sth = DBI::connect(...)-&gt;prepare(&quot;SELECT FROM DB&quot;);
+$sth-&gt;execute;
+my ($str_latin) = $sth-&gt;fetchrow_array();
+
+my $str_utf8 = decode(&quot;iso-8859-1&quot;,$str_latin);
+
+print $str_utf8; # n.b. you will still need to escape &lt;&gt;&quot;&amp; in string data
+
+__end__
+
+UTF-8 also restricts control characters, so you may need to do something
+like:
+$str_utf8 =~ s/[\x00-\x08\x0b-\x0d\x0e-\x1f]//sg; # Remove all control
+characters except newline (\n)
+
+There are quite a few utility functions in Encode for handling encodings, so
+is well worth taking a look at the help page.
+(I gotcha I have noticed is Perl modules that are written in C may not flag
+a string as UTF-8, even though the data is. There are methods in Encode for
+changing this flag - but should be used with caution!)
+
+All the best,
+Tim.
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001093.html">[OAI-implementers] character encoding
+</A></li>
+	<LI> Next message: <A HREF="001095.html">[OAI-implementers] Extensible Repository Resource Locators (E
+ RRoLs) Service
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1094">[ date ]</a>
+              <a href="thread.html#1094">[ thread ]</a>
+              <a href="subject.html#1094">[ subject ]</a>
+              <a href="author.html#1094">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

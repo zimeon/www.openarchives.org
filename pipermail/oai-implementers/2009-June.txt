@@ -1,0 +1,1800 @@
+From Rozita.Fridman at FIZ-Karlsruhe.DE  Tue Jun  2 07:37:01 2009
+From: Rozita.Fridman at FIZ-Karlsruhe.DE (Fridman, Rozita)
+Date: Tue Jun  2 07:37:34 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+Message-ID: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+
+Hello all,
+
+we developed an OAI-Provider for Escidoc repositories.
+Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+cache to reduce a response time. Escidoc repositories intend to contain
+multiple millions of objects. The Escidoc-Core framework only requires
+that objects metadata stored in a Escidoc repository are well formed
+xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+is essential to ensure validness of metadata in OAI-PMH response and an
+acceptable response time. 
+
+But the current OAI-PMH protocol specification doesn't account for some
+issues, caused by the employment of a cache.
+ 
+The main problem is a time lag between a harvester request and a last
+cache update:
+A harvester asks the OAI-Provider for all records that have changed
+between T0 and T2 in the underlying repository. The last cache update
+was at T1.The harvester gets records that have changed between T0 and
+T1, but assumes that it got all changes between T0 and T2. Therefore in
+the next request it asks for records that have changed between T2 and T3
+and is missing all changes between T1 and T2. If cache update interval
+is long and the next cache update takes place after T3, the harvester is
+also missing all changes between T2 and T3 and so on.
+   
+One proposal would be to put a date stamp of the last cache update into
+the OAI-PMH response, in order to inform a harvester about possibly
+missed records. 
+
+Does anybody face the same problem? What do you think about it? Maybe
+there are better solutions for this problem?
+
+The other issue is that depending on the OAI-Provider implementation a
+cache may be in an inconsistent state while a cache update process is
+running. Are there means in the OAI-PMH protocol to respond to harvester
+requests during a cache update? A possible solution would be to respond
+with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+specification), but the problem is to specify Retry-After period. A
+duration of the cache update is not constant, it depends on the changes
+in the repository.
+
+Thanks a lot,
+Rozita
+
+
+
+-------------- next part --------------
+
+
+-------------------------------------------------------
+
+Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH. 
+Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. 
+Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+
+From Rozita.Fridman at FIZ-Karlsruhe.DE  Tue Jun  2 07:48:45 2009
+From: Rozita.Fridman at FIZ-Karlsruhe.DE (Fridman, Rozita)
+Date: Tue Jun  2 07:49:18 2009
+Subject: [OAI-implementers] Issue regarding OAI-PMH protocol requirements
+	for meta data part of an OAI-PMH record
+Message-ID: <561B608813F3E7448D792A51EF2AB03E058EC38E@EXCLUSTER.fiz-karlsruhe.de>
+
+Hello all,
+
+I also have a question regarding a meta data part of an OAI-PMH record.
+The specification requires the attribute xmlns:xsi in a root element of
+a meta data part. The attribute xsi:schemaLocation is not required and
+it is understandable:  a harvester can get schema locations of all meta
+data formats using a request ListMetadataFormats.
+Is there a reason to require the attribute xmlns:xsi? The problem is
+some repository metadata don't contain attributes xsi:schemaLocation and
+xmlns:xsi, only a name space uri. The meta data are valid. But a
+provider have to change the original repository meta data and add the
+attribute xmlns:xsi in order to be conform with a specification.
+-------------- next part --------------
+
+
+-------------------------------------------------------
+
+Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH. 
+Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. 
+Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+
+From Rozita.Fridman at FIZ-Karlsruhe.DE  Tue Jun  2 07:50:13 2009
+From: Rozita.Fridman at FIZ-Karlsruhe.DE (Fridman, Rozita)
+Date: Tue Jun  2 07:50:46 2009
+Subject: [OAI-implementers] Issue regarding OAI-PMH protocol requirements
+	for meta data part of an OAI-PMH record
+Message-ID: <561B608813F3E7448D792A51EF2AB03E058EC38F@EXCLUSTER.fiz-karlsruhe.de>
+
+Hello all,
+
+I also have a question regarding a meta data part of an OAI-PMH record.
+The specification requires the attribute xmlns:xsi in a root element of
+a meta data part. The attribute xsi:schemaLocation is not required and
+it is understandable:  a harvester can get schema locations of all meta
+data formats using a request ListMetadataFormats.
+Is there a reason to require the attribute xmlns:xsi? The problem is
+some repository metadata don't contain attributes xsi:schemaLocation and
+xmlns:xsi, only a name space uri. The meta data are valid. But a
+provider have to change the original repository meta data and add the
+attribute xmlns:xsi in order to be conform with a specification.
+
+Thanks a lot,
+Rozita
+-------------- next part --------------
+
+
+-------------------------------------------------------
+
+Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH. 
+Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. 
+Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+
+From simeon.warner at cornell.edu  Tue Jun  2 09:29:22 2009
+From: simeon.warner at cornell.edu (Simeon Warner)
+Date: Tue Jun  2 09:29:27 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+In-Reply-To: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+Message-ID: <4A252932.6000402@cornell.edu>
+
+Hi Rozita,
+
+The notion of including an explicit start-next-incremental-harvest-from date 
+in the response is something I have thought about too. It would solve the 
+cache problem you describe. Not sure how much support there would be for such 
+a change, what do others think?
+
+One way to solve this using the current protocol without modification is to 
+use days granularity and to make sure that the cache is updated at least once 
+within each day (and that the the update does not span a day boundary in UTC). 
+That way T1=T2 always using your example.
+
+If you opted to follow the 503 route then you could issue a second/multiple 
+503's if the harvester comes back before the update is complete. This is 
+really the only good approach if the cache is in an inconsistent state such 
+that the idempotency requirements of the protocol are not met.
+
+Cheers.
+Simeon
+
+
+
+Fridman, Rozita wrote:
+> Hello all,
+> 
+> we developed an OAI-Provider for Escidoc repositories.
+> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+> cache to reduce a response time. Escidoc repositories intend to contain
+> multiple millions of objects. The Escidoc-Core framework only requires
+> that objects metadata stored in a Escidoc repository are well formed
+> xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+> is essential to ensure validness of metadata in OAI-PMH response and an
+> acceptable response time. 
+> 
+> But the current OAI-PMH protocol specification doesn't account for some
+> issues, caused by the employment of a cache.
+>  
+> The main problem is a time lag between a harvester request and a last
+> cache update:
+> A harvester asks the OAI-Provider for all records that have changed
+> between T0 and T2 in the underlying repository. The last cache update
+> was at T1.The harvester gets records that have changed between T0 and
+> T1, but assumes that it got all changes between T0 and T2. Therefore in
+> the next request it asks for records that have changed between T2 and T3
+> and is missing all changes between T1 and T2. If cache update interval
+> is long and the next cache update takes place after T3, the harvester is
+> also missing all changes between T2 and T3 and so on.
+>    
+> One proposal would be to put a date stamp of the last cache update into
+> the OAI-PMH response, in order to inform a harvester about possibly
+> missed records. 
+> 
+> Does anybody face the same problem? What do you think about it? Maybe
+> there are better solutions for this problem?
+> 
+> The other issue is that depending on the OAI-Provider implementation a
+> cache may be in an inconsistent state while a cache update process is
+> running. Are there means in the OAI-PMH protocol to respond to harvester
+> requests during a cache update? A possible solution would be to respond
+> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+> specification), but the problem is to specify Retry-After period. A
+> duration of the cache update is not constant, it depends on the changes
+> in the repository.
+> 
+> Thanks a lot,
+> Rozita
+> 
+> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> 
+> 
+> -------------------------------------------------------
+> 
+> Fachinformationszentrum Karlsruhe, Gesellschaft f??r wissenschaftlich-technische Information mbH. 
+> Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+> Gesch??ftsf??hrerin: Sabine Br??nger-Weilandt. 
+> Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+From hussein at cs.uct.ac.za  Tue Jun  2 09:46:09 2009
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Tue Jun  2 09:46:36 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+In-Reply-To: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+Message-ID: <4A252D21.9080908@cs.uct.ac.za>
+
+hi Rozita
+
+if you use a purpose-built cache, hopefully you can update the datestamp 
+in the cache so the datestamps of the cache are used to answer queries 
+instead of the original datestamps ... if you do this, you will not have 
+a problem, and i do believe this is the recommend OAI-PMH usage for 
+hierarchical/intermediate systems (i am sure it is written down 
+somewhere but i cant recall where)
+
+then, regarding cache downtime, i was going to say what Simeon has just 
+written regarding using multiple 503s ...
+
+(a day granularity may be restrictive, but it does depend on specifics 
+of your application)
+
+regarding the metadata issue, the reason for the requirement is so that 
+metadata records are self-contained and can be stored, verified and 
+moved around without losing namespace information. this requirement 
+exists to some degree because OAI-PMH was designed in the early and 
+somewhat "wild-west" days of XML when XML parsers were not very 
+namespace-aware ... although i should add that even today if you 
+programmatically extract an XML sub-tree with many parsing tools, you 
+will still not have have fully validifiable (valid?) XML unless 
+namespace information is in the inner tags ... so it is all about 
+maintaining verification information within records come what may ...
+
+ttfn,
+----hussein
+
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+Fridman, Rozita wrote:
+> Hello all,
+> 
+> we developed an OAI-Provider for Escidoc repositories.
+> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+> cache to reduce a response time. Escidoc repositories intend to contain
+> multiple millions of objects. The Escidoc-Core framework only requires
+> that objects metadata stored in a Escidoc repository are well formed
+> xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+> is essential to ensure validness of metadata in OAI-PMH response and an
+> acceptable response time. 
+> 
+> But the current OAI-PMH protocol specification doesn't account for some
+> issues, caused by the employment of a cache.
+>  
+> The main problem is a time lag between a harvester request and a last
+> cache update:
+> A harvester asks the OAI-Provider for all records that have changed
+> between T0 and T2 in the underlying repository. The last cache update
+> was at T1.The harvester gets records that have changed between T0 and
+> T1, but assumes that it got all changes between T0 and T2. Therefore in
+> the next request it asks for records that have changed between T2 and T3
+> and is missing all changes between T1 and T2. If cache update interval
+> is long and the next cache update takes place after T3, the harvester is
+> also missing all changes between T2 and T3 and so on.
+>    
+> One proposal would be to put a date stamp of the last cache update into
+> the OAI-PMH response, in order to inform a harvester about possibly
+> missed records. 
+> 
+> Does anybody face the same problem? What do you think about it? Maybe
+> there are better solutions for this problem?
+> 
+> The other issue is that depending on the OAI-Provider implementation a
+> cache may be in an inconsistent state while a cache update process is
+> running. Are there means in the OAI-PMH protocol to respond to harvester
+> requests during a cache update? A possible solution would be to respond
+> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+> specification), but the problem is to specify Retry-After period. A
+> duration of the cache update is not constant, it depends on the changes
+> in the repository.
+> 
+> Thanks a lot,
+> Rozita
+> 
+> 
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> 
+> 
+> -------------------------------------------------------
+> 
+> Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH. 
+> Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+> Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. 
+> Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+> 
+> 
+> 
+> ------------------------------------------------------------------------
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+From joel at stewbeans.com  Tue Jun  2 10:19:42 2009
+From: joel at stewbeans.com (Joel Stewart)
+Date: Tue Jun  2 10:20:15 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+In-Reply-To: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+Message-ID: <BAY108-W19E56BE420FD843F4361B3E84D0@phx.gbl>
+
+
+Hi,
+
+I am very new to OAI, so I am limited help, and more looking to learn myself.
+
+The burden might be on the harvester.  The Implementation Guidelines for harvesters appears to address this in section 3, stating that harvesters should overlap requests.  And it would seem a good implementation should base the "From" in subsequent requests based on previous harvesting timestamps found in the records themselves - not their own arbitrarily chosen "until" value.
+
+The later problem you mention seems to be a problem that is solved by mirrors / load balancing.  With a mirror, you essentially have 2 copies of the site, and use a 302 HTTP codes to stop requests to the site you are updating and redirect to the other copy.   With a load balancer this site switching can be done invisibly to the harvester.
+
+
+
+
+
+
+
+> Date: Tue, 2 Jun 2009 13:37:01 +0200
+> From: Rozita.Fridman@FIZ-Karlsruhe.DE
+> To: oai-implementers@openarchives.org
+> Subject: [OAI-implementers] issues with OAI-PMH specifications for	OAI-Provider implementations using a cache
+> 
+> Hello all,
+> 
+> we developed an OAI-Provider for Escidoc repositories.
+> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+> cache to reduce a response time. Escidoc repositories intend to contain
+> multiple millions of objects. The Escidoc-Core framework only requires
+> that objects metadata stored in a Escidoc repository are well formed
+> xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+> is essential to ensure validness of metadata in OAI-PMH response and an
+> acceptable response time. 
+> 
+> But the current OAI-PMH protocol specification doesn't account for some
+> issues, caused by the employment of a cache.
+>  
+> The main problem is a time lag between a harvester request and a last
+> cache update:
+> A harvester asks the OAI-Provider for all records that have changed
+> between T0 and T2 in the underlying repository. The last cache update
+> was at T1.The harvester gets records that have changed between T0 and
+> T1, but assumes that it got all changes between T0 and T2. Therefore in
+> the next request it asks for records that have changed between T2 and T3
+> and is missing all changes between T1 and T2. If cache update interval
+> is long and the next cache update takes place after T3, the harvester is
+> also missing all changes between T2 and T3 and so on.
+>    
+> One proposal would be to put a date stamp of the last cache update into
+> the OAI-PMH response, in order to inform a harvester about possibly
+> missed records. 
+> 
+> Does anybody face the same problem? What do you think about it? Maybe
+> there are better solutions for this problem?
+> 
+> The other issue is that depending on the OAI-Provider implementation a
+> cache may be in an inconsistent state while a cache update process is
+> running. Are there means in the OAI-PMH protocol to respond to harvester
+> requests during a cache update? A possible solution would be to respond
+> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+> specification), but the problem is to specify Retry-After period. A
+> duration of the cache update is not constant, it depends on the changes
+> in the repository.
+> 
+> Thanks a lot,
+> Rozita
+> 
+> 
+> 
+
+_________________________________________________________________
+Insert movie times and more without leaving Hotmail?. 
+http://windowslive.com/Tutorial/Hotmail/QuickAdd?ocid=TXT_TAGLM_WL_HM_Tutorial_QuickAdd_062009
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090602/cd0ac57f/attachment-0001.htm
+From Rozita.Fridman at FIZ-Karlsruhe.DE  Tue Jun  2 10:50:07 2009
+From: Rozita.Fridman at FIZ-Karlsruhe.DE (Fridman, Rozita)
+Date: Tue Jun  2 10:50:41 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+In-Reply-To: <4A252932.6000402@cornell.edu>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+	<4A252932.6000402@cornell.edu>
+Message-ID: <561B608813F3E7448D792A51EF2AB03E058EC391@EXCLUSTER.fiz-karlsruhe.de>
+
+Hello Simeon,
+
+thanks a lot for your quick response.
+
+> The notion of including an explicit start-next-incremental-harvest-from
+> date
+> in the response is something I have thought about too. It would solve
+> the
+> cache problem you describe. Not sure how much support there would be
+> for such
+> a change, what do others think?
+
+Hopefully we will get support from other OAI-developer to extend a schema for the OAI-PMH response.
+ 
+
+> One way to solve this using the current protocol without modification
+> is to
+> use days granularity and to make sure that the cache is updated at
+> least once
+> within each day (and that the the update does not span a day boundary
+> in UTC).
+> That way T1=T2 always using your example.
+
+It is a good solution until we get a protocol enhancement. But the problem is when a cache update has not run for 1 day (for example because an underlying repository was not available) a harvester will miss records for that day.
+
+Now we use the same workaround, that fedora-OAI-Provider uses: we deliver records based on update time in a cache and not on original update time of records in an underlying repository. But this approach requires us to change the earliestDatestamp entry contained in a OAI-PMH Identify-response. It have to be set to a time of the first cache update and not to original earliest time stamp in the underlying repository. Otherwise a harvester will possibly miss changes in the time range between earliest time stamp in the underlying repository and the first cache update time.
+
+> If you opted to follow the 503 route then you could issue a
+> second/multiple
+> 503's if the harvester comes back before the update is complete. This
+> is
+> really the only good approach if the cache is in an inconsistent state
+> such
+> that the idempotency requirements of the protocol are not met.
+> 
+
+Yes, it is an option. 
+
+Best regards,
+Rozita
+
+> Cheers.
+> Simeon
+> 
+> 
+> 
+> Fridman, Rozita wrote:
+> > Hello all,
+> >
+> > we developed an OAI-Provider for Escidoc repositories.
+> > Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses
+> a
+> > cache to reduce a response time. Escidoc repositories intend to
+> contain
+> > multiple millions of objects. The Escidoc-Core framework only
+> requires
+> > that objects metadata stored in a Escidoc repository are well formed
+> > xml-structures. Therefore using of a cache in the Escidoc-OAI-
+> Provider
+> > is essential to ensure validness of metadata in OAI-PMH response and
+> an
+> > acceptable response time.
+> >
+> > But the current OAI-PMH protocol specification doesn't account for
+> some
+> > issues, caused by the employment of a cache.
+> >
+> > The main problem is a time lag between a harvester request and a last
+> > cache update:
+> > A harvester asks the OAI-Provider for all records that have changed
+> > between T0 and T2 in the underlying repository. The last cache update
+> > was at T1.The harvester gets records that have changed between T0 and
+> > T1, but assumes that it got all changes between T0 and T2. Therefore
+> in
+> > the next request it asks for records that have changed between T2 and
+> T3
+> > and is missing all changes between T1 and T2. If cache update
+> interval
+> > is long and the next cache update takes place after T3, the harvester
+> is
+> > also missing all changes between T2 and T3 and so on.
+> >
+> > One proposal would be to put a date stamp of the last cache update
+> into
+> > the OAI-PMH response, in order to inform a harvester about possibly
+> > missed records.
+> >
+> > Does anybody face the same problem? What do you think about it? Maybe
+> > there are better solutions for this problem?
+> >
+> > The other issue is that depending on the OAI-Provider implementation
+> a
+> > cache may be in an inconsistent state while a cache update process is
+> > running. Are there means in the OAI-PMH protocol to respond to
+> harvester
+> > requests during a cache update? A possible solution would be to
+> respond
+> > with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of
+> the
+> > specification), but the problem is to specify Retry-After period. A
+> > duration of the cache update is not constant, it depends on the
+> changes
+> > in the repository.
+> >
+> > Thanks a lot,
+> > Rozita
+> >
+> >
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> ---
+> >
+> >
+> >
+> > -------------------------------------------------------
+> >
+> > Fachinformationszentrum Karlsruhe, Gesellschaft f??r
+> wissenschaftlich-technische Information mbH.
+> > Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim
+> HRB 101892.
+> > Gesch??ftsf??hrerin: Sabine Br??nger-Weilandt.
+> > Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> ---
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+
+
+
+-------------------------------------------------------
+
+Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH. 
+Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. 
+Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+
+
+
+From mln at cs.odu.edu  Tue Jun  2 11:15:13 2009
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Tue Jun  2 11:15:14 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+In-Reply-To: <561B608813F3E7448D792A51EF2AB03E058EC391@EXCLUSTER.fiz-karlsruhe.de>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+	<4A252932.6000402@cornell.edu>
+	<561B608813F3E7448D792A51EF2AB03E058EC391@EXCLUSTER.fiz-karlsruhe.de>
+Message-ID: <alpine.GSO.1.10.0906021106290.21908@vega.cs.odu.edu>
+
+
+unless I'm misunderstanding the problem, I think you *have* to use the 
+"workaround" mentioned below -- otherwise the repository is not really 
+being honest about its updates.  if the cache updates occur only at T0 and 
+T3, the repository can't claim any datestamps of T1 or T2.  The records 
+may have entered the repo somewhere at T2, but they did not surface to 
+OAI-PMH until T3.
+
+the harvester shouldn't have to care about how the repo is managing its
+data structures (caches, real-time accesses, etc.)
+
+I think the distinction is in separating repo datestamps (e.g., ingest) 
+and OAI-PMH datestamps.
+
+regards,
+
+Michael
+
+On Tue, 2 Jun 2009, Fridman, Rozita wrote:
+
+> Hello Simeon,
+>
+> thanks a lot for your quick response.
+>
+>> The notion of including an explicit start-next-incremental-harvest-from
+>> date
+>> in the response is something I have thought about too. It would solve
+>> the
+>> cache problem you describe. Not sure how much support there would be
+>> for such
+>> a change, what do others think?
+>
+> Hopefully we will get support from other OAI-developer to extend a schema for the OAI-PMH response.
+>
+>
+>> One way to solve this using the current protocol without modification
+>> is to
+>> use days granularity and to make sure that the cache is updated at
+>> least once
+>> within each day (and that the the update does not span a day boundary
+>> in UTC).
+>> That way T1=T2 always using your example.
+>
+> It is a good solution until we get a protocol enhancement. But the problem is when a cache update has not run for 1 day (for example because an underlying repository was not available) a harvester will miss records for that day.
+>
+> Now we use the same workaround, that fedora-OAI-Provider uses: we deliver records based on update time in a cache and not on original update time of records in an underlying repository. But this approach requires us to change the earliestDatestamp entry contained in a OAI-PMH Identify-response. It have to be set to a time of the first cache update and not to original earliest time stamp in the underlying repository. Otherwise a harvester will possibly miss changes in the time range between earliest time stamp in the underlying repository and the first cache update time.
+>
+>> If you opted to follow the 503 route then you could issue a
+>> second/multiple
+>> 503's if the harvester comes back before the update is complete. This
+>> is
+>> really the only good approach if the cache is in an inconsistent state
+>> such
+>> that the idempotency requirements of the protocol are not met.
+>>
+>
+> Yes, it is an option.
+>
+> Best regards,
+> Rozita
+>
+>> Cheers.
+>> Simeon
+>>
+>>
+>>
+>> Fridman, Rozita wrote:
+>>> Hello all,
+>>>
+>>> we developed an OAI-Provider for Escidoc repositories.
+>>> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses
+>> a
+>>> cache to reduce a response time. Escidoc repositories intend to
+>> contain
+>>> multiple millions of objects. The Escidoc-Core framework only
+>> requires
+>>> that objects metadata stored in a Escidoc repository are well formed
+>>> xml-structures. Therefore using of a cache in the Escidoc-OAI-
+>> Provider
+>>> is essential to ensure validness of metadata in OAI-PMH response and
+>> an
+>>> acceptable response time.
+>>>
+>>> But the current OAI-PMH protocol specification doesn't account for
+>> some
+>>> issues, caused by the employment of a cache.
+>>>
+>>> The main problem is a time lag between a harvester request and a last
+>>> cache update:
+>>> A harvester asks the OAI-Provider for all records that have changed
+>>> between T0 and T2 in the underlying repository. The last cache update
+>>> was at T1.The harvester gets records that have changed between T0 and
+>>> T1, but assumes that it got all changes between T0 and T2. Therefore
+>> in
+>>> the next request it asks for records that have changed between T2 and
+>> T3
+>>> and is missing all changes between T1 and T2. If cache update
+>> interval
+>>> is long and the next cache update takes place after T3, the harvester
+>> is
+>>> also missing all changes between T2 and T3 and so on.
+>>>
+>>> One proposal would be to put a date stamp of the last cache update
+>> into
+>>> the OAI-PMH response, in order to inform a harvester about possibly
+>>> missed records.
+>>>
+>>> Does anybody face the same problem? What do you think about it? Maybe
+>>> there are better solutions for this problem?
+>>>
+>>> The other issue is that depending on the OAI-Provider implementation
+>> a
+>>> cache may be in an inconsistent state while a cache update process is
+>>> running. Are there means in the OAI-PMH protocol to respond to
+>> harvester
+>>> requests during a cache update? A possible solution would be to
+>> respond
+>>> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of
+>> the
+>>> specification), but the problem is to specify Retry-After period. A
+>>> duration of the cache update is not constant, it depends on the
+>> changes
+>>> in the repository.
+>>>
+>>> Thanks a lot,
+>>> Rozita
+>>>
+>>>
+>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>> ---
+>>>
+>>>
+>>>
+>>> -------------------------------------------------------
+>>>
+>>> Fachinformationszentrum Karlsruhe, Gesellschaft f??r
+>> wissenschaftlich-technische Information mbH.
+>>> Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim
+>> HRB 101892.
+>>> Gesch??ftsf??hrerin: Sabine Br??nger-Weilandt.
+>>> Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+>>>
+>>>
+>>>
+>>> ---------------------------------------------------------------------
+>> ---
+>>>
+>>> _______________________________________________
+>>> OAI-implementers mailing list
+>>> List information, archives, preferences and to unsubscribe:
+>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>>
+>
+>
+>
+> -------------------------------------------------------
+>
+> Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH.
+> Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892.
+> Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt.
+> Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+From azaroth at liverpool.ac.uk  Tue Jun  2 11:20:33 2009
+From: azaroth at liverpool.ac.uk (Dr R. Sanderson)
+Date: Tue Jun  2 11:21:06 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+In-Reply-To: <alpine.GSO.1.10.0906021106290.21908@vega.cs.odu.edu>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+	<4A252932.6000402@cornell.edu>
+	<561B608813F3E7448D792A51EF2AB03E058EC391@EXCLUSTER.fiz-karlsruhe.de>
+	<alpine.GSO.1.10.0906021106290.21908@vega.cs.odu.edu>
+Message-ID: <Pine.GSO.4.64.0906021618470.14161@uxa.liv.ac.uk>
+
+
+
+Agreed.
+
+One could extend this situation ad absurdum with layers and layers of 
+caches, each of which would need to add in their own timestamps.  If a 
+harvester wants to be certain that it has everything, it could start at 
+the most recent time stamp it has in its database.
+
+Rob
+
+On Tue, 2 Jun 2009, Michael Nelson wrote:
+
+>
+> unless I'm misunderstanding the problem, I think you *have* to use the
+> "workaround" mentioned below -- otherwise the repository is not really
+> being honest about its updates.  if the cache updates occur only at T0 and
+> T3, the repository can't claim any datestamps of T1 or T2.  The records
+> may have entered the repo somewhere at T2, but they did not surface to
+> OAI-PMH until T3.
+>
+> the harvester shouldn't have to care about how the repo is managing its
+> data structures (caches, real-time accesses, etc.)
+>
+> I think the distinction is in separating repo datestamps (e.g., ingest)
+> and OAI-PMH datestamps.
+>
+> regards,
+>
+> Michael
+>
+> On Tue, 2 Jun 2009, Fridman, Rozita wrote:
+>
+>> Hello Simeon,
+>>
+>> thanks a lot for your quick response.
+>>
+>>> The notion of including an explicit start-next-incremental-harvest-from
+>>> date
+>>> in the response is something I have thought about too. It would solve
+>>> the
+>>> cache problem you describe. Not sure how much support there would be
+>>> for such
+>>> a change, what do others think?
+>>
+>> Hopefully we will get support from other OAI-developer to extend a schema for the OAI-PMH response.
+>>
+>>
+>>> One way to solve this using the current protocol without modification
+>>> is to
+>>> use days granularity and to make sure that the cache is updated at
+>>> least once
+>>> within each day (and that the the update does not span a day boundary
+>>> in UTC).
+>>> That way T1=T2 always using your example.
+>>
+>> It is a good solution until we get a protocol enhancement. But the problem is when a cache update has not run for 1 day (for example because an underlying repository was not available) a harvester will miss records for that day.
+>>
+>> Now we use the same workaround, that fedora-OAI-Provider uses: we deliver records based on update time in a cache and not on original update time of records in an underlying repository. But this approach requires us to change the earliestDatestamp entry contained in a OAI-PMH Identify-response. It have to be set to a time of the first cache update and not to original earliest time stamp in the underlying repository. Otherwise a harvester will possibly miss changes in the time range between earliest time stamp in the underlying repository and the first cache update time.
+>>
+>>> If you opted to follow the 503 route then you could issue a
+>>> second/multiple
+>>> 503's if the harvester comes back before the update is complete. This
+>>> is
+>>> really the only good approach if the cache is in an inconsistent state
+>>> such
+>>> that the idempotency requirements of the protocol are not met.
+>>>
+>>
+>> Yes, it is an option.
+>>
+>> Best regards,
+>> Rozita
+>>
+>>> Cheers.
+>>> Simeon
+>>>
+>>>
+>>>
+>>> Fridman, Rozita wrote:
+>>>> Hello all,
+>>>>
+>>>> we developed an OAI-Provider for Escidoc repositories.
+>>>> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses
+>>> a
+>>>> cache to reduce a response time. Escidoc repositories intend to
+>>> contain
+>>>> multiple millions of objects. The Escidoc-Core framework only
+>>> requires
+>>>> that objects metadata stored in a Escidoc repository are well formed
+>>>> xml-structures. Therefore using of a cache in the Escidoc-OAI-
+>>> Provider
+>>>> is essential to ensure validness of metadata in OAI-PMH response and
+>>> an
+>>>> acceptable response time.
+>>>>
+>>>> But the current OAI-PMH protocol specification doesn't account for
+>>> some
+>>>> issues, caused by the employment of a cache.
+>>>>
+>>>> The main problem is a time lag between a harvester request and a last
+>>>> cache update:
+>>>> A harvester asks the OAI-Provider for all records that have changed
+>>>> between T0 and T2 in the underlying repository. The last cache update
+>>>> was at T1.The harvester gets records that have changed between T0 and
+>>>> T1, but assumes that it got all changes between T0 and T2. Therefore
+>>> in
+>>>> the next request it asks for records that have changed between T2 and
+>>> T3
+>>>> and is missing all changes between T1 and T2. If cache update
+>>> interval
+>>>> is long and the next cache update takes place after T3, the harvester
+>>> is
+>>>> also missing all changes between T2 and T3 and so on.
+>>>>
+>>>> One proposal would be to put a date stamp of the last cache update
+>>> into
+>>>> the OAI-PMH response, in order to inform a harvester about possibly
+>>>> missed records.
+>>>>
+>>>> Does anybody face the same problem? What do you think about it? Maybe
+>>>> there are better solutions for this problem?
+>>>>
+>>>> The other issue is that depending on the OAI-Provider implementation
+>>> a
+>>>> cache may be in an inconsistent state while a cache update process is
+>>>> running. Are there means in the OAI-PMH protocol to respond to
+>>> harvester
+>>>> requests during a cache update? A possible solution would be to
+>>> respond
+>>>> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of
+>>> the
+>>>> specification), but the problem is to specify Retry-After period. A
+>>>> duration of the cache update is not constant, it depends on the
+>>> changes
+>>>> in the repository.
+>>>>
+>>>> Thanks a lot,
+>>>> Rozita
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>> ---
+>>>>
+>>>>
+>>>>
+>>>> -------------------------------------------------------
+>>>>
+>>>> Fachinformationszentrum Karlsruhe, Gesellschaft f??r
+>>> wissenschaftlich-technische Information mbH.
+>>>> Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim
+>>> HRB 101892.
+>>>> Gesch??ftsf??hrerin: Sabine Br??nger-Weilandt.
+>>>> Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+>>>>
+>>>>
+>>>>
+>>>> ---------------------------------------------------------------------
+>>> ---
+>>>>
+>>>> _______________________________________________
+>>>> OAI-implementers mailing list
+>>>> List information, archives, preferences and to unsubscribe:
+>>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>>>
+>>
+>>
+>>
+>> -------------------------------------------------------
+>>
+>> Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH.
+>> Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892.
+>> Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt.
+>> Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+>>
+>>
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+>
+> ----
+> Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+> Dept of Computer Science, Old Dominion University, Norfolk VA 23529
+> +1 757 683 6393 +1 757 683 4900 (f)
+From mln at cs.odu.edu  Tue Jun  2 11:21:39 2009
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Tue Jun  2 11:21:42 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications for
+	OAI-Provider implementations using a cache
+In-Reply-To: <4A252D21.9080908@cs.uct.ac.za>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+	<4A252D21.9080908@cs.uct.ac.za>
+Message-ID: <alpine.GSO.1.10.0906021120220.21908@vega.cs.odu.edu>
+
+
+On Tue, 2 Jun 2009, Hussein Suleman wrote:
+
+> hi Rozita
+>
+> if you use a purpose-built cache, hopefully you can update the datestamp in 
+> the cache so the datestamps of the cache are used to answer queries instead 
+> of the original datestamps ... if you do this, you will not have a problem, 
+> and i do believe this is the recommend OAI-PMH usage for 
+> hierarchical/intermediate systems (i am sure it is written down somewhere but 
+> i cant recall where)
+
+I just realized that my response was essentially the same as Hussein's 
+here -- I should have sent my mesg in reply & support of this one.
+
+regards,
+
+Michael
+
+>
+> then, regarding cache downtime, i was going to say what Simeon has just 
+> written regarding using multiple 503s ...
+>
+> (a day granularity may be restrictive, but it does depend on specifics of 
+> your application)
+>
+> regarding the metadata issue, the reason for the requirement is so that 
+> metadata records are self-contained and can be stored, verified and moved 
+> around without losing namespace information. this requirement exists to some 
+> degree because OAI-PMH was designed in the early and somewhat "wild-west" 
+> days of XML when XML parsers were not very namespace-aware ... although i 
+> should add that even today if you programmatically extract an XML sub-tree 
+> with many parsing tools, you will still not have have fully validifiable 
+> (valid?) XML unless namespace information is in the inner tags ... so it is 
+> all about maintaining verification information within records come what may 
+> ...
+>
+> ttfn,
+> ----hussein
+>
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+>
+>
+> Fridman, Rozita wrote:
+>> Hello all,
+>> 
+>> we developed an OAI-Provider for Escidoc repositories.
+>> Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses a
+>> cache to reduce a response time. Escidoc repositories intend to contain
+>> multiple millions of objects. The Escidoc-Core framework only requires
+>> that objects metadata stored in a Escidoc repository are well formed
+>> xml-structures. Therefore using of a cache in the Escidoc-OAI-Provider
+>> is essential to ensure validness of metadata in OAI-PMH response and an
+>> acceptable response time. 
+>> But the current OAI-PMH protocol specification doesn't account for some
+>> issues, caused by the employment of a cache.
+>>  The main problem is a time lag between a harvester request and a last
+>> cache update:
+>> A harvester asks the OAI-Provider for all records that have changed
+>> between T0 and T2 in the underlying repository. The last cache update
+>> was at T1.The harvester gets records that have changed between T0 and
+>> T1, but assumes that it got all changes between T0 and T2. Therefore in
+>> the next request it asks for records that have changed between T2 and T3
+>> and is missing all changes between T1 and T2. If cache update interval
+>> is long and the next cache update takes place after T3, the harvester is
+>> also missing all changes between T2 and T3 and so on.
+>>    One proposal would be to put a date stamp of the last cache update into
+>> the OAI-PMH response, in order to inform a harvester about possibly
+>> missed records. 
+>> Does anybody face the same problem? What do you think about it? Maybe
+>> there are better solutions for this problem?
+>> 
+>> The other issue is that depending on the OAI-Provider implementation a
+>> cache may be in an inconsistent state while a cache update process is
+>> running. Are there means in the OAI-PMH protocol to respond to harvester
+>> requests during a cache update? A possible solution would be to respond
+>> with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of the
+>> specification), but the problem is to specify Retry-After period. A
+>> duration of the cache update is not constant, it depends on the changes
+>> in the repository.
+>> 
+>> Thanks a lot,
+>> Rozita
+>> 
+>> 
+>> 
+>> 
+>> 
+>> ------------------------------------------------------------------------
+>> 
+>> 
+>> 
+>> -------------------------------------------------------
+>> 
+>> Fachinformationszentrum Karlsruhe, Gesellschaft f?r 
+>> wissenschaftlich-technische Information mbH. Sitz der Gesellschaft: 
+>> Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+>> Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. Vorsitzender des Aufsichtsrats: 
+>> MinR Hermann Riehl.
+>> 
+>> 
+>> 
+>> ------------------------------------------------------------------------
+>> 
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>> 
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+From Rozita.Fridman at FIZ-Karlsruhe.DE  Tue Jun  2 11:27:40 2009
+From: Rozita.Fridman at FIZ-Karlsruhe.DE (Fridman, Rozita)
+Date: Tue Jun  2 11:28:14 2009
+Subject: [OAI-implementers] issues with OAI-PMH specifications
+	for	OAI-Provider implementations using a cache
+In-Reply-To: <4A252D21.9080908@cs.uct.ac.za>
+References: <561B608813F3E7448D792A51EF2AB03E058EC38D@EXCLUSTER.fiz-karlsruhe.de>
+	<4A252D21.9080908@cs.uct.ac.za>
+Message-ID: <561B608813F3E7448D792A51EF2AB03E058EC392@EXCLUSTER.fiz-karlsruhe.de>
+
+Hi Hussein,
+
+thanks for your response.
+
+> if you use a purpose-built cache, hopefully you can update the
+> datestamp
+> in the cache so the datestamps of the cache are used to answer queries
+> instead of the original datestamps ... if you do this, you will not
+> have
+> a problem, and i do believe this is the recommend OAI-PMH usage for
+> hierarchical/intermediate systems (i am sure it is written down
+> somewhere but i cant recall where)
+> 
+
+ I found the Guidelines for Aggregators, Caches and Proxies (http://www.openarchives.org/OAI/2.0/guidelines-aggregator.htm). It requires to change the original repository date stamps to the date stamps of harvesting. But as I understood it is about Aggregators that harvest itself data from other repositories. The Escidoc OAI-Provider intend to behave like an immediate OAI-provider of the Escidoc repository, not like an intermediate node. 
+
+
+> then, regarding cache downtime, i was going to say what Simeon has just
+> written regarding using multiple 503s ...
+> 
+> (a day granularity may be restrictive, but it does depend on specifics
+> of your application)
+> 
+> regarding the metadata issue, the reason for the requirement is so that
+> metadata records are self-contained and can be stored, verified and
+> moved around without losing namespace information. this requirement
+> exists to some degree because OAI-PMH was designed in the early and
+> somewhat "wild-west" days of XML when XML parsers were not very
+> namespace-aware ... although i should add that even today if you
+> programmatically extract an XML sub-tree with many parsing tools, you
+> will still not have have fully validifiable (valid?) XML unless
+> namespace information is in the inner tags ... so it is all about
+> maintaining verification information within records come what may ...
+
+My question is why the attribute "xmlns:xsi" is required to be in the metadata part.
+Of course a name space uri of meta data itself must be in the meta data part.
+
+Best regards,
+Rozita
+> 
+> ttfn,
+> ----hussein
+> 
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+> 
+> 
+> Fridman, Rozita wrote:
+> > Hello all,
+> >
+> > we developed an OAI-Provider for Escidoc repositories.
+> > Escidoc-OAI-Provider is based on the Fedora-OAI-Provider, which uses
+> a
+> > cache to reduce a response time. Escidoc repositories intend to
+> contain
+> > multiple millions of objects. The Escidoc-Core framework only
+> requires
+> > that objects metadata stored in a Escidoc repository are well formed
+> > xml-structures. Therefore using of a cache in the Escidoc-OAI-
+> Provider
+> > is essential to ensure validness of metadata in OAI-PMH response and
+> an
+> > acceptable response time.
+> >
+> > But the current OAI-PMH protocol specification doesn't account for
+> some
+> > issues, caused by the employment of a cache.
+> >
+> > The main problem is a time lag between a harvester request and a last
+> > cache update:
+> > A harvester asks the OAI-Provider for all records that have changed
+> > between T0 and T2 in the underlying repository. The last cache update
+> > was at T1.The harvester gets records that have changed between T0 and
+> > T1, but assumes that it got all changes between T0 and T2. Therefore
+> in
+> > the next request it asks for records that have changed between T2 and
+> T3
+> > and is missing all changes between T1 and T2. If cache update
+> interval
+> > is long and the next cache update takes place after T3, the harvester
+> is
+> > also missing all changes between T2 and T3 and so on.
+> >
+> > One proposal would be to put a date stamp of the last cache update
+> into
+> > the OAI-PMH response, in order to inform a harvester about possibly
+> > missed records.
+> >
+> > Does anybody face the same problem? What do you think about it? Maybe
+> > there are better solutions for this problem?
+> >
+> > The other issue is that depending on the OAI-Provider implementation
+> a
+> > cache may be in an inconsistent state while a cache update process is
+> > running. Are there means in the OAI-PMH protocol to respond to
+> harvester
+> > requests during a cache update? A possible solution would be to
+> respond
+> > with a HTTP-status code 503-Service unavailable (section 3.1.2.2 of
+> the
+> > specification), but the problem is to specify Retry-After period. A
+> > duration of the cache update is not constant, it depends on the
+> changes
+> > in the repository.
+> >
+> > Thanks a lot,
+> > Rozita
+> >
+> >
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> ---
+> >
+> >
+> >
+> > -------------------------------------------------------
+> >
+> > Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-
+> technische Information mbH.
+> > Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim
+> HRB 101892.
+> > Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt.
+> > Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+> >
+> >
+> >
+> > ---------------------------------------------------------------------
+> ---
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+
+
+-------------------------------------------------------
+
+Fachinformationszentrum Karlsruhe, Gesellschaft f?r wissenschaftlich-technische Information mbH. 
+Sitz der Gesellschaft: Eggenstein-Leopoldshafen, Amtsgericht Mannheim HRB 101892. 
+Gesch?ftsf?hrerin: Sabine Br?nger-Weilandt. 
+Vorsitzender des Aufsichtsrats: MinR Hermann Riehl.
+
+
+
+From folgadaunica at gmail.com  Fri Jun 12 09:08:57 2009
+From: folgadaunica at gmail.com (Gina Paihama)
+Date: Fri Jun 12 09:09:35 2009
+Subject: [OAI-implementers] Survey
+Message-ID: <d3844650906120608s2e9ab2b2udbaed959a5753ff@mail.gmail.com>
+
+Good Day
+
+
+
+My name is Jorgina Paihama and I am conducting a study into the
+effectiveness of current interoperability protocols.
+
+
+
+If you have worked with interoperability protocols (such as OAI-PMH and
+RSS), please complete the short questionnaire at:
+
+http://banzai.cs.uct.ac.za/survey/index.php?sid=97137&lang=en
+
+
+
+ This questionnaire is expected to take only 5 - 10 minutes of your time.
+
+This study is conducted as part of an MSc degree in the Digital Libraries
+Laboratory, Department of Computer Science at the University of Cape Town.
+
+
+
+Thank You
+
+Jorgina Paihama
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090612/b7a9b400/attachment.htm
+From bietila at gelman.gwu.edu  Fri Jun 12 13:34:22 2009
+From: bietila at gelman.gwu.edu (David Bietila)
+Date: Fri Jun 12 13:34:28 2009
+Subject: [OAI-implementers] suggestions for Data Provider implementation
+Message-ID: <4A32595D.4A0D.0084.0@gelman.gwu.edu>
+
+Hello,
+
+Our site is seeking to quickly deploy a standalone OAI Data Provider. The records we need to include will be in MARCXML, so support for that format would be a requirement. I'd like to ask for recommendations on existing data provider tools that we could download and install for use here. Applications that require relatively minimal customization for use would be a plus. I appreciate any suggestions you can offer.
+
+Thanks,
+David
+
+David Bietila
+Head of Web Services
+Gelman Library
+George Washington University
+2130 H. St. NW
+Washington, DC 20052
+202-994-0684
+
+ 
+
+
+From khage at umich.edu  Fri Jun 12 14:15:51 2009
+From: khage at umich.edu (Hagedorn, Kat)
+Date: Fri Jun 12 14:14:31 2009
+Subject: [OAI-implementers] suggestions for Data Provider implementation
+In-Reply-To: <4A32595D.4A0D.0084.0@gelman.gwu.edu>
+Message-ID: <C6581397.26C37%khage@umich.edu>
+
+Hi David,
+
+You could use our UMProvider software, available at:
+https://sourceforge.net/projects/umoaitoolkit/
+It's written in perl. There is also a large list at:
+http://webservices.itcs.umich.edu/mediawiki/oaibp/index.php/TurnKeyPackages
+
+Regards,
+ -Kat
+
+
+On 6/12/09 1:34 PM, "David Bietila" <bietila@gelman.gwu.edu> wrote:
+
+> Hello,
+> 
+> Our site is seeking to quickly deploy a standalone OAI Data Provider. The
+> records we need to include will be in MARCXML, so support for that format
+> would be a requirement. I'd like to ask for recommendations on existing data
+> provider tools that we could download and install for use here. Applications
+> that require relatively minimal customization for use would be a plus. I
+> appreciate any suggestions you can offer.
+> 
+> Thanks,
+> David
+> 
+> David Bietila
+> Head of Web Services
+> Gelman Library
+> George Washington University
+> 2130 H. St. NW
+> Washington, DC 20052
+> 202-994-0684
+> 
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-------------------
+Kat Hagedorn 
+OAIster/Metadata Harvesting Librarian
+DLXS Bibliographic Class Coordinator
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From bdrhoa at gmail.com  Fri Jun 12 16:07:03 2009
+From: bdrhoa at gmail.com (Brad Rhoads)
+Date: Fri Jun 12 16:07:05 2009
+Subject: [OAI-implementers] suggestions for Data Provider implementation
+In-Reply-To: <4A32595D.4A0D.0084.0@gelman.gwu.edu>
+References: <4A32595D.4A0D.0084.0@gelman.gwu.edu>
+Message-ID: <676ffb3b0906121307m33cbb2f3xd1999a122235c14f@mail.gmail.com>
+
+I'm using OIACAT
+(http://pubserv.oclc.org/oaicat/jars/docs/index.html). It took some
+time to figure it out, but in the end, I ended up writing very little
+custom code.
+
+You could also look at http://www.oclc.org/research/software/oai/2page.htm
+
+
+On Fri, Jun 12, 2009 at 11:34 AM, David Bietila<bietila@gelman.gwu.edu> wrote:
+> Hello,
+>
+> Our site is seeking to quickly deploy a standalone OAI Data Provider. The records we need to include will be in MARCXML, so support for that format would be a requirement. I'd like to ask for recommendations on existing data provider tools that we could download and install for use here. Applications that require relatively minimal customization for use would be a plus. I appreciate any suggestions you can offer.
+>
+> Thanks,
+> David
+>
+> David Bietila
+> Head of Web Services
+> Gelman Library
+> George Washington University
+> 2130 H. St. NW
+> Washington, DC 20052
+> 202-994-0684
+>
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+
+
+-- 
+---------------------------
+www.maf.org/rhoads
+www.ontherhoads.org
+
+From jyoung at oclc.org  Fri Jun 12 16:31:04 2009
+From: jyoung at oclc.org (Young,Jeff (OR))
+Date: Fri Jun 12 16:31:31 2009
+Subject: [OAI-implementers] suggestions for Data Provider implementation
+In-Reply-To: <676ffb3b0906121307m33cbb2f3xd1999a122235c14f@mail.gmail.com>
+References: <4A32595D.4A0D.0084.0@gelman.gwu.edu>
+	<676ffb3b0906121307m33cbb2f3xd1999a122235c14f@mail.gmail.com>
+Message-ID: <52E301F960B30049ADEFBCCF1CCAEF59047410FB@OAEXCH4SERVER.oa.oclc.org>
+
+Coincidently, my quote of the day yesterday was Shakespeare: "How my
+achievements mock me!"
+
+Sadly, "it took some time to figure out" is too true. When Thom Hickey
+wrote a compliant OAI-PMH implementation with 2 pages of Python my folly
+was made clear. It takes just as much code to customize and configure
+OAICat as it does to write an OAI repository from scratch.
+
+http://www.oclc.org/research/software/oai/2page.htm
+
+I feel very bad about this, but I only have time these days to fix bugs
+in OAICat. I hope the people I disappoint can forgive me.
+
+Jeff
+
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org [mailto:oai-
+> implementers-bounces@openarchives.org] On Behalf Of Brad Rhoads
+> Sent: Friday, June 12, 2009 4:07 PM
+> To: David Bietila
+> Cc: oai-implementers@openarchives.org
+> Subject: Re: [OAI-implementers] suggestions for Data Provider
+> implementation
+> 
+> I'm using OIACAT
+> (http://pubserv.oclc.org/oaicat/jars/docs/index.html). It took some
+> time to figure it out, but in the end, I ended up writing very little
+> custom code.
+> 
+> You could also look at
+> http://www.oclc.org/research/software/oai/2page.htm
+> 
+> 
+> On Fri, Jun 12, 2009 at 11:34 AM, David
+Bietila<bietila@gelman.gwu.edu>
+> wrote:
+> > Hello,
+> >
+> > Our site is seeking to quickly deploy a standalone OAI Data
+Provider.
+> The records we need to include will be in MARCXML, so support for that
+> format would be a requirement. I'd like to ask for recommendations on
+> existing data provider tools that we could download and install for
+use
+> here. Applications that require relatively minimal customization for
+> use would be a plus. I appreciate any suggestions you can offer.
+> >
+> > Thanks,
+> > David
+> >
+> > David Bietila
+> > Head of Web Services
+> > Gelman Library
+> > George Washington University
+> > 2130 H. St. NW
+> > Washington, DC 20052
+> > 202-994-0684
+> >
+> >
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+> >
+> 
+> 
+> 
+> --
+> ---------------------------
+> www.maf.org/rhoads
+> www.ontherhoads.org
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+
+From bdrhoa at gmail.com  Fri Jun 12 16:38:58 2009
+From: bdrhoa at gmail.com (Brad Rhoads)
+Date: Fri Jun 12 16:39:00 2009
+Subject: [OAI-implementers] suggestions for Data Provider implementation
+In-Reply-To: <52E301F960B30049ADEFBCCF1CCAEF59047410FB@OAEXCH4SERVER.oa.oclc.org>
+References: <4A32595D.4A0D.0084.0@gelman.gwu.edu>
+	<676ffb3b0906121307m33cbb2f3xd1999a122235c14f@mail.gmail.com>
+	<52E301F960B30049ADEFBCCF1CCAEF59047410FB@OAEXCH4SERVER.oa.oclc.org>
+Message-ID: <676ffb3b0906121338m2a517edcw219023afbc47c60f@mail.gmail.com>
+
+I'm a satisfied customer :)! Some more docs would have been nice, but
+it's a good system.
+
+On Fri, Jun 12, 2009 at 2:31 PM, Young,Jeff (OR)<jyoung@oclc.org> wrote:
+> Coincidently, my quote of the day yesterday was Shakespeare: "How my
+> achievements mock me!"
+>
+> Sadly, "it took some time to figure out" is too true. When Thom Hickey
+> wrote a compliant OAI-PMH implementation with 2 pages of Python my folly
+> was made clear. It takes just as much code to customize and configure
+> OAICat as it does to write an OAI repository from scratch.
+>
+> http://www.oclc.org/research/software/oai/2page.htm
+>
+> I feel very bad about this, but I only have time these days to fix bugs
+> in OAICat. I hope the people I disappoint can forgive me.
+>
+> Jeff
+>
+>> -----Original Message-----
+>> From: oai-implementers-bounces@openarchives.org [mailto:oai-
+>> implementers-bounces@openarchives.org] On Behalf Of Brad Rhoads
+>> Sent: Friday, June 12, 2009 4:07 PM
+>> To: David Bietila
+>> Cc: oai-implementers@openarchives.org
+>> Subject: Re: [OAI-implementers] suggestions for Data Provider
+>> implementation
+>>
+>> I'm using OIACAT
+>> (http://pubserv.oclc.org/oaicat/jars/docs/index.html). It took some
+>> time to figure it out, but in the end, I ended up writing very little
+>> custom code.
+>>
+>> You could also look at
+>> http://www.oclc.org/research/software/oai/2page.htm
+>>
+>>
+>> On Fri, Jun 12, 2009 at 11:34 AM, David
+> Bietila<bietila@gelman.gwu.edu>
+>> wrote:
+>> > Hello,
+>> >
+>> > Our site is seeking to quickly deploy a standalone OAI Data
+> Provider.
+>> The records we need to include will be in MARCXML, so support for that
+>> format would be a requirement. I'd like to ask for recommendations on
+>> existing data provider tools that we could download and install for
+> use
+>> here. Applications that require relatively minimal customization for
+>> use would be a plus. I appreciate any suggestions you can offer.
+>> >
+>> > Thanks,
+>> > David
+>> >
+>> > David Bietila
+>> > Head of Web Services
+>> > Gelman Library
+>> > George Washington University
+>> > 2130 H. St. NW
+>> > Washington, DC 20052
+>> > 202-994-0684
+>> >
+>> >
+>> >
+>> >
+>> > _______________________________________________
+>> > OAI-implementers mailing list
+>> > List information, archives, preferences and to unsubscribe:
+>> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+>> >
+>> >
+>>
+>>
+>>
+>> --
+>> ---------------------------
+>> www.maf.org/rhoads
+>> www.ontherhoads.org
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+>
+>
+>
+
+
+
+-- 
+---------------------------
+www.maf.org/rhoads
+www.ontherhoads.org
+
+From khage at umich.edu  Tue Jun 30 14:47:18 2009
+From: khage at umich.edu (Hagedorn, Kat)
+Date: Tue Jun 30 14:45:28 2009
+Subject: [OAI-implementers] Second Workshop on "Very Large Digital Libraries"
+Message-ID: <C66FD5F6.278D9%khage@umich.edu>
+
+Of potential interest to OAI implementers...
+-----
+
+Second Workshop on "Very Large Digital Libraries"
+
+CALL FOR PAPERS
+
+*** Apologies for cross-posting***
+
+
+######## Submission deadline postponed to 6th of July ##########
+
+
+******************************************************************
+
+Second Workshop on "Very Large Digital Libraries"
+
+Corfu, Greece, October 1-2, 2009
+
+Sponsored by DELOS association
+
+Web site: http://www.delos.info/vldl2009
+
+E-mail: vldl2009@isti.cnr.it
+
+In conjunction with ECDL 2009
+
+*******************************************************************
+
+###### Workshop Objectives ######
+
+The implementation of nowadays Digital Libraries is more demanding than in
+the past. Information consumers are facing with the need to access ever
+growing, heterogeneous, possibly federated Information Spaces while
+information providers are interested in satisfying such needs by sharing
+rich and organised views over their information deluge. Because of their
+fundamental role of information production and dissemination vehicle,
+Digital Libraries are also expected to provide information society with
+services that must be available 24/7 and guarantee the expected quality of
+service. This scenario leads to the development of ?Very Large Digital
+Libraries? in terms of number of Information Objects and Collections to be
+made available, users to be served and potentially distributed resources
+needed to implement such systems. Such systems have to confront with new
+challenges in a context having scalability, interoperability and
+sustainability as focal points.
+
+Interestingly, however, there is no clear and well-accepted definition of
+Very Large Digital Library (VLDL). Some, in an attempt to give one, blur the
+separation between Very Large Databases (VLDBs) and VLDLs and regard the
+latter as VLDBs storing Digital Library content. Since in databases the
+adjective ?Very large? strictly refers to ?size of content?, the implication
+is that, similarly, VLDLs ought to be DLs storing digital content beyond a
+given storage threshold. Despite being intuitively correct, this explanation
+does not fully satisfy DL practitioners. Indeed, DL content design paradigms
+cannot be conceptually separated by the relative functionalities as it
+happens for DBs. DLs are of use to peculiar user communities whose
+functionality needs, best practices and behaviour are well-accepted DL
+systems requirements. As captured by the DELOS reference model for DLs, user
+management, content management, functionality management, and policies are
+equally important in the definition of a DL. Accordingly, as demonstrated by
+real DL system experiences, VLDLs should be described as DLs featuring ?very
+large features? in one or more of such aspects.
+
+The goal of this workshop is to provide researchers, practitioners and
+application developers with a forum fostering a constructive exchange among
+all key actors in the field of Very Large Digital Libraries. The workshop
+will also be the opportunity to answer the open questions that had arisen
+during VLDL first successful edition at ECDL 2008 (ref. VLDL2008 Workshop
+Report, published in SIGMOD Records 2009).
+
+###### Workshop topics ######
+
+Topics of this workshop are of interest to, but not limited to, the
+following research avenues:
+
+Foundational topics
+
+----------------
+
+Definitional models, for VLDL content, functionality, users, and policies
+(DELOS reference model):
+
+- Architectural models for VLDL systems;
+
+- Data models for VLDL content;
+
+- Design methodologies for VLDLs.
+
+System topics
+
+----------------
+
+Ideas, experiments and practical experiences in system design and
+
+implementation:
+
+- Integration and federation of existing DLs;
+
+- User management in VLDLs;
+
+- Security issues in VLDLs;
+
+- Sustainability issues in VLDLs;
+
+- Scalability issues in VLDLs;
+
+- Distribution issues for VLDLs;
+
+- Interoperability issues for VLDL content and functionalities;
+
+- Quality of Service measures and operation of VLDLs;
+
+- Storing and indexing issues in VLDL content;
+
+- Preservation issues for VLDL content.
+
+###### Important Dates ######
+
+Paper submission deadline: July 6th, 2009
+
+Notification of acceptance: July 31st, 2009
+
+Submission of camera-ready papers: September 6, 2009
+
+###### Paper Submission ######
+
+Authors are invited to submit original, unpublished research papers.
+
+Submitted manuscripts will have to be limited to 8 pages, following the
+guidelines for the LNCS format provided by Springer. Preferred formats are
+PDF or Microsoft Word. Papers should be submitted via email to
+vldl2009@isti.cnr.it. Papers submitted to the workshop will undergo a
+peer-review process by Program Committee members. For every accepted
+contribution, at least one author will be required to attend the workshop
+and present the paper. Accepted papers will be published as a volume in the
+DELOS workshop proceedings series (ISBN), which will also be made available
+in the DELOS digital library.
+
+###### Workshop Organisers ######
+
+- Yannis Ioannidis, Department of Informatics, National and Kapodistrian
+University of Athens, Greece;
+
+- Paolo Manghi, Istituto di Scienza e Tecnologie dell'Informazione (ISTI),
+National Research Council (CNR), Pisa, Italy;
+
+- Pasquale Pagano, Istituto di Scienza e Tecnologie dell'Informazione
+(ISTI), National Research Council (CNR), Pisa, Italy.
+
+###### Program Committee ######
+
+- Stavros Christodoulakis, Technical University of Crete (MUSIC/TUC),
+Greece;
+
+- Stefan Gradmann, Institut f?r Bibliotheks und Informationswissenschaft,
+Humboldt-Universit?t zu Berlin, Germany;
+
+- Kate Hagedorn, OAIster System, University of Michigan Digital Library
+Production Service, USA;
+
+- Dean B. Krafft, National Science Digital Library Project, Cornell
+Information Science, USA;
+
+- Yosi Mass, IBM Research Division, Haifa Research Laboratory, University
+Campus, Haifa, Israel;
+
+- Peter Wittenburg, Max-Planck-Institute for Psycholinguistics, The
+Netherlands.
+

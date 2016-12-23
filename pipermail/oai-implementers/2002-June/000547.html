@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] error reporting
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:deridder%40cs.utk.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000545.html">
+   <LINK REL="Next"  HREF="000549.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] error reporting
+   </H1>
+    <B>deridder
+    </B> 
+    <A HREF="mailto:deridder%40cs.utk.edu"
+       TITLE="[OAI-implementers] error reporting">deridder@cs.utk.edu
+       </A><BR>
+    <I>Mon, 24 Jun 2002 08:53:33 -0400 (EDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000545.html">[OAI-implementers] error reporting
+</A></li>
+        <LI> Next message: <A HREF="000549.html">[OAI-implementers] error reporting
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#547">[ date ]</a>
+              <a href="thread.html#547">[ thread ]</a>
+              <a href="subject.html#547">[ subject ]</a>
+              <a href="author.html#547">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>How about for when the database is down, or other low-level
+problems?
+  I for one would like to use something like:
+
+&lt;error code=&quot;ServerDown&quot;&gt;Service unavailable.  Retry in one
+hour&lt;/error&gt;
+
+ with a 503 code, but obviously that's not in the protocol.
+
+  --j.
+
+On Sun, 23 Jun 2002, Irina Dijour
+wrote:
+
+&gt;<i> Hi Michael,
+</I>&gt;<i>
+</I>&gt;<i> I think that if we don't have error codes for low-level errors your solution
+</I>&gt;<i> #2 (some lower level bound)
+</I>&gt;<i> is the most suitable.
+</I>&gt;<i>
+</I>&gt;<i> Thanks,
+</I>&gt;<i> Irina
+</I>&gt;<i>
+</I>&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Michael L. Nelson [mailto:<A HREF="mailto:mln@ils.unc.edu">mln@ils.unc.edu</A>]
+</I>&gt;<i> Sent: Sunday, June 23, 2002 4:43 PM
+</I>&gt;<i> To: <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: RE: [OAI-implementers] error reporting
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Sun, 23 Jun 2002, Irina Dijour wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; &gt;What error condition do you wish to report that is not covered
+</I>&gt;<i> &gt; &gt;by the existing error codes? I did not find any when writing
+</I>&gt;<i> &gt; &gt;my server.
+</I>&gt;<i> &gt; For example: One record in my database is wrong and I can not obtain
+</I>&gt;<i> &gt; datestamp information for this record.
+</I>&gt;<i> &gt; I could say &quot;cannotDisseminateFormat&quot; but in truth I can disseminate
+</I>&gt;<i> format,
+</I>&gt;<i> &gt; I just cannot get datestamp.
+</I>&gt;<i>
+</I>&gt;<i> interesting...  all of the errors defined in OAI-PMH are about OAI-based
+</I>&gt;<i> errors / exception conditions.  there is no provision for lower-level
+</I>&gt;<i> errors, such as problems in the database.
+</I>&gt;<i>
+</I>&gt;<i> I think the lack of a datestamp might be enough to say that this record
+</I>&gt;<i> does not exist in an OAI-context.
+</I>&gt;<i>
+</I>&gt;<i> from section 2.5:
+</I>&gt;<i>
+</I>&gt;<i> A record is identified unambigiously by the combination of the unique
+</I>&gt;<i> identifier of the item from which the record is available, the
+</I>&gt;<i> metadataPrefix identifying the metadata format of the record, and the
+</I>&gt;<i> datestamp of the record.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> so if you don't have 1 of {id,metadataPrefix,datestamp}, I don't think you
+</I>&gt;<i> have a record.  I would either:
+</I>&gt;<i>
+</I>&gt;<i> 1.  ignore this record for OAI purposes
+</I>&gt;<i>
+</I>&gt;<i> or
+</I>&gt;<i>
+</I>&gt;<i> 2.  make up a datestamp for the record.  it should not be hard to define
+</I>&gt;<i> some lower bound for the record; use whatever you put in earliestDatestamp
+</I>&gt;<i> in your Identify response.
+</I>&gt;<i>
+</I>&gt;<i> regards,
+</I>&gt;<i>
+</I>&gt;<i> Michael
+</I>&gt;<i>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; BR
+</I>&gt;<i> &gt; Irina
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; -----Original Message-----
+</I>&gt;<i> &gt; From: Simeon Warner [mailto:<A HREF="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</A>]
+</I>&gt;<i> &gt; Sent: Thursday, June 20, 2002 11:16 PM
+</I>&gt;<i> &gt; To: Irina Dijour
+</I>&gt;<i> &gt; Cc: '<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>'
+</I>&gt;<i> &gt; Subject: Re: [OAI-implementers] error reporting
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; What error condition do you wish to report that is not covered
+</I>&gt;<i> &gt; by the existing error codes? I did not find any when writing
+</I>&gt;<i> &gt; my server.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; My feeling is that 503 is not to be used for errors in the
+</I>&gt;<i> &gt; same sense as &lt;error&gt; replies. 503 is for cases when the
+</I>&gt;<i> &gt; service is unavailable -- it may be used for flow control
+</I>&gt;<i> &gt; or perhaps temporary outages such as might occur with large
+</I>&gt;<i> &gt; updates.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Cheers,
+</I>&gt;<i> &gt; Simeon.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Thu, 20 Jun 2002, Irina Dijour wrote:
+</I>&gt;<i> &gt; &gt; I have a small suggestion concerning error reporting.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; We have several error codes in OAI 2.0 protocol (&quot;badArgument&quot;,
+</I>&gt;<i> &gt; &gt; &quot;badResumptionToke&quot; etc).
+</I>&gt;<i> &gt; &gt; If I understand correctly, if none of these error codes fits for an
+</I>&gt;<i> error
+</I>&gt;<i> &gt; &gt; that should be reported,
+</I>&gt;<i> &gt; &gt; the OAI data provider should return HTTP Error code &quot;503 Service
+</I>&gt;<i> &gt; &gt; unavailable&quot;.
+</I>&gt;<i> &gt; &gt; 1. If the OAI data provider uses HTTP Error code 503 it cannot specify
+</I>&gt;<i> &gt; what
+</I>&gt;<i> &gt; &gt; exactly has happened.
+</I>&gt;<i> &gt; &gt;     And sometimes it's useful.
+</I>&gt;<i> &gt; &gt; 2. There are situations when the OAI Data provider wants to report a
+</I>&gt;<i> &gt; &gt; specific error for a specific record.
+</I>&gt;<i> &gt; &gt;     I think that sending HTTP Error code 503 in this case is too
+</I>&gt;<i> general.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Therefore I propose to add additional error &quot;unspecifiedError&quot; (as it's
+</I>&gt;<i> &gt; done
+</I>&gt;<i> &gt; &gt; in Z39.50 protocol).
+</I>&gt;<i> &gt; &gt; In the &quot;error&quot; element content OAI data provider may specify the error.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Irina
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; -----------------------------------
+</I>&gt;<i> &gt; &gt; Irina Dijour
+</I>&gt;<i> &gt; &gt; Software Development
+</I>&gt;<i> &gt; &gt; Ex Libris ltd.
+</I>&gt;<i> &gt; &gt; Malha Technology Park
+</I>&gt;<i> &gt; &gt; Jerusalem 91481, Israel
+</I>&gt;<i> &gt; &gt; Tel: +972-(0)2-6798-222  ext. 142
+</I>&gt;<i> &gt; &gt; Fax: +972-(0)2-6798-634
+</I>&gt;<i> &gt; &gt; <A HREF="mailto:Irina.Dijour@exlibris.co.il">Irina.Dijour@exlibris.co.il</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> ---
+</I>&gt;<i> Michael L. Nelson
+</I>&gt;<i> NASA Langley Research Center		<A HREF="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>
+</I>&gt;<i> MS 158, Hampton, VA 23681		<A HREF="http://www.ils.unc.edu/~mln/">http://www.ils.unc.edu/~mln/</A>
+</I>&gt;<i> +1 757 864 8511				+1 757 864 8342 (f)
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+
+***********************************************************
+   PGPKey: <A HREF="http://www.cs.utk.edu/~deridder/jd-pgp.txt">http://www.cs.utk.edu/~deridder/jd-pgp.txt</A>
+***********************************************************
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000545.html">[OAI-implementers] error reporting
+</A></li>
+	<LI> Next message: <A HREF="000549.html">[OAI-implementers] error reporting
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#547">[ date ]</a>
+              <a href="thread.html#547">[ thread ]</a>
+              <a href="subject.html#547">[ subject ]</a>
+              <a href="author.html#547">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

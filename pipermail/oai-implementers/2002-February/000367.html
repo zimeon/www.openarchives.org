@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] OAI Aggregator
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tim%40tim.brody.btinternet.co.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000366.html">
+   <LINK REL="Next"  HREF="000382.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] OAI Aggregator
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tim%40tim.brody.btinternet.co.uk"
+       TITLE="[OAI-implementers] OAI Aggregator">tim@tim.brody.btinternet.co.uk
+       </A><BR>
+    <I>Thu, 14 Feb 2002 12:55:35 -0000</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000366.html">[OAI-implementers] OAI Aggregator
+</A></li>
+        <LI> Next message: <A HREF="000382.html">[OAI-implementers] OAI Aggregator
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#367">[ date ]</a>
+              <a href="thread.html#367">[ thread ]</a>
+              <a href="subject.html#367">[ subject ]</a>
+              <a href="author.html#367">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Apologies for long email ...
+
+----- Original Message -----
+From: &quot;Alan Kent&quot; &lt;<A HREF="mailto:ajk@mds.rmit.edu.au">ajk@mds.rmit.edu.au</A>&gt;
+To: &quot;Tim Brody&quot; &lt;<A HREF="mailto:tim@tim.brody.btinternet.co.uk">tim@tim.brody.btinternet.co.uk</A>&gt;; &quot;OAI Implementors&quot;
+&lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+Sent: Wednesday, February 13, 2002 11:21 PM
+Subject: Re: [OAI-implementers] OAI Aggregator
+
+
+&gt;<i> On Wed, Feb 13, 2002 at 12:43:24PM -0000, Tim Brody wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; Announcing the release of a beta OAI aggregating tool: OAIA
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Based on PERL and MySQL, OAIA is a _very_ simple mechanism for providing
+</I>&gt;<i> &gt; caching and aggregating of OAI repositories.
+</I>&gt;<i>
+</I>&gt;<i> Having read the article
+</I><A HREF="http://documents.cern.ch/ettdh/doc/public/OAIRSF.html">http://documents.cern.ch/ettdh/doc/public/OAIRSF.html</A>
+&gt;<i> which talks about hierarchical harvesting, is the idea then for this
+</I>&gt;<i> package to collect data from multiple data providers, then provide the
+</I>&gt;<i> data to multiple service providers?
+</I>
+It could do, yes.
+
+The reason for writing OAIA was to alleviate the problem of DP9 overloading
+data providers (which is especially troublesome because it is based on
+GetRecord, rather than ListRecords requests).
+
+OAIA could also be used to build unified community, or perhaps geographical,
+specific collections. This alleviates the maintenance problems that global
+SPs will have, as they will only need to harvest half a dozen DPs, compared
+to potentially 1000s.
+
+&gt;<i> If this is the case, should more work be done in terms of mapping out
+</I>&gt;<i> the relationship between different OAI repositories and copies? As
+</I>&gt;<i> a new person to this list, I just looked at the list of available sites
+</I>&gt;<i> and said &quot;great, I will crawl them all!&quot;. But a recent mail I got
+</I>&gt;<i> indicated that one of the repositories was a copy (or included all
+</I>&gt;<i> of) another repository. This would seem to occur even more often with
+</I>&gt;<i> OAIA-like packages becoming available.
+</I>
+I don't see there being a big problem with harvesting the same records from
+multiple sources, as long as:
+a) Datestamps are always updated to the day of harvest, or the day the
+record was changed
+b) Harvesters are discerning about what they harvest
+
+(I have built an OAI export for web-logs but would you want to harvest it,
+even if it is original?)
+
+&gt;<i> (1) Improve the sophistication of the global XML document listing
+</I>&gt;<i>     various OAI repositories, showing how they inter-relate.
+</I>
+Sounds too complex. OAI should (eventually) cluster around communities,
+which will solve this problem to a large extent. At the moment the coverage
+is too fragmented to become self-organising - with the notable exception of
+OLAC.
+
+&gt;<i> (2) Extend the XML of the Identify return to (optionally) include
+</I>&gt;<i>     details such as 'I have local data', and 'I also have data
+</I>&gt;<i>     crawled from this other site using this query (set name)'.
+</I>&gt;<i>     The default assumption would be its local data.
+</I>&gt;<i>
+</I>&gt;<i> Putting it into the Identify command would avoid registration complexity.
+</I>
+Done (kind of):
+<A HREF="http://citebase.eprints.org/cgi-bin/oai?verb=Identify">http://citebase.eprints.org/cgi-bin/oai?verb=Identify</A>
+
+&gt;<i> Does the aggregator keep the original identifiers for metadata?
+</I>
+Yes. So you could compare the repositoryName (as returned by Identify) to
+the record identifiers its returning, to work out which records are local,
+and which re-exported.
+
+&gt;<i> Does an instance of OAIA get registered as a new repository?
+</I>
+It could do (of existing aggregators citebase is, arc isn't - but then
+citebase is also a hidden-augmentor ...).
+
+&gt;<i> Would this imply a site can return metadata with
+</I>&gt;<i> an identifier from a different site? Would this in turn mean that
+</I>&gt;<i> harvesters need to be careful - if they harvest from 2 OAIA sites,
+</I>&gt;<i> which both harvest from the same original site, where one OAIA site
+</I>&gt;<i> more up to date than the other then you may get old metadata back.
+</I>
+Assuming above caveat a) is adherred to, you should just compare datestamps
+and take the newer one. Things get complex if one aggregator is changing the
+metadata, while another one isn't - an issue that the technical folks in OAI
+2.0 were thinking about. The idea was proposed that the identifier be
+changed if a harvester alters the metadata, then re-exports - then the
+problem is how to resolve multiple near-duplicate records.
+
+&gt;<i> Makes deletes a bit more tricky too.
+</I>&gt;<i> Its not safe just to delete the local copy. I really need to cache
+</I>&gt;<i> the delete notification to be able to compare date/time stamps.
+</I>
+I don't treat a status=deleted as an order to delete the record. arXiv.org
+and EPrints.org both treat a deletion as a flag, so that should a user come
+across a deleted record they don't get a 404, but a notification that what
+they were looking for has been withdrawn, and why.
+If you store the deletion as a metadata field, it will be handled by the
+same datestamp test as the rest of the metadata.
+
+All the best,
+Tim.
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000366.html">[OAI-implementers] OAI Aggregator
+</A></li>
+	<LI> Next message: <A HREF="000382.html">[OAI-implementers] OAI Aggregator
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#367">[ date ]</a>
+              <a href="thread.html#367">[ thread ]</a>
+              <a href="subject.html#367">[ subject ]</a>
+              <a href="author.html#367">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

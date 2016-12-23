@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] harvesting strategy
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40lanl.gov">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000140.html">
+   <LINK REL="Next"  HREF="000143.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] harvesting strategy
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40lanl.gov"
+       TITLE="[OAI-implementers] harvesting strategy">simeon@lanl.gov
+       </A><BR>
+    <I>Fri, 25 May 2001 14:14:15 -0600 (MDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000140.html">[OAI-implementers] new records in combination with a resumptionToken
+</A></li>
+        <LI> Next message: <A HREF="000143.html">[OAI-implementers] new records in combination with a resumptionToken
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#142">[ date ]</a>
+              <a href="thread.html#142">[ thread ]</a>
+              <a href="subject.html#142">[ subject ]</a>
+              <a href="author.html#142">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, 23 May 2001, Hussein Suleman wrote:
+&gt;<i> [chopped section on resumptions and data-provider tables]
+</I>&gt;<i> 
+</I>&gt;<i> the alternative is to consider how service providers work (at least this
+</I>&gt;<i> is how we thought it through when building our first experimental
+</I>&gt;<i> harvester):
+</I>
+I've spent a little time thinking about harvesters so I thought I'd
+comment on Hussein's notes.
+
+&gt;<i> a) since you can always add records at any time during the day and the
+</I>&gt;<i> granularity of harvesting is a day, you cannot trust data you got on the
+</I>&gt;<i> same day.
+</I>
+agreed.
+
+&gt;<i> b) since dates are local to different timezones, if the data provider is
+</I>&gt;<i> west of the service provider, asking for everything up until yesterday
+</I>&gt;<i> is not &quot;interoperationally stable&quot; since it could still be yesterday at
+</I>&gt;<i> the data provider.
+</I>
+agreed.
+
+&gt;<i> now there are multiple solutions to this and we tried implementing some:
+</I>&gt;<i> a) dont get anything newer than 2 days old
+</I>&gt;<i> b) always ask for a 2 day overlap ending on the current date
+</I>&gt;<i> c) use a 1-day overlap and operate in the timezone of the data provider
+</I>&gt;<i> (extract an initial responseDate from the data provider and then
+</I>&gt;<i> increment locally)
+</I>
+I think something like option c) is best. As Hussein said, even when
+working in the local timezone of the data-provider, one needs to harvest
+records that changed on the same day as the last harvest was performed.
+I suggest using the YYYY-MM-DD part of the responseDate from the
+first reply to the last harvest's ListRecords/ListIdentifiers request
+as the new 'from' date. I say 'first reply' to cope with ill-defined
+behaviour if set of partial responses spanned a day boundary, and I
+note that the responseDate must be in the local timezone of the
+data-provider, with the offset from UTC appended (1.0spec. sec3.2).
+The nice feature of this strategy is that it doesn't require the
+harvester to know what the time is, and is insensitive to errors in
+the repository time provided the datestamps and responseDates are
+consistent.
+
+Does anyone else have comments of different strategies?
+
+Another thing I am thinking about is when the operator of a harvester
+should be alerted to possible problems/changes requiring manual
+intervention. So far I have come up with:
+1) too many failures to reach site
+2) unexpected HTTP replies
+3) too many sequential redirect or retryAfter replies
+4) change in Identity reply (other than responseDate) 
+Comments?
+
+Cheers,
+Simeon
+
+
+&gt;<i> 
+</I>&gt;<i> as far as we can figure, any service provider that wants to avoid
+</I>&gt;<i> missing data entries has to do something like this ... since new data is
+</I>&gt;<i> not &quot;stable&quot; for harvesting it is not trusted and/or not harvested
+</I>&gt;<i> immediately and your problem of database updates pretty much disappears
+</I>&gt;<i> as long as harvesting is by date (which i trust it almost always is)
+</I>&gt;<i> 
+</I>&gt;<i> ok, i know this is probably way too much detail for this question :) but
+</I>&gt;<i> i just wanted to share these thoughts to see if they aligned with the
+</I>&gt;<i> harvesting approaches used by other people building service provider
+</I>&gt;<i> interfaces ...
+</I>&gt;<i> 
+</I>&gt;<i> any further comments will be appreciated ...
+</I>&gt;<i> 
+</I>&gt;<i> ttfn
+</I>&gt;<i> ----hussein
+</I>&gt;<i> 
+</I>&gt;<i> -- 
+</I>&gt;<i> ========================================================================
+</I>&gt;<i> hussein suleman -- <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> -- vtcs -- <A HREF="http://purl.org/net/hussein">http://purl.org/net/hussein</A>
+</I>&gt;<i> ========================================================================
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000140.html">[OAI-implementers] new records in combination with a resumptionToken
+</A></li>
+	<LI> Next message: <A HREF="000143.html">[OAI-implementers] new records in combination with a resumptionToken
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#142">[ date ]</a>
+              <a href="thread.html#142">[ thread ]</a>
+              <a href="subject.html#142">[ subject ]</a>
+              <a href="author.html#142">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

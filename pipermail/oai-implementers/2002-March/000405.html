@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Better resumption mechanism - more important
+ than ever!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:mln%40ils.unc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000403.html">
+   <LINK REL="Next"  HREF="000407.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+   </H1>
+    <B>Michael L. Nelson
+    </B> 
+    <A HREF="mailto:mln%40ils.unc.edu"
+       TITLE="[OAI-implementers] Better resumption mechanism - more important
+ than ever!">mln@ils.unc.edu
+       </A><BR>
+    <I>Tue, 5 Mar 2002 10:02:43 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000403.html">[OAI-implementers] Better resumption mechanism - more important than ever!
+</A></li>
+        <LI> Next message: <A HREF="000407.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#405">[ date ]</a>
+              <a href="thread.html#405">[ thread ]</a>
+              <a href="subject.html#405">[ subject ]</a>
+              <a href="author.html#405">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>actually, the way I see it is the protocol should not be complicated with
+additional tokens and such to enforce what ETDCat (and similiarly
+large-sized DPs) should do:
+
+1.  partition their collection into sets
+2.  use stateless (or very long lived) resumptionTokens
+
+in 2.0, resumptionTokens will have optional attributes, including
+&quot;expirationDate&quot;, so this will take the guess work out of knowing how long
+a resumptionToken will be valid.
+
+IMO, introducing an optional restartToken is no different (from an
+implementer's point of view) than making the resumptionToken last a long
+time.  
+
+at some point, you (as a harvester) are simply at the mercy of the
+repository.  new features in the protocol won't change that.
+
+regards,
+
+Michael
+
+On Tue, 5 Mar 2002, 'Alan Kent' wrote:
+
+&gt;<i> I just got some mail from Jeff at OCLC talking about ETDCat (hope
+</I>&gt;<i> you don't mind me quoting some of your mail Jeff). In particular,
+</I>&gt;<i> he just told me
+</I>&gt;<i> 
+</I>&gt;<i>     ETDCat contains a lot of records (over 4 million), all of
+</I>&gt;<i>     which currently have the exact same datestamp from the initial load.
+</I>&gt;<i> 
+</I>&gt;<i> He also told me that there were no sets. So basically, its all
+</I>&gt;<i> or nothing for this site because OAI has no standard way to resume
+</I>&gt;<i> if a transfer fails.
+</I>&gt;<i> 
+</I>&gt;<i> If this has happened already, I think its likely to occur again.
+</I>&gt;<i> (That is, one very large database all with the same time stamp.)
+</I>&gt;<i> So any comments about having a single large collection like this
+</I>&gt;<i> is beside the point. The point is OAI does not handle it well.
+</I>&gt;<i> 
+</I>&gt;<i> So I would like to resurrect the discussion again if people don't
+</I>&gt;<i> mind on how to do support restarts. My understanding of the general
+</I>&gt;<i> feeling so far is
+</I>&gt;<i> 
+</I>&gt;<i> (1) Mandating support is not going to be acceptable
+</I>&gt;<i> 
+</I>&gt;<i> (2) Mandating format of resumption tokens is not going to be acceptable
+</I>&gt;<i> 
+</I>&gt;<i> (3) Mandating resumption tokens be long lifed (eg: can try again the
+</I>&gt;<i>     following day) is not acceptable
+</I>&gt;<i> 
+</I>&gt;<i> (4) In fact, mandating that resumption tokens be unique (allowing
+</I>&gt;<i>     a token to be reused twice in quick succession to get the same
+</I>&gt;<i>     data) is not acceptable
+</I>&gt;<i> 
+</I>&gt;<i> So any proposal needs to be optionally supported.
+</I>&gt;<i> 
+</I>&gt;<i> Question time:
+</I>&gt;<i> 
+</I>&gt;<i> Does anyone else think that this is a major hole in OAI? I personally
+</I>&gt;<i> do. After trying to crawl sites, things go wrong. The larger the site,
+</I>&gt;<i> the greater the probability that something will go wrong. The larger
+</I>&gt;<i> the site, the greater the pain of starting all over again. I do not
+</I>&gt;<i> think it is practical for anyone to harvest ETDCat if is really got
+</I>&gt;<i> 4,000,000 records. Any fault, and start downloading that 4gb again!
+</I>&gt;<i> So I feel strongly on this one. In fact, I think this is the most
+</I>&gt;<i> major problem OAI has.
+</I>&gt;<i> 
+</I>&gt;<i> Do people think its better to reuse resumption tokens for this purpose,
+</I>&gt;<i> or introduce a different sort of token? ETDCat for example I think
+</I>&gt;<i> allocates a session id in resumption tokens, meaning they cannot
+</I>&gt;<i> be reused when the session times out in the server (similar semantics
+</I>&gt;<i> anyway). This is a reasonable implementation decision to make.
+</I>&gt;<i> So maybe its better for servers to return an additional token,
+</I>&gt;<i> which is a &lt;restartToken&gt; which means a client can instead of
+</I>&gt;<i> specifying from= and to= again, specify restartToken= instead where
+</I>&gt;<i> the server then automatically works out whatever other parameters
+</I>&gt;<i> it needs, creates a new session etc internally. The new 'session'
+</I>&gt;<i> (ListXXX verb) then can use resumptionTokens to manage that new
+</I>&gt;<i> transfer.
+</I>&gt;<i> 
+</I>&gt;<i> The idea is for a &lt;restartToken&gt; to be long lifed. It may be less
+</I>&gt;<i> efficient to use than a resumptionToken, but its only purpose is
+</I>&gt;<i> if the client fails the download. If a server does not support
+</I>&gt;<i> restartToken, it simply never returns one. Large collections *should*
+</I>&gt;<i> support restartTokens.
+</I>&gt;<i> 
+</I>&gt;<i> For my harvester, I can then remember (to disk) the restartToken for
+</I>&gt;<i> every packet I get back, allowing me to recover much more easily
+</I>&gt;<i> if anything crashes. If restartToken's are too hard for someone
+</I>&gt;<i> to implement, then they don't. If you have a large data collection
+</I>&gt;<i> on the other hand, to reduce network load, I think its probably worth
+</I>&gt;<i> the extra effort of supporting restartTokens.
+</I>&gt;<i> 
+</I>&gt;<i> Any comments? Better suggesions?
+</I>&gt;<i> 
+</I>&gt;<i> Alan
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+---
+Michael L. Nelson
+NASA Langley Research Center		<A HREF="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>
+MS 158, Hampton, VA 23681		<A HREF="http://www.ils.unc.edu/~mln/">http://www.ils.unc.edu/~mln/</A>
++1 757 864 8511				+1 757 864 8342 (f)
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000403.html">[OAI-implementers] Better resumption mechanism - more important than ever!
+</A></li>
+	<LI> Next message: <A HREF="000407.html">[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#405">[ date ]</a>
+              <a href="thread.html#405">[ thread ]</a>
+              <a href="subject.html#405">[ subject ]</a>
+              <a href="author.html#405">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

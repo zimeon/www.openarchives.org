@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <title>OAI-PMH Implementation Guidelines - Specification and XML Schema for the OAI Identifier Format</title>
+  <style type="text/css">
+    body { color: black; background: white; }
+    code { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+    em { color: black; background: #FF6666; }
+  </style>
+<META content="Open Archives Initiative - Protocol for Metadata Harvesting - v.2.0" name=DC.title>
+<META content="Lagoze, Carl" name=DC.creator>
+<META content="Van de Sompel, Herbert" name=DC.creator>
+<META content="Nelson, Michael" name=DC.creator>
+<META content="Warner, Simeon" name=DC.creator>
+<META content=2002-06-01 name=DC.date>
+</head>
+<body>
+<table summary="Logo and heading" border="0" width="100%">
+<tr>
+<td ALIGN="CENTER" ROWSPAN="2">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" BORDER="0" height="70" width="100" align="BOTTOM" /></a>
+</td>
+<td ALIGN="LEFT" WIDTH="87%">
+<h2>Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting</h2>
+<h1>-&nbsp;Specification and XML Schema for the OAI Identifier Format</h1>
+</td>
+</tr>
+<tr>
+    <td ALIGN="LEFT" WIDTH="87%" height="38"> <b> Protocol Version 2.0 of 2002-06-14<br />
+      Document Version 2002/06/21T21:48:00Z<br />
+      http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm</b> </td>
+</tr>
+</table>
+
+<P><B>Editors</B></P>
+<P> <U>The OAI Executive:</U> <BR />
+  <A href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</A> &lt;<A href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt; 
+  -- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A> 
+  <BR />
+  <a href="mailto:herbertv@cs.cornell.edu">Herbert Van de Sompel</a> &lt;<a href="mailto:herbertv@lanl.gov">herbertv@lanl.gov</a>&gt; 
+  -- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+  Library </a></P>
+<P>
+<U>From the OAI Technical Committee:</U>
+<BR />
+<A href="mailto:m.l.nelson@larc.nasa.gov">Michael Nelson</A> 
+&lt;<A href="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>&gt; 
+-- <A href="http://www.larc.nasa.gov/">NASA - Langley Research Center</A>
+<BR />
+<A href="mailto:simeon@cs.cornell.edu">Simeon Warner</A> 
+&lt;<A href="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</A>&gt; 
+-- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A>
+</P>
+
+<p><b>
+This document is one part of the 
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h1>Specification and XML Schema for the OAI Identifier Format</h1>
+
+<h2>1. Introduction</h2>
+<p>
+The OAI identifier format is intended to provide persistent resource 
+identifiers for items in repositories that implement OAI-PMH. This
+is just one possible format that may be used for identifiers within
+OAI-PMH.
+</p>
+<p> <code>oai-identifiers</code> are Uniform Resource Names (URNs) in the sense 
+  of <a href="http://www.ietf.org/rfc/rfc1737.txt">RFC1737</a>; they are resource 
+  identifiers and not resource locators (URLs). Note that here the <i>resource</i> 
+  is the metadata (the items) and not the underlying object or "stuff" that the 
+  metadata describes. Correspondence between an <code>oai-identifier</code> and 
+  any identifier that the object described by the metadata may have is outside 
+  the scope of this specification and of the OAI-PMH. <a href="#Adherence">Adherence 
+  to standards and accord with existing schemes</a> is discussed at the end of 
+  this document. </p>
+
+<h2>2. Description</h2>
+
+<h3>2.1 Syntax</h3>
+
+<p>
+The <code>oai-identifier</code> syntax is a restriction of the 
+"general, absolute URI" syntax: 
+<code>&lt;scheme&gt;:&lt;scheme-specific-part&gt;</code>,
+defined in
+<a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>.
+The following description uses the same notational conventions as
+<a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>,
+and the same definitions of 
+<code>digit</code>, <code>alpha</code>, <code>alphanum</code>,
+<code>reserved</code>, <code>unreserved</code> and <code>uric</code>.
+</p>
+<pre>  oai-identifier = scheme ":" namespace-identifier ":" local-identifier
+
+  scheme = "oai"
+
+  namespace-identifier = domainname-word "." domainname
+  domainname = domainname-word [ "." domainname ]
+  domainname-word = alpha *( alphanum | "-" )
+
+  local-identifier = 1*uric
+</pre>
+<p>
+Any <code>uric</code> elements are permitted in the <code>local-identifier</code>. 
+Since characters in the <code>reserved</code> set do not have any 
+special meaning in the <code>local-identifier</code> component, they 
+are permitted unescaped. All characters not included
+in the <code>unreserved</code> and <code>reserved</code> sets <b>must</b> 
+be <code>escaped</code> (using the same 
+<a href="openarchivesprotocol.htm#SpecialCharacters">encoding</a> 
+as OAI-PMH requests).
+Characters in the <code>unreserved</code> and <code>reserved</code> sets 
+<b>must not</b> be escaped.
+An <code>oai-identifier</code> should never be unescaped, the sole
+purpose of permitting <code>escaped</code> characters is to allow
+repositories to map any internal identifier to the 
+<code>local-identifier</code> part of an <code>oai-identifier</code>.
+The following definitions are copied from
+<a href="http://www.ietf.org/rfc/rfc2396.txt">RFC 2396</a>
+for convenience:
+</p>
+<pre>  uric        = reserved | unreserved | escaped
+  reserved    = ";" | "/" | "?" | ":" | "@" | "&amp;" | "=" | "+" | "$" | ","
+  unreserved  = alphanum | mark
+  mark        = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"
+</pre>
+<p>
+To avoid the possibility of inconsistently generated <code>escaped</code> 
+characters in an <code>oai-identifier</code>, the <code>hex</code> 
+digits must use uppercase for the letters <code>A</code> though <code>F</code>.
+This is a further restriction on RFC 2396. Thus, <code>escaped</code> and 
+<code>hex</code> are defined as follows:
+</p>
+<pre>  escaped     = "%" hex hex
+  hex         = digit | "A" | "B" | "C" | "D" | "E" | "F"
+</pre>
+
+<h3>2.2 Namespace Identifier</h3>
+<p>
+Organizations must choose <code>namespace-identifier</code> values
+which correspond to a domain-name that they have registered, and are 
+committed to maintaining. Note that since the <code>oai-identifier</code> 
+is case-sensitive, a particular capitalization style must be selected and
+used consistently. A single domain name should not be used with variant 
+capitalizations.
+</p> 
+<p>
+Domain name registration is used to avoid the need for any additional 
+registration service for <code>oai-identifiers</code>. Domain name 
+based identifiers guarantee global uniqueness without the need for 
+OAI registration as required with the earlier, v1.0/1.1 specification.
+</p>
+
+
+<h3>2.3 Equivalence</h3>
+<p>
+Two <code>oai-identifiers</code> are equivalent if they are identical 
+strings. All three parts of the <code>oai-identifier</code> are case 
+sensitive. Any <code>escaped</code> elements must be left escaped; 
+there is no ambiguity because it is permissible (and required) only 
+to escape characters than cannot be included directly.
+</p>
+
+<h3><a name="BackwardsCompatibility">2.4 Backwards Compatibility</a></h3>
+<p>
+An <code>oai-identifier</code> scheme was introduced in
+<a href="http://www.openarchives.org/OAI/1.0/openarchivesprotocol.htm#oai-identifier">OAI-PMH v1.0</a>
+and remained unchanged in 
+<a href="http://www.openarchives.org/OAI/1.1/openarchivesprotocol.htm#oai-identifier">OAI-PMH v1.1</a>.
+This scheme has been widely adopted and existing identifiers may 
+continue to be used by referring to the old schema: 
+<a href="http://www.openarchives.org/OAI/1.1/oai-identifier.xsd"><code>http://www.openarchives.org/OAI/1.1/oai-identifier.xsd</code></a>.
+</p>
+<p>
+To use this new <code>oai-identifier</code> scheme, repositories must 
+make the following changes:
+</p>
+<ul>
+<li>Change the <code>Identify</code> response to refer to the new schema.
+<li>Choose and adopt a new domain name based <code>namespace-identifier</code>
+to replace the <code>repository-identifier</code>.
+      <li>Ensure that the <code>local-identifier</code> components of any identifiers 
+        exposed use the restricted character set (<code>uric</code>) of this specification. 
+        This may mean that internal identifiers need to be escaped to create the 
+        <code>local-identifier</code> component. The characters &lt;space&gt; 
+        and # were used with the earlier <code>oai-identifier</code> scheme and 
+        may no longer be used in the <code>local-identifier</code> component. 
+    </ul>
+
+<h3>2.5 Use as Arguments in OAI-PMH Requests</h3>
+<p>
+When used as an argument in an OAI-PMH request, an <code>oai-identifier</code>
+must be correctly encoded. This means that the colon (<code>:</code>) 
+separators and the percent (<code>%</code>) characters of <code>escaped</code>
+characters in the <code>local-identifier</code> part must be 
+<a href="openarchivesprotocol.htm#SpecialCharacters">URL encoded</a>.
+For example, the <code>oai-identifier</code>
+<code>oai:an.oai.org:ab%3Ccd</code> would be encoded as
+<code>identifier=oai%3Aan.oai.org%3Aab%253Ccd</code> in an OAI-PMH request.
+This means that characters in some internal identifier that an 
+<code>oai-identifier</code> is derived from may be URL encoded twice 
+-- once to make the <code>oai-identifier</code>, and a second time 
+to express the <code>oai-identifier</code> in a URL. The URL will be decoded
+once to recover the <code>oai-identifier</code>. 
+</p>
+
+<h3>2.6 Examples</h3>
+<p>
+The following are valid <code>oai-identifier</code> identifiers:
+</p>
+<pre>oai:arXiv.org:hep-th/9901001
+
+oai:foo.org:some-local-id-53
+oai:FOO.ORG:some-local-id-53     ;not the same as above, 
+                                 ;should not use foo.org _and_ FOO.ORG
+
+oai:foo.org:some-local-id-54
+oai:foo.org:Some-Local-Id-54     ;not the same as above, distinct identifier
+
+oai:wibble.org:ab%20cd           ;space in internal id correctly escaped 
+oai:wibble.org:ab?cd             ;question mark should not be escaped 
+</pre>
+<p>
+The following are <b>not</b> valid <code>oai-identifier</code> identifiers:
+</p>
+<pre>something:arXiv.org:hep-th/9901001   ;bad scheme
+
+oai:999:abc123                   ;namespace-identifier must not start with digit
+oai:wibble:abc123                ;namespace-identifier must be domain name
+
+oai:wibble.org:ab cd             ;space not permitted (must be escaped as %20) 
+oai:wibble.org:ab#cd             ;# not permitted
+oai:wibble.org:ab&lt;cd             ;&lt; not permitted
+oai:wibble.org:ab%3ccd           ;&lt; must be escaped at %3C not %3c
+</pre>
+
+
+<h2>3. XML Schema for <code>description</code> container</h2>
+<p>
+The following XML schema 
+(<code><a href="http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">oai-identifier.xsd</a></code>)
+defines the format of a <code>description</code> container in the <code>
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Identify">
+Identify</a></code> response so that repositories may expose their compliance 
+with the the <code>oai-identifier</code> format.</p>
+
+<table summary="XML schame for oai-identifier" BORDER="2" WIDTH="80%" BGCOLOR="#CCCCCC" >
+<tr>
+<td WIDTH="100%">
+<h2><code>description</code>
+for repositories that share the OAI format for unique identifiers of records</h2>
+</td>
+</tr>
+<tr>
+<td width="100%">
+<pre>&lt;schema targetNamespace="http://www.openarchives.org/OAI/2.0/oai-identifier"
+  xmlns:oai-identifier="http://www.openarchives.org/OAI/2.0/oai-identifier"
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified"
+  attributeFormDefault="unqualified"&gt;
+
+  &lt;annotation&gt;
+    &lt;documentation&gt;
+      Schema for description section of Identify reply of OAI-PMH v2.0.
+      For repositories that comply with the oai format for unique identifiers 
+      for items records. 
+      See: http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm
+      Validated with http://www.w3.org/2001/03/webdata/xsv on 16May2002 
+      Simeon Warner &#36;Date: 2002/06/21 20:14:34 $
+    &lt;/documentation&gt;
+  &lt;/annotation&gt;
+
+  &lt;element name="oai-identifier" type="oai-identifier:oai-identifierType"/&gt;
+
+  &lt;complexType name="oai-identifierType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="scheme" minOccurs="1" maxOccurs="1" 
+               type="string" fixed="oai"/&gt;
+      &lt;element name="repositoryIdentifier" minOccurs="1" maxOccurs="1" 
+               type="oai-identifier:repositoryIdentifierType"/&gt;
+      &lt;element name="delimiter" minOccurs="1" maxOccurs="1"
+               type="string" fixed=":"/&gt;
+      &lt;element name="sampleIdentifier" minOccurs="1" maxOccurs="1" 
+               type="oai-identifier:sampleIdentifierType"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="repositoryIdentifierType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;pattern value="[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="sampleIdentifierType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;pattern 
+value="oai:[a-zA-Z][a-zA-Z0-9\-]*(\.[a-zA-Z][a-zA-Z0-9\-]+)+:[a-zA-Z0-9\-_\.!~\*&apos;\(\);/\?:@&amp;=\+$,%]+"/&gt;
+
+&lt;!--meta ., \, ?, *, +, {, } (, ), [ or ] --&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+&lt;/schema&gt;
+</pre>
+</td>
+</tr>
+
+<tr>
+<td width="100%">This Schema is available at 
+<a href="http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">http://www.openarchives.org/OAI/2.0/oai-identifier.xsd</a></td>
+</tr>
+</table>
+
+<h3>3.1 Examples</h3>
+<p>
+The following examples are excerpts from <code>Identify</code> responses which may contain 
+zero or more <code>&lt;description&gt;</code> containers. 
+</p>
+
+<table summary="Example oai-identifier container" border=2 width="80%" bgcolor="#CCCCCC" >
+<tr>
+<td width="80%">
+<pre>&lt;description&gt;
+  &lt;oai-identifier xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier
+      http://www.openarchives.org/OAI/2.0/oai-identifier.xsd"&gt;
+    &lt;scheme&gt;oai&lt;/scheme&gt; 
+    &lt;repositoryIdentifier&gt;bespa.org&lt;/repositoryIdentifier&gt;    
+    &lt;delimiter&gt;:&lt;/delimiter&gt; 
+    &lt;sampleIdentifier&gt;oai:bespa.org:medi99-123&lt;/sampleIdentifier&gt;
+  &lt;/oai-identifier&gt;
+&lt;/description&gt;
+</pre>
+</td>
+</tr>
+</table>
+
+<table summary="Example oai-identifier container" border=2 width="80%" bgcolor="#CCCCCC" >
+<tr>
+<td width="80%">
+<pre>&lt;description&gt;
+  &lt;oai-identifier xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier
+      http://www.openarchives.org/OAI/2.0/oai-identifier.xsd"&gt;
+    &lt;scheme&gt;oai&lt;/scheme&gt;
+    &lt;repositoryIdentifier&gt;oai-stuff.foo.org&lt;/repositoryIdentifier&gt;
+    &lt;delimiter&gt;:&lt;/delimiter&gt;
+    &lt;sampleIdentifier&gt;oai:oai-stuff.foo.org:5324&lt;/sampleIdentifier&gt;
+  &lt;/oai-identifier&gt;
+&lt;/description&gt;
+</pre>
+</td>
+</tr>
+</table>
+
+
+
+<h2><a name="Adherence">4. Adherence to standards and accord with existing schemes</a></h2>
+<p>
+The following two sections describe how the <code>oai-identifier</code>
+meets the requirements for URN schemes outlined in
+<a href="http://www.ietf.org/rfc/rfc1737.txt">RFC1737</a>.
+</p>
+
+<h3>4.1 Functional requirements</h3>
+<ul>
+<li>Global scope: <code>oai-identifiers</code> should have global scope in the sense 
+that two equivalent <code>oai-identifiers</code> should have the same meaning 
+everywhere (i.e. they identify the same metadata item).
+</li>
+<li>Global uniqueness: the same <code>oai-identifier</code> should never be assigned to 
+different metadata items. To be useful for dedupping, the same metadata item 
+should not have more than one <code>oai-identifier</code>. Note that this does not imply
+that there will not be more than one metadata item (and hence <code>oai-identifier</code>)
+that describe the same underlying resource.
+</li>
+<li>Persistence: it is intended that <code>oai-identifiers</code> will be permanent. 
+That is, <code>oai-identifiers</code> must remain globally unique and items should 
+retain the same <code>oai-identifier</code>.
+(This is considerably weaker than RFC1737.)
+</li>
+<li>Scalability: availability of <code>oai-identifiers</code> should not be 
+limited by the syntax. Separation into two parts:
+a <code>namespace-identifier</code> and a <code>local-identifier</code>
+assures scalability in the same way as other URI schemes.
+</li>
+<li>Legacy support: this revision of <code>oai-identifiers</code> does
+not accommodate existing <code>oai-identifiers</code> created 
+for use with OAI-PMH versions 1.0 and 1.1. Repositories wishing
+to use that scheme may still do so, 
+see "<a href="#BackwardsCompatibility">Backwards compatibility</a>".
+</li>
+<li>Extensibility: the <code>oai-identifier</code> scheme is designed 
+around a model of <code>namespace-identifier</code> and 
+<code>local-identifier</code>. While the syntax of 
+<code>local-identifier</code> is undefined and may be used for some 
+possible extensions, the rest of the syntax is not. A more complex 
+scheme could be supported by extension of the 
+<code>namespace-identifier</code> syntax or by the creation of a 
+new URI scheme (OAI-PMH allows arbitrary URIs as identifiers).
+(This is considerably weaker than RFC1737.)
+</li>
+<li>Resolution: <code>oai-identifiers</code> are intended to serve as 
+identifiers for metadata items within repositories. It is not intended 
+that <code>oai-identifiers</code> be used outside the context of a set 
+of interacting repositories and harvesters.
+With knowledge of the repository that an <code>oai-identifier</code> 
+was obtained from, it will be possible to obtain the status of the 
+item and to disseminate metadata from it (provided the OAI-PMH 
+interface is operational).
+No general resolution scheme is proposed or imagined. Any such scheme 
+would involve an additional registration database.
+(This is considerably weaker than RFC1737.)
+</li>
+</ul>
+
+<h3>4.2 Encoding requirements</h3>
+<p>
+<code>oai-identifiers</code> are not designed for human use, they are 
+designed to be used only with the OAI-PMH. As such, presentation in 
+text, electronic mail etc. is not important. This makes the encoding 
+requirements considerably simpler than those described in 
+<a href="http://www.ietf.org/rfc/rfc1737.txt">RFC1737</a>:
+</p>
+<ul>
+<li>Single encoding: there should be just one way to write an <code>oai-identifier</code>.
+<li>Simple comparison: there should be a trivial and local algorithm to
+  compare two <code>oai-identifiers</code>.
+<li>Transport friendliness: <code>oai-identifiers</code> should be able to be 
+  transported unmodified over common Internet protocols (e.g. HTTP) and using 
+  common encoding standards (e.g. XML, RDF).
+<li>Machine consumption: <code>oai-identifiers</code> should be easy to parse.
+<li>Ease of use: <code>oai-identifiers</code> should be short so that 
+  transmitting them and managing them within computer programs is convenient.
+</ul>
+
+<!--h3>Registration of <code>oai</code> as a URI scheme</h3>
+<ul>
+<li><a href="http://www.w3.org/Addressing/schemes">W3C: Addressing Schemes</a>
+</li>
+<li><a href="http://www.iana.org/assignments/uri-schemes">IANA: Uniform Resource Identifier (URI) SCHEMES</a>
+</li>
+</ul-->
+
+<h2><a name="acknowledgements"></a>Acknowledgements</h2>
+<p>
+Support for the development of the OAI-PMH and for other Open Archives 
+Initiative activities comes from the 
+<A href="http://www.diglib.org/">Digital Library Federation</A>, the 
+<A href="http://www.cni.org/">Coalition for Networked Information</A>, 
+and from the National Science Foundation through Grant No. IIS-9817416.
+Individuals who have played a significant role in the development of 
+OAI-PMH version 2.0 are 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged in the protocol document</a>.
+</p>
+
+<h2><a name="DocumentHistory">Document History</a></h2>
+<p><b>2002-06-14</b>: Release of this document, combined with the release of OAI-PMH 
+  version 2.0.<br />
+<b>2002-06-21</b>: Added type definitions to <code>scheme</code> and 
+  <code>delimiter</code> elements in schema.
+</p>
+
+<!--
+LocalWords: namespace domainname locators URNs URN URI alphanum  notational
+LocalWords: IANA unescaped Scalability scalability dedupping Extensibility cd zA
+LocalWords: complexType simpleType targetNamespace elementFormDefault attributeFormDefault
+LocalWords: identifierType minOccurs maxOccurs namespaceIdentifierType namespaceIdentifier
+LocalWords: sampleIdentifier repositoryIdentifier bespa cogprints
+LocalWords: sampleIdentifierType repositoryIdentifierType oai xmlns
+-->
+<!--START-FOOTER-->
+</body>
+</html>

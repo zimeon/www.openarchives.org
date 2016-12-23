@@ -1,0 +1,153 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XSD file for qualified DC
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ann.apps%40man.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000540.html">
+   <LINK REL="Next"  HREF="000532.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XSD file for qualified DC
+   </H1>
+    <B>Ann Apps
+    </B> 
+    <A HREF="mailto:ann.apps%40man.ac.uk"
+       TITLE="[OAI-implementers] XSD file for qualified DC">ann.apps@man.ac.uk
+       </A><BR>
+    <I>Mon, 24 Jun 2002 13:52:34 GMT1BST</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000540.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+        <LI> Next message: <A HREF="000532.html">[OAI-implementers] error reporting
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Carl, and All,
+
+On Thu, 20 Jun 2002 Carl Lagoze wrote:
+
+&gt;<i> Turning attention to the citation data issue, I will argue equally
+</I>&gt;<i> strongly that slotting these into the dc identifier element is
+</I>&gt;<i> inappropriate.  Citation data is implicitely structured whereas dc
+</I>&gt;<i> elements should be simply &quot;appropriate literals&quot; as defined by Tom
+</I>&gt;<i> Baker.  Playing a syntactic trick and serializing that data into an
+</I>&gt;<i> &quot;appropriate literal&quot; through the use of punctuation such as &quot;Library
+</I>&gt;<i> and Information Science Research 22(3), 311-338 (2000)&quot; as you suggest
+</I>&gt;<i> in <A HREF="http://epub.mimas.ac.uk/DC/citproposal.html,">http://epub.mimas.ac.uk/DC/citproposal.html,</A> seems ill-advised with
+</I>&gt;<i> data that screams out for markup 
+</I>[snip]
+&gt;<i> Since this explicit structure is not currently allowed in DC (and I
+</I>&gt;<i> question whether it ever should be) and given the fact that OAI-PMH is
+</I>&gt;<i> quite happy expressing parallel structured form, it might be time to
+</I>&gt;<i> write the schema for such citation data and encourage people to expose
+</I>&gt;<i> it for harvesting, and not characterize it as &quot;dublin core&quot;.
+</I>&gt;<i> 
+</I>I think I'm about half way to agreeing with you. This approach does 
+require a model which includes parallel metadata formats. So it 
+would be OK for OAI, which is what we're talking about on this list.
+
+So we could have a metadata format, say oai-cite (that's not a 
+good name! - just something to work with). Then you could encode 
+the metadata for a journal article something like as follows. I'm just 
+considering the metadata for the article itself, not any references it 
+may have - but probably a metadata format for those could be 
+incorporated. (Doing this quickly, I've not included any schema 
+declarations.)
+
+&lt;metadata&gt;
+&lt;cite:atitle&gt;Studying E-journal User Behavior Using Log 
+Files&lt;/cite:atitle&gt;
+&lt;cite:author&gt;Xu,Y&lt;/cite:author&gt;
+&lt;cite:author&gt;Apps,A&lt;/cite:author&gt;
+&lt;cite:jtitle&gt;Library and Information Science Research&lt;/cite:jtitle&gt;
+&lt;cite:volume&gt;22&lt;/cite:volume&gt;
+&lt;cite:issue&gt;3&lt;/cite:issue&gt;
+&lt;cite:spage&gt;311&lt;/cite:spage&gt;
+&lt;cite:year&gt;2000&lt;/cite:year&gt;
+&lt;/metadata&gt;
+
+But this is looking very similar to the OpenURL journal article 
+metadata, which leads me to wonder if that can be used here as 
+well. The main concern is that this is not a referent (or subject of a 
+citation link) but rather an identification by citation metadata, 
+unless it's seen as an introverted, self-referential link. Maybe this is 
+an OpenURL context-object with a referring-entity but no referent?
+
+To go back to the qualified Dublin Core case, from another email:
+
+&gt;<i> &lt;meta name=&quot;DC.Identifier.citation&quot; 
+</I>&gt;<i> content=&quot;Library and Information Science Research 22(3), 311- 
+</I>338 (2000)&quot;&gt;
+&gt;<i> In that the entity Library and Information Science Research is 
+</I>being introduced that &quot;has a&quot; volume &quot;22&quot; and issue # &quot;3&quot;. 
+
+This is intended to be an &quot;is a&quot; relation where the entire content of 
+this string 'is a' citation, and hence identifier of the article. There is 
+no intention to say anything about the journal or issue outside of 
+that exact citation. I think this is the same as an OpenURL citation 
+where the complete set of metadata within the OpenURL identifies 
+a particluar article by its citation. In fact, in OpenURL, different sets 
+of metadata elements are used for journal articles (ja) and journal 
+issues (ji). It is just coincidence that some of the constituents look 
+the same to human readers. 
+
+The document 'Guidelines for implementing Dublin Core in XML' 
+<A HREF="http://www.ukoln.ac.uk/metadata/dcmi/dc-xml-guidelines/">http://www.ukoln.ac.uk/metadata/dcmi/dc-xml-guidelines/</A> includes 
+examples of mixing DC metadata within other schemas. So I think 
+one could include OpenURL jounal article metadata with a DC 
+record (assuming it is alright to use the OpenURL journal article 
+schema stand-alone).
+
+For example:
+
+&lt;metadata&gt;
+&lt;dc:title&gt;Studying E-journal User Behavior Using Log 
+Files&lt;/dc:title&gt;
+&lt;dc:creator&gt;Xu,Y&lt;/dc:creator&gt;
+&lt;dc:creator&gt;Apps,A&lt;/dc:creator&gt;
+&lt;dcterms:created&gt;2000&lt;/dcterms:created&gt;
+&lt;ja:jtitle&gt;Library and Information Science Research&lt;/ja:jtitle&gt;
+&lt;ja:volume&gt;22&lt;/ja:volume&gt;
+&lt;ja:issue&gt;3&lt;/ja:issue&gt;
+&lt;ja:spage&gt;311&lt;/ja:spage&gt;
+&lt;/metadata&gt;
+
+Best wishes,
+	Ann
+
+
+--------------------------------------------------------------------------
+Mrs. Ann Apps. Senior Analyst - Research &amp; Development, MIMAS,
+     University of Manchester, Oxford Road, Manchester, M13 9PL, UK
+Tel: +44 (0) 161 275 6039    Fax: +44 (0) 0161 275 6040
+Email: <A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>  WWW: <A HREF="http://epub.mimas.ac.uk/ann.html">http://epub.mimas.ac.uk/ann.html</A>
+--------------------------------------------------------------------------
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000540.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+	<LI> Next message: <A HREF="000532.html">[OAI-implementers] error reporting
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#546">[ date ]</a>
+              <a href="thread.html#546">[ thread ]</a>
+              <a href="subject.html#546">[ subject ]</a>
+              <a href="author.html#546">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

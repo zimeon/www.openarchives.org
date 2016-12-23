@@ -1,0 +1,1983 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE User Guide - Resource Map Implementation in RDF/XML</title>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="http://www.openarchives.org/ore/1.0/ore-spec.css" type="text/css" />
+</head>
+
+<body>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - Resource Map Implementation in RDF/XML</h2>
+  <h3 class="subTitle">17 October 2008</h3>
+</div><!--div-titleBlock-->
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/1.0/rdfxml">http://www.openarchives.org/ore/1.0/rdfxml</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/rdfxml">http://www.openarchives.org/ore/rdfxml</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.9/rdfxml">http://www.openarchives.org/ore/0.9/rdfxml</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE User Guide - Resource Map Implementation in RDF/XML-->
+<!--VAR-SUBTITLE=17 October 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/1.0/rdfxml-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/rdfxml-->
+<!--VAR-PREVIOUSURI=http://www.openarchives.org/ore/0.9/rdfxml-->
+
+<div class="abstract">
+<h2><a name="abstract" id="abstract">Abstract</a></h2>
+
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+defines standards for the description and exchange of aggregations of
+Web resources. OAI-ORE introduces the notion of a Resource Map, an
+RDF Graph [<a href="#RDF_Concepts">RDF Concepts</a>] which
+describes the Aggregation, the aggregated Resources of which it is
+composed, and the relationships between them (and/or the relationships
+between these and other resources).</p>
+
+<p>Since a Resource Map is an RDF
+Graph, it can be serialized using any RDF syntax.  This document
+outlines the use of one such syntax for the serialization of Resource
+Maps: RDF/XML [<a href="#RDFXML">RDF/XML</a>]. A companion document [<a
+href="#ORE_RDFa">ORE RDFa</a>]
+outlines the serialization of Resource Maps in RDFa [<a
+href="#RDFa_Syntax">RDFa Syntax</a>].</p>
+
+<p>This document is intended for implementers who have an understanding of ORE concepts
+and are responsible for the development of applications which generate or process
+Resource Maps using RDF/XML. Readers who want a high-level understanding of the motivation
+for ORE, and of the solution it provides, should read the ORE Primer [<a href="#ORE_Primer">Primer</a>];
+readers who want further details of the RDF/XML syntax should consult the W3C RDF/XML specification
+[<a href="#RDFXML">RDF/XML</a>]</p>
+
+<p>This is one of several
+documents comprising the <a href="toc">OAI-ORE specifications and user
+guides</a>.</p>
+
+<hr />
+</div>
+
+<h2><a name="contents" id="contents">Table of Contents</a></h2>
+<p class="toc">1. <a href="#Introduction">Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#Notational_Conventions">Notational Conventions</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#Namespaces">Namespaces</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.3 <a href="#Conformance">Conformance</a><br />
+2. <a href="#SummaryRDFXML">Summary of  Recommended ORE RDF/XML Syntax</a><br />
+3. <a href="#Examples">Examples of Resource Maps Encoded in RDF/XML</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.1. <a href="#remtoaggr">Relationship between a Resource Map and an Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.2. <a href="#Metadata_about_the_ReM">Metadata about the Resource Map and Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.3. <a href="#ars">Aggregated Resources and Aggregation Graph</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.4. <a href="#simlarTo">Relationships between the Aggregation and Similar Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.5. <a href="#other_rels">Relationships to other Resources and Types</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.6. <a href="#isAggregatedBy">Asserting that an Aggregated Resource is a constituent of another Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.7. <a href="#Nesting">Nesting Aggregations</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.8. <a href="#Proxies">Proxies for Aggregated Resources</a><br />
+4. <a href="#References">References</a></p>
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+<p class="toc">A. <a href="#acknowledgments">Acknowledgements</a><br />
+B. <a href="#changelog">Change Log</a>
+</p>
+
+<hr />
+<div class="body">
+
+<h2>1. <a name="Introduction">Introduction</a></h2>
+
+<p>The Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+[<a href="#ORE_Model">Abstract Data Model</a>] introduces the notion
+of a Resource Map, an RDF Graph [<a href="#RDF_Concepts">RDF Concepts</a>] which describes an Aggregation,
+the Aggregated Resources of which it is composed, and the relationships
+between them (and/or the relationships between these and other resources).
+Since a Resource Map is an RDF Graph, it can be serialized using any
+RDF syntax.</p>
+
+<p>This document outlines the use of one such syntax for the
+serialization of Resource Maps: RDF/XML [<a href="#RDFXML">RDF/XML</a>].
+The RDF/XML specification [<a href="#RDFXML">RDF/XML</a>] describes
+an XML format for serializing RDF graphs. In order to represent an RDF
+Graph as an XML document the constructs of the RDF Graph (triples made
+up of subjects, predicates and objects) have to be represented as
+components in that XML document, i.e. as XML elements and XML
+attributes, XML element names and XML attribute names, and as XML
+element content and XML attribute values.</p>
+
+<p>For some features of the RDF Graph, the RDF/XML syntax permits the
+encoding of a single feature in multiple ways in XML. The aim of this
+document is to provide a profile of RDF/XML for encoding
+an ORE Resource Map. However, it is possible to use RDF/XML to
+encode the same ORE Resource Map using a different set of conventions
+permitted by RDF/XML.</p>
+
+<h3>1.1 <a name="Notational_Conventions">Notational Conventions</a></h3>
+
+<p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;,
+&quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+&quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,
+&quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be
+interpreted as described in RFC 2119
+[<cite><a href="#RFC2119">IETF RFC 2119</a></cite>].</p>
+
+<p>This specification uses the common term URI to mean both IRI
+[<a href="#RFC3987">RFC3987</a>] and URI [<a href="#RFC3986">RFC3986</a>].</p>
+
+
+  <h3>1.2 <a id="Namespaces" name="Namespaces">Namespaces</a></h3>
+
+  <p>This specification uses the following namespaces and prefixes to indicate
+  those namespaces:</p>
+
+  <table class="namespace-table" summary="Namespaces table">
+   <tr>
+    <th>Prefix</th>
+    <th>Namespace URI</th>
+    <th>Description</th>
+   </tr>
+   <tr>
+
+    <td><span class="code">dc</span></td>
+    <td><span class="code">http://purl.org/dc/elements/1.1/</span></td>
+    <td>Dublin Core elements</td>
+   </tr>
+
+   <tr>
+    <td><span class="code">dcterms</span></td>
+
+    <td><span class="code">http://purl.org/dc/terms/</span></td>
+    <td>Dublin Core terms</td>
+   </tr>
+   <tr>
+    <td><span class="code">foaf</span></td>
+    <td><span class="code">http://xmlns.com/foaf/0.1/</span></td>
+    <td>FOAF vocabulary terms</td>
+  </tr>
+   <tr>
+    <td><span class="code">ore</span></td>
+    <td><span class="code">http://www.openarchives.org/ore/terms/</span></td>
+    <td>ORE vocabulary terms</td>
+   </tr>
+   <tr>
+    <td><span class="code">rdf</span></td>
+    <td><span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#</span></td>
+    <td>RDF vocabulary terms</td>
+   </tr>
+   <tr>
+    <td><span class="code">rdfs</span></td>
+    <td><span class="code">http://www.w3.org/2000/01/rdf-schema#</span></td>
+    <td>RDFS vocabulary terms</td>
+   </tr>
+  </table>
+
+  <h3>1.3 <a id="Conformance" name="Conformance">Conformance</a></h3>
+
+  <p>The Internet media type / MIME type for RDF/XML is <code>application/rdf+xml</code>.
+Where RDF/XML is used to provide representations of ORE Resource Maps that
+media type MUST be used.</p>
+
+<p> A consumer of ORE Resource Maps encoded in
+RDF/XML MUST support all of the syntactic conventions defined by
+RDF/XML. This allowance for different syntactic conventions is
+supported by conformant RDF/XML parsers.</p>
+
+  <h2>2. <a name="SummaryRDFXML" id="SummaryRDFXML">Summary of  Recommended ORE RDF/XML Syntax</a></h2>
+  <p>The general convention used in RDF/XML is that the set of subject-predicate-object triples is represented as sequences of XML
+    elements corresponding to the subject of one or more triples (node elements) containing child XML elements corresponding to
+    predicates (property elements) the attributes and/or content of which correspond to the objects. Since the object of one triple may itself
+    be the subject of another triple, that pattern can be repeated, with the consequence that this convention is sometimes referred to as &quot;striping&quot;. Neither the order of node elements within the root element, nor the order of property elements within the node element, is significant.</p>
+  <p>This document describes a convention for encoding Resource Maps in RDF/XML where this striping is limited to one &quot;level&quot; i.e. a node element contains child property elements
+    but those property elements do not contain further node elements.</p>
+  <p>The exception to this one level striping is when the object of a triple is a &quot;blank node&quot;, or &quot;bNode&quot;. In this case any subsequent triples where that object bNode is a subject may be nested in the &quot;stripe&quot; corresponding to the subject of the original triple. Note that bNodes are not mandated by the ORE data model, but MAY occur in some triples, for example when asserting the creator of a Resource Map, where no URI is available for the specified agent. Where a bNode is the object of multiple triples (e.g. the same agent is the creator of multiple resources), then two options are available: either the pattern above is repeated for each occurrence of the bNode and the triples where that bNode is a subject are nested in each &quot;stripe&quot;, or the bNode is represented as an un-nested node element in its own right.</p>
+
+  <p>Also, in the conventions used here, a node element always has the XML expanded name <span class="code">(&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;, &quot;Description&quot;)</span>, typically represented by the QName <span class="code">rdf:Description</span>, where the prefix <span class="code">rdf</span> is associated via an XML namespace declaration with the namespace name <span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#</span>. In other words, these examples do not make use of RDF/XML's &quot;typed node element&quot; convention: triples with the predicate <span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#type</span> are always represented using property elements.</p>
+  <p>In the remainder of this document, the names of XML elements are cited as XML QNames. An XML QName is an abbreviation for an expanded name, a pair consisting of an XML Namespace Name (a URI) and a local name. The prefix part of the
+    XML QName is bound to an XML Namespace Name through an XML Namespace declaration; where an XML QName has no prefix, the XML Namespace Name is obtained from
+    the default namespace declaration. Where an XML QName is used to represent a URI in RDF/XML, the URI is determined by appending the local name part of the QName
+    to the XML Namespace Name. For example, using the mapping provided in <a href="#Namespaces">the section above on Namepaces</a>, the QName <span class="code">ore:describes</span> maps to the URI <span class="code">http://www.openarchives.org/ore/terms/describes</span>. Note that the prefix used in the QNames in this document
+    should not be interpreted as significant; any prefix can be used as long as the QName corresponds to the XML expanded name which would be generated
+    using the prefix/namespace name pairs listed in <a href="#Namespaces">the section above on Namepaces</a>.</p>
+  <p>As demonstrated by the examples in the remainder of this document the recommended rules for encoding a Resource Map in RDF/XML are:</p>
+  <ul>
+    <li>Create a root element with the QName <span class="code">rdf:RDF</span></li>
+    <li>
+      <p><em>SubjectRule</em>: For each distinct subject in the Resource Map that is not a bNode:</p>
+      <ul>
+        <li>Create a node element (i.e. an XML element with the QName <span class="code">rdf:Description</span>) as child element of the root element</li>
+        <li>If the subject is a URI, add
+          an attribute with the QName <span class="code">rdf:about</span> and make the value of this attribute a URI reference corresponding to the subject</li>
+        <li>If the subject is a bNode, add
+          an attribute with the QName <span class="code">rdf:nodeID</span> and make the value of this attribute a blank node identifier corresponding to the subject</li>
+        <li>
+          <p><em>PredicateObjectRule:</em>: For each triple in the Resource Map with this subject</p>
+          <ul>
+            <li><em>PredicateRule</em>: Create a property element as child element of the node element. The name of the property element is derived from the URI reference which forms the predicate of the triple, following the URI-QName mapping convention described in section 2.1 of the RDF/XML specification.</li>
+            <li>
+              <p><em>ObjectRule</em></p>
+              <ul>
+                <li>If the object of the triple is a URI reference, add an attribute with the QName <span class="code">rdf:resource</span> and make the value of this attribute a URI reference corresponding to the object. In this case, the property element is empty.</li>
+                <li>
+                  <p>If the object of the triple is a literal</p>
+                  <ul>
+                    <li>For a plain literal, make the lexical form the content of the property element. If a language tag is present, add an attribute with the QName <span class="code">xml:lang</span> and make the value of this attribute the language tag</li>
+                    <li>For a typed literal, make the lexical form the content of the property element, and add an attribute with the QName <span class="code">rdf:datatype</span> and make the value of this attribute a URI reference corresponding to the URI of the datatype</li>
+                    <li>For an XML literal i.e. a typed literal with the datatype <span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral</span>, make the lexical form the content of the property element, and add an attribute with the QName <span class="code">rdf:parseType</span> and make the value of this attribute the string &quot;Literal&quot;</li>
+                  </ul>
+                </li>
+                <li>
+                  <p>If the object of the triple is a bNode</p>
+                  <ul>
+                    <li>If this bNode is not the object of any other triples, add an attribute to the property element with the QName <span class="code">rdf:parseType</span> and make the value of this attribute the string &quot;Resource&quot;, and follow <em>PredicateObjectRule</em> above, with the bNode as subject.</li>
+                    <li>If this bNode is the object of other triples, add an attribute to the property element with the QName <span class="code">rdf:nodeID</span> and make the value of this attribute a blank node identifier corresponding to the object, and follow <em>SubjectRule</em> above, with the bNode as subject.</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    </ul>
+  <h2>3. <a name="Examples" id="Examples"></a>Examples of Resource Maps Encoded in RDF/XML</h2>
+  <p>The remainder of this section uses the an e-print in <a href="arxiv.org">arXiv</a> with a &quot;splash page&quot; at <code><a href="http://arxiv.org/abs/astro-ph/0601007">http://arxiv.org/abs/astro-ph/0601007</a></code> to illustrate the RECOMMENDED RDF/XML encoding of a Resource Map. This is an interesting example because it has multiple
+    identifiers, versions, formats, mirrors and external
+    relationships. For illustrative purposes, the example diverges from the real e-print in arXiv in the manner that it associates an aggregation of data  with the e-print.</p>
+  <p>These examples use the following URIs for the Aggregation (URI-A) and Resource Map (URI-R). As <a href="http://www.openarchives.org/ore/1.0/datamodel#Aggregation">specified</a>, the URI-A of an Aggregation should be distinct from the URI of a splash page. </p>
+  <ul>
+    <li>URI-A: <span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></li>
+    <li>URI-R: <span class="code">http://arxiv.org/rem/rdf/astro-ph/0601007</span></li>
+  </ul>
+  <p>The ordering of the following subsections correspond to that used to introduce features in the Abstract Data Model specification [<a href="#ORE_Model">Abstract Data Model</a>]. Each section header links to the corresponding Abstract Data Model section. The examples are not intended to be exhaustive, but sufficient to demonstrate the recommended RDF/XML syntax.</p>
+
+  <!--
+  <p>This complete example is illustrated in the following figure. The table after the figure lists the URIs of Resources in the example.</p>
+
+  <p class="figure"><img src="rdfxml-images/example.jpg" alt="" width="717" height="656" /></p>
+
+  -->
+
+  <h3><a name="remtoaggr" id="remtoaggr"></a>3.1 <a href="datamodel.html#ReM-to-aggr">Relationship between a Resource Map and an Aggregation</a></h3>
+  <p> A Resource Map MUST include one triple with an <span class="code">ore:describes</span> predicate. The subject of this triple MUST be the URI-R of the Resource Map. The object is the URI-A of the Aggregation described by the Resource Map. </p>
+  <p>The triples corresponding to the example are:</p>
+
+<table class="example-table"  summary="Resource Map Example table">
+      <tr>
+        <th>Subject</th>
+        <th>Predicate</th>
+        <th>Object</th>
+      </tr>
+      <tr>
+        <th colspan="3">Assertions about Resource Map</th>
+      </tr>
+      <tr>
+        <td><span class="code">http://arxiv.org/rem/rdf/astro-ph/0601007</span></td>
+        <td><span class="code">ore:describes</span></td>
+        <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      </tr>
+      <tr>
+        <th colspan="3">Assertions about Aggregation</th>
+      </tr>
+      <tr>
+        <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+        <td><span class="code">ore:isDescribedy</span></td>
+        <td><span class="code">http://arxiv.org/rem/atom/astro-ph/0601007</span></td>
+      </tr>
+      <tr>
+        <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+        <td><span class="code">ore:isDescribedy</span></td>
+        <td><span class="code">http://arxiv.org/rem/xhtml/astro-ph/0601007</span></td>
+      </tr>
+</table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_1.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:ore="http://www.openarchives.org/ore/terms/"&gt;
+<strong>  &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+    &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007" /&gt;
+  &lt;/rdf:Description&gt;
+  &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+    &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007" /&gt;
+    &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+  &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_1.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_1.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_1.rdfxml">NTriples via Triplr</a>]</p>
+
+
+<p>Note: The use of <strong>bold</strong> in the RDF/XML above
+indicates the segment of the XML that corresponds to the triples in
+the table that immediately preceeds the example. This visual cue will
+be used throughout this document.</p>
+
+  <h3>3.2 <a href="datamodel.html#Metadata_about_the_ReM">Metadata about the Resource Map and Aggregation</a><a name="Metadata_about_the_ReM" id="Metadata_about_the_ReM"></a></h3>
+  <p>A Resource Map MUST include triples expressing minimal metadata properties about the Resource Map. It MAY include triples expressing additional metadata properties about the Resource Map. Finally it MAY include triples expressing  metadata properties about the Aggregation. </p>
+  <p>The triples corresponding to the example are:</p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Resource Map (and related Agents)</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/rem/rdf/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:creator</span></td>
+      <td><span class="code">_:blank1</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank1</span></td>
+      <td><span class="code">foaf:name</span></td>
+      <td><span class="code">&quot;arXiv.org e-Print Repository&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank1</span></td>
+      <td><span class="code">foaf:page</span></td>
+      <td>http://arXiv.org</td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/rem/rdf/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:created</span></td>
+      <td><span class="code">&quot;2008-10-01T18:30:02Z&quot;^^<br />
+        http://www.w3.org/2001/XMLSchema#dateTime</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/rem/rdf/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:modified</span></td>
+      <td><span class="code">&quot;2008-10-03T07:30:34Z&quot;^^<br />
+        http://www.w3.org/2001/XMLSchema#dateTime</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/rem/rdf/astro-ph/0601007</span></td>
+      <td><span class="code">dc:rights</span></td>
+      <td><span class="code">&quot;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/rem/rdf/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:rights</span></td>
+      <td><span class="code">http://creativecommons.org/licenses/by-nc/2.5/</span></td>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregation (and related Agents)</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Parametrization of K-essence and Its Kinetic Term&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:abstract</span></td>
+      <td><span class="code">&quot;We construct the non-canonical kinetic term of a k-essence field directly from the
+            effective equation of state function $w_k(z)$, which describes the properties of the dark
+            energy. Adopting the usual parametrizations of equation of state we numerically reproduce
+            the shape of the non-canonical kinetic term and discuss some features of the constructed
+            form of k-essence.&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:created</span></td>
+      <td><span class="code">&quot;2005-12-31T04:01:23Z&quot;^^<br />
+        http://www.w3.org/2001/XMLSchema#dateTime</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:modified</span></td>
+      <td><span class="code">&quot;2006-01-18T06:16:15Z&quot;^^<br />
+        http://www.w3.org/2001/XMLSchema#dateTime</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:creator</span></td>
+      <td><span class="code">_:blank2</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank2</span></td>
+      <td><span class="code">foaf:name</span></td>
+      <td><span class="code">&quot;Hui Li&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank2</span></td>
+      <td><span class="code">foaf:mbox</span></td>
+      <td><span class="code">mailto:lihui@somewhere.cn</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:creator</span></td>
+      <td><span class="code">_:blank3</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank3</span></td>
+      <td><span class="code">foaf:name</span></td>
+      <td><span class="code">&quot;Zong-Kuan Guo&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:creator</span></td>
+      <td><span class="code">_:blank4</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank4</span></td>
+      <td><span class="code">foaf:name</span></td>
+      <td><span class="code">&quot;Yuan-Zhong Zhang&quot;</span></td>
+    </tr>
+  </table>
+
+  <p>Note the introduction of bnodes for the creators of the resource map and of the aggregation - where there are no available URI for the agents.</p>
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_2.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+<strong>        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;arXiv.org e-Print Repository&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://arXiv.org" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-01T18:30:02Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-03T07:30:34Z&lt;/dcterms:modified&gt;
+        &lt;dc:rights&gt;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&lt;/dc:rights&gt;
+        &lt;dcterms:rights rdf:resource="http://creativecommons.org/licenses/by-nc/2.5/"/&gt;
+</strong>    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007"/&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+<strong>        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2005-12-31T04:01:23Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2006-01-18T06:16:15Z&lt;/dcterms:modified&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+            &lt;foaf:mbox rdf:resource="mailto:lihui@somewhere.cn" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Zong-Kuan Guo&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Yuan-Zhong Zhang&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+</strong>    &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_2.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_2.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_2.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3><a name="ars" id="ars"></a>3.3 <a href="datamodel.html#ore/aggregates">Aggregated Resources and Aggregation Graph</a></h3>
+  <p>A Resource Map MAY include one or more triples describing the relationship between the Aggregation and Aggregated Resources. </p>
+  <p>The triples corresponding to the example are:</p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregation</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/abs/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/pdf/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;font=bitmapped</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;font=bitmapped</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;font=TypeI</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/dvi/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;metadataPrefix=oai_dc&amp;identifier=oai:arXiv.org:astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://arxiv.org/cits/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007</span></td>
+    </tr>
+  </table>
+
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_3.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;arXiv.org e-Print Repository&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://arXiv.org" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-01T18:30:02Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-03T07:30:34Z&lt;/dcterms:modified&gt;
+        &lt;dc:rights&gt;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&lt;/dc:rights&gt;
+        &lt;dcterms:rights rdf:resource="http://creativecommons.org/licenses/by-nc/2.5/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007"/&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2005-12-31T04:01:23Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2006-01-18T06:16:15Z&lt;/dcterms:modified&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+            &lt;foaf:mbox rdf:resource="mailto:lihui@somewhere.cn" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Zong-Kuan Guo&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Yuan-Zhong Zhang&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+<strong>        &lt;ore:aggregates rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/cits/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"/&gt;
+</strong>    &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;
+
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_3.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_3.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_3.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3>3.4 <a name="simlarTo" id="simlarTo"></a><a href="datamodel.html#ore/similarTo">Relationships between the Aggregation and Similar Resources</a></h3>
+  <p>A Resource Map MAY include one or more triples, with URI-A as the subject, which assert that the Aggregation is a Resource with content that is similar to another Resource. The predicate MAY be either <span class="code">rdfs:seeAlso </span>or its sub-property <span class="code">ore:similarTo</span>.</p>
+  <p>The triples corresponding to the example are:</p>
+
+<table class="example-table"  summary="Resource Map Example table">
+    <tr>
+     <th>Subject</th>
+     <th>Predicate</th>
+     <th>Object</th>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregation</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">rdfs:seeAlso</span></td>
+      <td><span class="code">http://arxiv.org/abs/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">rdfs:seeAlso</span></td>
+      <td><span class="code">http://jp.arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:similarTo</span></td>
+      <td><span class="code">info:arxiv/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:similarTo</span></td>
+      <td><span class="code">info:doi/10.1142/S0217732306019475</span></td>
+    </tr>
+</table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_4.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;arXiv.org e-Print Repository&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://arXiv.org" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-01T18:30:02Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-03T07:30:34Z&lt;/dcterms:modified&gt;
+        &lt;dc:rights&gt;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&lt;/dc:rights&gt;
+        &lt;dcterms:rights rdf:resource="http://creativecommons.org/licenses/by-nc/2.5/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007"/&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2005-12-31T04:01:23Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2006-01-18T06:16:15Z&lt;/dcterms:modified&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+            &lt;foaf:mbox rdf:resource="mailto:lihui@somewhere.cn" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Zong-Kuan Guo&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Yuan-Zhong Zhang&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/cits/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"/&gt;
+<strong>        &lt;rdfs:seeAlso rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://jp.arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:arxiv/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+</strong>    &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_4.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_4.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_4.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3>3.5 <a name="other_rels" id="other_rels"></a><a href="datamodel.html#GlobalRels">Relationships to other Resources and Types</a></h3>
+  <p>A Resource Map MAY include additional triples that assert properties about the Resource Map, Aggregation, Aggregated Resources, or other related Resources or Literals. </p>
+  <p>The triples corresponding to the example are: </p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregation</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:hasVersion</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007v1</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:hasVersion</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007v2</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:isReferencedBy</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/0807.1020</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:isReferencedBy</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/0806.4327</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">rdf:type</span></td>
+      <td><span class="code">http://purl.org/eprint/type/JournalArticle</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:audience</span></td>
+      <td><span class="code">_:blank6</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank6</span></td>
+      <td><span class="code">rdf:value</span></td>
+      <td><span class="code">&quot;OCLC audience level 1: research&quot;</span></td>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about other Resource Maps</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/rem/atom/astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/atom+xml&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/rem/xhtml/astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/xhtml+xml&quot;</span></td>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about related Aggregations</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/0807.1020</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;How the Scalar Field of Unified Dark Matter Models Can Cluster&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/0806.4327</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Cosmological scalar fields that mimic the $\Lambda CDM$ cosmological model&quot;</span></td>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregated Resources (and related Agents)</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/abs/astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;[astro-ph/0601007] Parametrization of K-essence and Its Kinetic Term&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/abs/astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;text/html&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/abs/astro-ph/0601007</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/abs/astro-ph/0601007</span></td>
+      <td><span class="code">rdf:type</span></td>
+      <td><span class="code">info:eu-repo/semantics/humanStartPage</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/pdf/astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Parametrization of K-essence and Its Kinetic Term&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/pdf/astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/pdf&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/pdf/astro-ph/0601007</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/pdf/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:conformsTo</span></td>
+      <td><span class="code">info:pronom/fmt/18</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Parametrization of K-essence and Its Kinetic Term&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/postscript&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:hasFormat</span></td>
+      <td><span class="code">http://arxiv.org/pdf/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:hasFormat</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;font=bitmapped</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:hasFormat</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;font=bitmapped</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:hasFormat</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;font=TypeI</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:hasFormat</span></td>
+      <td><span class="code">http://arxiv.org/dvi/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;font=bitmapped</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Parametrization of K-essence and Its Kinetic Term (600 DPI Bitmapped Fonts PostScript)&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;font=bitmapped</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/postscript&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;font=bitmapped</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;font=bitmapped</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Parametrization of K-essence and Its Kinetic Term (300 DPI Bitmapped Fonts PostScript)&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;font=bitmapped</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/postscript&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;font=bitmapped</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;font=TypeI</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Parametrization of K-essence and Its Kinetic Term (Type I Fonts PostScript)&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;font=TypeI</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/postscript&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;font=TypeI</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/dvi/astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Parametrization of K-essence and Its Kinetic Term&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/dvi/astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/dvi&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/dvi/astro-ph/0601007</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;metadataPrefix=oai_dc&amp;identifier=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Dublin Core Metadata for Parametrization of K-essence and Its Kinetic Term&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;metadataPrefix=oai_dc&amp;identifier=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;application/xml&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;metadataPrefix=oai_dc&amp;identifier=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:conformsTo</span></td>
+      <td><span class="code">http://www.openarchives.org/OAI/2.0/oai_dc/</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;metadataPrefix=oai_dc&amp;identifier=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">rdf:type</span></td>
+      <td><span class="code">info:eu-repo/semantics/descriptiveMetadata</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/cits/astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Citations for astro-ph/0601007&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/cits/astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;text/html&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/cits/astro-ph/0601007</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">dc:title</span></td>
+      <td><span class="code">&quot;Citebase - Parametrization of K-essence and Its Kinetic Term&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">dc:format</span></td>
+      <td><span class="code">&quot;text/html&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">dc:language</span></td>
+      <td><span class="code">&quot;en&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007</span></td>
+      <td><span class="code">dcterms:creator</span></td>
+      <td><span class="code">_:blank5</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank5</span></td>
+      <td><span class="code">foaf:name</span></td>
+      <td><span class="code">&quot;The Citebase Project&quot;</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank5</span></td>
+      <td><span class="code">foaf:page</span></td>
+      <td><span class="code">http://www.citebase.org/</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">_:blank5</span></td>
+      <td><span class="code">foaf:mbox</span></td>
+      <td><span class="code">mailto:tdb01r@ecs.soton.ac.uk</span></td>
+    </tr>
+  </table>
+
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_5.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;arXiv.org e-Print Repository&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://arXiv.org" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-01T18:30:02Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-03T07:30:34Z&lt;/dcterms:modified&gt;
+        &lt;dc:rights&gt;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&lt;/dc:rights&gt;
+        &lt;dcterms:rights rdf:resource="http://creativecommons.org/licenses/by-nc/2.5/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007"/&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2005-12-31T04:01:23Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2006-01-18T06:16:15Z&lt;/dcterms:modified&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+            &lt;foaf:mbox rdf:resource="mailto:lihui@somewhere.cn" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Zong-Kuan Guo&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Yuan-Zhong Zhang&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/cits/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://jp.arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:arxiv/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+<strong>        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v1"/&gt;
+        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v2"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0807.1020"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0806.4327"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:audience rdf:parseType="Resource"&gt;
+            &lt;rdf:value&gt;OCLC audience level 1: research&lt;/rdf:value&gt;
+        &lt;/dcterms:audience&gt;
+</strong>    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://arxiv.org/rem/atom/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/atom+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/xhtml/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/xhtml+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;How the Scalar Field of Unified Dark Matter Models Can Cluster&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;Cosmological scalar fields that mimic the $\Lambda CDM$ cosmological model&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/abs/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;[astro-ph/0601007] Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/humanStartPage"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/pdf&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:conformsTo rdf:resource="info:pronom/fmt/18"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (600 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (300 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (Type I Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/dvi/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/dvi&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Dublin Core Metadata for Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/xml&lt;/dc:format&gt;
+        &lt;dcterms:conformsTo rdf:resource="http://www.openarchives.org/OAI/2.0/oai_dc/"/&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/descriptiveMetadata"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/cits/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citations for astro-ph/0601007&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citebase - Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;The Citebase Project&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://www.citebase.org/" /&gt;
+            &lt;foaf:mbox rdf:resource="mailto:tdb01r@ecs.soton.ac.uk" /&gt;
+        &lt;/dcterms:creator&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_5.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_5.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_5.rdfxml">NTriples via Triplr</a>]</p>
+
+<h3>3.6 <a name="isAggregatedBy" id="isAggregatedBy"></a><a href="datamodel.html#ore/isAggregatedBy">Asserting that an Aggregated Resource is a constituent of another Aggregation</a></h3>
+  <p>A Resource Map MAY  include one or more triples with the <span class="code">ore:isAggregatedBy</span> predicate to assert that an Aggregated Resources is a constituent of other Aggregations.</p>
+  <p>The triple corresponding to the example is:</p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregated Resource</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><span class="code">ore:isAggregatedBy</span></td>
+      <td><span class="code">http://example.org/aggregation-1</span></td>
+    </tr>
+  </table>
+
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_6.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;arXiv.org e-Print Repository&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://arXiv.org" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-01T18:30:02Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-03T07:30:34Z&lt;/dcterms:modified&gt;
+        &lt;dc:rights&gt;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&lt;/dc:rights&gt;
+        &lt;dcterms:rights rdf:resource="http://creativecommons.org/licenses/by-nc/2.5/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007"/&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2005-12-31T04:01:23Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2006-01-18T06:16:15Z&lt;/dcterms:modified&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+            &lt;foaf:mbox rdf:resource="mailto:lihui@somewhere.cn" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Zong-Kuan Guo&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Yuan-Zhong Zhang&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/cits/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://jp.arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:arxiv/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v1"/&gt;
+        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v2"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0807.1020"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0806.4327"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:audience rdf:parseType="Resource"&gt;
+            &lt;rdf:value&gt;OCLC audience level 1: research&lt;/rdf:value&gt;
+        &lt;/dcterms:audience&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/atom/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/atom+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/xhtml/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/xhtml+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;How the Scalar Field of Unified Dark Matter Models Can Cluster&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;Cosmological scalar fields that mimic the $\Lambda CDM$ cosmological model&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/abs/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;[astro-ph/0601007] Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/humanStartPage"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/pdf&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:conformsTo rdf:resource="info:pronom/fmt/18"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+<strong>        &lt;ore:isAggregatedBy rdf:resource="http://example.org/aggregation-1"/&gt;
+</strong>    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (600 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (300 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (Type I Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/dvi/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/dvi&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Dublin Core Metadata for Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/xml&lt;/dc:format&gt;
+        &lt;dcterms:conformsTo rdf:resource="http://www.openarchives.org/OAI/2.0/oai_dc/"/&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/descriptiveMetadata"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/cits/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citations for astro-ph/0601007&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citebase - Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;The Citebase Project&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://www.citebase.org/" /&gt;
+            &lt;foaf:mbox rdf:resource="mailto:tdb01r@ecs.soton.ac.uk" /&gt;
+        &lt;/dcterms:creator&gt;
+    &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_6.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_6.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_6.rdfxml">NTriples via Triplr</a>]</p>
+
+
+  <h3>3.7 <a name="Nesting" id="Nesting"></a><a href="datamodel.html#ore/isDescribedBy">Nesting Aggregations</a></h3>
+  <p>A Resource Map that asserts another Aggregation as an Aggregated Resource MAY assert an <span class="code">ore:isDescribedBy</span> relationship between this Aggregated Resource and a Resource Map describing the other Aggregation.</p>
+  <p>The triples corresponding to the example are: </p>
+
+<table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregation</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:aggregates</span></td>
+      <td><span class="code">http://example.org/dataSet</span></td>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Aggregated Resource</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://example.org/dataSet</span></td>
+      <td><span class="code">ore:isDescribedBy</span></td>
+      <td><span class="code">http://example.org/dataSet/rem.rdf</span></td>
+    </tr>
+</table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_7.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;arXiv.org e-Print Repository&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://arXiv.org" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-01T18:30:02Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-03T07:30:34Z&lt;/dcterms:modified&gt;
+        &lt;dc:rights&gt;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&lt;/dc:rights&gt;
+        &lt;dcterms:rights rdf:resource="http://creativecommons.org/licenses/by-nc/2.5/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007"/&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2005-12-31T04:01:23Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2006-01-18T06:16:15Z&lt;/dcterms:modified&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+            &lt;foaf:mbox rdf:resource="mailto:lihui@somewhere.cn" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Zong-Kuan Guo&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Yuan-Zhong Zhang&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/cits/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"/&gt;
+<strong>        &lt;ore:aggregates rdf:resource="http://example.org/dataSet"/&gt;
+</strong>        &lt;rdfs:seeAlso rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://jp.arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:arxiv/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v1"/&gt;
+        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v2"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0807.1020"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0806.4327"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:audience rdf:parseType="Resource"&gt;
+            &lt;rdf:value&gt;OCLC audience level 1: research&lt;/rdf:value&gt;
+        &lt;/dcterms:audience&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/atom/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/atom+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/xhtml/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/xhtml+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;How the Scalar Field of Unified Dark Matter Models Can Cluster&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;Cosmological scalar fields that mimic the $\Lambda CDM$ cosmological model&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/abs/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;[astro-ph/0601007] Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/humanStartPage"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/pdf&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:conformsTo rdf:resource="info:pronom/fmt/18"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:isAggregatedBy rdf:resource="http://example.org/aggregation-1"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (600 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (300 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (Type I Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/dvi/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/dvi&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Dublin Core Metadata for Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/xml&lt;/dc:format&gt;
+        &lt;dcterms:conformsTo rdf:resource="http://www.openarchives.org/OAI/2.0/oai_dc/"/&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/descriptiveMetadata"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/cits/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citations for astro-ph/0601007&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citebase - Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;The Citebase Project&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://www.citebase.org/" /&gt;
+            &lt;foaf:mbox rdf:resource="mailto:tdb01r@ecs.soton.ac.uk" /&gt;
+        &lt;/dcterms:creator&gt;
+    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://example.org/dataSet"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://example.org/dataSet/rem.rdf"/&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_7.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_7.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_7.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3>3.8 <a name="Proxies" id="Proxies"></a><a href="datamodel.html#Proxies">Proxies for Aggregated Resources</a></h3>
+  <p>A <span class="definition">Proxy</span> is a Resource that &quot;stands for&quot; an Aggregated Resource in a manner that is specific to one Aggregation. A Resource Map MAY assert one Proxy for any Aggregated Resource asserted by the Resource Map.</p>
+  <p>The triples corresponding to the example are:</p>
+
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <th colspan="3">Assertions about Proxies</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/abs/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/abs/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/abs/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/pdf/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/pdf/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/pdf/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?dpi%3d600%26font%3dbitmapped<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;font=bitmapped</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?dpi%3d600%26font%3dbitmapped<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?dpi%3d300%26font%3dbitmapped<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;font=bitmapped</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?dpi%3d300%26font%3dbitmapped<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?fname%3dcm%26font%3dTypeI<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;font=TypeI</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?fname%3dcm%26font%3dTypeI<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/dvi/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/dvi/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/dvi/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://export.arxiv.org/oai2?verb%3dGetRecord<br />%26metadataPrefix%3doai_dc%26identifier%3doai:arXiv.org:astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;metadataPrefix=oai_dc&amp;identifier=oai:arXiv.org:astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://export.arxiv.org/oai2?verb%3dGetRecord<br />%26metadataPrefix%3doai_dc%26identifier%3doai:arXiv.org:astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/cits/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://arxiv.org/cits/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/cits/astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://www.citebase.org/abstract?id%3doai:arXiv.org:astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyFor</span></td>
+      <td><span class="code">http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://www.citebase.org/abstract?id%3doai:arXiv.org:astro-ph/0601007<br />&amp;where=http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+      <td><span class="code">ore:proxyIn</span></td>
+      <td><span class="code">http://arxiv.org/aggregation/astro-ph/0601007</span></td>
+    </tr>
+  </table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_8.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/rdf/astro-ph/0601007"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;arXiv.org e-Print Repository&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://arXiv.org" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-01T18:30:02Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2008-10-03T07:30:34Z&lt;/dcterms:modified&gt;
+        &lt;dc:rights&gt;This Resource Map is available under the Creative Commons Attribution-Noncommercial 2.5 Generic license&lt;/dc:rights&gt;
+        &lt;dcterms:rights rdf:resource="http://creativecommons.org/licenses/by-nc/2.5/"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/atom/astro-ph/0601007"/&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/rem/xhtml/astro-ph/0601007" /&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2005-12-31T04:01:23Z&lt;/dcterms:created&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+          &gt;2006-01-18T06:16:15Z&lt;/dcterms:modified&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+            &lt;foaf:mbox rdf:resource="mailto:lihui@somewhere.cn" /&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Zong-Kuan Guo&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Yuan-Zhong Zhang&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/cits/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://example.org/dataSet"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="http://jp.arxiv.org/aggregation/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:arxiv/astro-ph/0601007"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v1"/&gt;
+        &lt;dcterms:hasVersion rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007v2"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0807.1020"/&gt;
+        &lt;dcterms:isReferencedBy rdf:resource="http://arxiv.org/aggregation/0806.4327"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:audience rdf:parseType="Resource"&gt;
+            &lt;rdf:value&gt;OCLC audience level 1: research&lt;/rdf:value&gt;
+        &lt;/dcterms:audience&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/atom/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/atom+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/rem/xhtml/astro-ph/0601007"&gt;
+        &lt;dc:format&gt;application/xhtml+xml&lt;/dc:format&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;How the Scalar Field of Unified Dark Matter Models Can Cluster&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/aggregation/0807.1020"&gt;
+        &lt;dc:title&gt;Cosmological scalar fields that mimic the $\Lambda CDM$ cosmological model&lt;/dc:title&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/abs/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;[astro-ph/0601007] Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/humanStartPage"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/pdf&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:conformsTo rdf:resource="info:pronom/fmt/18"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;dcterms:hasFormat rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:isAggregatedBy rdf:resource="http://example.org/aggregation-1"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (600 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (300 DPI Bitmapped Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term (Type I Fonts PostScript)&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/postscript&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/dvi/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/dvi&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Dublin Core Metadata for Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;application/xml&lt;/dc:format&gt;
+        &lt;dcterms:conformsTo rdf:resource="http://www.openarchives.org/OAI/2.0/oai_dc/"/&gt;
+        &lt;rdf:type rdf:resource="info:eu-repo/semantics/descriptiveMetadata"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/cits/astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citations for astro-ph/0601007&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"&gt;
+        &lt;dc:title&gt;Citebase - Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+        &lt;dc:format&gt;text/html&lt;/dc:format&gt;
+        &lt;dc:language&gt;en&lt;/dc:language&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;The Citebase Project&lt;/foaf:name&gt;
+            &lt;foaf:page rdf:resource="http://www.citebase.org/" /&gt;
+            &lt;foaf:mbox rdf:resource="mailto:tdb01r@ecs.soton.ac.uk" /&gt;
+        &lt;/dcterms:creator&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://example.org/dataSet"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://example.org/dataSet/rem.rdf"/&gt;
+    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/abs/astro-ph/0601007<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/abs/astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/pdf/astro-ph/0601007<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?dpi%3d600%26font%3dbitmapped<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=600&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?dpi%3d300%26font%3dbitmapped<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/ps/astro-ph/0601007?dpi=300&amp;amp;font=bitmapped"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007?fname%3dcm%26font%3dTypeI<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/ps/astro-ph/0601007?fname=cm&amp;amp;font=TypeI"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/dvi/astro-ph/0601007<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/dvi/astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://export.arxiv.org/oai2?verb%3dGetRecord<br />%26metadataPrefix%3doai_dc%26identifier%3dastro-ph/0601007<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://export.arxiv.org/oai2?verb=GetRecord<br />&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/cits/astro-ph/0601007<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/cits/astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://www.citebase.org/abstract?id%3doai:arXiv.org:astro-ph/0601007<br />&amp;amp;where=http://arxiv.org/aggregation/astro-ph/0601007"&gt;
+        &lt;ore:proxyFor rdf:resource="http://www.citebase.org/abstract?id=oai:arXiv.org:astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/aggregation/astro-ph/0601007"/&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_8.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_8.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/1.0/rdfxml-examples/ex3_8.rdfxml">NTriples via Triplr</a>]</p>
+
+<h2>4. <a name="References">References</a></h2>
+
+<dl>
+
+<dt>[<a name="ORE_Model" id="ORE_Model">ORE Model</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/1.0/datamodel">ORE Specification - Abstract Data Model</a></cite>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-10-17.
+Available at http://www.openarchives.org/ore/1.0/datamodel .</dd>
+
+<dt>[<a name="ORE_Primer" id="ORE_Primer">ORE Primer</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/1.0/primer">ORE User Guide - Primer</a></cite>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-10-17.
+Available at http://www.openarchives.org/ore/1.0/primer .</dd>
+
+<dt>[<a name="ORE_RDFa" id="ORE_RDFa">ORE RDFa</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/1.0/rdfa">ORE User Guide - Resource Map Implementation in RDFa</a></cite>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-10-17.
+Available at http://www.openarchives.org/ore/1.0/rdfa .</dd>
+
+<dt>[<a id="RDF_Concepts" name="RDF_Concepts">RDF Concepts</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/">Resource
+Description Framework (RDF): Concepts and Abstract Syntax</a></cite>,
+Graham Klyne and Jeremy J. Carroll, Editors, W3C Recommendation,
+10 February 2004, http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/
+. <a href="http://www.w3.org/TR/rdf-concepts/">Latest version</a>
+available at http://www.w3.org/TR/rdf-concepts/ .</dd>
+
+<dt>[<a id="RDFa_Syntax" name="RDFa_Syntax">RDFa Syntax</a>]</dt>
+<dd><a href="http://www.w3.org/TR/2008/PR-rdfa-syntax-20080904/"><cite>RDFa
+in XHTML: Syntax and Processing. A collection of attributes
+and processing rules for extending XHTML to support RDF</cite></a>,
+Ben Adida, Mark Birbeck, Shane McCarron and Steven Pemberton, Editors,
+W3C Proposed Recommendation 4 September 2008.<br />
+Available at http://www.w3.org/TR/2008/PR-rdfa-syntax-20080904/ .<br />
+<a href="http://www.w3.org/TR/rdfa-syntax/">Latest version</a> available
+at http://www.w3.org/TR/rdfa-syntax/. </dd>
+
+<dt>[<a id="RDFS" name="RDFS">RDFS</a>]</dt>
+<dd><a href="http://www.w3.org/TR/2004/REC-rdf-schema-20040210/">
+<cite>RDF Vocabulary Description Language 1.0: RDF Schema</cite></a>,
+Dan Brickley and R.V. Guha, Editors. W3C Recommendation, 10
+February 2004,<br />
+http://www.w3.org/TR/2004/REC-rdf-schema-20040210/ .<br />
+<a href="http://www.w3.org/TR/rdf-schema/">Latest version</a> available
+at http://www.w3.org/TR/rdf-schema/. </dd>
+
+<dt>[<a id="RDFXML" name="RDFXML">RDFXML</a>]</dt> <dd><cite><a
+href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML Syntax
+Specification (Revised)</a></cite>, Dave Beckett and Brian McBrde,
+Editors. W3C Recommendation, 10 February 2004,<br />
+http://www.w3.org/TR/2004/REC-rdf-syntax-grammar-20040210/ .<br /> <a
+href="http://www.w3.org/TR/rdf-syntax-grammar/">Latest version</a>
+available at http://www.w3.org/TR/rdf-syntax-grammar/. </dd>
+
+<dt>[<a id="RFC2119" name="RFC2119">RFC2119</a>]</dt> <dd>IETF
+<cite><a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119: Key
+words for use in RFCs to Indicate Requirement Levels</a></cite>,
+S. Bradner, March 1997. Available at
+http://www.ietf.org/rfc/rfc2119.txt.</dd>
+
+<dt>[<a id="RFC3986" name="RFC3986">RFC3986</a>]</dt> <dd><a
+href="http://www.ietf.org/rfc/rfc3986.txt"><cite>Uniform Resource
+Identifier (URI): Generic Syntax</cite></a>, T. Berners-Lee,
+R. Fielding, L. Masinter, IETF RFC3986, January 2005.</dd>
+
+<dt>[<a id="RFC3987" name="RFC3987">RFC3987</a>]</dt> <dd><a
+href="http://www.ietf.org/rfc/rfc3986.txt"><cite>Internationalized
+Resource Identifiers (IRIs)</cite></a>, M. Duerst &amp; M. Suignard,
+IETF RFC3987, January 2005.</dd>
+
+<dt>[<a name="Web_Architecture" id="Web_Architecture">Web
+Architecture</a>]</dt> <dd><a
+href="http://www.w3.org/TR/webarch/"><cite>Architecture of the World
+Wide Web, Volume One</cite></a>, I. Jacobs and N. Walsh, Editors,
+World Wide Web Consortium, 15 January 2004.</dd>
+
+</dl>
+</div>
+
+<div class="back">
+<!--START-INCLUDE=_acknowledgements.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+</div>
+<!--END-INCLUDE=_acknowledgements.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+       <tbody><tr>
+            <th>Date</th>
+            <th>Editor</th>
+            <th>Description</th>
+        </tr>
+	<tr>
+	    <td>2008-10-17</td>
+	    <td>johnston</td>
+	    <td>public 1.0 release</td>
+	</tr>
+	<tr>
+	    <td>2008-06-02</td>
+	    <td>johnston/lagoze</td>
+	    <td>public beta 0.9 release</td>
+	</tr>
+	<tr>
+	    <td>2008-02-29</td>
+	    <td>johnston</td>
+	    <td>public alpha 0.2 release (then part of rdfsyntax document)</td>
+	</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

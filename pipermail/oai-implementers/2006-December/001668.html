@@ -1,0 +1,241 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] sets - metadataPrefix relationship
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20sets%20-%20metadataPrefix%20relationship&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001666.html">
+   <LINK REL="Next"  HREF="001669.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] sets - metadataPrefix relationship</H1>
+    <B>Irina Dijour</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20sets%20-%20metadataPrefix%20relationship&In-Reply-To="
+       TITLE="[OAI-implementers] sets - metadataPrefix relationship">Irina.Dijour at exlibris.co.il
+       </A><BR>
+    <I>Mon Dec  4 15:24:20 EST 2006</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001666.html">[OAI-implementers] sets - metadataPrefix relationship
+</A></li>
+        <LI>Next message: <A HREF="001669.html">[OAI-implementers] Re: [OAI-general] Stargate project conclusions
+	and extension
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1668">[ date ]</a>
+              <a href="thread.html#1668">[ thread ]</a>
+              <a href="subject.html#1668">[ subject ]</a>
+              <a href="author.html#1668">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi, 
+
+Thank you all for the answers. I am agree with Caroline that the 
+best situation is when all the items can be returned in all the
+supported formats, not depending on the sets definition.
+Unfortunately I have some constraints in my repository.
+
+My understanding was that each item must have corresponding oai_dc
+record.
+I wanted to expose all these oai_dc records through special set of
+oai_dc
+records.
+Now it's clear to me that any item from any set must be available in
+oai_dc.
+I will think how to redesign my sets structure.
+
+Thanks a lot!
+Irina
+
+-----Original Message-----
+From: Thomas G. Habing [mailto:<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">thabing at uiuc.edu</A>] 
+Sent: Monday, December 04, 2006 8:47 PM
+To: Irina Dijour
+Cc: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at openarchives.org</A>
+Subject: Re: [OAI-implementers] sets - metadataPrefix relationship
+
+Hi,
+
+The definition of set from the specification is:
+
+&quot;A set is an optional construct for grouping _items_ for the purpose of 
+selective harvesting.&quot;
+
+I've deliberately emphasized the word _item_ which also has a specific 
+meaning in the protocol:
+
+&quot;An item is a constituent of a repository from which metadata about a 
+resource can be disseminated.&quot;
+
+This is to be differentiated from records:
+
+&quot;A record is metadata expressed in a single format. A record is returned
+
+in an XML-encoded byte stream in response to an OAI-PMH request for 
+metadata from an item.&quot;
+
+In other words a set is a grouping of items and not a grouping of 
+records (items represented in a specific metadata format).
+
+The protocol also requires every item to have a corresponding oai_dc 
+record.
+
+This implies to me that a request like:
+
+   ?verb=ListRecords&amp;set=A&amp;metadataPrefix=oai_dc
+
+must always return records for all the items belonging to that set, 
+assuming that set A is not empty.  For example, if set A has 10 items 
+then this request must always return all 10 records.
+
+A request for some other metadata format could return all the same items
+
+in the requested format, no items, or a subset of the items that belong 
+to that set, depending on whether or which of those items are available 
+in the other format, for example:
+
+   ?verb=ListRecords&amp;set=A&amp;metadataPrefix=marcxml
+
+might return 10 records assuming that all the records have mappings to 
+marcxml.  It might just return 5 records because only half of the items 
+in set A have a mapping to marcxml, and the other half do not.  It might
+
+also return no records with an error of noRecordsMatch or 
+cannotDisseminateFormat.  If there are items in the repository that can 
+be disseminated as marcxml, just not for this set, you should use 
+noRecordsMatch.  However, if the repository does not support marcxml at 
+all for any of its items, then use cannotDisseminateFormat.
+
+Hope this helps,
+	Tom
+
+Irina Dijour wrote:
+&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> I have a question concerning sets - metadataPrefix relationship.
+</I>&gt;<i> 
+</I>&gt;<i> Is it permitted by the protocol to &quot;attach&quot; metadataPrefix to set?
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> For example, is the following situation is valid:
+</I>&gt;<i> 
+</I>&gt;<i> I define two sets  A and B. All the records from my repository belong
+</I>to 
+&gt;<i> both sets.
+</I>&gt;<i> 
+</I>&gt;<i> Set A &quot;contains&quot; records in marcxml. Set B &quot;contains&quot; records in
+</I>oai_dc.
+&gt;<i> 
+</I>&gt;<i> ListSets response contains 2 sets: A and B
+</I>&gt;<i> 
+</I>&gt;<i> ListMetadataFormats reponse contains 2 formats: marxml and oai_dc.
+</I>&gt;<i> 
+</I>&gt;<i> ListRecords request with set=A, metadataPrefix=marcxml - results in
+</I>list 
+&gt;<i> of records
+</I>&gt;<i> 
+</I>&gt;<i> ListRecords request with set=A, metadataPrefix=oai_dc - results in
+</I>error 
+&gt;<i> cannotDissemenateFormat
+</I>&gt;<i> 
+</I>&gt;<i> ListRecords request with set=B, metadataPrefix=marcxml - results in 
+</I>&gt;<i> error cannotDissemenateFormat
+</I>&gt;<i> 
+</I>&gt;<i> ListRecords request with set=B, metadataPrefix=oai_dc - results in
+</I>list 
+&gt;<i> of record
+</I>&gt;<i> 
+</I>&gt;<i> GetRecord request for any record in my repository both with 
+</I>&gt;<i> metadataPrefix=marcxml and with
+</I>&gt;<i> 
+</I>&gt;<i> metadataPrefix=oai_dc results in the record in corresponding format.
+</I>&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Sorry if I repeat the question which has been risen several months
+</I>ago. 
+&gt;<i> I see that there was discussion
+</I>&gt;<i> 
+</I>&gt;<i> on the same matter, but unfortunately I did not find answer on my
+</I>question.
+&gt;<i> 
+</I>&gt;<i>  
+</I>&gt;<i> 
+</I>&gt;<i> Thanks,
+</I>&gt;<i> 
+</I>&gt;<i> Irina Dijour
+</I>&gt;<i> 
+</I>&gt;<i> ExLibris Ltd.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> -----------------------------------------------------------------
+</I>&gt;<i> This message has been scanned for viruses and
+</I>&gt;<i> dangerous content by *Ex Libris Ltd* &lt;<A HREF="http://www.exlibrisgroup.com">http://www.exlibrisgroup.com</A>&gt;,
+</I>and is
+&gt;<i> believed to be clean.
+</I>&gt;<i> -----------------------------------------------------------------
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i>
+</I>------------------------------------------------------------------------
+&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+-- 
+Thomas G. Habing
+Research Programmer
+Grainger Engineering Library Information Center
+University of Illinois at Urbana-Champaign
+
+-------------------------------------------------------- 
+This message has been scanned for viruses and
+dangerous content by Ex Libris Ltd, and is
+believed to be clean.
+--------------------------------------------------------
+
+
+-------------------------------------------------------- 
+This message has been scanned for viruses and
+dangerous content by Ex Libris Ltd, and is
+believed to be clean.
+--------------------------------------------------------
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001666.html">[OAI-implementers] sets - metadataPrefix relationship
+</A></li>
+	<LI>Next message: <A HREF="001669.html">[OAI-implementers] Re: [OAI-general] Stargate project conclusions
+	and extension
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1668">[ date ]</a>
+              <a href="thread.html#1668">[ thread ]</a>
+              <a href="subject.html#1668">[ subject ]</a>
+              <a href="author.html#1668">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

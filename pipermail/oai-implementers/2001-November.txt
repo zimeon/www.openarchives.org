@@ -1,0 +1,531 @@
+From caar@loc.gov  Thu Nov 15 23:44:49 2001
+From: caar@loc.gov (Caroline Arms)
+Date: Thu, 15 Nov 2001 18:44:49 -0500 (EST)
+Subject: [OAI-implementers] New collections from Library of Congress
+Message-ID: <Pine.SOL.4.21.0111151827140.15924-100000@sun8.loc.gov>
+
+Today, the Library of Congress has made records for two substantial
+collections of photographs available for harvesting.  Brief descriptions
+for these two collections are below.
+
+Brief descriptions of all the Library of Congress collections for which 
+records are available is at:
+
+  http://memory.loc.gov/ammem/oamh/lcoa1_content.html
+
+   Caroline Arms                             caar@loc.gov
+   National Digital Library Program
+   Library of Congress
+
+PS to the folks at arc:  I notice that you harvested the records from our
+unadvertised test server.  You may want to pull them again from the
+production server.  We have made some minor adjustments to the MARC to DC
+mapping and the Dublin Core records will be "better" than those you have.
+
+setSpec: gottscho
+
+Architecture and Interior Design for 20th Century America: Photographs by
+Samuel Gottscho and William Schleisner, 1935-1955
+ 
+     Description: The Gottscho-Schleisner Collection is comprised of over
+29,000 images primarily of architectural subjects, including interiors and
+exteriors of homes, stores, offices, factories, historic buildings, and
+other structures. Subjects are concentrated chiefly in the northeastern
+United States, especially the New York City area, and Florida. Included
+are the homes of notable Americans, such as Raymond Loewy, and of several
+U.S. presidents, as well as color images of the 1939-40 New York World's
+Fair. Many of the photographs were commissioned by architects, designers,
+owners and architectural publications, and document important achievements
+in American 20th-century architecture and interior design.
+
+setSpec: horyd
+
+Washington as It Was: Photographs by Theodor Horydczak, 1923-1959
+ 
+     Description: Spanning from the mid 1920s through the 1950s, the
+Theodor Horydczak collection (about 14,350 photographs online) documents
+the architecture and social life of the Washington metropolitan area in
+the 1920s, 1930s, and 1940s, including exteriors and interiors of
+commercial, residential, and government buildings, as well as street
+scenes and views of neighborhoods.  A number of Washington events and
+activities, such as the 1932 Bonus Army encampment, the 1933 World Series,
+and World War II preparedness campaigns, are also depicted.
+
+The two collections are available as a single set, setSpec: lcphotos
+
+
+
+From liu_x@cs.odu.edu  Sat Nov 17 07:11:39 2001
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Sat, 17 Nov 2001 02:11:39 -0500 (EST)
+Subject: [OAI-implementers] doubts about xmlschema in OAI
+Message-ID: <Pine.SOL.4.10.10111170114460.3738-100000@defiant.cs.odu.edu>
+
+hi,
+
+In OAI_GetRecord.xsd, it specifies 
+
+<complexType name="metadataType">
+ <sequence>
+  <any namespace="##other" processContents="lax"/>
+ </sequence>
+</complexType>
+
+and in dc.xsd, it specifies like
+
+<element name="dc" type="dc:dublincoreType"/>
+<complexType name="dublincoreType">
+....
+
+The question is: If we use "processContents="lax" in OAI_GetRecord.xsd,
+xmlschema validator will treat 
+<GetRecord>....<xxx_dc><title>...</title></xxx_dc>..</GetRecord>  as
+valid,
+ 
+but <xxx_dc>...</xxx_dc> may not be the right format in our intention, it
+passes schema validator only because processContents="lax" is used in
+Get_Record.xsd. We probably want to always use <dc>....<dc>.
+
+I have this doubt when I try to process OAI response with XSLT, the arXiv
+uses <oai_dc>...</oai_dc>, it passed oaiexplorer test and other schema
+validator (oracle and XMLSpy). But this really brings some troubles to
+XSLT processing. 
+
+If I change Get_record.xsd to processContents="strict", this problem will
+be reported by schema validator.
+
+Do we have special reason of using processContents="lax"?
+
+regards,
+Xiaoming Liu
+
+
+
+
+From tim@tim.brody.btinternet.co.uk  Sat Nov 17 13:53:39 2001
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Sat, 17 Nov 2001 13:53:39 -0000
+Subject: [OAI-implementers] doubts about xmlschema in OAI
+References: <Pine.SOL.4.10.10111170114460.3738-100000@defiant.cs.odu.edu>
+Message-ID: <001e01c16f6f$43a3dd30$6400a8c0@Advocate>
+
+Hi,
+
+If I understand your query correctly, Chris (of e-prints) and I had a
+discussion about this some time ago.
+
+The conclusion we came to was that you should use the namespace attribute
+rather than the name of the metadata enclosure (be it "dc" or "oai_dc"), to
+identify the type of metadata.
+
+I believe you can perform XSLT based on attribute values?
+
+All the best,
+Tim Brody
+
+----- Original Message -----
+From: "Xiaoming Liu" <liu_x@cs.odu.edu>
+To: <oai-implementers@oaisrv.nsdl.cornell.edu>
+Sent: Saturday, November 17, 2001 7:11 AM
+Subject: [OAI-implementers] doubts about xmlschema in OAI
+
+
+> hi,
+>
+> In OAI_GetRecord.xsd, it specifies
+>
+> <complexType name="metadataType">
+>  <sequence>
+>   <any namespace="##other" processContents="lax"/>
+>  </sequence>
+> </complexType>
+>
+> and in dc.xsd, it specifies like
+>
+> <element name="dc" type="dc:dublincoreType"/>
+> <complexType name="dublincoreType">
+> ....
+>
+> The question is: If we use "processContents="lax" in OAI_GetRecord.xsd,
+> xmlschema validator will treat
+> <GetRecord>....<xxx_dc><title>...</title></xxx_dc>..</GetRecord>  as
+> valid,
+>
+> but <xxx_dc>...</xxx_dc> may not be the right format in our intention, it
+> passes schema validator only because processContents="lax" is used in
+> Get_Record.xsd. We probably want to always use <dc>....<dc>.
+>
+> I have this doubt when I try to process OAI response with XSLT, the arXiv
+> uses <oai_dc>...</oai_dc>, it passed oaiexplorer test and other schema
+> validator (oracle and XMLSpy). But this really brings some troubles to
+> XSLT processing.
+>
+> If I change Get_record.xsd to processContents="strict", this problem will
+> be reported by schema validator.
+>
+> Do we have special reason of using processContents="lax"?
+>
+> regards,
+> Xiaoming Liu
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+From hussein@vt.edu  Sun Nov 18 17:34:30 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Sun, 18 Nov 2001 12:34:30 -0500
+Subject: [OAI-implementers] doubts about xmlschema in OAI
+References: <Pine.SOL.4.10.10111170114460.3738-100000@defiant.cs.odu.edu> <001e01c16f6f$43a3dd30$6400a8c0@Advocate>
+Message-ID: <3BF7F126.7060801@vt.edu>
+
+hi
+
+while it is true that namespace attributes can be used to disambiguate, 
+the root tag of the metadata ("dc" or "oai_dc") has to belong to some 
+namespace to be validifiable.
+
+as it stands, that tag is defined in the schema for dc, and it is named 
+"dc" so i believe that if you use "oai_dc" it is just simply not correct 
+as far as schema validity goes.
+
+and the problem doesnt end here, because with "lax" validation you can 
+put any nonsense into your record and call it "dc" xml ...
+
+i agree somewhat with Xiaoming and i have raised this issue before in 
+the context of the repository explorer. the problem is that people with 
+exotic data types may not have the know-how to write schemas. so its a 
+dilemma: either we exclude people who cant write schemas or we allow 
+people to ignore schemas altogether ... right now we are doing the 
+latter and i dont know if that is reasonable.
+
+we need to think this through more carefully ...
+
+ttfn
+----hussein
+
+Tim Brody wrote:
+
+> Hi,
+> 
+> If I understand your query correctly, Chris (of e-prints) and I had a
+> discussion about this some time ago.
+> 
+> The conclusion we came to was that you should use the namespace attribute
+> rather than the name of the metadata enclosure (be it "dc" or "oai_dc"), to
+> identify the type of metadata.
+> 
+> I believe you can perform XSLT based on attribute values?
+> 
+> All the best,
+> Tim Brody
+> 
+> ----- Original Message -----
+> From: "Xiaoming Liu" <liu_x@cs.odu.edu>
+> To: <oai-implementers@oaisrv.nsdl.cornell.edu>
+> Sent: Saturday, November 17, 2001 7:11 AM
+> Subject: [OAI-implementers] doubts about xmlschema in OAI
+> 
+> 
+> 
+>>hi,
+>>
+>>In OAI_GetRecord.xsd, it specifies
+>>
+>><complexType name="metadataType">
+>> <sequence>
+>>  <any namespace="##other" processContents="lax"/>
+>> </sequence>
+>></complexType>
+>>
+>>and in dc.xsd, it specifies like
+>>
+>><element name="dc" type="dc:dublincoreType"/>
+>><complexType name="dublincoreType">
+>>....
+>>
+>>The question is: If we use "processContents="lax" in OAI_GetRecord.xsd,
+>>xmlschema validator will treat
+>><GetRecord>....<xxx_dc><title>...</title></xxx_dc>..</GetRecord>  as
+>>valid,
+>>
+>>but <xxx_dc>...</xxx_dc> may not be the right format in our intention, it
+>>passes schema validator only because processContents="lax" is used in
+>>Get_Record.xsd. We probably want to always use <dc>....<dc>.
+>>
+>>I have this doubt when I try to process OAI response with XSLT, the arXiv
+>>uses <oai_dc>...</oai_dc>, it passed oaiexplorer test and other schema
+>>validator (oracle and XMLSpy). But this really brings some troubles to
+>>XSLT processing.
+>>
+>>If I change Get_record.xsd to processContents="strict", this problem will
+>>be reported by schema validator.
+>>
+>>Do we have special reason of using processContents="lax"?
+>>
+>>regards,
+>>Xiaoming Liu
+>>
+>>
+>>
+>>_______________________________________________
+>>OAI-implementers mailing list
+>>OAI-implementers@oaisrv.nsdl.cornell.edu
+>>http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+======================================================================
+hussein suleman - hussein@vt.edu - vtcs - http://www.husseinsspace.com
+======================================================================
+
+
+From liu_x@cs.odu.edu  Wed Nov 21 05:18:12 2001
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Wed, 21 Nov 2001 00:18:12 -0500 (EST)
+Subject: [OAI-implementers] DP9- An OAI Gateway Service for Web Crawlers
+Message-ID: <Pine.SOL.4.10.10111210015200.7225-100000@defiant.cs.odu.edu>
+
+Hi all,
+
+(appologies for cross-posting)
+
+A new OAI service provider for Web Crawlers- DP9 is available, the idea
+comes from one discussion in this list -- how to index OAI archives in
+Google? 
+ 
+DP9 is a gateway service that enables indexing of an OAI data provider by
+an Internet search engine. The DP9 allows a web crawler to retrieve
+records in an OAI collection by executing OAI requests and translating XML
+responses into HTML format on behalf of a web crawler. 
+ 
+Below are the services that DP9 provides:
+ 
+An entry page,if Web Crawler find entry page and dig into these links, it
+will index all records in an OAI data provider. 
+ http://arc.cs.odu.edu:8080/dp9/index.jsp
+ 
+Persistent and bookmarkable URL for OAI record. An example,     
+
+ http://arc.cs.odu.edu:8080/dp9/getrecord.jsp?identifier=oai:arXiv:astro-ph/9501031&prefix=oai_dc
+ 
+Parallel metadata Set, but only limited format is supported now,  new
+metadata support could be easily added-- just send us your XSL file
+
+http://arc.cs.odu.edu:8080/dp9/getrecord.jsp?identifier=oai:VTETD:etd-3345131939761081&prefix=oai_rfc1807
+ 
+The DP9 code is available from 
+   http://arc.cs.odu.edu:8080/dp9/install.jsp
+It's based on JSP and XSLT, if you install it in your own server, it will
+make your OAI compliant archive webcrawler-enabled, and with your own URL.
+ 
+DP9 is a gateway service, it doesn't cache the OAI record and just
+forwards any request to corresponding OAI data provider, so its quality of
+service is highly depended on the server availabity of OAI data providers.
+ 
+DP9 now uses the data providers list from OAI website
+ http://www.openarchives.org/Register/ListFriends.pl
+
+We'd welcome any feedback or advice.
+
+
+Xiaoming Liu
+DL Research Group
+Old Dominion Univ 
+
+
+
+
+
+
+
+
+From a.powell@ukoln.ac.uk  Wed Nov 21 13:29:22 2001
+From: a.powell@ukoln.ac.uk (Andy Powell)
+Date: Wed, 21 Nov 2001 13:29:22 +0000 (GMT)
+Subject: [OAI-implementers] DP9- An OAI Gateway Service for Web Crawlers
+In-Reply-To: <Pine.SOL.4.10.10111210015200.7225-100000@defiant.cs.odu.edu>
+Message-ID: <Pine.SO4.4.05.10111211325270.9455-100000@lamin.ukoln.ac.uk>
+
+On Wed, 21 Nov 2001, Xiaoming Liu wrote:
+
+> Persistent and bookmarkable URL for OAI record. An example,     
+> 
+>  http://arc.cs.odu.edu:8080/dp9/getrecord.jsp?identifier=oai:arXiv:astro-ph/9501031&prefix=oai_dc
+
+Doesn't the '?' in this URL mean that at least some search engines will
+not index this resource?  It might be better to configure things so that
+the persistent URL is of the form
+
+ http://arc.cs.odu.edu:8080/dp9/getrecord/oai_dc/oai:arXiv:astro-ph/9501031
+
+?
+
+Andy
+--
+Distributed Systems and Services
+UKOLN, University of Bath, Bath, BA2 7AY, UK       a.powell@ukoln.ac.uk
+http://www.ukoln.ac.uk/ukoln/staff/a.powell      Voice: +44 1225 323933
+Resource Discovery Network http://www.rdn.ac.uk/   Fax: +44 1225 826838
+
+
+
+From mln@ils.unc.edu  Wed Nov 21 14:44:13 2001
+From: mln@ils.unc.edu (Michael L. Nelson)
+Date: Wed, 21 Nov 2001 09:44:13 -0500 (EST)
+Subject: [OAI-implementers] DP9- An OAI Gateway Service for Web Crawlers
+In-Reply-To: <Pine.SO4.4.05.10111211325270.9455-100000@lamin.ukoln.ac.uk>
+Message-ID: <Pine.GSO.4.21.0111210933010.19588-100000@ruby.ils.unc.edu>
+
+>Doesn't the '?' in this URL mean that at least some search engines will
+>not index this resource?  It might be better to configure things so that
+>the persistent URL is of the form
+
+maybe some won't, but I think that convention has been mostly ignored.
+
+In http://naca.larc.nasa.gov/reports/ crawlers happily trudge through all
+my reports, each of which has an index.cgi with arguments.  inktomi,
+google and others happily invoke every possible combination presented to
+them.
+
+And robots.txt does not allow me to have a line like:
+
+	Disallow: /reports/*/*/index.cgi
+
+I could shut off all robots, but so far the load has not been too
+bad.  But I'm considering using DP9 for robot access -- it might make
+their crawls a little smarter.
+
+regards,
+
+Michael
+
+---
+Michael L. Nelson
+NASA Langley Research Center		m.l.nelson@larc.nasa.gov
+MS 158, Hampton, VA 23681		http://www.ils.unc.edu/~mln/
++1 757 864 8511				+1 757 864 8342 (f)
+
+
+From liu_x@cs.odu.edu  Wed Nov 28 17:16:49 2001
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Wed, 28 Nov 2001 12:16:49 -0500 (EST)
+Subject: [OAI-implementers] DP9- An OAI Gateway Service for Web Crawlers
+In-Reply-To: <Pine.SO4.4.05.10111211325270.9455-100000@lamin.ukoln.ac.uk>
+Message-ID: <Pine.SOL.4.10.10111281203130.8854-100000@stimpy.cs.odu.edu>
+
+Hi,
+
+I have added a wrapper program, it will accept the regular URL and call
+the corresponding jsp/servlet application. It's implemented by server-side
+include method so there is no http redirection involved.
+
+So now the new format is like a static one. like
+ http://arc.cs.odu.edu:8080/dp9/getrecord/oai_dc/oai:aps:tmp1
+
+The APIs and URLs I mentioned before are still valid, they implement the
+functionalities behind the scene.
+
+See the new format in http://arc.cs.odu.edu:8080/dp9/index.jsp
+
+Liu
+
+
+
+
+
+
+On Wed, 21 Nov 2001, Andy Powell wrote:
+
+> On Wed, 21 Nov 2001, Xiaoming Liu wrote:
+> 
+> > Persistent and bookmarkable URL for OAI record. An example,     
+> > 
+> >  http://arc.cs.odu.edu:8080/dp9/getrecord.jsp?identifier=oai:arXiv:astro-ph/9501031&prefix=oai_dc
+> 
+> Doesn't the '?' in this URL mean that at least some search engines will
+> not index this resource?  It might be better to configure things so that
+> the persistent URL is of the form
+> 
+>  http://arc.cs.odu.edu:8080/dp9/getrecord/oai_dc/oai:arXiv:astro-ph/9501031
+> 
+> ?
+> 
+> Andy
+> --
+> Distributed Systems and Services
+> UKOLN, University of Bath, Bath, BA2 7AY, UK       a.powell@ukoln.ac.uk
+> http://www.ukoln.ac.uk/ukoln/staff/a.powell      Voice: +44 1225 323933
+> Resource Discovery Network http://www.rdn.ac.uk/   Fax: +44 1225 826838
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+From liu_x@cs.odu.edu  Thu Nov 29 16:32:12 2001
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Thu, 29 Nov 2001 11:32:12 -0500 (EST)
+Subject: [OAI-implementers] DP9- An OAI Gateway Service for Web Crawlers
+In-Reply-To: <Pine.SO4.4.05.10111211325270.9455-100000@lamin.ukoln.ac.uk>
+Message-ID: <Pine.SOL.4.10.10111291127200.13663-100000@defiant.cs.odu.edu>
+
+Hi,
+
+I have added a wrapper program, it will accept the regular URL and call
+the corresponding jsp/servlet application. It's implemented by server-side
+include method so there is no http redirection involved.
+
+So now the new format is like a static one. like
+ http://arc.cs.odu.edu:8080/dp9/getrecord/oai_dc/oai:aps:tmp1
+
+The APIs and URLs I mentioned before are still valid, they implement the
+functionalities behind the scene.
+
+See the new format in http://arc.cs.odu.edu:8080/dp9/index.jsp
+
+Liu
+
+
+
+
+On Wed, 21 Nov 2001, Andy Powell wrote:
+
+> On Wed, 21 Nov 2001, Xiaoming Liu wrote:
+> 
+> > Persistent and bookmarkable URL for OAI record. An example,     
+> > 
+> >  http://arc.cs.odu.edu:8080/dp9/getrecord.jsp?identifier=oai:arXiv:astro-ph/9501031&prefix=oai_dc
+> 
+> Doesn't the '?' in this URL mean that at least some search engines will
+> not index this resource?  It might be better to configure things so that
+> the persistent URL is of the form
+> 
+>  http://arc.cs.odu.edu:8080/dp9/getrecord/oai_dc/oai:arXiv:astro-ph/9501031
+> 
+> ?
+> 
+> Andy
+> --
+> Distributed Systems and Services
+> UKOLN, University of Bath, Bath, BA2 7AY, UK       a.powell@ukoln.ac.uk
+> http://www.ukoln.ac.uk/ukoln/staff/a.powell      Voice: +44 1225 323933
+> Resource Discovery Network http://www.rdn.ac.uk/   Fax: +44 1225 826838
+> 
+> 
+
+

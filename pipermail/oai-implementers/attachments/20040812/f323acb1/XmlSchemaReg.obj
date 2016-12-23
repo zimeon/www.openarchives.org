@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+     xsd:targetNamespace="http://www.dstc.edu.au/rdu/reg/"
+     xmlns="http://www.w3.org/2001/XMLSchema"
+     xmlns:DSTC="http://www.dstc.edu.au/"
+     xmlns:REG="http://www.dstc.edu.au/rdu/reg/"
+     xsd:elementFormDefault="qualified"
+     xsd:attributeFormDefault="unqualified">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+      XML Schema for DSTC "REG" records; Version 1.0
+      One for one element and attribute match with earlier DTD implementation
+      with more rigorous range restriction of record status and source values.
+      Ron C.  2004-01-22.
+      XML Schema for DSTC "REG" records; Version 1.1
+      Added optional attributes for 'owner', 'statusChanger', 'statusChanged'
+      and increased the maximum 'status' value to 9.
+      Steve C.  2004-04-30.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="metasuite.reg" type="DSTC:metasuiteRegType" />
+
+  <xsd:complexType name="metasuiteRegType">
+    <xsd:sequence>
+      <xsd:element name="record" type="REG:RecordType"
+                   minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="RecordType">
+    <xsd:simpleContent>
+      <xsd:restriction base="xsd:string">
+        <xsd:attribute name="id" type="xsd:unsignedLong"
+                       use="required" />
+        <xsd:attribute name="status" type="StatusType"
+                       use="optional" default="0" />
+        <xsd:attribute name="source" type="SourceType"
+                       use="optional" default="0" />
+        <xsd:attribute name="owner" type="xsd:string"
+                       use="optional" />
+        <xsd:attribute name="creator" type="xsd:string"
+                       use="optional" />
+        <xsd:attribute name="created" type="xsd:long"
+                       use="optional" />
+        <xsd:attribute name="modifier" type="xsd:string"
+                       use="optional" />
+        <xsd:attribute name="modified" type="xsd:long"
+                       use="optional" />
+        <xsd:attribute name="statusChanger" type="xsd:string"
+                       use="optional" />
+        <xsd:attribute name="statusChanged" type="xsd:long"
+                       use="optional" />
+        <xsd:attribute name="schema" type="xsd:string"
+                       use="optional" />
+        <xsd:attribute name="uri" type="xsd:string"
+                       use="optional" />
+      </xsd:restriction>
+    </xsd:simpleContent>
+    <xsd:sequence>
+      <xsd:element name="annotation" type="REG:AnnotationType
+                   minOccurs="0" maxOccurs="1" />
+      <xsd:element name="provenance" type="REG:ProvenanceType"
+                   minOccurs="0" maxOccurs="Unbounded" />
+      <xsd:element name="element" type="REG:ElementType"
+                   minOccurs="1" maxOccurs="Unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ProvenanceType">
+    <xsd:simpleContent>
+      <xsd:restriction base="xsd:string">
+        <xsd:attribute name="originBaseURL" type="xsd:string"
+                       use="required" />
+        <xsd:attribute name="originId" type="xsd:string"
+                       use="required" />
+        <xsd:attribute name="originDatestamp" type="xsd:long"
+                       use="required" />
+        <xsd:attribute name="originNS" type="xsd:string"
+                       use="required" />
+        <xsd:attribute name="harvestDate" type="xsd:long"
+                       use="required" />
+        <xsd:attribute name="altered" type="xsd:boolean"
+                       use="optional" default="false" />
+      </xsd:restriction>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  
+  <xsd:complexType name="ElementType">
+    <xsd:simpleContent>
+      <xsd:restriction base="xsd:string">
+        <xsd:attribute name="id" type="xsd:string"
+                       use="required" />
+        <xsd:attribute name="encoding" type="xsd:string"
+                       use="optional" />
+        <xsd:attribute name="lang" type="xsd:string"
+                       use="optional" />
+      </xsd:restriction>
+    </xsd:simpleContent>
+  </compleType>
+ 
+  <xsd:simpleType name="AnnotationType">
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+ 
+  <xsd:simpleType name="StatusType">
+    <xsd:restriction base="xsd:int">
+      <xsd:maxInclusive="-1" />
+      <xsd:maxInclusive="9" />
+    </xsd:restriction>
+  </xsd:simpleType>
+ 
+  <xsd:simpleType name="SourceType">
+    <xsd:restriction base="xsd:long">
+      <xsd:minInclusive="-3" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

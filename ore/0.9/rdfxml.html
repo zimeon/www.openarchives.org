@@ -1,0 +1,925 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE User Guide - Resource Map Implementation in RDF/XML</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.9/ore-spec.css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - Resource Map Implementation in RDF/XML</h2>
+  <h3 class="subTitle">2 June 2008</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of a beta release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.9/rdfxml">http://www.openarchives.org/ore/0.9/rdfxml</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/rdfxml">http://www.openarchives.org/ore/rdfxml</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.3/rdfsyntax">http://www.openarchives.org/ore/0.3/rdfsyntax</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE User Guide - Resource Map Implementation in RDF/XML-->
+<!--VAR-SUBTITLE=2 June 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.9/rdfxml-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/rdfxml-->
+<!--VAR-PREVIOUSURI=http://www.openarchives.org/ore/0.3/rdfsyntax-->
+
+<div class="abstract">
+<h2><a name="abstract" id="abstract">Abstract</a></h2>
+
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+defines standards for the description and exchange of Aggregations of
+Web resources.  OAI-ORE introduces the notion of a Resource Map, a
+named RDF Graph [<a href="#RDF_Concepts">RDF Concepts</a>] which
+describes the Aggregation, the Aggregated Resources of which it is
+composed, and the relationships between them (and/or the relationships
+between these and other resources).  Since a Resource Map is an RDF
+Graph, it can be serialized using any RDF syntax.  This document
+outlines the use of one such syntax for the serialization of Resource
+Maps: RDF/XML [<a href="#RDFXML">RDF/XML</a>]. A companion document
+outlines the serialization of Resource Maps in RDFa [<a
+href="#RDFa_Syntax">RDFa Syntax</a>].  This is one of several
+documents comprising the <a href="toc">OAI-ORE specification and user
+guide</a>.</p>
+
+<hr />
+</div>
+
+<h2><a name="contents" id="contents">Table of Contents</a></h2>
+<p class="toc">1. <a href="#Introduction">Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#Notational_Conventions">Notational Conventions</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#Namespaces">Namespaces</a><br />
+2. <a href="#SummaryRDFXML">Summary of  Recommended ORE RDF/XML Syntax</a><br />
+3. <a href="#Examples">Examples of Resource Maps Encoded in RDF/XML</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.1. <a href="#remtoaggr">Relationship between a Resource Map and an Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.2. <a href="#Metadata_about_the_ReM">Metadata about the Resource Map and Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.3. <a href="#ars">Aggregated Resources and Aggregation Graph</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.4. <a href="#simlarTo">Relationships between the Aggregation and Similar Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.5. <a href="#other_rels">Relationships to other Resources and Types</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.6. <a href="#isAggregatedBy">Asserting that an Aggregated Resource is a constituent of another Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.7. <a href="#Nesting">Nesting Aggregations</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.8. <a href="#Proxies">Proxies for Aggregated Resources</a><br />
+4. <a href="#References">References</a></p>
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+<p class="toc">A. <a href="#acknowledgments">Acknowledgements</a><br />
+B. <a href="#changelog">Change Log</a>
+</p>
+
+<hr />
+<div class="body">
+
+<h2>1. <a name="Introduction">Introduction</a></h2>
+
+<p>The Open Archives Initiative Object Reuse and Exchange (OAI-ORE) 
+[<a href="#ORE_Model">Abstract Data Model</a>] introduces the notion
+of a Resource Map, a named RDF Graph [<a href="#RDF_Concepts">RDF Concepts</a>, 
+<a href="#Named_Graph">Named Graph</a>] which describes an Aggregation, 
+the Aggregated Resources of which it is composed, and the relationships 
+between them (and/or the relationships between these and other resources).
+Since a Resource Map is an RDF Graph, it can be serialized using any 
+RDF syntax.
+This document outlines the use of one such syntax for the
+serialization of Resource Maps: RDF/XML [<a href="#RDFXML">RDF/XML</a>]. 
+The Internet media type / MIME type for RDF/XML is <code>application/rdf+xml</code>. 
+Where RDF/XML is used to provide representations of ORE Resource Maps that
+media type MUST be used.</p>
+
+<p>The RDF/XML specification [<a href="#RDFXML">RDF/XML</a>] describes
+an XML format for serializing RDF graphs. In order to represent an RDF
+Graph as an XML document the constructs of the RDF Graph (triples made
+up of subjects, predicates and objects) have to be represented as
+components in that XML document, i.e. as XML elements and XML
+attributes, XML element names and XML attribute names, and as XML
+element content and XML attribute values. The RDF/XML specification
+describes such a mapping between the RDF Graph and the XML Infoset 
+[<a href="#XML_Infoset">XML Infoset</a>].</p>
+
+<p>For some features of the RDF Graph, the RDF/XML syntax permits the
+encoding of a single feature in multiple ways in XML. The aim of this
+document is to provide a RECOMMENDED profile of RDF/XML for encoding
+an ORE Resource Map. However, It is possible to use RDF/XML to
+encode the same ORE Resource Map using a different set of conventions
+permitted by RDF/XML. A consumer of ORE Resource Maps encoded in
+RDF/XML MUST support all of the syntactic conventions defined by
+RDF/XML. This allowance for different syntactic conventions is
+supported by conformant RDF/XML parsers.</p>
+
+<h3>1.1 <a name="Notational_Conventions">Notational Conventions</a></h3>
+
+<p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;,
+&quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+&quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;,
+&quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are to be
+interpreted as described in RFC 2119 
+[<cite><a href="#RFC2119">IETF RFC 2119</a></cite>].</p>
+
+<p>This specification uses the common term URI to mean both IRI 
+[<a href="#RFC3987">RFC3987</a>] and URI [<a href="#RFC3986">RFC3986</a>].</p>
+
+
+  <h3>1.2 <a id="Namespaces" name="Namespaces">Namespaces</a></h3>
+
+  <p>This specification uses the following namespaces and prefixes to indicate
+  those namespaces:</p>
+
+  <table class="namespace-table" summary="Namespaces table">
+   <tr>
+    <th>Prefix</th>
+    <th>Namespace URI</th>
+    <th>Description</th>
+   </tr>
+   <tr>
+
+    <td><code>dc</code></td>
+    <td><code>http://purl.org/dc/elements/1.1/</code></td>
+    <td>Dublin Core elements</td>
+   </tr>
+
+   <tr>
+    <td><code>dcterms</code></td>
+
+    <td><code>http://purl.org/dc/terms/</code></td>
+    <td>Dublin Core terms</td>
+   </tr>
+   <tr>
+    <td><code>foaf</code></td>
+    <td><code>http://xmlns.com/foaf/0.1/</code></td>
+    <td>FOAF vocabulary terms</td>
+  </tr>
+   <tr>
+    <td><code>marcrel</code></td>
+    <td><code>http://www.loc.gov/loc.terms/relators/</code></td>
+    <td>MARC Relator vocabulary terms</td>
+  </tr>
+   <tr>
+    <td><code>ore</code></td>
+    <td><code>http://www.openarchives.org/ore/terms/</code></td>
+
+    <td>ORE vocabulary terms</td>
+
+   </tr>
+   <tr>
+
+    <td><code>rdf</code></td>
+    <td><code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code></td>
+    <td>RDF vocabulary terms</td>
+   </tr>
+   <tr>
+    <td><code>rdfs</code></td>
+    <td><code>http://www.w3.org/2000/01/rdf-schema#</code></td>
+    <td>RDFS vocabulary terms</td>
+   </tr>
+  </table>
+
+  <h2>2. <a name="SummaryRDFXML" id="SummaryRDFXML">Summary of  Recommended ORE RDF/XML Syntax</a></h2>
+  <p>The general convention used in RDF/XML is that the set of subject-predicate-object triples is represented as sequences of XML
+    elements corresponding to the subject of one or more triples (node elements) containing child XML elements corresponding to
+    predicates (property elements) the attributes and/or content of which correspond to the objects. Since the object of one triple may itself
+    be the subject of another triple, that pattern can be repeated, with the consequence that this convention is sometimes referred to as &quot;striping&quot;. Neither the order of node elements within the root element, nor the order of property elements within the node element, is significant.</p>
+  <p>This document describes a convention for encoding Resource Maps in RDF/XML where this striping is limited to one &quot;level&quot; i.e. a node element contains child property elements
+    but those property elements do not contain further node elements. The exception to this one level striping is when the object of a triple is a &quot;blank node&quot;, or &quot;bNode&quot;. In this case any subsequent triples where that object bNode is a subject are nested in the &quot;stripe&quot; corresponding to the subject of the original triple. Note that bNodes are not mandated by the ORE data model, but MAY occur in some triples, for example when asserting the creator of a Resource Map, where no URI is available for the specified agent. </p>
+  <p>Also, in the conventions used here, a node element always has the XML expanded name <span class="code">(&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;, &quot;Description&quot;)</span>, typically represented by the QName <span class="code">rdf:Description</span>, where the prefix <span class="code">rdf</span> is associated via an XML namespace declaration with the namespace name <span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#</span>. In other words, these examples do not make use of RDF/XML's &quot;typed node element&quot; convention: triples with the predicate <span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#type</span> are always represented using property elements.</p>
+  <p>In the remainder of this document, the names of XML elements are cited as XML QNames. An XML QName is an abbreviation for an expanded name, a pair consisting of an XML Namespace Name (a URI) and a local name. The prefix part of the
+    XML QName is bound to an XML Namespace Name through an XML Namespace declaration; where an XML QName has no prefix, the XML Namespace Name is obtained from
+    the default namespace declaration. Where an XML QName is used to represent a URI in RDF/XML, the URI is determined by appending the local name part of the QName
+    to the XML Namespace Name. For example, using the mapping provided in <a href="#Namespaces">the section above on Namepaces</a>, the QName <span class="code">ore:describes</span> maps to the URI <span class="code">http://www.openarchives.org/ore/terms/describes</span>. Note that the prefix used in the QNames in this document
+    should not be interpreted as significant; any prefix can be used as long as the QName corresponds to the XML expanded name would be generated
+    using the prefix/namespace name pairs listed in <a href="#Namespaces">the section above on Namepaces</a>.</p>
+  <p>As demonstrated by the examples in the remainder of this document the recommended rules for encoding a Resource Map in RDF/XML are:</p>
+  <ul>
+    <li>Create a root element with the QName rdf:RDF</li>
+    <li>
+      <p><em>SubjectRule</em>: For each distinct subject in the Resource Map that is not a bNode:</p>
+      <ul>
+        <li>Create a node element (i.e. an XML element with the QName <span class="code">rdf:Description</span>) as child element of the root element and add
+          an attribute with the QName <span class="code">rdf:about</span> and make the value of this attribute a URI reference corresponding to the subject</li>
+        <li>
+          <p><em>ObjectRule</em>: For each triple in the Resource Map with this subject</p>
+          <ul>
+            <li><em>ObjectRule</em>: Create a property element as child element of the node element. The name of the property element is derived from the URI reference which forms the predicate of the triple, following the URI-QName mapping convention described in section 2.1 of the RDF/XML specification.</li>
+            <li>If the object of the triple is a URI reference, add an attribute with the QName <span class="code">rdf:resource</span> and make the value of this attribute a URI reference corresponding to the object. In this case, the property element is empty.</li>
+            <li>
+              <p>If the object of the triple is a literal</p>
+              <ul>
+                <li>For a plain literal, make the lexical form the content of the property element. If a language tag is present, add an attribute with the QName <span class="code">xml:lang</span> and make the value of this attribute the language tag</li>
+                <li>For a typed literal, make the lexical form the content of the property element, and add an attribute with the QName <span class="code">rdf:datatype</span> and make the value of this attribute a URI reference corresponding to the URI of the datatype</li>
+                <li>For an XML literal i.e. a typed literal with the datatype <span class="code">http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral</span>, make the lexical form the content of the property element, and add an attribute with the QName rdf:parseType and make the value of this attribute the string &quot;Literal&quot;</li>
+              </ul>
+            </li>
+            <li>If the object of the triple is a bNode
+              <ul>
+                <li>Add an attribute to the property element with the QName <span class="code">rdf:parseType</span> and make the value of this attribute the string &quot;Resource&quot;.</li>
+                <li>Follow <em>ObjectRule </em>above, with the bNode as subject.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    </ul>
+  <h2>3. <a name="Examples" id="Examples"></a>Examples of Resource Maps Encoded in RDF/XML</h2>
+  <p>The remainder of this section uses the an e-print in <a href="arxiv.org">arXiv</a> with a &quot;splash page&quot; at <code><a href="http://arxiv.org/abs/astro-ph/0601007">http://arxiv.org/abs/astro-ph/0601007</a></code> to illustrate the RECOMMENDED RDF/XML encoding of a Resource Map. This is an interesting example because it has multiple
+    identifiers, versions, formats, mirrors and external
+    relationships. For illustrative purposes, the example diverges from the real e-print in arXiv in the manner that it associates an aggregation of data  with the e-print.</p>
+  <p>These examples use the following URIs for the Aggregation (URI-A) and Resource Map (URI-R). As <a href="http://www.openarchives.org/ore/0.9/datamodel#Aggregation">specified</a>, the URI-A of an Aggregation should be distinct from the URI of a splash page. </p>
+  <ul>
+    <li>URI-A: <span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></li>
+    <li>URI-R: <span class="code">http://arxiv.org/astro-ph/0601007/foo.rdf</span></li>
+  </ul>
+  <p>The ordering of the following subsections correspond to that used to introduce features in the Abstract Data Model Specification [<a href="#ORE_Model">Abstract Data Model</a>]. Each section header links to the corresponding Abstract Data Model section. The examples are not intended to be exhaustive, but sufficient to demonstrate the recommended RDF/XML syntax.</p>
+  <p>This complete example is illustrated in the following figure. The table after the figure lists the URIs of Resources in the example.</p>
+
+  <p align="center"><img src="rdfxml-images/example.jpg" alt="" width="717" height="656" /></p>
+
+  <h3><a name="remtoaggr" id="remtoaggr"></a>3.1 <a href="datamodel.html#ReM-to-aggr">Relationship between a Resource Map and an Aggregation</a></h3>
+  <p> A Resource Map MUST include one triple with an <span class="code">ore:describes</span> predicate. The subject of this triple MUST be the URI-R of the Resource Map. The object is the URI-A of the Aggregation described by the Resource Map. </p>
+  <p>The triples corresponding to the example are:</p>
+
+<table class="example-table"  summary="Resource Map Example table">
+      <tr>
+        <th>Subject</th>
+        <th>Predicate</th>
+        <th>Object</th>
+      </tr>
+      <tr>
+        <td class="code">http://arxiv.org/astro-ph/0601007/foo.rdf</td>
+        <td><code>ore:describes</code></td>
+        <td class="code">http://arxiv.org/astro-ph/0601007#aggregation</td>
+      </tr>
+      <tr>
+        <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+        <td><code>ore:isDescribedy</code></td>
+        <td><span class="code">http://arxiv.org/astro-ph/0601007/foo.atom</span></td>
+    </tr>
+</table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_1.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        xmlns:ore="http://www.openarchives.org/ore/terms/"&gt;
+<strong>  &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+    &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation" /&gt;
+  &lt;/rdf:Description&gt;
+  &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+    &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom" /&gt;
+  &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_1.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_1.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_1.rdfxml">NTriples via Triplr</a>]</p>
+
+
+<p>Note: The use of <strong>bold</strong> in the RDF/XML above
+indicates the segment of the XML that corresponds to the triples in
+the table that immediately preceeds the example. This visual cue will
+be used throughout this document.</p>
+
+  <h3>3.2 <a href="datamodel.html#Metadata_about_the_ReM">Metadata about the Resource Map and Aggregation</a><a name="Metadata_about_the_ReM" id="Metadata_about_the_ReM"></a></h3>
+  <p>A Resource Map MUST include triples expressing minimal metadata properties about the Resource Map. It MAY include triples expressing additional metadata properties about the Resource Map. Finally it MAY include triples expressing  metadata properties about the Aggregation. </p>
+  <p>The triples corresponding to the example are:</p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/astro-ph/0601007/foo.rdf</span></td>
+      <td><code>dcterms:creator</code></td>
+      <td><code>http://my.example.org/agents/AgencyX</code></td>
+    </tr>
+    <tr>
+      <td><code class="code">http://my.example.org/agents/AgencyX</code></td>
+      <td class="code">foaf:name</td>
+      <td>&quot;The best ReM Agent&quot;</td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/astro-ph/0601007/foo.rdf</span></td>
+      <td><code>dcterms:modified</code></td>
+      <td><code>&quot;2008-02-12&quot;^^<br />
+        http://www.w3.org/2001/XMLSchema#date</code></td>
+    </tr>
+    <tr>
+      <td>http://arxiv.org/astro-ph/0601007#aggregation</td>
+      <td><code>dcterms:creator</code></td>
+      <td><span class="code">bNode</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">bNode</span></td>
+      <td class="code">foaf:name</td>
+      <td>&quot;Hui Li&quot;</td>
+    </tr>
+  </table>
+
+  <p>Note the introduction of a bnode for the <span class="code">dcterms:creator</span> of the aggregation - where there is no available URI for the agent &quot;Hui Li&quot;.</p>
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_2.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:dcterms="http://purl.org/dc/terms/"
+         xmlns:foaf="http://xmlns.com/foaf/0.1/"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+<strong>        &lt;dcterms:creator rdf:resource="http://my.example.org/agents/AgencyX"/&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+          &gt;2008-02-12&lt;/dcterms:modified&gt;
+</strong>    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom"/&gt;
+<strong>        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+</strong>    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://my.example.org/agents/AgencyX"&gt;
+        &lt;foaf:name&gt;The Best ReM Agent&lt;/foaf:name&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_2.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_2.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_2.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3><a name="ars" id="ars"></a>3.3 <a href="datamodel.html#ore/aggregates">Aggregated Resources and Aggregation Graph</a></h3>
+  <p>A Resource Map MAY include one or more triples describing the relationship between the Aggregation and Aggregated Resources. </p>
+  <p>The triples corresponding to the example are:</p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+      <td><code>ore:aggregates</code></td>
+      <td class="code">http://arxiv.org/ps/astro-ph/0601007</td>
+    </tr>
+    <tr>
+      <td height="35"><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+      <td><code>ore:aggregates</code></td>
+      <td class="code">http://arxiv.org/pdf/astro-ph/0601007</td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+      <td><code>ore:aggregates</code></td>
+      <td class="code">http://arxiv.org/e-print/astro-ph/0601007</td>
+    </tr>
+  </table>
+
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_3.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+        &lt;dcterms:creator rdf:resource="http://my.example.org/agents/AgencyX"/&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+        &gt;2008-02-12&lt;/dcterms:modified&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+<strong>        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/e-print/astro-ph/0601007"/&gt;
+</strong>    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://my.example.org/agents/AgencyX"&gt;
+        &lt;foaf:name&gt;The Best ReM Agent&lt;/foaf:name&gt;
+    &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;
+
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_3.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_3.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_3.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3>3.4 <a name="simlarTo" id="simlarTo"></a><a href="datamodel.html#ore/similarTo">Relationships between the Aggregation and Similar Resources</a></h3>
+  <p>A Resource Map MAY include one or more triples, with URI-A as the subject, which assert that the Aggregation is a Resource with content that is similar to another Resource. The predicate MAY be either <span class="code">rdfs:seeAlso </span>or its sub-property<span class="code"> ore:similarTo</span>.</p>
+  <p>The triples corresponding to the example are:</p>
+
+<table class="example-table"  summary="Resource Map Example table">
+              <tr>
+               <th width="53%">Subject</th>
+                <th width="17%">Predicate</th>
+                <th width="30%">Object</th>
+              </tr>
+              <tr>
+               <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+                <td><code>rdfs:seeAlso</code></td>
+                <td><code> info:arXiv/astro-ph/0601007v2</code></td>
+              </tr>
+              <tr>
+               <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+                <td><code>ore:similarTo</code></td>
+                <td><code>info:doi/10.1142/S0217732306019475</code></td>
+              </tr>
+</table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_4.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+        &lt;dcterms:creator rdf:resource="http://my.example.org/agents/AgencyX"/&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+        &gt;2008-02-12&lt;/dcterms:modified&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/e-print/astro-ph/0601007"/&gt;
+<strong>        &lt;rdfs:seeAlso rdf:resource="info:arXiv/astro-ph/0601007v2"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+</strong>    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://my.example.org/agents/AgencyX"&gt;
+        &lt;foaf:name&gt;The Best ReM Agent&lt;/foaf:name&gt;
+    &lt;/rdf:Description&gt;
+&lt;/rdf:RDF&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_4.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_4.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_4.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3>3.5 <a name="other_rels" id="other_rels"></a><a href="datamodel.html#GlobalRels">Relationships to other Resources and Types</a></h3>
+  <p>A Resource Map MAY include additional triples that assert properties about the Resource Map, Aggregation, Aggregated Resources, or other related Resources or Literals. </p>
+  <p>The triples corresponding to the example are: </p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+      <td><code>dcterms:references</code></td>
+      <td><code>info:doi/10.1086/300499</code></td>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+      <td><code>dcterms:references</code></td>
+      <td class="code">info:doi/10.1103/PhysRevD.72.083511</td>
+    </tr>
+    <tr>
+      <td class="code">http://arxiv.org/pdf/astro-ph/0601007</td>
+      <td><code class="code">rdf:type</code></td>
+      <td class="code"><code class="code">http://purl.org/dc/dcmitype/Text</code></td>
+    </tr>
+    <tr>
+      <td class="code">http://arxiv.org/astro-ph/0601007#aggregation</td>
+      <td class="code">rdf:type</td>
+      <td class="code">http://purl.og/eprint/type/JournalArticle</td>
+    </tr>
+  </table>
+
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_5.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+        &lt;dcterms:creator rdf:resource="http://my.example.org/agents/AgencyX"/&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+        &gt;2008-02-12&lt;/dcterms:modified&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/e-print/astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="info:arXiv/astro-ph/0601007v2"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+<strong>        &lt;rdf:type rdf:resource="http://purl.og/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1086/30049"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1103/PhysRevD.72.083511"/&gt;
+</strong>    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://my.example.org/agents/AgencyX"&gt;
+        &lt;foaf:name&gt;The Best ReM Agent&lt;/foaf:name&gt;
+    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_5.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_5.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_5.rdfxml">NTriples via Triplr</a>]</p>
+
+<h3>3.6 <a name="isAggregatedBy" id="isAggregatedBy"></a><a href="datamodel.html#ore/isAggregatedBy">Asserting that an Aggregated Resource is a constituent of another Aggregation</a></h3>
+  <p>A Resource Map MAY  include one or more triples with the <span class="code">ore:isAggregatedBy</span> predicate to assert that an Aggregated Resources is a constituent of other Aggregations.</p>
+  <p>The triple corresponding to the example is:</p>
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/ps/astro-ph/0601007</span></td>
+      <td><code>ore:isAggregatedBy</code></td>
+      <td><code>http://your.example.org/aggregation-2</code></td>
+    </tr>
+  </table>
+
+  <p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_6.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+        &lt;dcterms:creator rdf:resource="http://my.example.org/agents/AgencyX"/&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+            &gt;2008-02-12&lt;/dcterms:modified&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/e-print/astro-ph/0601007"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="info:arXiv/astro-ph/0601007v2"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.og/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1086/30049"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1103/PhysRevD.72.083511"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://my.example.org/agents/AgencyX"&gt;
+        &lt;foaf:name&gt;The Best ReM Agent&lt;/foaf:name&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007"&gt;
+        &lt;ore:isAggregatedBy rdf:resource="http://your.example.org/aggregation-2"/&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_6.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_6.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_6.rdfxml">NTriples via Triplr</a>]</p>
+
+
+  <h3>3.7 <a name="Nesting" id="Nesting"></a><a href="datamodel.html#ore/isDescribedBy">Nesting Aggregations</a></h3>
+  <p>A Resource Map that asserts another Aggregation as an Aggregated Resource MAY assert an <span class="code">ore:isDescribedBy</span> relationship between this Aggregated Resource and a Resource Map describing the other Aggregation.</p>
+  <p>The triples corresponding to the example are: </p>
+
+<table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <td><span class="code">http://arxiv.org/astro-ph/0601007#aggregation</span></td>
+      <td><code>ore:aggregates</code></td>
+      <td class="code">http://mydata.org/dataSet</td>
+    </tr>
+    <tr>
+      <td><span class="code">http://mydata.org/dataSet</span></td>
+      <td class="code">ore:isDescribedBy</td>
+      <td class="code">http://mydata.org/dataSet/rem.rdf</td>
+    </tr>
+</table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_7.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+        &lt;dcterms:creator rdf:resource="http://my.example.org/agents/AgencyX"/&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+            &gt;2008-02-12&lt;/dcterms:modified&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/e-print/astro-ph/0601007"/&gt;
+<strong>        &lt;ore:aggregates rdf:resource="http://mydata.org/dataSet"/&gt;
+</strong>        &lt;rdfs:seeAlso rdf:resource="info:arXiv/astro-ph/0601007v2"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.og/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1086/30049"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1103/PhysRevD.72.083511"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://my.example.org/agents/AgencyX"&gt;
+        &lt;foaf:name&gt;The Best ReM Agent&lt;/foaf:name&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007"&gt;
+        &lt;ore:isAggregatedBy rdf:resource="http://your.example.org/aggregation-2"/&gt;
+    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://mydata.org/dataSet"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://mydata.org/dataSet/rem.rdf"/&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_7.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_7.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_7.rdfxml">NTriples via Triplr</a>]</p>
+
+  <h3>3.8 <a name="Proxies" id="Proxies"></a><a href="datamodel.html#Proxies">Proxies for Aggregated Resources</a></h3>
+  <p>A <span class="definition">Proxy</span> is a Resource that &quot;stands for&quot; an Aggregated Resource in a manner that is specific to one Aggregation. A Resource Map MAY assert one Proxy for any Aggregated Resource asserted by the Resource Map.</p>
+  <p>The triples corresponding to the example are:</p>
+
+  <table class="example-table"  summary="Resource Map Example table">
+    <tr>
+      <th>Subject</th>
+      <th>Predicate</th>
+      <th>Object</th>
+    </tr>
+    <tr>
+      <td class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007&amp;amp;where=http://arxiv.org/rem/astro-ph/0601007%23aggregation</td>
+      <td><code>ore:proxyFor</code></td>
+      <td class="code">http://arxiv.org/ps/astro-ph/0601007</td>
+    </tr>
+    <tr>
+      <td><span class="code">http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007&amp;amp;where=http://arxiv.org/rem/astro-ph/0601007%23aggregation</span></td>
+      <td class="code"><code class="code">ore:proxyIn</code></td>
+      <td class="code">http://arxiv.org/astro-ph/0601007#aggregation</td>
+    </tr>
+  </table>
+
+<p>These triples SHOULD be serialized in RDF/XML as follows:</p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_8.rdfxml-->
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007/foo.rdf"&gt;
+        &lt;ore:describes rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+        &lt;dcterms:creator rdf:resource="http://my.example.org/agents/AgencyX"/&gt;
+        &lt;dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+            &gt;2008-02-12&lt;/dcterms:modified&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/astro-ph/0601007#aggregation"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://arxiv.org/astro-ph/0601007/foo.atom"/&gt;
+        &lt;dcterms:creator rdf:parseType="Resource"&gt;
+            &lt;foaf:name&gt;Hui Li&lt;/foaf:name&gt;
+        &lt;/dcterms:creator&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/pdf/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://arxiv.org/e-print/astro-ph/0601007"/&gt;
+        &lt;ore:aggregates rdf:resource="http://mydata.org/dataSet"/&gt;
+        &lt;rdfs:seeAlso rdf:resource="info:arXiv/astro-ph/0601007v2"/&gt;
+        &lt;ore:similarTo rdf:resource="info:doi/10.1142/S0217732306019475"/&gt;
+        &lt;rdf:type rdf:resource="http://purl.og/eprint/type/JournalArticle"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1086/30049"/&gt;
+        &lt;dcterms:references rdf:resource="info:doi/10.1103/PhysRevD.72.083511"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://my.example.org/agents/AgencyX"&gt;
+        &lt;foaf:name&gt;The Best ReM Agent&lt;/foaf:name&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/pdf/astro-ph/0601007"&gt;
+        &lt;rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://arxiv.org/ps/astro-ph/0601007"&gt;
+        &lt;ore:isAggregatedBy rdf:resource="http://your.example.org/aggregation-2"/&gt;
+    &lt;/rdf:Description&gt;
+    &lt;rdf:Description rdf:about="http://mydata.org/dataSet"&gt;
+        &lt;ore:isDescribedBy rdf:resource="http://mydata.org/dataSet/rem.rdf"/&gt;
+    &lt;/rdf:Description&gt;
+<strong>    &lt;rdf:Description rdf:about="http://oreproxy.org/r?what=http://arxiv.org/ps/astro-ph/0601007&amp;amp;where=http://arxiv.org/rem/astro-ph/0601007%23aggregation"&gt;
+        &lt;ore:proxyFor rdf:resource="http://arxiv.org/ps/astro-ph/0601007"/&gt;
+        &lt;ore:proxyIn rdf:resource="http://arxiv.org/astro-ph/0601007#aggregation"/&gt;
+    &lt;/rdf:Description&gt;
+</strong>&lt;/rdf:RDF&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=rdfxml-examples/ex3_8.rdfxml-->
+</div>
+<p>[<a href="rdfxml-examples/ex3_8.rdfxml">RDF/XML</a>,
+<a href="http://triplr.org/ntriples/www.openarchives.org/ore/0.9/rdfxml-examples/ex3_8.rdfxml">NTriples via Triplr</a>]</p>
+
+<h2>4. <a name="References">References</a></h2>
+
+<dl>
+    <dt>[<a id="Named_Graph" name="Named_Graph">Named Graph</a>]</dt>
+    <dd><a href="http://portal.acm.org/citation.cfm?id=1060835"><cite>
+    Named graphs, provenance and trust</cite></a>, J. Carroll, C. Bizer,
+    P. Hayes, P. Stickler, <span>Proceedings of the 14th international
+    conference on World Wide Web, 2005.</span></dd>
+
+    <dt>[<a id="ORE_Model" name="ORE_Model">ORE Model</a>]</dt>
+    <dd><cite><a href="http://www.openarchives.org/ore/0.9/datamodel">ORE Specification -  Abstract Data Model</a></cite>,
+    C. Lagoze, H. Van de Sompel, M. Nelson, R. Sanderson, S. Warner, 2008-06-02.
+    Available at http://www.openarchives.org/ore/0.9/datamodel.</dd>
+
+    <dt>[<a id="RDF_Concepts" name="RDF_Concepts">RDF Concepts</a>]</dt>
+    <dd><cite><a href="http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/">Resource
+    Description Framework (RDF): Concepts and Abstract Syntax</a></cite>,
+    Graham Klyne and Jeremy J. Carroll, Editors, W3C Recommendation,
+    10 February 2004, http://www.w3.org/TR/2004/REC-rdf-concepts-20040210/
+    . <a href="http://www.w3.org/TR/rdf-concepts/">Latest version</a>
+    available at http://www.w3.org/TR/rdf-concepts/ .</dd>
+
+    <dt>[<a id="RDFa_Syntax" name="RDFa_Syntax">RDFa Syntax</a>]</dt>
+    <dd><a href="http://www.w3.org/TR/2007/WD-rdfa-syntax-20071018/">
+    <cite> RDFa in XHTML: Syntax and Processing. A collection of attributes
+    and processing rules for extending XHTML to support RDF</cite>
+    </a>, Ben Adida, Mark Birbeck, Shane McCarron and Steven Pemberton, Editors.
+     W3C Editor's Draft, 01 May 2008,<br />
+    http://www.w3.org/MarkUp/2008/ED-rdfa-syntax-20080501 .<br />
+    <a href="http://www.w3.org/TR/rdfa-syntax/">Latest version</a> available
+    at http://www.w3.org/TR/rdfa-syntax/. </dd>
+
+    <dt>[<a id="RDFS" name="RDFS">RDFS</a>]</dt>
+    <dd><a href="http://www.w3.org/TR/2004/REC-rdf-schema-20040210/">
+    <cite>RDF Vocabulary Description Language 1.0: RDF Schema</cite></a>, 
+    Dan Brickley and R.V. Guha, Editors. W3C Recommendation, 10
+    February 2004,<br />
+    http://www.w3.org/TR/2004/REC-rdf-schema-20040210/ .<br />
+    <a href="http://www.w3.org/TR/rdf-schema/">Latest version</a> available
+    at http://www.w3.org/TR/rdf-schema/. </dd>
+
+    <dt>[<a id="RDFXML" name="RDFXML">RDFXML</a>]</dt>
+    <dd><cite><a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML Syntax Specification (Revised)</a></cite>, 
+    Dave Beckett and Brian McBrde, Editors. W3C Recommendation, 10 February 2004,<br />
+    http://www.w3.org/TR/2004/REC-rdf-syntax-grammar-20040210/ .<br />
+    <a href="http://www.w3.org/TR/rdf-syntax-grammar/">Latest version</a> available
+    at http://www.w3.org/TR/rdf-syntax-grammar/. </dd>
+
+    <dt>[<a id="RFC2119" name="RFC2119">RFC2119</a>]</dt>
+    <dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119:
+    Key words for use in RFCs to Indicate Requirement Levels</a></cite>,
+    S. Bradner, March 1997. Available at http://www.ietf.org/rfc/rfc2119.txt.</dd>
+
+    <dt>[<a id="RFC3986" name="RFC3986">RFC3986</a>]</dt>
+    <dd><a href="http://www.ietf.org/rfc/rfc3986.txt"><cite>Uniform Resource
+    Identifier (URI): Generic Syntax</cite></a>, T. Berners-Lee, R. Fielding,
+    L. Masinter, IETF RFC3986, January 2005.</dd>
+
+    <dt>[<a id="RFC3987" name="RFC3987">RFC3987</a>]</dt>
+    <dd><a href="http://www.ietf.org/rfc/rfc3986.txt"><cite>Internationalized Resource Identifiers (IRIs)</cite></a>, M. Duerst
+    &amp; M. Suignard, IETF RFC3987, January 2005.</dd>
+
+    <dt>[<a name="Web_Architecture" id="Web_Architecture">Web Architecture</a>]</dt>
+    <dd><a href="http://www.w3.org/TR/webarch/"><cite>Architecture of
+    the World Wide Web, Volume One</cite></a>, I. Jacobs and N. Walsh,
+    Editors, World Wide Web Consortium, 15 January 2004.</dd>
+ </dl>
+</div>
+
+<div class="back">
+<!--START-INCLUDE=_acknowledgements.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+</div>
+<!--END-INCLUDE=_acknowledgements.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+       <tbody><tr>
+            <th>Date</th>
+            <th>Editor</th>
+            <th>Description</th>
+        </tr>
+	<tr>
+	    <td>2008-06-02</td>
+	    <td>johnston/lagoze</td>
+	    <td>public beta 0.9 release</td>
+	</tr>
+	<tr>
+	    <td>2008-02-29</td>
+	    <td>johnston</td>
+	    <td>public alpha 0.2 release (then part of rdfsyntax document)</td>
+	</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

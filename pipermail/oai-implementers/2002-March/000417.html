@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Better resumption mechanism - more important
+ than ever!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:liu_x%40cs.odu.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000416.html">
+   <LINK REL="Next"  HREF="000419.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Better resumption mechanism - more important
+ than ever!
+   </H1>
+    <B>Xiaoming Liu
+    </B> 
+    <A HREF="mailto:liu_x%40cs.odu.edu"
+       TITLE="[OAI-implementers] Better resumption mechanism - more important
+ than ever!">liu_x@cs.odu.edu
+       </A><BR>
+    <I>Tue, 5 Mar 2002 21:53:54 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000416.html">[OAI-implementers] Better resumption mechanism - more important than ever!
+</A></li>
+        <LI> Next message: <A HREF="000419.html">[OAI-implementers] Better resumption mechanism - more important than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#417">[ date ]</a>
+              <a href="thread.html#417">[ thread ]</a>
+              <a href="subject.html#417">[ subject ]</a>
+              <a href="author.html#417">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Alan,
+
+I think there are two questions here.
+
+1) Could the resumptionToken (in your case restartToken) be re-used? 
+
+I agree the retry algorithem is theoretically unsafe in current protocol,
+thanks. However, the same question also exists in &quot;restartToken&quot; and 
+must be addressed before we talk about question 2. If they can not be
+re-used, the harvester has to start from scratch. It looks like the OAI
+1.1 doesn't give clear answer to this question. Hopefully it
+could be answsered in 2.0
+
+2) If it is legal to re-use, should we introduce a restartToken concept?
+
+My personal opinion is restartToken will bring too much complexity, and
+it's not necessary.
+
+In your case, I could imagine it can be done by current OAI 
+resumptionToken: assume the proposed tokens in your suggestion are called
+alan_restartToken and  alan_resumptionToken respectively. 
+
+oai_resumptionToken=alan_restartToken + alan_resumptionToken
+
+So data provider (DP) can always parse the oai_resumptionToken, in most
+case, the session is valid and DP just uses alan_resumptionToken; if
+anything goes wrong, DP need redo the query, DP have the freedom to use
+the alan_restartToken. The harvester should not know what happens behind
+the scene. At this scenario, the time-to-live could be month, year ;-)
+
+Another small doubt.
+
+&gt;<i>precise date stamps (lets say every ETDCat record has a different
+</I>&gt;<i>stamp), because results are not guaranteed to come back in sorted
+</I>&gt;<i>order, I cannot restart using from=. I must start again from scratch.
+</I>
+I think it's perfectly correct if you restart using from=. For example, if
+you finished everything &lt;=1980, and when you are doing something
+&quot;from=1981&quot;, system crashed, I think it's correct if you do &quot;from=1981&quot;
+again. Because the protocol guarantees you have everything before 1981.
+
+regards,
+liu
+
+
+
+
+
+
+
+
+
+On Wed, 6 Mar 2002, 'Alan Kent' wrote:
+
+&gt;<i> On Tue, Mar 05, 2002 at 10:02:43AM -0500, Michael L. Nelson wrote:
+</I>&gt;<i> &gt; actually, the way I see it is the protocol should not be complicated with
+</I>&gt;<i> &gt; additional tokens and such to enforce what ETDCat (and similiarly
+</I>&gt;<i> &gt; large-sized DPs) should do:
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 1.  partition their collection into sets
+</I>&gt;<i> 
+</I>&gt;<i> I am sorry, but I agree with other's here that sets are not the
+</I>&gt;<i> solution. How are the sets going to be created? Are they going
+</I>&gt;<i> to have any semantics (or just 1,000 records per set)? What if I
+</I>&gt;<i> do want semantics for my sets, but one set does have a 1,000,000
+</I>&gt;<i> records? What happens when people start creating even bigger
+</I>&gt;<i> collections? Etc. I think sets can be useful, but I would not
+</I>&gt;<i> *rely* on them as solving the problem.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; 2.  use stateless (or very long lived) resumptionTokens
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; in 2.0, resumptionTokens will have optional attributes, including
+</I>&gt;<i> &gt; &quot;expirationDate&quot;, so this will take the guess work out of knowing how long
+</I>&gt;<i> &gt; a resumptionToken will be valid.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; IMO, introducing an optional restartToken is no different (from an
+</I>&gt;<i> &gt; implementer's point of view) than making the resumptionToken last a long
+</I>&gt;<i> &gt; time.  
+</I>&gt;<i> 
+</I>&gt;<i> I am going to play devil's advocate a bit here - I think its worth
+</I>&gt;<i> teasing out arguments a bit more to make sure they are solid.
+</I>&gt;<i> 
+</I>&gt;<i> There is a difference, but is the difference worth the complexity
+</I>&gt;<i> to the protocol? That is a different question.
+</I>&gt;<i> 
+</I>&gt;<i> For example, if I was going to build a data supplier implementation
+</I>&gt;<i> (I am actually thinking about how it would be done), then I would
+</I>&gt;<i> layer it on top of Z39.50 - because that is what our database server
+</I>&gt;<i> uses. Z39.50 has a result set concept. So I would do a search,
+</I>&gt;<i> then the resumptionToken would be the result set name. If I had
+</I>&gt;<i> to make resumptionTokens unique (not currently required I believe),
+</I>&gt;<i> then I would add the offset into the result set. Since result
+</I>&gt;<i> sets are stored in the server, I might use a timeout of 10 minutes,
+</I>&gt;<i> maybe an hour, certainly not a few days. Each result set uses up
+</I>&gt;<i> memory in the server! Note that because I have a Z39.50 result,
+</I>&gt;<i> I don't need to worry about updates of data in the server.
+</I>&gt;<i> My result set won't change in size during the transfer, so I can
+</I>&gt;<i> implement idempotent resumptionTokens easily.
+</I>&gt;<i> 
+</I>&gt;<i> So how to support restarting if something goes wrong? Well, I could
+</I>&gt;<i> implement a restartToken which encoded the original request and
+</I>&gt;<i> the OAI record identifier I was up to. Note, I would not store the
+</I>&gt;<i> result set index. I have to redo the query, the database may have
+</I>&gt;<i> changed, so the old index is no longer guaranteed to be correct.
+</I>&gt;<i> (I would sort the result sets in the server to make my implementation
+</I>&gt;<i> easy). My restart query would be the old from/until stuff, plus an
+</I>&gt;<i> addtional 'id &gt;= id-from-restartToken' so the new result set would
+</I>&gt;<i> be smaller.
+</I>&gt;<i> 
+</I>&gt;<i> How long would my restartToken be valid for? I could say months
+</I>&gt;<i> or years. How long would my resumptionToken be valid for? minutes
+</I>&gt;<i> or hours, not days. Remember that if a transfer fails, my data
+</I>&gt;<i> provider code is not sure how long before (or if) the client is
+</I>&gt;<i> going to retry. If the harvester says 'help! I need human
+</I>&gt;<i> intervension', then the delay could be significant.
+</I>&gt;<i> 
+</I>&gt;<i> So my *personal* feeling is restartToken's should have a life in
+</I>&gt;<i> terms of at least a week. Certainly multiple days. I think this
+</I>&gt;<i> might be too much of a restriction on resumption tokens.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Some other points worth noting:
+</I>&gt;<i> 
+</I>&gt;<i> * If a server does support long term resumption tokens, then they
+</I>&gt;<i>   can return exactly the same string for both resumption tokens
+</I>&gt;<i>   and restart tokens. So implementation is not that much harder.
+</I>&gt;<i> 
+</I>&gt;<i> * It is reasonable for a request using a restart token to return
+</I>&gt;<i>   a different set of records (due to database updates) than the
+</I>&gt;<i>   old request. It is also reasonable for a server not to return
+</I>&gt;<i>   a restart token for every response - it could, for example,
+</I>&gt;<i>   return a restart token every time the day or year changes in
+</I>&gt;<i>   returned records (if the implementation returns them in order)
+</I>&gt;<i>   allowing the harvester to avoid doing *all* the work again,
+</I>&gt;<i>   even if some effort is repeated. (ie: more flexibility).
+</I>&gt;<i> 
+</I>&gt;<i> * Is enhancing the Identify verb response (in a standard way) a
+</I>&gt;<i>   good model to move to? It is a real option, and a reasonable one.
+</I>&gt;<i>   But so far OAI has not required harvesters to do this sort of
+</I>&gt;<i>   look into what the server provides. Do people want to start now?
+</I>&gt;<i>   (Phylisophical question here worth asking.) Using restartToken
+</I>&gt;<i>   does not require usage of examining Identify responses.
+</I>&gt;<i> 
+</I>&gt;<i> * For small servers, they do not have to implement restartToken at
+</I>&gt;<i>   all. In that case, harvesters just redo the whole request.
+</I>&gt;<i>   So this is not mandatory additional code to write.
+</I>&gt;<i> 
+</I>&gt;<i> * For people who have written code to implement a data provider,
+</I>&gt;<i>   how much of a burden is there for resumptionToken's to be valid
+</I>&gt;<i>   for a long period of time? (eg: a week). Would a separate
+</I>&gt;<i>   restartToken be any use?
+</I>&gt;<i> 
+</I>&gt;<i> * For data provider programmers again, if the data provider server
+</I>&gt;<i>   goes down (eg: shut down nightly for backups or something), will
+</I>&gt;<i>   it be easy to make resumption tokens survive across such events?
+</I>&gt;<i> 
+</I>&gt;<i> * Has OAI 2.0 decreed that resumptionToken's can be reused? (Idempotent)
+</I>&gt;<i>   If not, then they cannot be used to recover - unless again something
+</I>&gt;<i>   is added to Identify for harvesters to say 'oh, I can try a reload'.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Taking my horns off for a moment, I also agree that keeping the protocol
+</I>&gt;<i> simple is a very good thing.
+</I>&gt;<i> 
+</I>&gt;<i> But I am not (yet) convinced (oh dear, those horns don't come off that
+</I>&gt;<i> easily do they &gt;;^) that that forcing resumptionTokens to have a longer
+</I>&gt;<i> life is actually simplifying the job of implementors. And I don't think
+</I>&gt;<i> short life resumptionTokens (less than a few days at least) will solve
+</I>&gt;<i> the restart problem.  Semantically, to me resumptionToken's are used as
+</I>&gt;<i> a protocol mechanism to link multiple packets into a single request.
+</I>&gt;<i> RestartTokens are used to recover after a failure by starting a
+</I>&gt;<i> completely new request.
+</I>&gt;<i> 
+</I>&gt;<i> &gt; at some point, you (as a harvester) are simply at the mercy of the
+</I>&gt;<i> &gt; repository.  new features in the protocol won't change that.
+</I>&gt;<i> 
+</I>&gt;<i> That is true, but that does not mean to me that the protocol cannot
+</I>&gt;<i> be improved to make the protocol more robust. With OAI as it is,
+</I>&gt;<i> I am not going to try and crawl ETDCat any more. Even with more
+</I>&gt;<i> precise date stamps (lets say every ETDCat record has a different
+</I>&gt;<i> stamp), because results are not guaranteed to come back in sorted
+</I>&gt;<i> order, I cannot restart using from=. I must start again from scratch.
+</I>&gt;<i> 
+</I>&gt;<i> I think the real question is will data provider implementers be
+</I>&gt;<i> happy with resumptonToken's lasting for a week. For me *personally*,
+</I>&gt;<i> it will be easier having two separate tokens. But I think its wrong
+</I>&gt;<i> to design the protocol around my intended implementation (which does
+</I>&gt;<i> not even - and may never - exist! :-)
+</I>&gt;<i> 
+</I>&gt;<i> Alan
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000416.html">[OAI-implementers] Better resumption mechanism - more important than ever!
+</A></li>
+	<LI> Next message: <A HREF="000419.html">[OAI-implementers] Better resumption mechanism - more important than ever!
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#417">[ date ]</a>
+              <a href="thread.html#417">[ thread ]</a>
+              <a href="subject.html#417">[ subject ]</a>
+              <a href="author.html#417">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

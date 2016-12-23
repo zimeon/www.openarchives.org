@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] implementation of non-English characters
+	w/UTF-8?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20implementation%20of%20non-English%20characters%0A%09w/UTF-8%3F&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001518.html">
+   <LINK REL="Next"  HREF="001517.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] implementation of non-English characters
+	w/UTF-8?</H1>
+    <B>Chris Wilper</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20implementation%20of%20non-English%20characters%0A%09w/UTF-8%3F&In-Reply-To="
+       TITLE="[OAI-implementers] implementation of non-English characters
+	w/UTF-8?">cwilper at cs.cornell.edu
+       </A><BR>
+    <I>Tue Sep 13 16:40:23 EDT 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001518.html">[OAI-implementers] implementation of non-English characters
+	w/UTF-8?
+</A></li>
+        <LI>Next message: <A HREF="001517.html">[OAI-implementers] implementation of non-English characters
+	w/UTF-8? 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1515">[ date ]</a>
+              <a href="thread.html#1515">[ thread ]</a>
+              <a href="subject.html#1515">[ subject ]</a>
+              <a href="author.html#1515">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Jewel,
+
+UTF-8 can handle any Unicode character (&quot;e&quot; with an accent, and thousands
+more from many languages).  As long as the encoding of the your characters
+constitute valid UTF-8, you should be set.  The problem often arises when you
+think you have UTF-8 to begin with, but your source data is actually using
+some other encoding.  Often the problem isn't apparent until you get to the
+non-ascii characters because several different encodings represent
+&quot;low-ascii&quot; in the same way (the first few bytes).  It sounds like that might
+be what's happening in your case.
+
+If so, the best thing to do (and this is sometimes really hard) is to find
+out what encoding the original provider of the file used.  If you know that,
+then you can convert it to UTF-8 using a tool designed for that job[1].   If
+you're unable to determine what the original encoding was, you can at least
+make the file validate by replacing the odd characters with valid (though,
+probably incorrect) UTF-8 ones[2].
+
+- Chris
+
+[1] Like this one that google told me about:
+<A HREF="http://www.chilkatsoft.com/CharsetStudio.asp">http://www.chilkatsoft.com/CharsetStudio.asp</A>
+[2] Simeon here at Cornell wrote a nice utility for this:
+<A HREF="http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/">http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/</A>
+
+-----Original Message-----
+From: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A> on behalf of Jewel Ward
+Sent: Tue 9/13/2005 3:29 PM
+To: OAI-implementers
+Subject: [OAI-implementers] implementation of non-English characters w/UTF-8?
+ 
+
+How have other people implemented &quot;non-UTF-8&quot; characters in their DP 
+records?
+
+Meaning, we have non-English characters that are &quot;choking&quot; when we test 
+our Data Provider.  [Think &quot;e&quot; with the accent over it 
+<A HREF="http://lib-app1.usc.edu:8085/oaidp?verb=GetRecord&amp;identifier=oai:usc:digitala">http://lib-app1.usc.edu:8085/oaidp?verb=GetRecord&amp;identifier=oai:usc:digitala</A>
+rchive:bhe/bhe-m27&amp;metadataPrefix=oai_dc 
+(surname after first name of &quot;Elmo&quot;).]  Eventually, we will have several 
+Asian language character sets, as well as the current non-English 
+characters.
+
+I have looked over the protocol, looked at various tutorials, the 
+oai-implementers archives, and the OAI Best Practices site, and have not 
+seen any guidelines other than this thread:
+
+<A HREF="http://www.openarchives.org/pipermail/oai-implementers/2001-April/000093.html">http://www.openarchives.org/pipermail/oai-implementers/2001-April/000093.html</A>
+
+I'm also looking at OLAC and some of the DP implementations in Japan, 
+but have not [yet] found the solution.  [Like this: 
+<A HREF="http://mitizane.ll.chiba-u.jp/cgi-bin/oai/oai2.0?verb=ListRecords&amp;metadataPre">http://mitizane.ll.chiba-u.jp/cgi-bin/oai/oai2.0?verb=ListRecords&amp;metadataPre</A>
+fix=oai_dc 
+.]
+
+Will we just have to locate the individual characters that are choking 
+and encode those a specific way?
+
+Thanks in advance,
+
+Jewel
+
+-- 
+Jewel H. Ward
+Program Manager, USC Digital Archive
+Leavey Library, Information Services Division
+University of Southern California
+Tel: (213) 821-2298   Cell: (213) 219-2784
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <A HREF="http://openarchives.org/pipermail/oai-implementers/attachments/20050913/ec6029a8/attachment.htm">http://openarchives.org/pipermail/oai-implementers/attachments/20050913/ec6029a8/attachment.htm</A>
+</PRE>
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001518.html">[OAI-implementers] implementation of non-English characters
+	w/UTF-8?
+</A></li>
+	<LI>Next message: <A HREF="001517.html">[OAI-implementers] implementation of non-English characters
+	w/UTF-8? 
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1515">[ date ]</a>
+              <a href="thread.html#1515">[ thread ]</a>
+              <a href="subject.html#1515">[ subject ]</a>
+              <a href="author.html#1515">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

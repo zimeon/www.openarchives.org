@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] OAI-XMLFile - Fixes/Problems
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20OAI-XMLFile%20-%20Fixes/Problems&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001324.html">
+   <LINK REL="Next"  HREF="001326.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] OAI-XMLFile - Fixes/Problems</H1>
+    <B>Venkat Suryadevara</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20OAI-XMLFile%20-%20Fixes/Problems&In-Reply-To="
+       TITLE="[OAI-implementers] OAI-XMLFile - Fixes/Problems">gokulsuryadevara at gmail.com
+       </A><BR>
+    <I>Wed Oct 27 19:01:47 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001324.html">[OAI-implementers] 
+ Press Release: Infrae extends Python, Zope, Silva, and Railroad with
+ OAI-PMH facilities
+</A></li>
+        <LI>Next message: <A HREF="001326.html">[OAI-implementers] Searching open archives
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1325">[ date ]</a>
+              <a href="thread.html#1325">[ thread ]</a>
+              <a href="subject.html#1325">[ subject ]</a>
+              <a href="author.html#1325">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi All,
+
+        I've been through an interesting problem. I am a data provider
+and I'm using Hussein Suleman's OAI-XMLFile tool to build my OAI-PMH
+Server. I ran tests against Hussein's Repository Explorer
+<A HREF="http://oai.dlib.vt.edu/cgi-bin/Explorer/oai2.0/testoai.">http://oai.dlib.vt.edu/cgi-bin/Explorer/oai2.0/testoai.</A> All the 28
+tests passed against my server.
+
+ I wanted to move a step ahead by testing my base URL against Open
+Archives Repository Explorer. I was surprised to find 3
+errors/exceptions. The results of the test are below.
+
+ I felt that there are some problems with OAI-XMLFile tool and took
+the initiative to fix it. I could fix the first error where the test
+passes a malformed parameter and expects a response. So I escaped the
+malformed character in the header by replacing it with an empty
+character (In the directory Pure/EZCGI.pm, Add a Line75: $parray[$i]
+=~ s/%22/ /eg;)
+
+ There are two more errors/exceptions that I couldn't manage to handle
+at this point. I would be very thankful if someone using this tool who
+already ran into similar problems would help me with the fix.
+
+ Thank you,
+
+Venkat 
+
+ 
+
+************************************************************************************************
+
+Base URL:
+
+<A HREF="http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl">http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl</A>
+
+adminEmail: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">suryadev at bus.orst.edu</A>
+
+ ...............................................................................
+
+ Unfortunately your repository did not validate at version 2.0 of the
+OAI-PMH according to our OAI protocol conformance tester. The error(s)
+received during testing is/are listed below.
+
+ Malformed response to
+
+<A HREF="http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl?verb=GetRecord&amp;identifier=invalid&quot;id&amp;metadataPrefix=oai_dc">http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl?verb=GetRecord&amp;identifier=invalid&quot;id&amp;metadataPrefix=oai_dc</A>
+
+not well-formed (invalid token) at line 6, column 46, byte 352
+
+ An XML parsing error may be due to incorrectly including the invalid
+identifier in the &lt;request&gt; element of your XML error response; only
+valid arguments should be included. A response that includes &lt;request
+verb=&quot;GetRecord&quot; identifier=&quot;invalid&quot;id&quot;
+
+metadataPrefix=&quot;oai_dc&quot;&gt;..baseURL..&lt;/request&gt; is not well-formed XML
+because of the quotation mark (&quot;) in the identifier.
+
+ Error in parsing XML response to exception request:
+
+verb=ListRecords&amp;metadataPrefix=oai_dc&amp;until=1969-01-01T00:00:00Z
+
+ Empty resumption token in response to
+
+<A HREF="http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl?verb=ListRecords&amp;metadataPrefix=oai_dc">http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl?verb=ListRecords&amp;metadataPrefix=oai_dc</A>
+
+There should never be an empty resumptionToken in response to a
+request without a resumptionToken argument
+
+ 
+
+SUMMARY:
+
+ Total exceptions improperly handled: 2 out of 15 Total error count: 3
+
+ ***********************************************************************************************
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001324.html">[OAI-implementers] 
+ Press Release: Infrae extends Python, Zope, Silva, and Railroad with
+ OAI-PMH facilities
+</A></li>
+	<LI>Next message: <A HREF="001326.html">[OAI-implementers] Searching open archives
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1325">[ date ]</a>
+              <a href="thread.html#1325">[ thread ]</a>
+              <a href="subject.html#1325">[ subject ]</a>
+              <a href="author.html#1325">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

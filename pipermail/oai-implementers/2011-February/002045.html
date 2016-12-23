@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] ListRecords request w/out an until..
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20ListRecords%20request%20w/out%20an%20until..&In-Reply-To=AANLkTi%3DaXVTvwdEE4BDCO4J%2BTCF97a-r9ox8HJA-J0B1%40mail.gmail.com">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002044.html">
+   <LINK REL="Next"  HREF="002046.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] ListRecords request w/out an until..</H1>
+    <B>Benjamin Anderson</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20ListRecords%20request%20w/out%20an%20until..&In-Reply-To=AANLkTi%3DaXVTvwdEE4BDCO4J%2BTCF97a-r9ox8HJA-J0B1%40mail.gmail.com"
+       TITLE="[OAI-implementers] ListRecords request w/out an until..">benanderson.us at gmail.com
+       </A><BR>
+    <I>Tue Feb  1 10:36:55 EST 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002044.html">[OAI-implementers] ListRecords request w/out an until..
+</A></li>
+        <LI>Next message: <A HREF="002046.html">[OAI-implementers] ListRecords request w/out an until..
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2045">[ date ]</a>
+              <a href="thread.html#2045">[ thread ]</a>
+              <a href="subject.html#2045">[ subject ]</a>
+              <a href="author.html#2045">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>ugh, sorry - I pushed send too quickly.  The 2 bullet points after the
+sentence I quoted clear it up (at least in regards to what the spec
+defines).  Seems a little ambiguous, though, doesn't it?  It seems that to
+harvest in the most correct way you almost have to know how the provider is
+implemented, which kind of defeats the purpose of a spec.  I'm still curious
+as to whether there's a de facto standard that most providers are using?
+
+
+On Tue, Feb 1, 2011 at 10:26 AM, Benjamin Anderson &lt;<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">benanderson.us at gmail.com</A>
+&gt;<i> wrote:
+</I>
+&gt;<i> Thanks Simeon.  I'm looking over the section you linked to...
+</I>&gt;<i>
+</I>&gt;<i> Repositories that implement resumptionTokens *must* do so in a manner that
+</I>&gt;&gt;<i> allows harvesters to resume a sequence of requests for incomplete lists by
+</I>&gt;&gt;<i> re-issuing a list request with the most recent resumptionToken
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> I'm having a hard time understanding this sentence. What is meant by
+</I>&gt;<i> &quot;incomplete list&quot;?  What is meant by &quot;re-issuing a list request&quot;?
+</I>&gt;<i>
+</I>&gt;<i> I was just thinking that my harvester assumption wouldn't work for the
+</I>&gt;<i> given scenario:
+</I>&gt;<i>
+</I>&gt;<i> Let's assume a provider that allows for updates during harvests and that
+</I>&gt;<i> this provider only keeps the most recent updated date (not all update
+</I>&gt;<i> dates).  If a record was updated before t0 and again after t0 (but before it
+</I>&gt;<i> was included in the harvest initiated at t0), then the harvester will not
+</I>&gt;<i> get the record even though it should have.  That's probably a rare case, but
+</I>&gt;<i> nevertheless bound to happen.  Are there guidelines for the best way to use
+</I>&gt;<i> an until as a harvester?
+</I>&gt;<i>
+</I>&gt;<i> Thanks again,
+</I>&gt;<i> Ben
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Tue, Feb 1, 2011 at 10:05 AM, Simeon Warner &lt;<A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">simeon.warner at cornell.edu</A>&gt;wrote:
+</I>&gt;<i>
+</I>&gt;&gt;<i> Hi Ben,
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> This is covered in the in section 3.5.1 of the specification:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> <A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Idempotency">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Idempotency</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I think your solution for the harvester is the correct one. Provided the
+</I>&gt;&gt;<i> harvester starts again with from=t0 all changes between t0 and t2 will be
+</I>&gt;&gt;<i> harvested, irrespective of whether or not they were included in the original
+</I>&gt;&gt;<i> response (modulo understood problems with items that move between sets for
+</I>&gt;&gt;<i> set selective requests).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Cheers,
+</I>&gt;&gt;<i> Simeon
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> On 02/01/2011 09:09 AM, Benjamin Anderson wrote:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Hi,
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I'm wondering what others are doing when a ListRecords request w/out an
+</I>&gt;&gt;&gt;<i> until comes in.&#65533; Consider this scenario:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> t0 - harvest request (with no until) is initiated
+</I>&gt;&gt;&gt;<i> t1 - record 101 is added to the repo
+</I>&gt;&gt;&gt;<i> t2 - harvest is finished (it took multiple requests to complete)
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Should record 101 be included in the harvest data?&#65533; If not, will the
+</I>&gt;&gt;&gt;<i> client better issue their next harvest with a from=t0 (a from=t2 would
+</I>&gt;&gt;&gt;<i> be invalid because they'd miss out on record 101).
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> We have implemented both oai-pmh harvesters and providers, so I have to
+</I>&gt;&gt;&gt;<i> consider both ends of this.&#65533; Here's what I'm thinking...
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> As a Provider
+</I>&gt;&gt;&gt;<i> I will simply lock the repo so that the above scenario can't happen.&#65533; If
+</I>&gt;&gt;&gt;<i> someone is already harvesting (there exist unexpired resumptionTokens)
+</I>&gt;&gt;&gt;<i> then I will not update the repository.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> As a Harvester
+</I>&gt;&gt;&gt;<i> I will always use the until parameter with the value of the time the
+</I>&gt;&gt;&gt;<i> harvest was initially started.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> I think this keeps me clear of any problems.&#65533; Anyone else have thoughts
+</I>&gt;&gt;&gt;<i> or care to share your solutions?
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> Thanks,
+</I>&gt;&gt;&gt;<i> Ben Anderson
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;&gt;<i> OAI-implementers mailing list
+</I>&gt;&gt;&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;&gt;&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: <A HREF="http://www.openarchives.org/pipermail/oai-implementers/attachments/20110201/8d3c4617/attachment-0001.htm">http://www.openarchives.org/pipermail/oai-implementers/attachments/20110201/8d3c4617/attachment-0001.htm</A>
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002044.html">[OAI-implementers] ListRecords request w/out an until..
+</A></li>
+	<LI>Next message: <A HREF="002046.html">[OAI-implementers] ListRecords request w/out an until..
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2045">[ date ]</a>
+              <a href="thread.html#2045">[ thread ]</a>
+              <a href="subject.html#2045">[ subject ]</a>
+              <a href="author.html#2045">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

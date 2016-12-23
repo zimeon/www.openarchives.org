@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] List Id's for multiple sets
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tdb198%40ecs.soton.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000023.html">
+   <LINK REL="Next"  HREF="000026.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] List Id's for multiple sets
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tdb198%40ecs.soton.ac.uk"
+       TITLE="[OAI-implementers] List Id's for multiple sets">tdb198@ecs.soton.ac.uk
+       </A><BR>
+    <I>Fri, 9 Feb 2001 09:07:31 +0000 (GMT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000023.html">[OAI-implementers] List Id's for multiple sets
+</A></li>
+        <LI> Next message: <A HREF="000026.html">[OAI-implementers] List Id's for multiple sets
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#25">[ date ]</a>
+              <a href="thread.html#25">[ thread ]</a>
+              <a href="subject.html#25">[ subject ]</a>
+              <a href="author.html#25">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Thu, 8 Feb 2001, deridder wrote:
+
+&gt;<i>   This is looking more complicated than I expected.  With no dates
+</I>&gt;<i> specified, and no sets specified, the list could be enormous;  and as more
+</I>&gt;<i> and more sets are added, the resumption tokens could get pretty hairy too.
+</I>
+Excuse my ignorance if this is already obvious to you:
+
+(as suggested by Chris Gutteridge, this is how I have implemented
+resumptionTokens)
+
+Initial request:
+Build a temporary table of all the identifiers that match the request,
+this CAN get huge but if you want harvesters to get all of your repository
+there isn't much choice...(indeed I would argue this is more efficient
+than enumerating over sets)
+Output the first 400 records (or whatever) from the temporary table, using
+the identifiers as an index into your database/file system. The
+resumptionToken will be the name of your temporary table and an encoded
+string to tell you what the metadataFormat is (required for ListRecords).
+
+Temporary table is:
+pos	int,auto_increment
+id	char(64) ... this is OAI Identifier/your archive identifier, but
+if you use OAI to index means ListIdentifiers only needs temporary table
+
+Latter requests:
+Get the appropriate list of identifiers by saying get &quot;pos &gt; start&quot;.
+
+To manage the temporary tables I have another table, the temp index, which
+stores the table names and the last time they were accessed. Whenever a
+query is started I remove old temporary tables and their associated
+entries in the temp index. To make the resumptionToken even simpler you
+could store the metadataPrefix in the index ...
+
+The initial request can be very slow, as it has to enumerate over your
+entire archive, but subsequent requests are very quick. Each harvester (if
+it is well behaved) will only need to do this once, subsequent queries
+should use &quot;from&quot; to only grab the latest data.
+
+e.g. (liable to be broken and knackered as is my wont)
+<A HREF="http://cite-base.ecs.soton.ac.uk/cgi-bin/oai/OAI-script?debug=1&verb=ListRecords&metadataPrefix=oai_dc">http://cite-base.ecs.soton.ac.uk/cgi-bin/oai/OAI-script?debug=1&amp;verb=ListRecords&amp;metadataPrefix=oai_dc</A>
+
+As an aside, I have tried to write my OAI &quot;bits&quot; to be in a seperate, non
+archive-specific library - would people be interested in access to this (I
+can not guarantee its correctness nor robustness, just it supports the
+bits of OAI that I've needed)?
+
+All the best,
+Tim Brody
+Computer Science, University of Southampton
+email: <A HREF="mailto:tdb198@soton.ac.uk">tdb198@soton.ac.uk</A>
+Web: <A HREF="http://www.ecs.soton.ac.uk/~tdb198/">http://www.ecs.soton.ac.uk/~tdb198/</A>
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000023.html">[OAI-implementers] List Id's for multiple sets
+</A></li>
+	<LI> Next message: <A HREF="000026.html">[OAI-implementers] List Id's for multiple sets
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#25">[ date ]</a>
+              <a href="thread.html#25">[ thread ]</a>
+              <a href="subject.html#25">[ subject ]</a>
+              <a href="author.html#25">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

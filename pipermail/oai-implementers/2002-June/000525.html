@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XSD file for qualified DC
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:ann.apps%40man.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000522.html">
+   <LINK REL="Next"  HREF="000526.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XSD file for qualified DC
+   </H1>
+    <B>Ann Apps
+    </B> 
+    <A HREF="mailto:ann.apps%40man.ac.uk"
+       TITLE="[OAI-implementers] XSD file for qualified DC">ann.apps@man.ac.uk
+       </A><BR>
+    <I>Tue, 18 Jun 2002 13:55:07 GMT1BST</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000522.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+        <LI> Next message: <A HREF="000526.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#525">[ date ]</a>
+              <a href="thread.html#525">[ thread ]</a>
+              <a href="subject.html#525">[ subject ]</a>
+              <a href="author.html#525">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Carl, Herbert,
+
+I agree with Carl's proposal here. But I think that any XML schemas 
+to cover citations should be based on the work Herbert is doing for 
+OpenURL, rather than more of us cooking something up. Otherwise 
+we would be in danger of duplicating effort again, and OpenURL is 
+heading towards standardisation. Then we could include citation 
+information within an openurl namespace in OAI-PMH, so we could 
+have something like:
+
+&lt;dcterms:citation&gt;
+  &lt;openurl:jtitle&gt;Lecture Notes in Computer Science&lt;/openurl:jtitle&gt;
+  &lt;openurl:atitle&gt;Dublin Core Metadata for Electronic 
+Journals&lt;/openurl:atitle&gt;
+  &lt;openurl:aulast&gt;Apps&lt;/openurl:aulast&gt;
+    etc
+  &lt;openurl:admin_ver&gt;Z39.XX-NN&lt;/openurl:admin_ver&gt;
+&lt;/dcterms:citation&gt;
+
+or wrapped by &lt;dcterms:references&gt; for references [and making 
+assumptions about dcterms:citation, otherwise wrapped by 
+dc:identifier]
+
+Herbert, please correct me if I have got this wrong! I assume we 
+could use an OpenURL namspace before it becomes a 'real' 
+standard. And that we can do this as part of OpenURL version 1.0 
+(because it would not have a resolver).
+
+If we utilise an OpenURL schema, we can immediately do citations 
+for more than just journal articles, such as conference papers, 
+books and parts, patents, etc.
+
+I think it would still need some agreement with DCMI, that the 
+OpenURL schema could be used within the particular DC 
+elements, but hopefully this would be acceptable because it 
+doesn't depend on a DC structured value. [However I do still 
+advocate a DCSV for the literal string citation, being less cryptic 
+than OpenURL for human reading, but that is outside the scope of 
+OAI.]
+
+Best wishes,
+	Ann
+
+
+Subject:        	RE: [OAI-implementers] XSD file for qualified DC
+Date sent:      	Thu, 13 Jun 2002 14:53:48 -0400
+From:           	&quot;Carl Lagoze&quot; &lt;<A HREF="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt;
+To:             	&lt;<A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>&gt;,
+	&quot;Tim Brody&quot; &lt;<A HREF="mailto:tim@tim.brody.btinternet.co.uk">tim@tim.brody.btinternet.co.uk</A>&gt;
+Copies to:      	&lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+
+&gt;<i> Interesting discussions from all.  As Herbert points out in another
+</I>&gt;<i> mail, this is an opportunity for some interesting cooperative work.  I
+</I>&gt;<i> think we all agree that 'citation-type' metadata is useful.  Tim's
+</I>&gt;<i> example at
+</I>&gt;<i> <A HREF="http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&metadataPrefix=">http://citebase.eprints.org/cgi-bin/oai?verb=GetRecord&amp;metadataPrefix=</A>
+</I>&gt;<i> dcq&amp;identifier=oai:arXiv:hep-th/0102001 demonstrates how one might
+</I>&gt;<i> make available for harvesting not only the citation data for a
+</I>&gt;<i> resource but its list of references.  
+</I>&gt;<i> 
+</I>&gt;<i> My personal perspective is that trying to shoehorn these requirments
+</I>&gt;<i> into the DC element structure is probably the wrong approach.  It
+</I>&gt;<i> relies on a notion of DC Structured Values, the status of which is
+</I>&gt;<i> pretty uncertain with in DCMI and for which there is no well-defined
+</I>&gt;<i> data model. It also seems to take the approach of DC as a root format
+</I>&gt;<i> on which to build further expressive structrues, rather than as one
+</I>&gt;<i> metadata format among many. Wouldn't a better approach be to exploit
+</I>&gt;<i> the reality we now have realized in OAI: that is, availability of
+</I>&gt;<i> multiple parallel metadata formats?  SHouldn't citation and reference
+</I>&gt;<i> metadata be packaged as a metadata format parallel to DC (qualified or
+</I>&gt;<i> unqualified)?  Sure there is some duplication of information with DC
+</I>&gt;<i> (e.g., yes a citation has a title) but, taking the view that the
+</I>&gt;<i> metadata format exposed for harvesting is just a database view, I
+</I>&gt;<i> don't think that this is really a relevant argument.
+</I>&gt;<i> 
+</I>&gt;<i> So, a proposal.  Let's move this reference/citations metadata
+</I>&gt;<i> requirement out from under the notion of 'application profile' for DC
+</I>&gt;<i> or qualifiers for DC and see if there can be some agreement on a good
+</I>&gt;<i> XML schema (profile) for making this information harvestable via
+</I>&gt;<i> OAI-PMH.  
+</I>&gt;<i> 
+</I>&gt;<i> Probably if people like Tim and Ann put there heads together on this,
+</I>&gt;<i> possibly with the contributions of Simeon Warner and Thomas Krickel,
+</I>&gt;<i> we could come up with something that could fit into a revised version
+</I>&gt;<i> of the OAI implementation guidelines document.
+</I>&gt;<i> 
+</I>&gt;<i> Carl
+</I>&gt;<i> 
+</I>&gt;<i> Carl Lagoze
+</I>&gt;<i> Senior Research Associate, Computing and Information Science, Cornell
+</I>&gt;<i> University Director of Technology, National Science Digital Library
+</I>&gt;<i> Open Archives Initiative Executive Upson Hall Ithaca, NY 14853 Phone:
+</I>&gt;<i> 607-255-6046 FAX: 607-255-4428 URL: <A HREF="http://www.cs.cornell.edu/lagoze">http://www.cs.cornell.edu/lagoze</A>
+</I>&gt;<i> 
+</I>
+
+
+--------------------------------------------------------------------------
+Mrs. Ann Apps. Senior Analyst - Research &amp; Development, MIMAS,
+     University of Manchester, Oxford Road, Manchester, M13 9PL, UK
+Tel: +44 (0) 161 275 6039    Fax: +44 (0) 0161 275 6040
+Email: <A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>  WWW: <A HREF="http://epub.mimas.ac.uk/ann.html">http://epub.mimas.ac.uk/ann.html</A>
+--------------------------------------------------------------------------
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000522.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+	<LI> Next message: <A HREF="000526.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#525">[ date ]</a>
+              <a href="thread.html#525">[ thread ]</a>
+              <a href="subject.html#525">[ subject ]</a>
+              <a href="author.html#525">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

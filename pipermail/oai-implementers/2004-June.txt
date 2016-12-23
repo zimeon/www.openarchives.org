@@ -1,0 +1,1696 @@
+From robert.tansley at hp.com  Thu Jun 10 14:57:25 2004
+From: robert.tansley at hp.com (Tansley, Robert)
+Date: Thu Jun 10 14:57:34 2004
+Subject: [OAI-implementers] DSpace OAI-PMH support changes, issues
+Message-ID: <40700B4C02ABD5119F00009027876644084DF66C@hplex1.hpl.hp.com>
+
+[Resending, as this seemed to bounce...]
+
+Hi all,
+
+As part of DSpace 1.2, I've made a few changes and fixes to the OAI-PMH support in DSpace.  In particular, communities can now be organised into an hierarchy which may change over time.  Hence the set structure exposed by DSpace is now just collections, where the set spec is the CNRI handle of the set.
+
+This (and other changes) have a variety of consequences on the OAI-PMH side:
+
+- In existing DSpaces, the sets of existing items will change after the code update.  There are previously-discussed issues with this.  The "'delete' every record and re-issue with new ID" approach won't really work for us, since the IDs of records are the item Handles.
+
+- The upgrade also involves minor changes to each item (apart from the set spec), which means that after an upgrade, every record will be modified and presumably be re-harvested.
+
+In view of the above, I'm wondering whether it might be a good time to introduce a couple of other changes:
+
+- Are Handles appropriate IDs for the OAI metadata records?  Originally, it seemed pointless to me to use anything else; forcing people to jump through yet another hoop to get yet another unique ID to get set up.  However, on occasion people have indicated they'd rather use an oai: prefixed identifier.  If anyone can offer reasons and suggestions either way I'd appreciate it.
+
+- Might it be a good idea to change the base URL from something like http://dspace.mit.edu/oai/ to something like http://dspace.mit.edu/oai/request?  Having that / on the end has confused a few people, as URLs like this look a little awkward:
+
+http://dspace.mit.edu/oai/?verb=Identify
+
+Additionally, not having a / at the end also would allow the OAI implementation to use XSLTs to render the responses for browsers.
+
+However, of course this would of course require DSpace instances to re-register with openarchives.org, which isn't exactly ideal, but since there are other changes happening at the same time, perhaps now's a good time to just take the hit and clean things up a bit.
+
+Thoughts?
+
+ Robert Tansley / Digital Media Systems Programme / HP Labs
+
+From simeon at cs.cornell.edu  Tue Jun 15 15:00:44 2004
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Tue Jun 15 15:01:20 2004
+Subject: [OAI-implementers] Web Feeds from OAI Data/Service Providers?
+In-Reply-To: <s0cef27c.076@129.186.11.21>
+References: <s0cef27c.076@129.186.11.21>
+Message-ID: <Pine.LNX.4.58.0406151458230.30168@dhcp103-124.cs.cornell.edu>
+
+[redirected from oai-general - Simeon]
+
+            _Web Feeds from OAI Data/Service Providers_
+
+I am greatly interested in learning of Any and All OAI Service
+Providers _or_ OAI Data Providers
+that offer Web feeds (RSS, Atom, Other(s)) for site updates/search
+results/etc.
+
+BTW: I am aware of the RSS feeds are provided by my.OAI [
+http://www.myoai.com/ ],
+one of the  major Open Archives Initiative Service Providers
+[ http://www.public.iastate.edu/~gerrymck/OAI-SP-I.pdf ]
+
+Thanks!
+
+Regards,
+
+/Gerry
+
+Gerry McKiernan
+Science and Technology Librarian
+and
+Bibliographer
+Iowa State University Library
+Ames IA 50011
+
+gerrymck@iastate.edu
+
+From simeon at cs.cornell.edu  Tue Jun 15 15:18:13 2004
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Tue Jun 15 15:18:45 2004
+Subject: [OAI-implementers] Proposed corrections/fixes to OAI-PMH protocol
+	document and schema
+Message-ID: <Pine.LNX.4.58.0406151507160.30168@dhcp103-124.cs.cornell.edu>
+
+
+I've been collecting problems/corrections to the OAI-PMH protocol document
+and schema for some time. I detail proposed corrections and fixes below.
+Please reply either directly to me or to the list with comments or
+additional issues/corrections/errors.
+
+Cheers,
+Simeon
+
+
+
+PROPOSED FIXES TO OAI PROTOCOL DOCUMENT AND SCHEMA
+--------------------------------------------------
+
+1) Correct protocol document and schema definition of setSpec to be
+consistent, and also to permit the use of URL encoding.
+
+1.1) Motivation
+
+First, the protocol document and the schema simply do not agree. The use
+of the wording "any characters that are safe in a query component of a
+URI" is unclear and cannot be construed to agree with the schema. Second,
+many repositories are using URL-like encoding to create setSpecs so it
+seems better to permit the recognized URL encoding. The practical change
+to meet both of these criteria is very small: the schema regular
+expression should be changed to remove $ and +, and to add ~ and %xx (URL
+encoding). This will bring the protocol document in line with the terms
+"escaped" and "unreserved" as used in the URI RFC.
+
+1.2) Impact
+
+The only conforming repository that we know of using setSpecs affected by
+this change is Jeff Young's OpenURL repository
+(http://alcme.oclc.org/openurl/servlet/OAIHandler) where he uses '+' as
+an encoding for space. Jeff agrees that a change would be sensible and
+that he could be replace '+' with '%20'. Repositories using URL-like
+encodings will not be affected although they may choose to change to use
+real URL encoding. All OAI software maintainers should, however, review
+the change and update their parsing code accordingly.
+
+1.3) Changes
+
+1.3.1) Change wording in protocol document
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set
+from:
+
+a setSpec -- a colon [:] separated list indicating the path from the root
+of the set hierarchy to the respective node.  Each element in the list is
+a string consisting of any characters that are safe in a query component
+of a URI , which must not contain any colons [ :].  Since a setSpec forms
+a unique identifier for the set within the repository, it must be unique
+for each set.  Flat set organizations have only sets with setSpec that do
+not contain any colons [ :].
+
+to:
+
+a setSpec -- a colon [:] separated list indicating the path from the root
+of the set hierarchy to the respective node. Each element in the list is a
+string consisting of any valid URI "unreserved" and "escaped" characters.
+A setTag must not contain URI "reserved" characters, for example the colon
+[:] which is used to delimit setTags. Since a setSpec forms a unique
+identifier for the set within the repository, it must be unique for each
+set. Flat set organizations have only sets with setSpec that do not
+contain any colons [:].
+
+The corresponding parts of the specification of allowed characters in URIs
+are:
+
+unreserved    = alphanum | mark
+mark          = "-" | "_" | "." | "!" | "~" | "*" | "'" |
+                "(" | ")"
+escaped       = "%" hex hex
+hex           = digit | "A" | "B" | "C" | "D" | "E" | "F" |
+                "a" | "b" | "c" | "d" | "e" | "f"
+
+
+1.3.2) Change definition of setSpecType in the schema to match the definition
+from:
+
+ <simpleType name="setSpecType">
+    <restriction base="string">
+      <pattern value=
+       "([A-Za-z0-9_!'$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'$\(\)\+\-\.\*]+)*"/>
+    </restriction>
+  </simpleType>
+
+to:
+
+  <simpleType name="setSpecType">
+    <restriction base="string">
+      <pattern value="([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+(:([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+)*"/>
+    </restriction>
+  </simpleType>
+
+
+2) Correct protocol document and schema definition for metadataPrefix to
+be consistent, and also to match the revised setSpec definition.
+
+2.1) Motivation
+
+The protocol document uses the same imprecise wording for metadataPrefix
+as it does for setSpec ("any characters that are safe in a query
+component of a URI") and the schema does not even follow a reasonable
+interpretation of this wording. It seems sensible to use the same
+character restrictions in a consistent fashion. This will bring the
+protocol document in line with the terms "escaped" and "unreserved" as
+used in the URI RFC.
+
+2.2) Impact
+
+This change is not expected to impact any known repository.  All OAI
+software maintainers should, however, review the change and update their
+parsing code accordingly.
+
+2.3) Changes
+
+2.2.1) Change wording in protocol document
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#metadataPrefix
+from:
+
+The metadataPrefix - a string to specify the metadata format in OAI-PMH
+requests issued to the repository. metadataPrefix consists of any
+characters that are safe in a query component of a URI. metadataPrefix
+arguments are used in ListRecords, ListIdentifiers, and GetRecord
+requests to retrieve records, or the headers of records that include
+metadata in the format specified by the metadataPrefix;
+
+to:
+
+The metadataPrefix - a string to specify the metadata format in OAI-PMH
+requests issued to the repository. metadataPrefix consists of any valid
+URI "unreserved" and "escaped"  characters. A metadataPrefix must not
+contain URI "reserved" characters. metadataPrefix arguments are used in
+ListRecords, ListIdentifiers, and GetRecord requests to retrieve records,
+or the headers of records that include metadata in the format specified
+by the metadataPrefix;
+
+2.3.2) Change definition of metadataPrefixType in schema to match the
+definition from:
+
+  <simpleType name="metadataPrefixType">
+    <restriction base="string">
+      <pattern value="[A-Za-z0-9_!'$\(\)\+\-\.\*]+"/>
+    </restriction>
+  </simpleType>
+
+to:
+
+  <simpleType name="metadataPrefixType">
+    <restriction base="string">
+      <pattern value="([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+"/>
+    </restriction>
+  </simpleType>
+
+
+3) Change protocol document to explicitly state the sets may be empty
+
+3.1) Motivation
+
+This issue has been raised a number of times in discussion and is not
+made explicit in the protocol document.
+
+3.2) Impact
+
+None (except clarity)
+
+3.3) Change: add additional bullet to the final set of bullets in protocol
+document sec2.6
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set
+
+Introduction of bullets should say "Five issues should be noted here"
+instead of "Four issues should be noted here".
+
+Additional bullet: The set hierarchy of a repository may include sets
+that are empty.
+
+
+4) Correct typo on sec2.6
+(http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set)
+
+Section 2.6 says:
+
+If a repository supports sets then it must include set membership
+information in the GetRecord request. The list of setSpec should include
+only the minimum number of setSpec required to specify the set
+membership. Using the previous example of a set hierarchy, the header for
+an item organized in set institution:florida should not include setSpec
+institution since that is implied by the setSpec institution:florida .
+
+when it should say 'in response to ListIdentifiers, ListRecords and
+GetRecord requests' instead of 'in the GetRecord request'. The corrected
+paragraph reads:
+
+If a repository supports sets then it must include set membership
+information in the headers returned in response to ListIdentifiers,
+ListRecords and GetRecord requests. The list of setSpec elements should
+include only the minimum number of setSpec elements required to specify
+the set membership. Using the previous example of a set hierarchy, the
+header for an item organized in set institution:florida should not
+include setSpec institution since that is implied by the setSpec
+institution:florida.
+
+[problem pointed out by Mike Taylor <mike@indexdata.com>]
+
+
+5) Correct typo the second example in protocol document sec5
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#dublincore
+
+The namespace is incorrectly given in the declaration. It is 'oai' and
+not 'oai_dc' and the example is not schema valid. The following
+correction is required:
+
+3c3
+<     xmlns:oai="http://www.openarchives.org/OAI/2.0/oai_dc/"
+---
+>     xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+
+[problem pointed out by Terry Harrison <1maniac@cox.net>]
+
+
+6) Schema should more tightly validate UTCdatetime
+
+6.1) Motivation
+
+While the specification is quite clear about what datetime formats must
+be used, the fact that the schema does not enforce the restriction to Z
+notation means that there are errors not found during schema validation.
+The additional check is easy to add to the schema and would likely
+improve interoperability.
+
+6.2) Impact
+
+No conforming repository should be affected. The responses from some
+non-conforming implementations will no longer schema validate. It is
+hoped that this will encourage maintainers to correct them.
+
+6.3) Change schema definition from:
+
+  <simpleType name="UTCdatetimeType">
+    <union memberTypes="date dateTime"/>
+  </simpleType>
+
+to:
+
+  <simpleType name="UTCdatetimeType">
+    <union memberTypes="date oai:UTCdateTimeZType"/>
+  </simpleType>
+
+  <simpleType name="UTCdateTimeZType">
+    <restriction base="dateTime">
+      <pattern value=".*Z"/>
+    </restriction>
+  </simpleType>
+
+
+7) Add section on deleted records to the protocol document
+
+7.1) Motivation
+
+Deleted records are an issue that causes confusion. This is not helped by
+information about them being distributed over the protocol document.
+
+7.2) Impact
+
+none (except greater comprehension!)
+
+7.3) Change protocol document to include:
+
+2.5.1 Deleted records
+
+If a record is no longer available then it is said to be 'deleted'.
+Repositories may or may not keep track of deletions. If a repository does
+not keep track of deletions then such records will simply vanish from
+responses and there will be no way for a harvester to discover deletions
+through continued incremental harvesting. If a repository does keep track
+of deletions then the datestamp of the deleted record _must_ be the date
+and time that it was deleted. Responses to a GetRecord request for a
+deleted record _must_ then include a header with the attribute
+status="deleted" and no metadata or about parts. Similarly, responses to
+selective harvesting requests with set membership and date range criteria
+that include deleted records _must_ include the headers of these records.
+Incremental harvesting will thus discover deletions from repositories
+that keep track of them. Repositories must indicate their level of
+support for deletions in the deletedRecord element of the Identify
+response.
+
+Note that deleted status is a property of individual records. Like a
+normal record, a deleted record is identified by a unique identifier, a
+metadataPrefix and a datestamp. Other records, with different
+metadataPrefix but the same unique identifier, may remain available for
+the an item.
+
+
+8) Change schema to defined a type for protocolVersion instead of using
+an anonymous definition (ALREADY DONE, 2004-03-29)
+
+8.1) Motivation
+
+To allow reuse as part of the Static Repository schema
+http://www.openarchives.org/OAI/2.0/OAI-PMH-static-repository.xsd
+
+8.2) Impact
+
+None except as noted in motivation. Schema semantics unchanged; all
+validating instances will still validate.
+
+8.3) Change to OAI-PMH.xsd
+
+98,104c100
+<       <element name="protocolVersion">
+<         <simpleType>
+<           <restriction base="string">
+<             <enumeration value="2.0"/>
+<           </restriction>
+<         </simpleType>
+<       </element>
+---
+>       <element name="protocolVersion" type="oai:protocolVersionType"/>
+192a189
+>
+253a251,256
+>
+>   <simpleType name="protocolVersionType">
+>     <restriction base="string">
+>       <enumeration value="2.0"/>
+>     </restriction>
+>   </simpleType>
+
+(old version available as
+http://www.openarchives.org/OAI/2.0/OAI-PMH.2002-06-13.xsd)
+
+From thabing at uiuc.edu  Tue Jun 15 15:35:39 2004
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Tue Jun 15 15:37:48 2004
+Subject: [OAI-implementers] Web Feeds from OAI Data/Service Providers?
+In-Reply-To: <Pine.LNX.4.58.0406151458230.30168@dhcp103-124.cs.cornell.edu>
+References: <s0cef27c.076@129.186.11.21>
+	<Pine.LNX.4.58.0406151458230.30168@dhcp103-124.cs.cornell.edu>
+Message-ID: <40CF4F8B.5010400@uiuc.edu>
+
+Simeon Warner wrote:
+
+> [redirected from oai-general - Simeon]
+> 
+>             _Web Feeds from OAI Data/Service Providers_
+> 
+> I am greatly interested in learning of Any and All OAI Service
+> Providers _or_ OAI Data Providers
+> that offer Web feeds (RSS, Atom, Other(s)) for site updates/search
+> results/etc.
+> 
+> BTW: I am aware of the RSS feeds are provided by my.OAI [
+> http://www.myoai.com/ ],
+> one of the  major Open Archives Initiative Service Providers
+> [ http://www.public.iastate.edu/~gerrymck/OAI-SP-I.pdf ]
+
+The UIUC Registry of OAI data providers 
+(http://oai.grainger.uiuc.edu/registry/) has an RSS feed of new or 
+recently modified registry records at 
+http://oai.grainger.uiuc.edu/registry/rss.asp
+
+You might also be interested in the SRU search service for the same 
+registry at http://gita.grainger.uiuc.edu/registry/sru/sru.asp
+
+In addition Jeff Young has an interesting service called ERRoL 
+(Extensible Repository Resource Locators) which works in conjunction 
+with the UIUC Registry to turn any OAI provider with a unique 
+identifier into an RSS feed (among other things).  Take a look at 
+http://errol.oclc.org/ or for a specific example using the LOC OAI 
+provider http://errol.oclc.org/lcoa1.loc.gov.rss
+
+Kind regards,
+	Tom Habing
+
+> 
+> Thanks!
+> 
+> Regards,
+> 
+> /Gerry
+> 
+> Gerry McKiernan
+> Science and Technology Librarian
+> and
+> Bibliographer
+> Iowa State University Library
+> Ames IA 50011
+> 
+> gerrymck@iastate.edu
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+From simeon at cs.cornell.edu  Wed Jun 16 12:07:43 2004
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Wed Jun 16 12:08:29 2004
+Subject: [OAI-implementers] DSpace OAI-PMH support changes, issues
+In-Reply-To: <40700B4C02ABD5119F00009027876644084DF66C@hplex1.hpl.hp.com>
+References: <40700B4C02ABD5119F00009027876644084DF66C@hplex1.hpl.hp.com>
+Message-ID: <Pine.LNX.4.58.0406161202230.31633@dhcp103-124.cs.cornell.edu>
+
+
+On Thu, 10 Jun 2004, Tansley, Robert wrote:
+> - Are Handles appropriate IDs for the OAI metadata records?
+> Originally, it seemed pointless to me to use anything else; forcing
+> people to jump through yet another hoop to get yet another unique ID to
+> get set up.  However, on occasion people have indicated they'd rather
+> use an oai: prefixed identifier.  If anyone can offer reasons and
+> suggestions either way I'd appreciate it.
+
+Aside from the possibility of changing ids to get around the changing sets
+problem, I can't see why an oai-identifier would be preferred to a handle.
+
+> - Might it be a good idea to change the base URL from something like
+> http://dspace.mit.edu/oai/ to something like
+> http://dspace.mit.edu/oai/request?  Having that / on the end has
+> confused a few people, as URLs like this look a little awkward:
+>
+> http://dspace.mit.edu/oai/?verb=Identify
+>
+> Additionally, not having a / at the end also would allow the OAI
+> implementation to use XSLTs to render the responses for browsers.
+>
+> However, of course this would of course require DSpace instances to
+> re-register with openarchives.org, which isn't exactly ideal, but since
+> there are other changes happening at the same time, perhaps now's a good
+> time to just take the hit and clean things up a bit.
+>
+> Thoughts?
+
+Probably sensible avoid confusion.
+
+Cheers,
+Simeon
+
+From robert.tansley at hp.com  Thu Jun 17 09:54:09 2004
+From: robert.tansley at hp.com (Tansley, Robert)
+Date: Thu Jun 17 09:54:16 2004
+Subject: [OAI-implementers] DSpace OAI-PMH support changes, issues
+Message-ID: <40700B4C02ABD5119F00009027876644084DF68F@hplex1.hpl.hp.com>
+
+> On Thu, 10 Jun 2004, Tansley, Robert wrote:
+> > - Are Handles appropriate IDs for the OAI metadata records? 
+> > Originally, it seemed pointless to me to use anything else; forcing 
+> > people to jump through yet another hoop to get yet another 
+> unique ID 
+> > to get set up.  However, on occasion people have indicated they'd 
+> > rather use an oai: prefixed identifier.  If anyone can 
+> offer reasons 
+> > and suggestions either way I'd appreciate it.
+> 
+> Aside from the possibility of changing ids to get around the 
+> changing sets problem, I can't see why an oai-identifier 
+> would be preferred to a handle.
+
+One potential scenario I've thought of is where >1 DSpace contains the same item, with the same Handle (resource ID).  Each DSpace might have different/additional metadata though and in any case probably shouldn't use the same ID for OAI-PMH.  So, perhaps an easy way forward is to use an OAI identifier of the form:
+
+oai:(dspace hostname):(handle)
+
+E.g.
+
+oai:dspace.mit.edu:1721.1/1234
+
+ Robert Tansley / Digital Media Systems Programme / HP Labs
+ http://www.hpl.hp.com/personal/Robert_Tansley/
+
+From robert.tansley at hp.com  Thu Jun 17 16:06:24 2004
+From: robert.tansley at hp.com (Tansley, Robert)
+Date: Thu Jun 17 16:06:31 2004
+Subject: [OAI-implementers] DSpace OAI-PMH support changes, issues
+Message-ID: <40700B4C02ABD5119F00009027876644084DF693@hplex1.hpl.hp.com>
+
+So, is there any agreed process for the lifecycle of OAI data providers?  If we make the change below in DSpace (Handles -> OAI scheme identifiers) there seem to be two basic choices:
+
+1/ 'Delete' all the metadata records with Handles so that harvesters know that records have been deleted.  This would be a pain to implement as it'd need to keep a record.
+
+2/ Change the base URL, so effectively a DSpace would become a 'new' OAI-PMH data provider (the old URL would just stop working)
+
+I'd be hesitant to do 2, since that would mean for a lot of harvesters DSpace at MIT and a whole bunch of other places would seem to just 'disappear'.  Openarchives.org doesn't seem to offer any way of changing or removing an entry, and in any case, do service providers actually regularly pay attention to this?
+
+I'm guessing that unless the relevant people are paying attention to this list, most providers wouldn't see the change, and even then they'd only catch the MIT change, other sites running DSpace would have to announce when theirs changed.
+
+Do any others have experience of doing something like this?
+
+> -----Original Message-----
+> From: Tansley, Robert 
+> Sent: 17 June 2004 09:54
+> To: Simeon Warner; Tansley, Robert
+> Cc: oai-implementers@openarchives.org
+> Subject: RE: [OAI-implementers] DSpace OAI-PMH support changes, issues
+> 
+> 
+> > On Thu, 10 Jun 2004, Tansley, Robert wrote:
+> > > - Are Handles appropriate IDs for the OAI metadata records? 
+> > > Originally, it seemed pointless to me to use anything 
+> else; forcing 
+> > > people to jump through yet another hoop to get yet another 
+> > unique ID 
+> > > to get set up.  However, on occasion people have indicated they'd 
+> > > rather use an oai: prefixed identifier.  If anyone can 
+> > offer reasons 
+> > > and suggestions either way I'd appreciate it.
+> > 
+> > Aside from the possibility of changing ids to get around the 
+> > changing sets problem, I can't see why an oai-identifier 
+> > would be preferred to a handle.
+> 
+> One potential scenario I've thought of is where >1 DSpace 
+> contains the same item, with the same Handle (resource ID).  
+> Each DSpace might have different/additional metadata though 
+> and in any case probably shouldn't use the same ID for 
+> OAI-PMH.  So, perhaps an easy way forward is to use an OAI 
+> identifier of the form:
+> 
+> oai:(dspace hostname):(handle)
+> 
+> E.g.
+> 
+> oai:dspace.mit.edu:1721.1/1234
+> 
+>  Robert Tansley / Digital Media Systems Programme / HP Labs
+>  http://www.hpl.hp.com/personal/Robert_Tansley/
+> 
+
+From f.bathgate at unsw.edu.au  Sun Jun 20 23:10:39 2004
+From: f.bathgate at unsw.edu.au (Fiona Bathgate)
+Date: Sun Jun 20 23:11:44 2004
+Subject: [OAI-implementers] dc metadata question
+In-Reply-To: <200406181600.i5IG0Q920727@smtp.unsw.edu.au>
+References: <200406181600.i5IG0Q920727@smtp.unsw.edu.au>
+Message-ID: <p0610050abcfbee89c463@[192.168.0.4]>
+
+Dear OAI-implementers,
+
+Looking at the OAI-PMH examples in XML at:
+http://www.openarchives.org/OAI/openarchivesprotocol.html#dublincore
+example number 2,  line  10
+
+<dc:subject>LCSH:Ausdehnungslehre; LCCN QA205.H99</dc:subject>
+
+has the schemes LCSH LCCN embedded in the xml.
+
+I had thought that schemes because they are 'qualifiers' are not 
+OAI-PMH compliant.
+If i want to specify schemes in a metadata set that will be OAI-PMH 
+compliant how would i do this? My metadata set will consist of a 
+number of elements from the 15 UDC metadata elements set. Other 
+schemes i wish to specify, besides LCSH for DC.subject, would be 
+W3CDTF for DC.date, RFC3066 for DC.language, URI  for DC.identifier 
+for example
+
+thanks in advance
+Fiona Bathgate
+
+From mln at cs.odu.edu  Sun Jun 20 23:32:30 2004
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Sun Jun 20 23:32:35 2004
+Subject: [OAI-implementers] dc metadata question
+In-Reply-To: <p0610050abcfbee89c463@[192.168.0.4]>
+References: <200406181600.i5IG0Q920727@smtp.unsw.edu.au>
+	<p0610050abcfbee89c463@[192.168.0.4]>
+Message-ID: <Pine.GSO.4.58.0406202330230.12963@tango.cs.odu.edu>
+
+On Mon, 21 Jun 2004, Fiona Bathgate wrote:
+
+> Dear OAI-implementers,
+>
+> Looking at the OAI-PMH examples in XML at:
+> http://www.openarchives.org/OAI/openarchivesprotocol.html#dublincore
+> example number 2,  line  10
+>
+> <dc:subject>LCSH:Ausdehnungslehre; LCCN QA205.H99</dc:subject>
+>
+> has the schemes LCSH LCCN embedded in the xml.
+>
+> I had thought that schemes because they are 'qualifiers' are not
+> OAI-PMH compliant.
+
+that is more like "tunneling" the LCSH headings; not exactly qualifiers.
+see example 2.3.9.2 in:
+
+http://www.dublincore.org/documents/2002/05/15/dcq-rdf-xml/
+
+and also:
+
+http://www.dublincore.org/documents/dcmi-terms/
+
+regards,
+
+Michael
+
+> If i want to specify schemes in a metadata set that will be OAI-PMH
+> compliant how would i do this? My metadata set will consist of a
+> number of elements from the 15 UDC metadata elements set. Other
+> schemes i wish to specify, besides LCSH for DC.subject, would be
+> W3CDTF for DC.date, RFC3066 for DC.language, URI  for DC.identifier
+> for example
+>
+> thanks in advance
+> Fiona Bathgate
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://openarchives.org/mailman/listinfo/oai-implementers
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From hussein at cs.uct.ac.za  Mon Jun 21 11:26:14 2004
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Mon Jun 21 11:24:17 2004
+Subject: [OAI-implementers] Proposed corrections/fixes to OAI-PMH protocol
+	document and schema
+In-Reply-To: <Pine.LNX.4.58.0406151507160.30168@dhcp103-124.cs.cornell.edu>
+References: <Pine.LNX.4.58.0406151507160.30168@dhcp103-124.cs.cornell.edu>
+Message-ID: <40D6FE16.7070105@cs.uct.ac.za>
+
+hi Simeon
+
+[this is a quick reply, cos i am about to leave town but thought i 
+should reply now rather than in 2 weeks :)]
+
+firstly, thanks for looking into this. may i suggest that the naming 
+system for any updated documentation be looked at very carefully so as 
+not to cause any confusion among readers. i would be in favour of an 
+"OAI-PMH revision 2" with a link back to the first revision. anyone have 
+better ideas?
+
+1/2: i have some reservations about us requiring URL-encoding within 
+XML. this mixes syntax with intended semantics of use and further 
+entrenches the implicit support for URL-encoding, which is irrelevant 
+if, for example, OAI-PMH makes the jump to using a SOAP request/response 
+model. the model and abstractions must be clean and separable, they 
+arent quite so already and i would prefer they didnt get more complicated.
+
+3/4/5: sounds good.
+
+6: its about time (no pun intended), but shouldnt the pattern be tighter 
+than anything ending in "Z"? or does it not matter for validation 
+purposes if the base is set properly? has anyone tried base/extension 
+validation?
+
+7: obviously this only applies to "persistent" records. the situation is 
+different if "transient" or "no" are specified in the "deletedRecords" 
+field of Identify ... so maybe you want to tie this into the discussion 
+in section 2.7.1. or merge the sections somehow so it is all clearer.
+
+8: in an attempt not to "grease the squeaky wheel", if ure creating a 
+data type for one field, why not for all? wouldnt that be a cleaner 
+solution anyway?
+
+ttfn,
+----hussein
+
+
+Simeon Warner wrote:
+
+> I've been collecting problems/corrections to the OAI-PMH protocol document
+> and schema for some time. I detail proposed corrections and fixes below.
+> Please reply either directly to me or to the list with comments or
+> additional issues/corrections/errors.
+> 
+> Cheers,
+> Simeon
+> 
+> 
+> 
+> PROPOSED FIXES TO OAI PROTOCOL DOCUMENT AND SCHEMA
+> --------------------------------------------------
+> 
+> 1) Correct protocol document and schema definition of setSpec to be
+> consistent, and also to permit the use of URL encoding.
+> 
+> 1.1) Motivation
+> 
+> First, the protocol document and the schema simply do not agree. The use
+> of the wording "any characters that are safe in a query component of a
+> URI" is unclear and cannot be construed to agree with the schema. Second,
+> many repositories are using URL-like encoding to create setSpecs so it
+> seems better to permit the recognized URL encoding. The practical change
+> to meet both of these criteria is very small: the schema regular
+> expression should be changed to remove $ and +, and to add ~ and %xx (URL
+> encoding). This will bring the protocol document in line with the terms
+> "escaped" and "unreserved" as used in the URI RFC.
+> 
+> 1.2) Impact
+> 
+> The only conforming repository that we know of using setSpecs affected by
+> this change is Jeff Young's OpenURL repository
+> (http://alcme.oclc.org/openurl/servlet/OAIHandler) where he uses '+' as
+> an encoding for space. Jeff agrees that a change would be sensible and
+> that he could be replace '+' with '%20'. Repositories using URL-like
+> encodings will not be affected although they may choose to change to use
+> real URL encoding. All OAI software maintainers should, however, review
+> the change and update their parsing code accordingly.
+> 
+> 1.3) Changes
+> 
+> 1.3.1) Change wording in protocol document
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set
+> from:
+> 
+> a setSpec -- a colon [:] separated list indicating the path from the root
+> of the set hierarchy to the respective node.  Each element in the list is
+> a string consisting of any characters that are safe in a query component
+> of a URI , which must not contain any colons [ :].  Since a setSpec forms
+> a unique identifier for the set within the repository, it must be unique
+> for each set.  Flat set organizations have only sets with setSpec that do
+> not contain any colons [ :].
+> 
+> to:
+> 
+> a setSpec -- a colon [:] separated list indicating the path from the root
+> of the set hierarchy to the respective node. Each element in the list is a
+> string consisting of any valid URI "unreserved" and "escaped" characters.
+> A setTag must not contain URI "reserved" characters, for example the colon
+> [:] which is used to delimit setTags. Since a setSpec forms a unique
+> identifier for the set within the repository, it must be unique for each
+> set. Flat set organizations have only sets with setSpec that do not
+> contain any colons [:].
+> 
+> The corresponding parts of the specification of allowed characters in URIs
+> are:
+> 
+> unreserved    = alphanum | mark
+> mark          = "-" | "_" | "." | "!" | "~" | "*" | "'" |
+>                 "(" | ")"
+> escaped       = "%" hex hex
+> hex           = digit | "A" | "B" | "C" | "D" | "E" | "F" |
+>                 "a" | "b" | "c" | "d" | "e" | "f"
+> 
+> 
+> 1.3.2) Change definition of setSpecType in the schema to match the definition
+> from:
+> 
+>  <simpleType name="setSpecType">
+>     <restriction base="string">
+>       <pattern value=
+>        "([A-Za-z0-9_!'$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'$\(\)\+\-\.\*]+)*"/>
+>     </restriction>
+>   </simpleType>
+> 
+> to:
+> 
+>   <simpleType name="setSpecType">
+>     <restriction base="string">
+>       <pattern value="([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+(:([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+)*"/>
+>     </restriction>
+>   </simpleType>
+> 
+> 
+> 2) Correct protocol document and schema definition for metadataPrefix to
+> be consistent, and also to match the revised setSpec definition.
+> 
+> 2.1) Motivation
+> 
+> The protocol document uses the same imprecise wording for metadataPrefix
+> as it does for setSpec ("any characters that are safe in a query
+> component of a URI") and the schema does not even follow a reasonable
+> interpretation of this wording. It seems sensible to use the same
+> character restrictions in a consistent fashion. This will bring the
+> protocol document in line with the terms "escaped" and "unreserved" as
+> used in the URI RFC.
+> 
+> 2.2) Impact
+> 
+> This change is not expected to impact any known repository.  All OAI
+> software maintainers should, however, review the change and update their
+> parsing code accordingly.
+> 
+> 2.3) Changes
+> 
+> 2.2.1) Change wording in protocol document
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#metadataPrefix
+> from:
+> 
+> The metadataPrefix - a string to specify the metadata format in OAI-PMH
+> requests issued to the repository. metadataPrefix consists of any
+> characters that are safe in a query component of a URI. metadataPrefix
+> arguments are used in ListRecords, ListIdentifiers, and GetRecord
+> requests to retrieve records, or the headers of records that include
+> metadata in the format specified by the metadataPrefix;
+> 
+> to:
+> 
+> The metadataPrefix - a string to specify the metadata format in OAI-PMH
+> requests issued to the repository. metadataPrefix consists of any valid
+> URI "unreserved" and "escaped"  characters. A metadataPrefix must not
+> contain URI "reserved" characters. metadataPrefix arguments are used in
+> ListRecords, ListIdentifiers, and GetRecord requests to retrieve records,
+> or the headers of records that include metadata in the format specified
+> by the metadataPrefix;
+> 
+> 2.3.2) Change definition of metadataPrefixType in schema to match the
+> definition from:
+> 
+>   <simpleType name="metadataPrefixType">
+>     <restriction base="string">
+>       <pattern value="[A-Za-z0-9_!'$\(\)\+\-\.\*]+"/>
+>     </restriction>
+>   </simpleType>
+> 
+> to:
+> 
+>   <simpleType name="metadataPrefixType">
+>     <restriction base="string">
+>       <pattern value="([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+"/>
+>     </restriction>
+>   </simpleType>
+> 
+> 
+> 3) Change protocol document to explicitly state the sets may be empty
+> 
+> 3.1) Motivation
+> 
+> This issue has been raised a number of times in discussion and is not
+> made explicit in the protocol document.
+> 
+> 3.2) Impact
+> 
+> None (except clarity)
+> 
+> 3.3) Change: add additional bullet to the final set of bullets in protocol
+> document sec2.6
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set
+> 
+> Introduction of bullets should say "Five issues should be noted here"
+> instead of "Four issues should be noted here".
+> 
+> Additional bullet: The set hierarchy of a repository may include sets
+> that are empty.
+> 
+> 
+> 4) Correct typo on sec2.6
+> (http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set)
+> 
+> Section 2.6 says:
+> 
+> If a repository supports sets then it must include set membership
+> information in the GetRecord request. The list of setSpec should include
+> only the minimum number of setSpec required to specify the set
+> membership. Using the previous example of a set hierarchy, the header for
+> an item organized in set institution:florida should not include setSpec
+> institution since that is implied by the setSpec institution:florida .
+> 
+> when it should say 'in response to ListIdentifiers, ListRecords and
+> GetRecord requests' instead of 'in the GetRecord request'. The corrected
+> paragraph reads:
+> 
+> If a repository supports sets then it must include set membership
+> information in the headers returned in response to ListIdentifiers,
+> ListRecords and GetRecord requests. The list of setSpec elements should
+> include only the minimum number of setSpec elements required to specify
+> the set membership. Using the previous example of a set hierarchy, the
+> header for an item organized in set institution:florida should not
+> include setSpec institution since that is implied by the setSpec
+> institution:florida.
+> 
+> [problem pointed out by Mike Taylor <mike@indexdata.com>]
+> 
+> 
+> 5) Correct typo the second example in protocol document sec5
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#dublincore
+> 
+> The namespace is incorrectly given in the declaration. It is 'oai' and
+> not 'oai_dc' and the example is not schema valid. The following
+> correction is required:
+> 
+> 3c3
+> <     xmlns:oai="http://www.openarchives.org/OAI/2.0/oai_dc/"
+> ---
+> 
+>>    xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+> 
+> 
+> [problem pointed out by Terry Harrison <1maniac@cox.net>]
+> 
+> 
+> 6) Schema should more tightly validate UTCdatetime
+> 
+> 6.1) Motivation
+> 
+> While the specification is quite clear about what datetime formats must
+> be used, the fact that the schema does not enforce the restriction to Z
+> notation means that there are errors not found during schema validation.
+> The additional check is easy to add to the schema and would likely
+> improve interoperability.
+> 
+> 6.2) Impact
+> 
+> No conforming repository should be affected. The responses from some
+> non-conforming implementations will no longer schema validate. It is
+> hoped that this will encourage maintainers to correct them.
+> 
+> 6.3) Change schema definition from:
+> 
+>   <simpleType name="UTCdatetimeType">
+>     <union memberTypes="date dateTime"/>
+>   </simpleType>
+> 
+> to:
+> 
+>   <simpleType name="UTCdatetimeType">
+>     <union memberTypes="date oai:UTCdateTimeZType"/>
+>   </simpleType>
+> 
+>   <simpleType name="UTCdateTimeZType">
+>     <restriction base="dateTime">
+>       <pattern value=".*Z"/>
+>     </restriction>
+>   </simpleType>
+> 
+> 
+> 7) Add section on deleted records to the protocol document
+> 
+> 7.1) Motivation
+> 
+> Deleted records are an issue that causes confusion. This is not helped by
+> information about them being distributed over the protocol document.
+> 
+> 7.2) Impact
+> 
+> none (except greater comprehension!)
+> 
+> 7.3) Change protocol document to include:
+> 
+> 2.5.1 Deleted records
+> 
+> If a record is no longer available then it is said to be 'deleted'.
+> Repositories may or may not keep track of deletions. If a repository does
+> not keep track of deletions then such records will simply vanish from
+> responses and there will be no way for a harvester to discover deletions
+> through continued incremental harvesting. If a repository does keep track
+> of deletions then the datestamp of the deleted record _must_ be the date
+> and time that it was deleted. Responses to a GetRecord request for a
+> deleted record _must_ then include a header with the attribute
+> status="deleted" and no metadata or about parts. Similarly, responses to
+> selective harvesting requests with set membership and date range criteria
+> that include deleted records _must_ include the headers of these records.
+> Incremental harvesting will thus discover deletions from repositories
+> that keep track of them. Repositories must indicate their level of
+> support for deletions in the deletedRecord element of the Identify
+> response.
+> 
+> Note that deleted status is a property of individual records. Like a
+> normal record, a deleted record is identified by a unique identifier, a
+> metadataPrefix and a datestamp. Other records, with different
+> metadataPrefix but the same unique identifier, may remain available for
+> the an item.
+> 
+> 
+> 8) Change schema to defined a type for protocolVersion instead of using
+> an anonymous definition (ALREADY DONE, 2004-03-29)
+> 
+> 8.1) Motivation
+> 
+> To allow reuse as part of the Static Repository schema
+> http://www.openarchives.org/OAI/2.0/OAI-PMH-static-repository.xsd
+> 
+> 8.2) Impact
+> 
+> None except as noted in motivation. Schema semantics unchanged; all
+> validating instances will still validate.
+> 
+> 8.3) Change to OAI-PMH.xsd
+> 
+> 98,104c100
+> <       <element name="protocolVersion">
+> <         <simpleType>
+> <           <restriction base="string">
+> <             <enumeration value="2.0"/>
+> <           </restriction>
+> <         </simpleType>
+> <       </element>
+> ---
+> 
+>>      <element name="protocolVersion" type="oai:protocolVersionType"/>
+> 
+> 192a189
+> 
+> 253a251,256
+> 
+>>  <simpleType name="protocolVersionType">
+>>    <restriction base="string">
+>>      <enumeration value="2.0"/>
+>>    </restriction>
+>>  </simpleType>
+> 
+> 
+> (old version available as
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.2002-06-13.xsd)
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From herbertv at lanl.gov  Mon Jun 21 13:07:46 2004
+From: herbertv at lanl.gov (herbert van de sompel)
+Date: Mon Jun 21 13:08:36 2004
+Subject: [OAI-implementers] DSpace OAI-PMH support changes, issues
+In-Reply-To: <40700B4C02ABD5119F00009027876644084DF68F@hplex1.hpl.hp.com>
+References: <40700B4C02ABD5119F00009027876644084DF68F@hplex1.hpl.hp.com>
+Message-ID: <40D715E2.3020606@lanl.gov>
+
+Tansley, Robert wrote:
+
+>>On Thu, 10 Jun 2004, Tansley, Robert wrote:
+>>
+>>>- Are Handles appropriate IDs for the OAI metadata records? 
+>>>Originally, it seemed pointless to me to use anything else; forcing 
+>>>people to jump through yet another hoop to get yet another 
+>>
+>>unique ID 
+>>
+>>>to get set up.  However, on occasion people have indicated they'd 
+>>>rather use an oai: prefixed identifier.  If anyone can 
+>>
+>>offer reasons 
+>>
+>>>and suggestions either way I'd appreciate it.
+>>
+>>Aside from the possibility of changing ids to get around the 
+>>changing sets problem, I can't see why an oai-identifier 
+>>would be preferred to a handle.
+> 
+> 
+> One potential scenario I've thought of is where >1 DSpace contains the same item, with the same Handle (resource ID).  Each DSpace might have different/additional metadata though and in any case probably shouldn't use the same ID for OAI-PMH.  So, perhaps an easy way forward is to use an OAI identifier of the form:
+> 
+> oai:(dspace hostname):(handle)
+> 
+> E.g.
+> 
+> oai:dspace.mit.edu:1721.1/1234
+> 
+
+Rob,
+
+I think the above makes _a lot_ of sense.  As a matter of fact, if I am not 
+mistaken, the American Physical Society does something along the same lines by 
+making their doi's part of an oai-identifier.
+
+One firm advantage to the above that I can see is the clear distinction that is 
+made between the identifier of the resource (handle) and the identifier of the 
+OAI-PMH item (oai-identifier) that gives access to metadata about the resource. 
+  The more elaborate services that we will start building based on materials in 
+Institutional Repositories, the more it will become important to clearly 
+distinguish between the identifier of a resource, the identifier of metadata 
+that describes the resource, the identifier used in the OAI-PMH to harvest 
+metadata pertaining to the resource.  At least we should be aware of those 
+differences.  Indicating that distinction through an appropriate choice of 
+identifiers doesn't hurt the least.
+
+Generally speaking, I would like to take advantage of this thread to emphasize 
+the importance of doing the right thing re identifiers used in the OAI-PMH. 
+Recently, at conferences and meetings, I have seen a lot of really problematic 
+implementations of OAI-PMH identifiers, including OAI-PMH identifiers that:
+* do not follow URI syntax
+* do not aim for some global uniqueness
+Such a sloppy use of OAI-PMH identifiers is going to eventually cause huge 
+problems, for example, when trying to build services on top of a global network 
+of Institutional Repositories.  I recommend re-reading what the protocol 
+document says re OAI-PMH identifiers: 
+http://www.openarchives.org/OAI/openarchivesprotocol.html#UniqueIdentifier
+
+cheers
+
+herbert
+
+-- 
+Herbert Van de Sompel
+Digital Library Research & Prototyping
+Los Alamos National Laboratory, Research Library
+http://lib-www.lanl.gov/~herbertv/
+
+
+From doyle at aps.org  Mon Jun 21 15:52:18 2004
+From: doyle at aps.org (Mark Doyle)
+Date: Mon Jun 21 15:52:42 2004
+Subject: [OAI-implementers] DSpace OAI-PMH support changes, issues
+In-Reply-To: <40D715E2.3020606@lanl.gov>
+Message-ID: <80C07F5C-C3BC-11D8-983A-000393ADC728@aps.org>
+
+Greetings,
+
+On Monday, June 21, 2004, at 01:07  PM, herbert van de sompel wrote:
+
+> I think the above makes _a lot_ of sense.  As a matter of fact, if I 
+> am not mistaken, the American Physical Society does something along 
+> the same lines by making their doi's part of an oai-identifier.
+
+More specifically, we use a DOI suffix for our journal articles that is 
+transparently
+related to the typical (journal, volume, page/article id) citation 
+triplet for our
+articles. As Herbert points out, we use the DOI suffix as the oai 
+identifier as well
+for our (mode 0) OAI services. In general, we find it best to have a 
+single way
+to cite or otherwise reference our journal article, to the point where 
+we have
+eliminated page numbers and replaced it with a 6 digit article id that 
+allows
+us to post articles one at a time online in advance of print and still 
+have
+the print TOC ordered monotonically with the articles sort by subject 
+area.
+Most (almost all) other publishers have DOI's that aren't directly 
+related
+to the article's final citation (only decided when the print issue is 
+paginated)
+and, thus, have opaque DOI suffixes...
+
+One could I suppose use the full DOI (with the prefix included), but I
+find DOI prefixes not very illuminated (10.1103 is ours) and would
+rather have something better like oai:aps.org.
+
+Cheers,
+Mark
+
+
+From herbertv at lanl.gov  Tue Jun 22 11:50:40 2004
+From: herbertv at lanl.gov (herbert van de sompel)
+Date: Tue Jun 22 11:51:21 2004
+Subject: [OAI-implementers] Web Feeds from OAI Data/Service Providers?
+In-Reply-To: <40CF4F8B.5010400@uiuc.edu>
+References: <s0cef27c.076@129.186.11.21>	<Pine.LNX.4.58.0406151458230.30168@dhcp103-124.cs.cornell.edu>
+	<40CF4F8B.5010400@uiuc.edu>
+Message-ID: <40D85550.3040909@lanl.gov>
+
+Thomas G. Habing wrote:
+
+> Simeon Warner wrote:
+> 
+>> [redirected from oai-general - Simeon]
+>>
+>>             _Web Feeds from OAI Data/Service Providers_
+>>
+>> I am greatly interested in learning of Any and All OAI Service
+>> Providers _or_ OAI Data Providers
+>> that offer Web feeds (RSS, Atom, Other(s)) for site updates/search
+>> results/etc.
+>>
+
+There is also http://www.ariadne.ac.uk/issue37/duke/
+
+herbert
+
+
+-- 
+Herbert Van de Sompel
+Digital Library Research & Prototyping
+Los Alamos National Laboratory, Research Library
+http://lib-www.lanl.gov/~herbertv/
+
+
+From will.sexton at duke.edu  Mon Jun 28 10:29:51 2004
+From: will.sexton at duke.edu (will.sexton@duke.edu)
+Date: Mon Jun 28 10:29:54 2004
+Subject: [OAI-implementers] VRA in OAI-PMH
+In-Reply-To: <p0610050abcfbee89c463@[192.168.0.4]>
+References: <200406181600.i5IG0Q920727@smtp.unsw.edu.au>
+	<p0610050abcfbee89c463@[192.168.0.4]>
+Message-ID: <Pine.GSO.4.58.0406280953470.25110@godzilla.acpub.duke.edu>
+
+
+Does anyone know of any live examples of OAI providers that serve records
+in the Visual Resources Association Core Categories (VRA)?  I've done some
+browsing through the OAI registries at UIUC and openarchives.org but
+turned up nothing so far.
+
+Will
+--
+Will Sexton / Metadata Architect * Research & Content Development
+Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+
+
+
+From sshreeve at uiuc.edu  Mon Jun 28 10:37:48 2004
+From: sshreeve at uiuc.edu (Sarah L. Shreeves)
+Date: Mon Jun 28 10:37:00 2004
+Subject: [OAI-implementers] VRA in OAI-PMH
+In-Reply-To: <Pine.GSO.4.58.0406280953470.25110@godzilla.acpub.duke.edu>
+References: <200406181600.i5IG0Q920727@smtp.unsw.edu.au>
+	<p0610050abcfbee89c463@[192.168.0.4]>
+	<Pine.GSO.4.58.0406280953470.25110@godzilla.acpub.duke.edu>
+Message-ID: <6.0.1.1.2.20040628093450.046b0eb0@express.cites.uiuc.edu>
+
+Will --
+
+It looks like the American Numismatic Society is using VRA Core. I took a 
+look at the distinct metadata schemas report on the UIUC registry 
+(http://gita.grainger.uiuc.edu/registry/ListSchemas.asp) and then did a 
+search for vra.
+
+The details for the American Numismatic Society are here: 
+http://gita.grainger.uiuc.edu/registry/details.asp?id=469
+
+It also looks like there's a test archive here: 
+http://gita.grainger.uiuc.edu/registry/details.asp?id=204
+
+Sarah
+-----------------------------------------------------------------------------------------------
+Sarah L. Shreeves
+Visiting Project Coordinator, IMLS Digital Collections and Content
+University of Illinois Library at Urbana-Champaign
+Phone: 217-244-7809
+Fax: 217-244-7764
+Email: sshreeve@uiuc.edu
+Web: http://imlsdcc.grainger.uiuc.edu
+
+
+
+At 09:29 AM 6/28/2004, will.sexton@duke.edu wrote:
+
+>Does anyone know of any live examples of OAI providers that serve records
+>in the Visual Resources Association Core Categories (VRA)?  I've done some
+>browsing through the OAI registries at UIUC and openarchives.org but
+>turned up nothing so far.
+>
+>Will
+>--
+>Will Sexton / Metadata Architect * Research & Content Development
+>Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+>
+>
+>
+>_______________________________________________
+>OAI-implementers mailing list
+>List information, archives, preferences and to unsubscribe:
+>http://openarchives.org/mailman/listinfo/oai-implementers
+
+
+From will.sexton at duke.edu  Mon Jun 28 11:07:00 2004
+From: will.sexton at duke.edu (will.sexton@duke.edu)
+Date: Mon Jun 28 11:07:03 2004
+Subject: [OAI-implementers] VRA in OAI-PMH
+In-Reply-To: <6.0.1.1.2.20040628093450.046b0eb0@express.cites.uiuc.edu>
+References: <200406181600.i5IG0Q920727@smtp.unsw.edu.au>
+	<p0610050abcfbee89c463@[192.168.0.4]>
+	<Pine.GSO.4.58.0406280953470.25110@godzilla.acpub.duke.edu>
+	<6.0.1.1.2.20040628093450.046b0eb0@express.cites.uiuc.edu>
+Message-ID: <Pine.GSO.4.58.0406281037480.25110@godzilla.acpub.duke.edu>
+
+
+Thanks for the replies about the UIUC registry listing -- my synapses
+failed to register the "Distinct Metadata Schemas" link on the page there,
+this Monday morning :)
+
+FWIW, the American Numismatic Society's vra output seems to have a rogue
+"</dc>"  tag in it that prevents the xml from validating.
+
+I've turned up a certain amount of discussion among visual resources
+curators and the cultural heritage community about the use of OAI for VRA
+metadata, but the practice doesn't seem to have caught on.  I'm just
+curious now, but this question comes to mind.  Are there any communities,
+which have their own metadata standards aside from Dublin Core, into which
+OAI has diffused broadly?  Eprints and ETD's seem to have adopted OAI,
+with the use of Dublin Core.  But are there any specialties with
+established metadata practices and their own, non-DC, standards where OAI
+has significantly caught on?
+
+Please feel free to correct gently any mistaken assumptions of mine, in
+asking this question.
+
+Will
+
+
+
+On Mon, 28 Jun 2004, Sarah L. Shreeves wrote:
+
+> Will --
+>
+> It looks like the American Numismatic Society is using VRA Core. I took a
+> look at the distinct metadata schemas report on the UIUC registry
+> (http://gita.grainger.uiuc.edu/registry/ListSchemas.asp) and then did a
+> search for vra.
+>
+> The details for the American Numismatic Society are here:
+> http://gita.grainger.uiuc.edu/registry/details.asp?id=469
+>
+> It also looks like there's a test archive here:
+> http://gita.grainger.uiuc.edu/registry/details.asp?id=204
+>
+> Sarah
+> -----------------------------------------------------------------------------------------------
+> Sarah L. Shreeves
+> Visiting Project Coordinator, IMLS Digital Collections and Content
+> University of Illinois Library at Urbana-Champaign
+> Phone: 217-244-7809
+> Fax: 217-244-7764
+> Email: sshreeve@uiuc.edu
+> Web: http://imlsdcc.grainger.uiuc.edu
+>
+>
+>
+> At 09:29 AM 6/28/2004, will.sexton@duke.edu wrote:
+>
+> >Does anyone know of any live examples of OAI providers that serve records
+> >in the Visual Resources Association Core Categories (VRA)?  I've done some
+> >browsing through the OAI registries at UIUC and openarchives.org but
+> >turned up nothing so far.
+> >
+> >Will
+> >--
+> >Will Sexton / Metadata Architect * Research & Content Development
+> >Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+> >
+> >
+> >
+> >_______________________________________________
+> >OAI-implementers mailing list
+> >List information, archives, preferences and to unsubscribe:
+> >http://openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+--
+Will Sexton / Metadata Architect * Research & Content Development
+Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+
+
+From sshreeve at uiuc.edu  Mon Jun 28 11:54:57 2004
+From: sshreeve at uiuc.edu (Sarah L. Shreeves)
+Date: Mon Jun 28 11:54:24 2004
+Subject: [OAI-implementers] VRA in OAI-PMH
+In-Reply-To: <Pine.GSO.4.58.0406281037480.25110@godzilla.acpub.duke.edu>
+References: <200406181600.i5IG0Q920727@smtp.unsw.edu.au>
+	<p0610050abcfbee89c463@[192.168.0.4]>
+	<Pine.GSO.4.58.0406280953470.25110@godzilla.acpub.duke.edu>
+	<6.0.1.1.2.20040628093450.046b0eb0@express.cites.uiuc.edu>
+	<Pine.GSO.4.58.0406281037480.25110@godzilla.acpub.duke.edu>
+Message-ID: <6.0.1.1.2.20040628103310.046ec1f0@express.cites.uiuc.edu>
+
+Hi Will,
+
+You've touched on an issue that is coming up in various forums....
+
+I think that your assumptions are correct - Dublin Core and variations of 
+Dublin Core are the most used schemas. MARC is used a fair amount as well, 
+though I don't know of many service providers that are making use of the 
+MARC records (please correct me if I'm wrong). OLAC (the Open Language 
+Archive Community) has adapted Dublin Core (beyond the dcterms list) to 
+meet their particular needs (see 
+http://www.language-archives.org/OLAC/metadata.html#The%20metadata%20set 
+for more information). Also, there are probably closed systems where 
+schemas other than Dublin Core are being used.
+
+There have been more conversations among service providers - particularly 
+those within the Digital Library Federation - recently about the need to 
+actively encourage the use of metadata schemas in addition to Dublin Core. 
+Dublin Core is useful in so far that it provides a -somewhat- common 
+denominator, but we at Illinois and other service providers have found that 
+DC use is so variant that it takes significant resources to normalize it 
+and massage it into a useful form. If data providers would provide their 
+native metadata schema as well as DC (to be conformant) we could 
+potentially make better use of it. Even qualified DC provides more useful 
+semantics than simple DC.
+
+Sarah
+
+
+At 10:07 AM 6/28/2004, will.sexton@duke.edu wrote:
+
+>Thanks for the replies about the UIUC registry listing -- my synapses
+>failed to register the "Distinct Metadata Schemas" link on the page there,
+>this Monday morning :)
+>
+>FWIW, the American Numismatic Society's vra output seems to have a rogue
+>"</dc>"  tag in it that prevents the xml from validating.
+>
+>I've turned up a certain amount of discussion among visual resources
+>curators and the cultural heritage community about the use of OAI for VRA
+>metadata, but the practice doesn't seem to have caught on.  I'm just
+>curious now, but this question comes to mind.  Are there any communities,
+>which have their own metadata standards aside from Dublin Core, into which
+>OAI has diffused broadly?  Eprints and ETD's seem to have adopted OAI,
+>with the use of Dublin Core.  But are there any specialties with
+>established metadata practices and their own, non-DC, standards where OAI
+>has significantly caught on?
+>
+>Please feel free to correct gently any mistaken assumptions of mine, in
+>asking this question.
+>
+>Will
+>
+>
+>
+>On Mon, 28 Jun 2004, Sarah L. Shreeves wrote:
+>
+> > Will --
+> >
+> > It looks like the American Numismatic Society is using VRA Core. I took a
+> > look at the distinct metadata schemas report on the UIUC registry
+> > (http://gita.grainger.uiuc.edu/registry/ListSchemas.asp) and then did a
+> > search for vra.
+> >
+> > The details for the American Numismatic Society are here:
+> > http://gita.grainger.uiuc.edu/registry/details.asp?id=469
+> >
+> > It also looks like there's a test archive here:
+> > http://gita.grainger.uiuc.edu/registry/details.asp?id=204
+> >
+> > Sarah
+> > 
+> -----------------------------------------------------------------------------------------------
+> > Sarah L. Shreeves
+> > Visiting Project Coordinator, IMLS Digital Collections and Content
+> > University of Illinois Library at Urbana-Champaign
+> > Phone: 217-244-7809
+> > Fax: 217-244-7764
+> > Email: sshreeve@uiuc.edu
+> > Web: http://imlsdcc.grainger.uiuc.edu
+> >
+> >
+> >
+> > At 09:29 AM 6/28/2004, will.sexton@duke.edu wrote:
+> >
+> > >Does anyone know of any live examples of OAI providers that serve records
+> > >in the Visual Resources Association Core Categories (VRA)?  I've done some
+> > >browsing through the OAI registries at UIUC and openarchives.org but
+> > >turned up nothing so far.
+> > >
+> > >Will
+> > >--
+> > >Will Sexton / Metadata Architect * Research & Content Development
+> > >Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+> > >
+> > >
+> > >
+> > >_______________________________________________
+> > >OAI-implementers mailing list
+> > >List information, archives, preferences and to unsubscribe:
+> > >http://openarchives.org/mailman/listinfo/oai-implementers
+> >
+> >
+>
+>--
+>Will Sexton / Metadata Architect * Research & Content Development
+>Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+>
+>
+>_______________________________________________
+>OAI-implementers mailing list
+>List information, archives, preferences and to unsubscribe:
+>http://openarchives.org/mailman/listinfo/oai-implementers
+
+
+From jose.borbinha at bn.pt  Tue Jun 29 05:52:06 2004
+From: jose.borbinha at bn.pt (Jose Borbinha)
+Date: Tue Jun 29 05:53:15 2004
+Subject: [OAI-implementers] VRA in OAI-PMH
+In-Reply-To: <6.0.1.1.2.20040628103310.046ec1f0@express.cites.uiuc.edu>
+Message-ID: <mailman.0.1088502795.1904.oai-implementers@openarchives.org>
+
+ Hi!
+FYI, it the National Library of Portugal we have used OAI with UNIMARC in
+several internal and european projects.
+The experience had shown us the obvious: if we want to expose records for
+simple resource discovery services, DC works fine, but if you want to share
+the records for more complex purposes (browsing services, re-usage for
+cataloguing - such as we are doing in our national project for thesis and
+dissertations, were we are using a national schema, etc.) you'll need to use
+other richer formats. Another exanple is if the European project LEAF, where
+several partners are exposing EAC records (Encoding Archival Context) by OAI
+for a commom central service.
+
+regards
+jos? borbinha
+
+-----Mensagem original-----
+De: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] Em nome de Sarah L.
+Shreeves
+Enviada: segunda-feira, 28 de Junho de 2004 16:55
+Para: will.sexton@duke.edu; oai-implementers@openarchives.org
+Assunto: Re: [OAI-implementers] VRA in OAI-PMH
+
+Hi Will,
+
+You've touched on an issue that is coming up in various forums....
+
+I think that your assumptions are correct - Dublin Core and variations of 
+Dublin Core are the most used schemas. MARC is used a fair amount as well, 
+though I don't know of many service providers that are making use of the 
+MARC records (please correct me if I'm wrong). OLAC (the Open Language 
+Archive Community) has adapted Dublin Core (beyond the dcterms list) to 
+meet their particular needs (see 
+http://www.language-archives.org/OLAC/metadata.html#The%20metadata%20set 
+for more information). Also, there are probably closed systems where 
+schemas other than Dublin Core are being used.
+
+There have been more conversations among service providers - particularly 
+those within the Digital Library Federation - recently about the need to 
+actively encourage the use of metadata schemas in addition to Dublin Core. 
+Dublin Core is useful in so far that it provides a -somewhat- common 
+denominator, but we at Illinois and other service providers have found that 
+DC use is so variant that it takes significant resources to normalize it 
+and massage it into a useful form. If data providers would provide their 
+native metadata schema as well as DC (to be conformant) we could 
+potentially make better use of it. Even qualified DC provides more useful 
+semantics than simple DC.
+
+Sarah
+
+
+At 10:07 AM 6/28/2004, will.sexton@duke.edu wrote:
+
+>Thanks for the replies about the UIUC registry listing -- my synapses
+>failed to register the "Distinct Metadata Schemas" link on the page there,
+>this Monday morning :)
+>
+>FWIW, the American Numismatic Society's vra output seems to have a rogue
+>"</dc>"  tag in it that prevents the xml from validating.
+>
+>I've turned up a certain amount of discussion among visual resources
+>curators and the cultural heritage community about the use of OAI for VRA
+>metadata, but the practice doesn't seem to have caught on.  I'm just
+>curious now, but this question comes to mind.  Are there any communities,
+>which have their own metadata standards aside from Dublin Core, into which
+>OAI has diffused broadly?  Eprints and ETD's seem to have adopted OAI,
+>with the use of Dublin Core.  But are there any specialties with
+>established metadata practices and their own, non-DC, standards where OAI
+>has significantly caught on?
+>
+>Please feel free to correct gently any mistaken assumptions of mine, in
+>asking this question.
+>
+>Will
+>
+>
+>
+>On Mon, 28 Jun 2004, Sarah L. Shreeves wrote:
+>
+> > Will --
+> >
+> > It looks like the American Numismatic Society is using VRA Core. I took
+a
+> > look at the distinct metadata schemas report on the UIUC registry
+> > (http://gita.grainger.uiuc.edu/registry/ListSchemas.asp) and then did a
+> > search for vra.
+> >
+> > The details for the American Numismatic Society are here:
+> > http://gita.grainger.uiuc.edu/registry/details.asp?id=469
+> >
+> > It also looks like there's a test archive here:
+> > http://gita.grainger.uiuc.edu/registry/details.asp?id=204
+> >
+> > Sarah
+> > 
+>
+----------------------------------------------------------------------------
+-------------------
+> > Sarah L. Shreeves
+> > Visiting Project Coordinator, IMLS Digital Collections and Content
+> > University of Illinois Library at Urbana-Champaign
+> > Phone: 217-244-7809
+> > Fax: 217-244-7764
+> > Email: sshreeve@uiuc.edu
+> > Web: http://imlsdcc.grainger.uiuc.edu
+> >
+> >
+> >
+> > At 09:29 AM 6/28/2004, will.sexton@duke.edu wrote:
+> >
+> > >Does anyone know of any live examples of OAI providers that serve
+records
+> > >in the Visual Resources Association Core Categories (VRA)?  I've done
+some
+> > >browsing through the OAI registries at UIUC and openarchives.org but
+> > >turned up nothing so far.
+> > >
+> > >Will
+> > >--
+> > >Will Sexton / Metadata Architect * Research & Content Development
+> > >Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+> > >
+> > >
+> > >
+> > >_______________________________________________
+> > >OAI-implementers mailing list
+> > >List information, archives, preferences and to unsubscribe:
+> > >http://openarchives.org/mailman/listinfo/oai-implementers
+> >
+> >
+>
+>--
+>Will Sexton / Metadata Architect * Research & Content Development
+>Perkins Library * Duke University / http://www.duke.edu/~wsexton/
+>
+>
+>_______________________________________________
+>OAI-implementers mailing list
+>List information, archives, preferences and to unsubscribe:
+>http://openarchives.org/mailman/listinfo/oai-implementers
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://openarchives.org/mailman/listinfo/oai-implementers
+
+

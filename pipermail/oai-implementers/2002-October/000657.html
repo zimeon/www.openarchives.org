@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] SPECIAL CHARACTERS...
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:doyle%40aps.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000656.html">
+   <LINK REL="Next"  HREF="000658.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] SPECIAL CHARACTERS...
+   </H1>
+    <B>Mark Doyle
+    </B> 
+    <A HREF="mailto:doyle%40aps.org"
+       TITLE="[OAI-implementers] SPECIAL CHARACTERS...">doyle@aps.org
+       </A><BR>
+    <I>Wed, 2 Oct 2002 11:47:02 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000656.html">[OAI-implementers] SPECIAL CHARACTERS...
+</A></li>
+        <LI> Next message: <A HREF="000658.html">[OAI-implementers] item and resource?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#657">[ date ]</a>
+              <a href="thread.html#657">[ thread ]</a>
+              <a href="subject.html#657">[ subject ]</a>
+              <a href="author.html#657">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Greetings,
+
+Please be aware that there seems to be some subtle issues with 5.8 and
+XML::Parser and XML::DOM that have cropped up on the perl-xml mailing
+list. See for instance
+
+<A HREF="http://aspn.activestate.com/ASPN/Mail/Message/perl-xml/1380541">http://aspn.activestate.com/ASPN/Mail/Message/perl-xml/1380541</A>
+
+Cheers,
+Mark
+
+On Wednesday, October 2, 2002, at 10:27 AM, Simeon Warner wrote:
+
+&gt;<i>
+</I>&gt;<i> Tim mentioned encoding support in perl5.8 in his earlier post and I 
+</I>&gt;<i> tried
+</I>&gt;<i> it out some time ago. It seems pretty good and is probably a good
+</I>&gt;<i> solution if the data coming from your database is in a well-defined 
+</I>&gt;<i> (and
+</I>&gt;<i> supported) encoding such as latin1.
+</I>&gt;<i>
+</I>&gt;<i> I played with the &quot;from_to&quot; function supplied by the &quot;Encode&quot; module 
+</I>&gt;<i> and
+</I>&gt;<i> it seems very easy to use. These functions will write multi-byte
+</I>&gt;<i> characters instead of entities but that is fine.
+</I>&gt;<i>
+</I>&gt;<i> The entity encoding of gt, lt, amp and quot is a separate XML issue 
+</I>&gt;<i> which
+</I>&gt;<i> should be handled by whatever XML writing code you are using.
+</I>&gt;<i>
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Simeon.
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Code I played with is below, test with:
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="mailto:simeon@ice">simeon@ice</A> ~&gt;echo &quot;çãö&quot; | convert-encoding.pl -f ISO-8859-1 -t utf8
+</I>&gt;<i> Ã§Ã£Ã¶
+</I>&gt;<i> <A HREF="mailto:simeon@ice">simeon@ice</A> ~&gt;
+</I>&gt;<i>
+</I>&gt;<i> where the gibberish Ã§Ã£Ã¶ is actually the correct utf8 bytes displayed
+</I>&gt;<i> incorrectly on my terminal, perhaps octal makes it more obvious:
+</I>&gt;<i>
+</I>&gt;<i> <A HREF="mailto:simeon@ice">simeon@ice</A> ~&gt;echo &quot;çãö&quot; | convert-encoding.pl -f ISO-8859-1 -t utf8 | 
+</I>&gt;<i> hexdump -c
+</I>&gt;<i> 0000000 303 247 303 243 303 266  \n
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> #!/usr/bin/perl5.8.0
+</I>&gt;<i> #
+</I>&gt;<i> use strict;
+</I>&gt;<i> use Getopt::Std;
+</I>&gt;<i> use vars qw($opt_f $opt_t $opt_h);
+</I>&gt;<i> my $FROM='utf8';
+</I>&gt;<i> my $TO='utf8';
+</I>&gt;<i> unless ((&amp;getopts('f:t:h') &amp;&amp; !$opt_h)) {
+</I>&gt;<i>   die &quot;usage: $0 [-f from] [-t to] [-h]\n
+</I>&gt;<i> Convert bytestream from one encoding to another.
+</I>&gt;<i>   -f from   set incoming encoding [default $FROM]
+</I>&gt;<i>   -t to     set outgoing encoding [default $TO]
+</I>&gt;<i>   -h        this help.\n&quot;;
+</I>&gt;<i> }
+</I>&gt;<i> my $from = $opt_f || $FROM;
+</I>&gt;<i> my $to = $opt_t || $TO;
+</I>&gt;<i> use Encode 'from_to';
+</I>&gt;<i>
+</I>&gt;<i> undef $/; #make read to string slurp all file
+</I>&gt;<i> my $data=&lt;STDIN&gt;;
+</I>&gt;<i> &amp;from_to($data, $from, $to); # from legacy to utf-8
+</I>&gt;<i> print $data;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> On Wed, 2 Oct 2002, Tim Brody wrote:
+</I>&gt;&gt;<i> (Only tested using the Perl expat parser  ...)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> I don't *think* your solution will cover all situations (e.g., it 
+</I>&gt;&gt;<i> didn't
+</I>&gt;&gt;<i> encode the last of the three example latin characters). Exhaustively 
+</I>&gt;&gt;<i> parsing
+</I>&gt;&gt;<i> all 8-bit character codes produces the following required regexps to 
+</I>&gt;&gt;<i> go from
+</I>&gt;&gt;<i> raw any-ascii text to UTF-8 parsable (i.e. a shot-gun approach):
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> s/&amp;/&amp;amp;/sg;
+</I>&gt;&gt;<i> s/&lt;/&amp;lt;/sg;
+</I>&gt;&gt;<i> s/&gt;/&amp;gt;/sg;
+</I>&gt;&gt;<i> s/[\x00-\x08\x0b-\x0c\x0e-\x1f]//sg;
+</I>&gt;&gt;<i> s/([\x80-\xff])/sprintf(&quot;&amp;#x%04x;&quot;,ord($1))/seg;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> This will delete any control characters that aren't valid Unicode, and
+</I>&gt;&gt;<i> entity-encode characters above 127 (note, there are control 
+</I>&gt;&gt;<i> characters above
+</I>&gt;&gt;<i> 127 in the Unicode database but these seem to be accepted by the 
+</I>&gt;&gt;<i> parser
+</I>&gt;&gt;<i> ...).
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> It would still be better to use a proper encoding transform than rely 
+</I>&gt;&gt;<i> on
+</I>&gt;&gt;<i> regexps :-)
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> Regards,
+</I>&gt;&gt;<i> Tim.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> ----- Original Message -----
+</I>&gt;&gt;<i> From: &quot;Marina Muilwijk&quot; &lt;<A HREF="mailto:m.muilwijk@library.uu.nl">m.muilwijk@library.uu.nl</A>&gt;
+</I>&gt;&gt;<i> To: &quot;OAI Implementers&quot; &lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+</I>&gt;&gt;<i> Sent: Friday, September 27, 2002 2:46 PM
+</I>&gt;&gt;<i> Subject: Re: [OAI-implementers] SPECIAL CHARACTERS...
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> On 27 Sep 2002 at 10:06, Ramon Martins Sodoma da Fonseca wrote:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> We are having problems with the character encoding.
+</I>&gt;&gt;&gt;<i> We need to display special charaters, like &quot;ç, ã, ö&quot;, and others, and
+</I>&gt;&gt;&gt;<i> our question is:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> We use Perl's sprintf function. For instance:
+</I>&gt;&gt;<i> $creators =~ s/([^&lt;&gt;:a-zA-Z, .\/-])/sprintf &quot;&amp;#x%04X;&quot;, ord($1)/ei;
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> which converts everything but the characters within brackets to their
+</I>&gt;&gt;<i> hexadecimal value and adds the &quot;&amp;#X&quot; required for Unicode encoding.
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> OAI-implementers mailing list
+</I>&gt;&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;&gt;<i>
+</I>&gt;&gt;<i> _______________________________________________
+</I>&gt;&gt;<i> OAI-implementers mailing list
+</I>&gt;&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000656.html">[OAI-implementers] SPECIAL CHARACTERS...
+</A></li>
+	<LI> Next message: <A HREF="000658.html">[OAI-implementers] item and resource?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#657">[ date ]</a>
+              <a href="thread.html#657">[ thread ]</a>
+              <a href="subject.html#657">[ subject ]</a>
+              <a href="author.html#657">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

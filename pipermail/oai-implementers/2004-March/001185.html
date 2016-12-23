@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Automatically gathering the full-text of eprints
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:herbertv%40lanl.gov">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001184.html">
+   <LINK REL="Next"  HREF="001190.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Automatically gathering the full-text of eprints
+   </H1>
+    <B>herbert van de sompel
+    </B> 
+    <A HREF="mailto:herbertv%40lanl.gov"
+       TITLE="[OAI-implementers] Automatically gathering the full-text of eprints">herbertv@lanl.gov
+       </A><BR>
+    <I>Wed, 17 Mar 2004 12:19:39 -0700</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001184.html">[OAI-implementers] Automatically gathering the full-text of eprints
+</A></li>
+        <LI> Next message: <A HREF="001190.html">[OAI-implementers] Automatically gathering the full-text of
+ eprints
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1185">[ date ]</a>
+              <a href="thread.html#1185">[ thread ]</a>
+              <a href="subject.html#1185">[ subject ]</a>
+              <a href="author.html#1185">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Dear Andy,
+
+The problem of service providers needing access to content in addition to 
+metadata has come up in many discussions, lately, including in the realm of the 
+DARE, DINI, JISC, DSpace, Fedora, etc work.  It so happens that my team in Los 
+Alamos has recently done quite some work in this realm, as is illustrated by the 
+most recent papers listed on my personal web site.
+
+Here is some initial feedback to the proposal.   The proposal relies on:
+
+a. The assumption that a harvester knows that something that is in the 
+dc.identifier element of oai_dc points to a - compliant - jump-off page.  There 
+are two problems with this assumption:
+- lots of things can be in the dc.identifier element both resolvable and 
+unresolvable
+- lots of things at the end of the thing identified by the content of 
+dc.identifier (if resolvable) will not be compliant jump-off pages
+
+This means harvesters never really know when they are facing the scenario that 
+you target, and hence will do a lot of meaningless dererferencing and parsing. 
+One could think of addressing this to some extent by a special-purpose 
+Descriptor in the Identify response to indicate that a repository actually is 
+'compliant' but that would still leave the harvester guessing about which of the 
+dc.identifiers (if there are multiple) is the magic one.
+
+b. The actual existence of a 'jump-off' page.  This is something that - in the 
+context of the OAI-PMH (with its disconnection of DP and SP) we can not just 
+take for granted or assume.
+
+There are other problems related to obtaining content which are not covered by 
+the solution:
+
+* How does a harvester know when to go after an update to content?  The OAI-PMH
+indicates that the datestamp of a record only changes when the metadata has 
+changed, it doesn't say anything about the content.  I suggest it should stay 
+that way.  So, in the proposed solution, content in a repo can change without 
+the harvester ever knowing about it.
+
+* The scenario as described in the propsoal, in which a single metadata record 
+corresponds with a single &quot;preprint&quot; is only a special case of - future - 
+reality.  Increasingly, objects held in and described by repositories will be 
+&quot;compound&quot; or &quot;complex&quot;, i.e. consisting of multiple datastreams, not just a 
+single &quot;preprint&quot;.  I find that it would be desirable that a solution to get to 
+the content would be able to handle such situations.  The proposed solution 
+could actually accomodate such 'compound' objects, because the mutliple 
+datastreams are linked off the jump-off page.  There is, however, a problem. 
+Let's presume we have a situation in which an object is deposited in an 
+institutional repository that has 2 datastreams, each of which actually has a 
+unique identifier, say a doi or something.  Thinking of a - future - 
+self-archiving scenario and the trend to accord identifiers at finer levels of 
+granularity, this is not unlikely at all.  Now we get 3 things in dc.identifier 
+(2 doi's and a link to a jump-off page), and 2 things in the jump-off page 
+(links to the 2 datastreams).  How do I know which doi goes with which 
+datastream?  Information that - I hope we will all agree - is rather significant.
+
+OK.  The point I am trying to make is that the described scenario and its more 
+general problem domain (beyond eprints, and into the realm of objects with 
+multiple datastreams) may call for another approach.  Our research has shown 
+that such an approach can remain 100% OAI-PMH-based if a complex object format 
+such as METS, MPEG-21 DIDL or SCORM is used.  These formats can be &quot;parallel&quot; 
+OAI-PMH &quot;metadata formats&quot; through which harvesters can get to the content 
+without running into issues such as the ones mentioned above.  Content can be 
+embedded in the XML wrappers or pointed at by them.  Identifiers can be 
+unambiguously connected to content.  If content changes, the datstamp of the 
+&quot;conplex&quot; record changes.
+
+I anticipate concerns re the overhead of introducing a solution based on a 
+complex object format.  At this point, I would like to say 2 things with this 
+respect:
+
+* It took 2 people on my team about 2 days to create a prototype plug-in that 
+enables OAI-PMH harvesting of content from DSpace repositories.  Our plug-in 
+rendered content using the MPEG-21 DIDL XML wrapper format.  Most of the time 
+invested in this plug-in was spent figuring out the DSpace API and a sensible 
+way to map the DSpace data model to the DIDL data model.  The prototype was 
+demonstrated at the DSpace federation meeting, last week.  Although 
+questions/issues did arise in the course of our work, non seemed unsolvable. 
+But it is my impression that the very fast delivery of a prototype indicates the 
+feasibility of the complex format approach.
+
+* I would personally be very willing to spend time with the apporpiate 
+representatives of the community - including yourself - to work towards a 
+solution that is future-proof and provides adequate guarantees regarding 
+perceived requirements of a content-harvesting solution.  I would actually 
+prefer that over going for a solution which is attractive at first glance 
+because of its obvious simplicity, but which seems to raise some relevant 
+questions upon closer inspection.
+
+To end, I would like to thank you for bringing this topic to the list.  I have 
+had many private email exchanges over the last few months especially with 
+representatives from DARE and DINI about this and related problem domains.  I 
+hope that your mail can be another impulse towards a joint action in this realm. 
+  The problem is very real, and I would love our community to jointly create a 
+really good solution to it.
+
+many greetings
+
+herbert
+
+
+Andy Powell wrote:
+
+&gt;<i> The JISC-funded ePrints UK project has a requirement to automatically
+</I>&gt;<i> harvest both metadata and full-text from the eprint archives within UK
+</I>&gt;<i> academia (and potentially elsewhere).  This is so that we can pass both
+</I>&gt;<i> metadata and full-text to the various 'enhancement' Web services offered
+</I>&gt;<i> by our partners.
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://www.rdn.ac.uk/projects/eprints-uk/">http://www.rdn.ac.uk/projects/eprints-uk/</A>
+</I>&gt;<i> 
+</I>&gt;<i> In order for our harvesting robot to be able to do this, it must be able
+</I>&gt;<i> to reliably (and automatically) determine the correct URL(s) for the
+</I>&gt;<i> various full-text manifestation(s) (HTML, PDF, RTF, etc.) of each eprint.
+</I>&gt;<i> 
+</I>&gt;<i> Our &quot;Using simple Dublin Core to describe eprints&quot; guidelines are intended
+</I>&gt;<i> to encourage greater consistency in the metadata that is exposed by eprint
+</I>&gt;<i> archives using the 'oai_dc' format within the OAI Protocol for Metadata
+</I>&gt;<i> Harvesting (OAI-PMH).  Somewhat perversely, because we stick rigidly to
+</I>&gt;<i> the semantics of the DC element set, our guidelines make determining the
+</I>&gt;<i> URL of each manifestation that is available quite difficult.  (This is
+</I>&gt;<i> largely a consequence of the 'simple' nature of 'simple DC'!).  In
+</I>&gt;<i> general, the URL in the &lt;dc:identifier&gt; element of the oai_dc record is
+</I>&gt;<i> the URL of a jump-off page, rather than a direct link to the full-text.
+</I>&gt;<i> 
+</I>&gt;<i> We would like to suggest a new proposal for unambiguously embedding the
+</I>&gt;<i> URL for each manifestation of an eprint into the (X)HTML jump-off page for
+</I>&gt;<i> that eprint.  Since the jump-off page is generated automatically by the
+</I>&gt;<i> eprint archive software, doing this shouldn't be too difficult (in fact,
+</I>&gt;<i> we would hope that archive software, such as eprints.org, will be
+</I>&gt;<i> configured to do this out of the box).
+</I>&gt;<i> 
+</I>&gt;<i> If this proposal is adopted, it will make it much easier to write OAI
+</I>&gt;<i> service provider software that can reliably gather the full-text of an
+</I>&gt;<i> eprint, given only the oai_dc record for that eprint.
+</I>&gt;<i> 
+</I>&gt;<i> The proposal is at
+</I>&gt;<i> 
+</I>&gt;<i> <A HREF="http://www.rdn.ac.uk/projects/eprints-uk/docs/encoding-fulltext-links/">http://www.rdn.ac.uk/projects/eprints-uk/docs/encoding-fulltext-links/</A>
+</I>&gt;<i> 
+</I>&gt;<i> Comments are welcome,
+</I>&gt;<i> 
+</I>&gt;<i> Andy
+</I>&gt;<i> --
+</I>&gt;<i> Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+</I>&gt;<i> <A HREF="http://www.ukoln.ac.uk/ukoln/staff/a.powell/">http://www.ukoln.ac.uk/ukoln/staff/a.powell/</A>      +44 1225 383933
+</I>&gt;<i> Resource Discovery Network <A HREF="http://www.rdn.ac.uk/">http://www.rdn.ac.uk/</A>
+</I>&gt;<i> ECDL 2004, Bath, UK - 12-17 Sept 2004 - <A HREF="http://www.ecdl2004.org/">http://www.ecdl2004.org/</A>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+-- 
+Herbert Van de Sompel
+digital library research &amp; prototyping
+Los Alamos National Laboratory - Research Library
++ 1 (505) 667 1267 / <A HREF="http://lib-www.lanl.gov/~herbertv/">http://lib-www.lanl.gov/~herbertv/</A>
+
+&quot;met gestreken jeans de dansvloer penetreren&quot;
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001184.html">[OAI-implementers] Automatically gathering the full-text of eprints
+</A></li>
+	<LI> Next message: <A HREF="001190.html">[OAI-implementers] Automatically gathering the full-text of
+ eprints
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1185">[ date ]</a>
+              <a href="thread.html#1185">[ thread ]</a>
+              <a href="subject.html#1185">[ subject ]</a>
+              <a href="author.html#1185">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

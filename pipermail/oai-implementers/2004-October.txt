@@ -1,0 +1,1317 @@
+From jyoung at oclc.org  Fri Oct  1 13:14:48 2004
+From: jyoung at oclc.org (Young,Jeff)
+Date: Fri Oct  1 13:15:04 2004
+Subject: [OAI-implementers] Branding
+Message-ID: <E5431CF93E29F9478878F623E5B9CE9809DF790F@oa3-server.oa.oclc.org>
+
+I have an immediate need for a best-practices description for creating XSLT
+stylesheets for use with the description/branding/metadataRendering element
+in an OAI Identify response
+(http://www.openarchives.org/OAI/2.0/guidelines-branding.htm). 
+
+The only guidance this specification gives regarding the stylesheet itself
+is "the style sheet must be able to render the metadata part of a GetRecord
+response for the specific metadata format". Unfortunately, it doesn't say
+what the stylesheet should render it into. Should it be an HTML fragment
+suitable for dropping into the body of an HTML document? Should it be a
+stand-alone XHTML document ready to display in a browser? Can I depend on
+the result being assigned to a particular namespace? There are limits to how
+many variants I should have to attempt in order to parse the result and use
+it.
+ 
+There are only 4 repositories registered at UIUC that currently use this the
+metadataRendering element, two of which are mine
+(http://gita.grainger.uiuc.edu/registry/ListReposWithDesc.asp?desc=branding)
+. I am on the verge, however, of creating a system that depends on them, as
+well as updating many of my repositories to include them.
+
+It would be nice to have this group's consensus before I commit to a
+particular solution.
+
+Jeff
+
+From hussein at cs.uct.ac.za  Sat Oct  2 12:47:30 2004
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Sat Oct  2 12:47:42 2004
+Subject: [OAI-implementers] Branding
+In-Reply-To: <E5431CF93E29F9478878F623E5B9CE9809DF790F@oa3-server.oa.oclc.org>
+References: <E5431CF93E29F9478878F623E5B9CE9809DF790F@oa3-server.oa.oclc.org>
+Message-ID: <415EDBA2.1080008@cs.uct.ac.za>
+
+hi Jeff
+
+i would vote in favour of standalone XHTML 1.0.
+
+at first fragments sounded nicer (for integration), but then what if the 
+rendering is PDF or Mobile-HTML or some such thing ... and then again 
+XHTML is sooner or later going to be v2.0 anyway. with a complete 
+document, we can at least make the assumption of a mime type and promote 
+this to a problem the browser mediates.
+
+then maybe in a later "bugfix", Simeon (or whoever is the maintainer) 
+can introduce a "target-mime-type" attribute or some such mechanism in 
+the metadataRendering container.
+
+but is there a mime type for HTML fragments? if there is, then maybe the 
+fragment is the way to go ... as long as down the road we can widen the 
+scope without any changes. if there is no fragment mime type, maybe we 
+can introduce one :)
+
+ttfn,
+----hussein
+
+
+
+Young,Jeff wrote:
+> I have an immediate need for a best-practices description for creating XSLT
+> stylesheets for use with the description/branding/metadataRendering element
+> in an OAI Identify response
+> (http://www.openarchives.org/OAI/2.0/guidelines-branding.htm). 
+> 
+> The only guidance this specification gives regarding the stylesheet itself
+> is "the style sheet must be able to render the metadata part of a GetRecord
+> response for the specific metadata format". Unfortunately, it doesn't say
+> what the stylesheet should render it into. Should it be an HTML fragment
+> suitable for dropping into the body of an HTML document? Should it be a
+> stand-alone XHTML document ready to display in a browser? Can I depend on
+> the result being assigned to a particular namespace? There are limits to how
+> many variants I should have to attempt in order to parse the result and use
+> it.
+>  
+> There are only 4 repositories registered at UIUC that currently use this the
+> metadataRendering element, two of which are mine
+> (http://gita.grainger.uiuc.edu/registry/ListReposWithDesc.asp?desc=branding)
+> . I am on the verge, however, of creating a system that depends on them, as
+> well as updating many of my repositories to include them.
+> 
+> It would be nice to have this group's consensus before I commit to a
+> particular solution.
+> 
+> Jeff
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From jyoung1 at columbus.rr.com  Sat Oct  2 13:17:35 2004
+From: jyoung1 at columbus.rr.com (Jeffrey A. Young)
+Date: Sat Oct  2 13:17:58 2004
+Subject: [OAI-implementers] Branding
+In-Reply-To: <415EDBA2.1080008@cs.uct.ac.za>
+Message-ID: <200410021717.i92HHZJX015585@ms-smtp-01-eri0.ohiordc.rr.com>
+
+I vote against fragments. The reason is a little involved.
+
+The problem starts with the fact that I am not willing to run unknown
+stylesheets on my machine. As mentioned at the bottom of section 5.4 of the
+XSLT spec (http://www.w3.org/TR/xslt#section-Applying-Template-Rules), there
+is a denial of service risk associated with running stylesheets.
+
+The solution I've come up with is to create an XSLT processor web service
+coupled with a catalog of stylesheets that the processor service is willing
+to perform. This has been bundled into an open-source Java Servlet
+distribution named XSLTProc so anyone can set it up to support stylesheets
+they are interested in using. The parameters to this service are the same as
+they would be calling the XSLT processor from the command line.
+
+The catalog for this service will be OAI-harvestable which will allow me to
+create a union catalog and couple that with another open-source web service
+that accepts the same arguments XSLTProc does, except that instead of
+performing the transform, it will perform an HTTP redirect to a willing
+XSLTProc service instead.
+
+This solution may be less efficient than running the stylesheet directly,
+but it is the only way I can think of to manage the risk of running unknown
+stylesheets. There are many other interesting and uses for this model,
+though, that I won't go into now.
+
+Getting back to the problem with fragments, a stylesheet that produces
+fragments would be fine if I imported it locally into another stylesheet,
+for example, but I think the XSLTProc service must be bound to produce
+well-formed XML so that the client can manage the response using XML tools
+rather than being forced to treat it as a string.
+
+Sorry that this has led to such a tangent, but this is the problem and
+solution I am facing.
+
+Jeff
+
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org [mailto:oai-implementers-
+> bounces@openarchives.org] On Behalf Of Hussein Suleman
+> Sent: Saturday, October 02, 2004 12:48 PM
+> To: Young,Jeff
+> Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] Branding
+> 
+> hi Jeff
+> 
+> i would vote in favour of standalone XHTML 1.0.
+> 
+> at first fragments sounded nicer (for integration), but then what if the
+> rendering is PDF or Mobile-HTML or some such thing ... and then again
+> XHTML is sooner or later going to be v2.0 anyway. with a complete
+> document, we can at least make the assumption of a mime type and promote
+> this to a problem the browser mediates.
+> 
+> then maybe in a later "bugfix", Simeon (or whoever is the maintainer)
+> can introduce a "target-mime-type" attribute or some such mechanism in
+> the metadataRendering container.
+> 
+> but is there a mime type for HTML fragments? if there is, then maybe the
+> fragment is the way to go ... as long as down the road we can widen the
+> scope without any changes. if there is no fragment mime type, maybe we
+> can introduce one :)
+> 
+> ttfn,
+> ----hussein
+> 
+> 
+> 
+> Young,Jeff wrote:
+> > I have an immediate need for a best-practices description for creating
+> XSLT
+> > stylesheets for use with the description/branding/metadataRendering
+> element
+> > in an OAI Identify response
+> > (http://www.openarchives.org/OAI/2.0/guidelines-branding.htm).
+> >
+> > The only guidance this specification gives regarding the stylesheet
+> itself
+> > is "the style sheet must be able to render the metadata part of a
+> GetRecord
+> > response for the specific metadata format". Unfortunately, it doesn't
+> say
+> > what the stylesheet should render it into. Should it be an HTML fragment
+> > suitable for dropping into the body of an HTML document? Should it be a
+> > stand-alone XHTML document ready to display in a browser? Can I depend
+> on
+> > the result being assigned to a particular namespace? There are limits to
+> how
+> > many variants I should have to attempt in order to parse the result and
+> use
+> > it.
+> >
+> > There are only 4 repositories registered at UIUC that currently use this
+> the
+> > metadataRendering element, two of which are mine
+> >
+> (http://gita.grainger.uiuc.edu/registry/ListReposWithDesc.asp?desc=brandin
+> g)
+> > . I am on the verge, however, of creating a system that depends on them,
+> as
+> > well as updating many of my repositories to include them.
+> >
+> > It would be nice to have this group's consensus before I commit to a
+> > particular solution.
+> >
+> > Jeff
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://openarchives.org/mailman/listinfo/oai-implementers
+> >
+> 
+> --
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://openarchives.org/mailman/listinfo/oai-implementers
+
+
+
+From simeon at cs.cornell.edu  Mon Oct  4 21:12:14 2004
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Mon Oct  4 21:13:01 2004
+Subject: [OAI-implementers] Branding
+In-Reply-To: <200410021717.i92HHZJX015585@ms-smtp-01-eri0.ohiordc.rr.com>
+References: <200410021717.i92HHZJX015585@ms-smtp-01-eri0.ohiordc.rr.com>
+Message-ID: <Pine.LNX.4.58.0410041726210.25377@dhcp103-124.cs.cornell.edu>
+
+
+My initial reaction to the question of what a style-sheet specified in
+a metadataRendering declaration should do is: produce fragment XHTML.
+
+Fragments:
+
+As Hussein said, fragments are appealing from the point of view of
+integration. However, if there really are two useful cases, fragment and
+standalone, we could provide some way to declare this outside of the mime
+type (c.f. standalone = "yes" | "no" in XSLT output declarations:
+http://www.w3.org/TR/xslt#output). It seems hard to tell given almost no
+use of this feature so far.
+
+While I understand Jeff's concern about running XSLT processes on one's
+server, I don't see any real difference between a service provider doing
+that (perhaps in a well-controlled sandbox) or asking a downstream user to
+do it in their browser. One might even argue that service provider is
+likely better equipped to control the dangers than a downstream user?
+
+The branding spec says that "the style sheet must be able to render the
+metadata part of a GetRecord response" which is rather vague (for which
+I'm partly to blame). Should this say instead that "the style sheet must
+be able to render the <metadata> part of a <record> response" meaning that
+one could give it a record from a GetRecord or a record from a ListRecords
+response? The latter sounds more useful to me.
+
+XHTML:
+
+This seems the obvious default at present. However, XSLT1.0 doesn't have
+an XHTML output method (XSLT2.0 does but I hear tools for that aren't
+ready for prime-time yet, and the spec is just a Working Draft). With XSLT
+1.0 I think that means one should probably use the 'xml' output method to
+avoid problems with possible collapsing of empty elements to ill-formed
+xml (e.g. <p/> -> <p>, see:
+http://www.w3.org/TR/xslt#section-HTML-Output-Method)
+
+I agree with Hussein that it would be sensible to add an outputMimeType
+attribute to the <metadataRendering> element. Can anyone see a reason not
+to do this? (I should also fix the mimeType type in the schema which
+has a pattern that is too restrictive to permit all mime types).
+
+
+Incidentally, I added a metadataRendering declaration to
+http://arXiv.org/oai2 so I suppose there are now 5 repositories that do
+it.
+
+Cheers,
+Simeon
+
+
+
+
+On Sat, 2 Oct 2004, Jeffrey A. Young wrote:
+> I vote against fragments. The reason is a little involved.
+>
+> The problem starts with the fact that I am not willing to run unknown
+> stylesheets on my machine. As mentioned at the bottom of section 5.4 of the
+> XSLT spec (http://www.w3.org/TR/xslt#section-Applying-Template-Rules), there
+> is a denial of service risk associated with running stylesheets.
+>
+> The solution I've come up with is to create an XSLT processor web service
+> coupled with a catalog of stylesheets that the processor service is willing
+> to perform. This has been bundled into an open-source Java Servlet
+> distribution named XSLTProc so anyone can set it up to support stylesheets
+> they are interested in using. The parameters to this service are the same as
+> they would be calling the XSLT processor from the command line.
+>
+> The catalog for this service will be OAI-harvestable which will allow me to
+> create a union catalog and couple that with another open-source web service
+> that accepts the same arguments XSLTProc does, except that instead of
+> performing the transform, it will perform an HTTP redirect to a willing
+> XSLTProc service instead.
+>
+> This solution may be less efficient than running the stylesheet directly,
+> but it is the only way I can think of to manage the risk of running unknown
+> stylesheets. There are many other interesting and uses for this model,
+> though, that I won't go into now.
+>
+> Getting back to the problem with fragments, a stylesheet that produces
+> fragments would be fine if I imported it locally into another stylesheet,
+> for example, but I think the XSLTProc service must be bound to produce
+> well-formed XML so that the client can manage the response using XML tools
+> rather than being forced to treat it as a string.
+>
+> Sorry that this has led to such a tangent, but this is the problem and
+> solution I am facing.
+>
+> Jeff
+>
+> > -----Original Message-----
+> > From: oai-implementers-bounces@openarchives.org [mailto:oai-implementers-
+> > bounces@openarchives.org] On Behalf Of Hussein Suleman
+> > Sent: Saturday, October 02, 2004 12:48 PM
+> > To: Young,Jeff
+> > Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> > Subject: Re: [OAI-implementers] Branding
+> >
+> > hi Jeff
+> >
+> > i would vote in favour of standalone XHTML 1.0.
+> >
+> > at first fragments sounded nicer (for integration), but then what if the
+> > rendering is PDF or Mobile-HTML or some such thing ... and then again
+> > XHTML is sooner or later going to be v2.0 anyway. with a complete
+> > document, we can at least make the assumption of a mime type and promote
+> > this to a problem the browser mediates.
+> >
+> > then maybe in a later "bugfix", Simeon (or whoever is the maintainer)
+> > can introduce a "target-mime-type" attribute or some such mechanism in
+> > the metadataRendering container.
+> >
+> > but is there a mime type for HTML fragments? if there is, then maybe the
+> > fragment is the way to go ... as long as down the road we can widen the
+> > scope without any changes. if there is no fragment mime type, maybe we
+> > can introduce one :)
+> >
+> > ttfn,
+> > ----hussein
+> >
+> >
+> >
+> > Young,Jeff wrote:
+> > > I have an immediate need for a best-practices description for creating
+> > XSLT
+> > > stylesheets for use with the description/branding/metadataRendering
+> > element
+> > > in an OAI Identify response
+> > > (http://www.openarchives.org/OAI/2.0/guidelines-branding.htm).
+> > >
+> > > The only guidance this specification gives regarding the stylesheet
+> > itself
+> > > is "the style sheet must be able to render the metadata part of a
+> > GetRecord
+> > > response for the specific metadata format". Unfortunately, it doesn't
+> > say
+> > > what the stylesheet should render it into. Should it be an HTML fragment
+> > > suitable for dropping into the body of an HTML document? Should it be a
+> > > stand-alone XHTML document ready to display in a browser? Can I depend
+> > on
+> > > the result being assigned to a particular namespace? There are limits to
+> > how
+> > > many variants I should have to attempt in order to parse the result and
+> > use
+> > > it.
+> > >
+> > > There are only 4 repositories registered at UIUC that currently use this
+> > the
+> > > metadataRendering element, two of which are mine
+> > >
+> > (http://gita.grainger.uiuc.edu/registry/ListReposWithDesc.asp?desc=brandin
+> > g)
+> > > . I am on the verge, however, of creating a system that depends on them,
+> > as
+> > > well as updating many of my repositories to include them.
+> > >
+> > > It would be nice to have this group's consensus before I commit to a
+> > > particular solution.
+> > >
+> > > Jeff
+> > >
+> > > _______________________________________________
+> > > OAI-implementers mailing list
+> > > List information, archives, preferences and to unsubscribe:
+> > > http://openarchives.org/mailman/listinfo/oai-implementers
+> > >
+> >
+> > --
+> > =====================================================================
+> > hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> > =====================================================================
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From jyoung1 at columbus.rr.com  Mon Oct  4 23:34:47 2004
+From: jyoung1 at columbus.rr.com (Jeffrey A. Young)
+Date: Mon Oct  4 23:35:01 2004
+Subject: [OAI-implementers] Branding
+In-Reply-To: <Pine.LNX.4.58.0410041726210.25377@dhcp103-124.cs.cornell.edu>
+Message-ID: <200410050334.i953Ylnb024483@ms-smtp-02-eri0.ohiordc.rr.com>
+
+> While I understand Jeff's concern about running XSLT processes on one's
+> server, I don't see any real difference between a service provider doing
+> that (perhaps in a well-controlled sandbox) or asking a downstream user to
+> do it in their browser.
+
+Unless someone knows of an existing XSLT processor that will timeout in this
+situation, I can't imagine how to set up such a sandbox on my machine. This
+situation on a server is much more critical than in a browser because it is
+much more inconvenient to restart my server when it hangs in the middle of
+the night than it is to kill a browser that is hung while I'm sitting in
+front of it.
+
+The major advantage to my model is that the risk is virtually eliminated
+since no one in the XSLTProc network would dare catalog a problematic
+stylesheet. If no one is willing to run it, I will simply ignore it and
+apply a default stylesheet instead.
+
+Jeff
+
+> One might even argue that service provider is
+> likely better equipped to control the dangers than a downstream user?
+> 
+> The branding spec says that "the style sheet must be able to render the
+> metadata part of a GetRecord response" which is rather vague (for which
+> I'm partly to blame). Should this say instead that "the style sheet must
+> be able to render the <metadata> part of a <record> response" meaning that
+> one could give it a record from a GetRecord or a record from a ListRecords
+> response? The latter sounds more useful to me.
+> 
+> XHTML:
+> 
+> This seems the obvious default at present. However, XSLT1.0 doesn't have
+> an XHTML output method (XSLT2.0 does but I hear tools for that aren't
+> ready for prime-time yet, and the spec is just a Working Draft). With XSLT
+> 1.0 I think that means one should probably use the 'xml' output method to
+> avoid problems with possible collapsing of empty elements to ill-formed
+> xml (e.g. <p/> -> <p>, see:
+> http://www.w3.org/TR/xslt#section-HTML-Output-Method)
+> 
+> I agree with Hussein that it would be sensible to add an outputMimeType
+> attribute to the <metadataRendering> element. Can anyone see a reason not
+> to do this? (I should also fix the mimeType type in the schema which
+> has a pattern that is too restrictive to permit all mime types).
+> 
+> 
+> Incidentally, I added a metadataRendering declaration to
+> http://arXiv.org/oai2 so I suppose there are now 5 repositories that do
+> it.
+> 
+> Cheers,
+> Simeon
+> 
+> 
+> 
+> 
+> On Sat, 2 Oct 2004, Jeffrey A. Young wrote:
+> > I vote against fragments. The reason is a little involved.
+> >
+> > The problem starts with the fact that I am not willing to run unknown
+> > stylesheets on my machine. As mentioned at the bottom of section 5.4 of
+> the
+> > XSLT spec (http://www.w3.org/TR/xslt#section-Applying-Template-Rules),
+> there
+> > is a denial of service risk associated with running stylesheets.
+> >
+> > The solution I've come up with is to create an XSLT processor web
+> service
+> > coupled with a catalog of stylesheets that the processor service is
+> willing
+> > to perform. This has been bundled into an open-source Java Servlet
+> > distribution named XSLTProc so anyone can set it up to support
+> stylesheets
+> > they are interested in using. The parameters to this service are the
+> same as
+> > they would be calling the XSLT processor from the command line.
+> >
+> > The catalog for this service will be OAI-harvestable which will allow me
+> to
+> > create a union catalog and couple that with another open-source web
+> service
+> > that accepts the same arguments XSLTProc does, except that instead of
+> > performing the transform, it will perform an HTTP redirect to a willing
+> > XSLTProc service instead.
+> >
+> > This solution may be less efficient than running the stylesheet
+> directly,
+> > but it is the only way I can think of to manage the risk of running
+> unknown
+> > stylesheets. There are many other interesting and uses for this model,
+> > though, that I won't go into now.
+> >
+> > Getting back to the problem with fragments, a stylesheet that produces
+> > fragments would be fine if I imported it locally into another
+> stylesheet,
+> > for example, but I think the XSLTProc service must be bound to produce
+> > well-formed XML so that the client can manage the response using XML
+> tools
+> > rather than being forced to treat it as a string.
+> >
+> > Sorry that this has led to such a tangent, but this is the problem and
+> > solution I am facing.
+> >
+> > Jeff
+> >
+> > > -----Original Message-----
+> > > From: oai-implementers-bounces@openarchives.org [mailto:oai-
+> implementers-
+> > > bounces@openarchives.org] On Behalf Of Hussein Suleman
+> > > Sent: Saturday, October 02, 2004 12:48 PM
+> > > To: Young,Jeff
+> > > Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> > > Subject: Re: [OAI-implementers] Branding
+> > >
+> > > hi Jeff
+> > >
+> > > i would vote in favour of standalone XHTML 1.0.
+> > >
+> > > at first fragments sounded nicer (for integration), but then what if
+> the
+> > > rendering is PDF or Mobile-HTML or some such thing ... and then again
+> > > XHTML is sooner or later going to be v2.0 anyway. with a complete
+> > > document, we can at least make the assumption of a mime type and
+> promote
+> > > this to a problem the browser mediates.
+> > >
+> > > then maybe in a later "bugfix", Simeon (or whoever is the maintainer)
+> > > can introduce a "target-mime-type" attribute or some such mechanism in
+> > > the metadataRendering container.
+> > >
+> > > but is there a mime type for HTML fragments? if there is, then maybe
+> the
+> > > fragment is the way to go ... as long as down the road we can widen
+> the
+> > > scope without any changes. if there is no fragment mime type, maybe we
+> > > can introduce one :)
+> > >
+> > > ttfn,
+> > > ----hussein
+> > >
+> > >
+> > >
+> > > Young,Jeff wrote:
+> > > > I have an immediate need for a best-practices description for
+> creating
+> > > XSLT
+> > > > stylesheets for use with the description/branding/metadataRendering
+> > > element
+> > > > in an OAI Identify response
+> > > > (http://www.openarchives.org/OAI/2.0/guidelines-branding.htm).
+> > > >
+> > > > The only guidance this specification gives regarding the stylesheet
+> > > itself
+> > > > is "the style sheet must be able to render the metadata part of a
+> > > GetRecord
+> > > > response for the specific metadata format". Unfortunately, it
+> doesn't
+> > > say
+> > > > what the stylesheet should render it into. Should it be an HTML
+> fragment
+> > > > suitable for dropping into the body of an HTML document? Should it
+> be a
+> > > > stand-alone XHTML document ready to display in a browser? Can I
+> depend
+> > > on
+> > > > the result being assigned to a particular namespace? There are
+> limits to
+> > > how
+> > > > many variants I should have to attempt in order to parse the result
+> and
+> > > use
+> > > > it.
+> > > >
+> > > > There are only 4 repositories registered at UIUC that currently use
+> this
+> > > the
+> > > > metadataRendering element, two of which are mine
+> > > >
+> > >
+> (http://gita.grainger.uiuc.edu/registry/ListReposWithDesc.asp?desc=brandin
+> > > g)
+> > > > . I am on the verge, however, of creating a system that depends on
+> them,
+> > > as
+> > > > well as updating many of my repositories to include them.
+> > > >
+> > > > It would be nice to have this group's consensus before I commit to a
+> > > > particular solution.
+> > > >
+> > > > Jeff
+> > > >
+> > > > _______________________________________________
+> > > > OAI-implementers mailing list
+> > > > List information, archives, preferences and to unsubscribe:
+> > > > http://openarchives.org/mailman/listinfo/oai-implementers
+> > > >
+> > >
+> > > --
+> > > =====================================================================
+> > > hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> > > =====================================================================
+> > >
+> > >
+> > > _______________________________________________
+> > > OAI-implementers mailing list
+> > > List information, archives, preferences and to unsubscribe:
+> > > http://openarchives.org/mailman/listinfo/oai-implementers
+> >
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://openarchives.org/mailman/listinfo/oai-implementers
+> >
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://openarchives.org/mailman/listinfo/oai-implementers
+
+
+
+From simeon at cs.cornell.edu  Tue Oct 12 11:48:11 2004
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Tue Oct 12 11:48:45 2004
+Subject: [OAI-implementers] Re: Part II: Proposed corrections/fixes to
+ OAI-PMH protocol document and schema
+In-Reply-To: <Pine.LNX.4.58.0409161928190.28886@dhcp103-124.cs.cornell.edu>
+References: <Pine.LNX.4.58.0409161928190.28886@dhcp103-124.cs.cornell.edu>
+Message-ID: <Pine.LNX.4.58.0410121135280.21933@dhcp103-124.cs.cornell.edu>
+
+
+Since there has been no objection to part A below, I have gone ahead and
+made those changes. Updated versions of the OAI-PMH schema and protocol
+document are now live on the OAI website:
+  http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm
+  http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd
+The previous versions are available for reference:
+  http://www.openarchives.org/OAI/2.0/openarchivesprotocol.2004-09-15.htm
+  http://www.openarchives.org/OAI/2.0/OAI-PMH.2004-09-14.xsd
+
+I have not yet tackled part B below because of lack of agreement.
+
+Implementers should check their implementations to make sure that nothing
+needs to be changed to agree with these revised (and now consistent!)
+specifications for allowed characters in setSpec and metadataPrefix
+values.
+
+One other minor change to the protocol document was revision of the list
+of technical committee members and alpha testers to remove the email
+addresses to list just names and affiliations. This may be closing the
+door somewhat after the horse has bolted but it is one less trivially
+harvestable set of email addresses.
+
+Cheers,
+Simeon
+
+
+On Thu, 16 Sep 2004, Simeon Warner wrote:
+> I'd like to solicit further comment regarding issues 1 and 2 of the set of
+> proposed corrections and fixes to the OAI-PMH protocol document and schema
+> that I sent back in June (copied below, alternatively see:
+> http://openarchives.org/pipermail/oai-implementers/2004-June/001216.html).
+> These are really the same issue repeated for both setSpec and
+> metadataPrefix. Both cases involve the same two parts which I describe
+> below: part A I assume is not controversial; part B Hussein commented on.
+> A lack of other comments presumably indicates lack of other objections but
+> I'd like to confirm that since the proposal will involve minor changes in
+> some implementations.
+>
+>
+> A) The values of setSpec and metadataPrefix permitted protocol document
+> and the by the schema simply do not agree. This should be corrected.
+>
+> The meaning of the current wording "any characters that are safe in a
+> query component of a URI" is unclear and cannot be construed to agree with
+> the schema.  I suggest the simplest way to clarify and fix this is to
+> rephrase as "a string consisting of any valid URI 'unreserved' characters"
+> which would give the following changes in allowed values (both of which
+> add ~ and disallow $ and + ):
+>
+> setSpec from:
+> <pattern value="([A-Za-z0-9_!'$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'$\(\)\+\-\.\*]+)*"/>
+> to:
+> <pattern value="([A-Za-z0-9\-_\.!~\*'\(\)])+(:[A-Za-z0-9\-_\.!~\*'\(\)]+)*"/>
+>
+> metadataPrefix from:
+> <pattern value="[A-Za-z0-9_!'$\(\)\+\-\.\*]+"/>
+> to:
+> <pattern value="[A-Za-z0-9\-_\.!~\*'\(\)]+"/>
+>
+> The setSpec pattern is more complicated because elements are separated by
+> colons [:].
+>
+>
+> B) There should be some standard way to permit straightforward use,
+> perhaps via escaping, of setSpec and metadataPrefix values native to
+> repositories.
+>
+> The suggestion is to permit URI "escaped" characters (%xx where xx are two
+> hex digits). I note that a number of repositories have already adopted
+> encoding using hex but that in most cases the escape character is simply
+> omitted; in a few cases another escape character has been chosen (e.g. *)
+> because % is not permitted. The fact that implementers are already doing
+> this demonstrates a desire to encode values native to other systems.
+> Permitting URI "escaped" characters is a simple way to standardize this
+> using and well-known escaping mechanism without significantly increasing
+> complexity.
+>
+> Alternatives include:
+>
+> 1) Use another escaping mechanism. Another obvious choice would be to use
+> XML numeric entities (e.g. '&#58;' (decimal) or '&#x3A;' (hex) for a
+> quotation mark).  These entities would themselves have to be escaped in
+> XML responses (otherwise you have alternative 2) so responses might
+> include XML of the form <setSpec>&amp;#x3A;</setSpec> to encode a setSpec
+> which is internally a colon [:]. One might also want to restrict to
+> just-decimal or just-hex to reduce complexity. It seems to me that one
+> ends up with a complex set of restrictions on XML entity encoding which
+> largely negate any benefit of adopting that standard. Perhaps there is
+> another good option?
+>
+> 2) Permit a much larger character set in the first place (the limit being
+> "anything" - the XML schema "string" type). I see three issues with this.
+> First, when OAI-PMH was first designed we decided on a limited character
+> set to make implementation easier, I think this still has some merit.
+> Second, in the setSpec there will always be a potential need to escape a
+> colon [:], since that has special meaning in OAI-PMH (which may not
+> correspond to use in values native to a repository). Third, this would be
+> a significant change requiring updates to most harvesting software.
+> Significant extension of the character set is beyond the scope of the
+> present proposal.
+>
+> 3) Do not include a standard way to permit the use of setSpec and
+> metadataPrefix values native to repositories (simply make the protocol
+> document and schema agree as described in A).
+>
+> Note that this issue is quite separate from URL-encoding of OAI requests
+> made over HTTP. Characters used in any escaping mechanism for setSpec and
+> metadataPrefix may need to be further escaped when used in URLs.
+>
+> On Mon, 21 Jun 2004, Hussein Suleman wrote:
+> ...
+> > 1/2: i have some reservations about us requiring URL-encoding within
+> > XML. this mixes syntax with intended semantics of use and further
+> > entrenches the implicit support for URL-encoding, which is irrelevant
+> > if, for example, OAI-PMH makes the jump to using a SOAP request/response
+> > model. the model and abstractions must be clean and separable, they
+> > arent quite so already and i would prefer they didnt get more complicated.
+>
+> In response, I don't think the proposal was to _require_ URL-encoding. It
+> was to allow it at a data-provider's choice; service providers should (in
+> the absence of other information, e.g. oai_dc is special) treat both
+> setSpec and metadataPrefix values as opaque tokens. OAI-PMH's special use
+> of the colon means that this issue would not entirely go away even if
+> OAI-PMH used an XML-clean transport such as SOAP, and we were no longer
+> concerned about the burden on harvesters of permitting any string to be
+> used.
+>
+>
+> Ug, that got longer than I hoped...
+>
+> Cheers,
+> Simeon
+>
+>
+> > Simeon Warner wrote:
+> > > ...
+> > > PROPOSED FIXES TO OAI PROTOCOL DOCUMENT AND SCHEMA
+> > > --------------------------------------------------
+> > >
+> > > 1) Correct protocol document and schema definition of setSpec to be
+> > > consistent, and also to permit the use of URL encoding.
+> > >
+> > > 1.1) Motivation
+> > >
+> > > First, the protocol document and the schema simply do not agree. The use
+> > > of the wording "any characters that are safe in a query component of a
+> > > URI" is unclear and cannot be construed to agree with the schema. Second,
+> > > many repositories are using URL-like encoding to create setSpecs so it
+> > > seems better to permit the recognized URL encoding. The practical change
+> > > to meet both of these criteria is very small: the schema regular
+> > > expression should be changed to remove $ and +, and to add ~ and %xx (URL
+> > > encoding). This will bring the protocol document in line with the terms
+> > > "escaped" and "unreserved" as used in the URI RFC.
+> > >
+> > > 1.2) Impact
+> > >
+> > > The only conforming repository that we know of using setSpecs affected by
+> > > this change is Jeff Young's OpenURL repository
+> > > (http://alcme.oclc.org/openurl/servlet/OAIHandler) where he uses '+' as
+> > > an encoding for space. Jeff agrees that a change would be sensible and
+> > > that he could be replace '+' with '%20'. Repositories using URL-like
+> > > encodings will not be affected although they may choose to change to use
+> > > real URL encoding. All OAI software maintainers should, however, review
+> > > the change and update their parsing code accordingly.
+> > >
+> > > 1.3) Changes
+> > >
+> > > 1.3.1) Change wording in protocol document
+> > > http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set
+> > > from:
+> > >
+> > > a setSpec -- a colon [:] separated list indicating the path from the root
+> > > of the set hierarchy to the respective node.  Each element in the list is
+> > > a string consisting of any characters that are safe in a query component
+> > > of a URI , which must not contain any colons [ :].  Since a setSpec forms
+> > > a unique identifier for the set within the repository, it must be unique
+> > > for each set.  Flat set organizations have only sets with setSpec that do
+> > > not contain any colons [ :].
+> > >
+> > > to:
+> > >
+> > > a setSpec -- a colon [:] separated list indicating the path from the root
+> > > of the set hierarchy to the respective node. Each element in the list is a
+> > > string consisting of any valid URI "unreserved" and "escaped" characters.
+> > > A setTag must not contain URI "reserved" characters, for example the colon
+> > > [:] which is used to delimit setTags. Since a setSpec forms a unique
+> > > identifier for the set within the repository, it must be unique for each
+> > > set. Flat set organizations have only sets with setSpec that do not
+> > > contain any colons [:].
+> > >
+> > > The corresponding parts of the specification of allowed characters in URIs
+> > > are:
+> > >
+> > > unreserved    = alphanum | mark
+> > > mark          = "-" | "_" | "." | "!" | "~" | "*" | "'" |
+> > >                 "(" | ")"
+> > > escaped       = "%" hex hex
+> > > hex           = digit | "A" | "B" | "C" | "D" | "E" | "F" |
+> > >                 "a" | "b" | "c" | "d" | "e" | "f"
+> > >
+> > >
+> > > 1.3.2) Change definition of setSpecType in the schema to match the definition
+> > > from:
+> > >
+> > >  <simpleType name="setSpecType">
+> > >     <restriction base="string">
+> > >       <pattern value=
+> > >        "([A-Za-z0-9_!'$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'$\(\)\+\-\.\*]+)*"/>
+> > >     </restriction>
+> > >   </simpleType>
+> > >
+> > > to:
+> > >
+> > >   <simpleType name="setSpecType">
+> > >     <restriction base="string">
+> > >       <pattern value="([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+(:([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+)*"/>
+> > >     </restriction>
+> > >   </simpleType>
+> > >
+> > >
+> > > 2) Correct protocol document and schema definition for metadataPrefix to
+> > > be consistent, and also to match the revised setSpec definition.
+> > >
+> > > 2.1) Motivation
+> > >
+> > > The protocol document uses the same imprecise wording for metadataPrefix
+> > > as it does for setSpec ("any characters that are safe in a query
+> > > component of a URI") and the schema does not even follow a reasonable
+> > > interpretation of this wording. It seems sensible to use the same
+> > > character restrictions in a consistent fashion. This will bring the
+> > > protocol document in line with the terms "escaped" and "unreserved" as
+> > > used in the URI RFC.
+> > >
+> > > 2.2) Impact
+> > >
+> > > This change is not expected to impact any known repository.  All OAI
+> > > software maintainers should, however, review the change and update their
+> > > parsing code accordingly.
+> > >
+> > > 2.3) Changes
+> > >
+> > > 2.2.1) Change wording in protocol document
+> > > http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#metadataPrefix
+> > > from:
+> > >
+> > > The metadataPrefix - a string to specify the metadata format in OAI-PMH
+> > > requests issued to the repository. metadataPrefix consists of any
+> > > characters that are safe in a query component of a URI. metadataPrefix
+> > > arguments are used in ListRecords, ListIdentifiers, and GetRecord
+> > > requests to retrieve records, or the headers of records that include
+> > > metadata in the format specified by the metadataPrefix;
+> > >
+> > > to:
+> > >
+> > > The metadataPrefix - a string to specify the metadata format in OAI-PMH
+> > > requests issued to the repository. metadataPrefix consists of any valid
+> > > URI "unreserved" and "escaped"  characters. A metadataPrefix must not
+> > > contain URI "reserved" characters. metadataPrefix arguments are used in
+> > > ListRecords, ListIdentifiers, and GetRecord requests to retrieve records,
+> > > or the headers of records that include metadata in the format specified
+> > > by the metadataPrefix;
+> > >
+> > > 2.3.2) Change definition of metadataPrefixType in schema to match the
+> > > definition from:
+> > >
+> > >   <simpleType name="metadataPrefixType">
+> > >     <restriction base="string">
+> > >       <pattern value="[A-Za-z0-9_!'$\(\)\+\-\.\*]+"/>
+> > >     </restriction>
+> > >   </simpleType>
+> > >
+> > > to:
+> > >
+> > >   <simpleType name="metadataPrefixType">
+> > >     <restriction base="string">
+> > >       <pattern value="([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+"/>
+> > >     </restriction>
+> > >   </simpleType>
+>
+>
+> ----------------------------------------------------------
+> Simeon Warner                 Email: simeon@cs.cornell.edu
+> Cornell Information Science              Tel: 607-254-8605
+> 301 College Ave                          Fax: 607-255-5196
+> Ithaca, NY 14850-4623, USA
+>
+>
+
+From eric at infrae.com  Thu Oct 14 10:29:40 2004
+From: eric at infrae.com (eric casteleijn)
+Date: Thu Oct 14 10:29:49 2004
+Subject: [OAI-implementers] 
+ Press Release: Infrae extends Python, Zope, Silva, and Railroad with
+ OAI-PMH facilities
+Message-ID: <416E8D54.7050303@infrae.com>
+
+I'm kind of hesitant to send this to a mailing list, but since this *is*
+about OAI, and the tools are open source, I hope y'all will not shoot
+me for it:
+
+
+OAI Pack: a full stack of Open Archives services
+
+October 14, 2004 ? Infrae is pleased to release open source[*] 
+extensions for Python, Zope and the Silva CMS for harvesting web-based 
+repositories exposed using the OAI-PMH standard (Open Archives 
+Initiative Protocol for Metadata Harvesting). In addition we are 
+announcing an extension for the Railroad content repository software for 
+exposing existing Railroad systems as OAI-PMH harvestable repositories. 
+The individual components enable organizations to harvest, index and 
+present data from any OAI-PMH repository, and also allow the setting up 
+of a new repository with Railroad.
+
+Infrae has extended Silva so it enables users to browse and search
+harvested metadata, further enriching the extensive feature set of this
+open source CMS. An organization that uses Silva can easily become an
+OAI-PMH Service Provider.
+
+In the process, Infrae also developed a module for accessing OAI-PMH
+compliant repositories in Python, and developed a sophisticated
+harvesting and indexing system for using harvested metadata in Zope.
+These reusable components are designed to be building blocks for other
+Python or Zope-based applications.
+
+Infrae has also extended Railroad with a service to turn it into an
+OAI-PMH compliant server. Railroad is a standards-based content
+repository for digital media and corresponding metadata. It?s designed
+to be easy to integrate with content management systems and other client
+software, and has already been integrated with Silva and Plone. By using
+Railroad, an organization can easily become an OAI-PMH Data Provider.
+
+Infrae calls this full stack of OAI-PMH services the OAI-PMH Pack. It is
+possible to use a combination of Silva and Railroad to become both
+Service Provider and Data Provider, but since the OAI Pack builds on an
+interoperable protocol, the components can also be used individually.
+
+More information on the OAI-PMH Pack:
+     http://www.infrae.com/products/oaipack
+Python oaipmh module:
+     http://www.infrae.com/products/oaipack#oaimph
+Zope OAICore Product:
+     http://www.infrae.com/products/oaipack#OAICore
+Silva OAI Extension:
+     http://www.infrae.com/products/oaipack#SilvaOAI
+Railroad OAI Service:
+     http://www.infrae.com/products/oaipack#RailroadOAIService
+More information about OAI-PMH:
+     http://www.openarchives.org/
+     http://www.oaforum.org/tutorial/
+
+About Silva
+
+Silva is a powerful CMS for managing content for the web, paper, and
+other media. Content is stored in a clean and future-proof format,
+independent of layout and presentation, suitable for use in multiple
+publications. Features include a multi-version workflow system, integral
+WYSIWYG editor (Kupu), sophisticated access management, extensive
+import/export facilities, fine-grained templating, and image
+manipulation. Silva is built on top of the flexible Zope web application
+platform.
+
+[*] Silva, and everything in the OAI Pack is released under a BSD-style 
+license.
+
+From gokulsuryadevara at gmail.com  Wed Oct 27 19:01:47 2004
+From: gokulsuryadevara at gmail.com (Venkat Suryadevara)
+Date: Wed Oct 27 19:03:21 2004
+Subject: [OAI-implementers] OAI-XMLFile - Fixes/Problems
+Message-ID: <3f62258a04102716017843c323@mail.gmail.com>
+
+Hi All,
+
+        I've been through an interesting problem. I am a data provider
+and I'm using Hussein Suleman's OAI-XMLFile tool to build my OAI-PMH
+Server. I ran tests against Hussein's Repository Explorer
+http://oai.dlib.vt.edu/cgi-bin/Explorer/oai2.0/testoai. All the 28
+tests passed against my server.
+
+ I wanted to move a step ahead by testing my base URL against Open
+Archives Repository Explorer. I was surprised to find 3
+errors/exceptions. The results of the test are below.
+
+ I felt that there are some problems with OAI-XMLFile tool and took
+the initiative to fix it. I could fix the first error where the test
+passes a malformed parameter and expects a response. So I escaped the
+malformed character in the header by replacing it with an empty
+character (In the directory Pure/EZCGI.pm, Add a Line75: $parray[$i]
+=~ s/%22/ /eg;)
+
+ There are two more errors/exceptions that I couldn't manage to handle
+at this point. I would be very thankful if someone using this tool who
+already ran into similar problems would help me with the fix.
+
+ Thank you,
+
+Venkat 
+
+ 
+
+************************************************************************************************
+
+Base URL:
+
+http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl
+
+adminEmail: suryadev@bus.orst.edu
+
+ ...............................................................................
+
+ Unfortunately your repository did not validate at version 2.0 of the
+OAI-PMH according to our OAI protocol conformance tester. The error(s)
+received during testing is/are listed below.
+
+ Malformed response to
+
+http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl?verb=GetRecord&identifier=invalid"id&metadataPrefix=oai_dc
+
+not well-formed (invalid token) at line 6, column 46, byte 352
+
+ An XML parsing error may be due to incorrectly including the invalid
+identifier in the <request> element of your XML error response; only
+valid arguments should be included. A response that includes <request
+verb="GetRecord" identifier="invalid"id"
+
+metadataPrefix="oai_dc">..baseURL..</request> is not well-formed XML
+because of the quotation mark (") in the identifier.
+
+ Error in parsing XML response to exception request:
+
+verb=ListRecords&metadataPrefix=oai_dc&until=1969-01-01T00:00:00Z
+
+ Empty resumption token in response to
+
+http://vapor.bus.oregonstate.edu/cgi-bin/OAI-XMLFile-2.1/XMLFile/tecollection/oai.pl?verb=ListRecords&metadataPrefix=oai_dc
+
+There should never be an empty resumptionToken in response to a
+request without a resumptionToken argument
+
+ 
+
+SUMMARY:
+
+ Total exceptions improperly handled: 2 out of 15 Total error count: 3
+
+ ***********************************************************************************************
+
+From howard.noble at computing-services.oxford.ac.uk  Thu Oct 28 10:26:21 2004
+From: howard.noble at computing-services.oxford.ac.uk (Howard Noble)
+Date: Thu Oct 28 10:26:24 2004
+Subject: [OAI-implementers] Searching open archives
+Message-ID: <004501c4bcfa$18b816a0$d0644381@OUCSHOWARD>
+
+Hello,
+
+Can anyone tell me if there is a recommended means for searching an OAI repository? Z3.50, SRW...?
+
+How are most repositories cross-searched?
+
+Also are most repositories open to searching (by users, not harvesting) or do they require authentication?
+
+Howard Noble
+Educational Interoperability Specialist
+
+Oxford University, Learning Technologies Group (LTG)
+13 Banbury Rd, Oxford. OX2 6NN. England
+Tel. +44 (0)1865 273211 internal 73211
+email: howard.noble@computing-services.oxford.ac.uk
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20041028/64463f1a/attachment.htm
+From evelyn at ime.usp.br  Thu Oct 28 13:12:04 2004
+From: evelyn at ime.usp.br (Evelyn Cristina Pinto)
+Date: Thu Oct 28 13:12:39 2004
+Subject: [OAI-implementers] BIBSTER
+Message-ID: <Pine.LNX.4.44.0410281407340.19970-100000@kama.ime.usp.br>
+
+Hi everyone,
+
+Have you seen this interesting service: BIBSTER
+(http://bibster.semanticweb.org/)? What do you think about it?
+
+Best wishes,
+Evelyn.
+
+
+From khage at umich.edu  Thu Oct 28 16:38:05 2004
+From: khage at umich.edu (Kat Hagedorn)
+Date: Thu Oct 28 16:38:01 2004
+Subject: [OAI-implementers] U of Michigan OAI tools
+In-Reply-To: <2CCD55C6-291B-11D9-BAC9-0003934CA344@umich.edu>
+References: <003a01c4bd25$9e455500$922bd38d@CLUBSODA>
+	<2CCD55C6-291B-11D9-BAC9-0003934CA344@umich.edu>
+Message-ID: <45319367-2921-11D9-BAC9-0003934CA344@umich.edu>
+
+DLPS at the University of Michigan is pleased to announce our suite of 
+open-source OAI data provider and service provider tools. These tools, 
+all written in perl, include:
+
++ data provider software designed to map DLXS Bibliographic Class 
+collections to oai_dc
++ harvester software based on Ed Summers' N:O:H harvester APIs
++ transformation tool to transform harvested oai_dc metadata into DLXS 
+Bibliographic Class, ready for indexing
+
+The data provider software, called broker, connects to a MySQL or CSV 
+database and uses the xpat search engine to serve up records. The DLXS 
+collection management tool, collmgr, is an integral part of broker.
+
+The harvester, called UMHarvester, is a more stand-alone tool than the 
+other two. It will harvest more than one data provider at a time via a 
+simple, command-line interface and stores logs of successful or failed 
+harvests. It allows for set harvesting Currently, it will not perform 
+incremental harvests, but we would like to add this feature soon-ish.
+
+The transformation tool, called OAITransform, counts records, records 
+with DC Identifiers and deleted records, as well as filtering out those 
+records without DC Identifiers and adding a DC Type normalization 
+element. It will also pinpoint UTF-8 character errors.
+
+Future work will incorporate both MODS and MARC mapping and 
+transformations.
+
+If anyone is interested in one or more of these tools, let us know and 
+we'll send them your way. We are investigating adding them to 
+SourceForge, along with the rest of DLXS materials, and also to our 
+dlxs.org website as an OAI tools package.
+
+- Kat
+
+-------------------
+Kat Hagedorn
+OAIster/Metadata Harvesting Librarian
+DLXS Bibliographic Class Coordinator
+DLXS Text Class Collections Co-coordinator
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From p.johnston at ukoln.ac.uk  Fri Oct 29 13:00:44 2004
+From: p.johnston at ukoln.ac.uk (Pete Johnston)
+Date: Fri Oct 29 12:59:08 2004
+Subject: [OAI-implementers] Searching open archives
+In-Reply-To: <004501c4bcfa$18b816a0$d0644381@OUCSHOWARD>
+Message-ID: <001101c4bdd8$d455e0c0$2392268a@ulpcpj>
+
+Hi Howard,
+
+As no-one seems to have replied, I'll have a go, but it may be a "Friday
+afternoon" sort of answer! ;-)
+
+> Can anyone tell me if there is a recommended means for searching an 
+> OAI repository? Z3.50, SRW...? How are most repositories 
+> cross-searched? Also are most repositories open to searching (by 
+> users, not harvesting) or do they require authentication?
+
+At the risk of not really answering your questions... 
+
+The OAI-PMH spec provides the following definition of a repository:
+
+A repository is a network accessible server that can process the 6
+OAI-PMH requests in the manner described in this document. A repository
+is managed by a data provider to expose metadata to harvesters [1].
+
+i.e. an OAI-PMH repository is a service that supports harvesting using
+OAI-PMH ;-)
+
+Now, it may well be that the same set of metadata records that is made
+available for harvesting is also made available through other interfaces
+that support other types of interaction with the metadata records. Those
+other interfaces may include
+
+- a Web site that allows human users to browse/search the records
+- a Z39.50 or SRW/U target that allows other applications to issue
+searches
+
+but OAI-PMH itself is (AFAIK!) completely neutral on whether such
+interfaces are provided and/or what protocols they use - so I think it's
+difficult to answer the question of whether there is "a recommended
+means for searching an OAI repository"!
+
+In practice, I suspect that, yes, some metadata databases that are
+available for harvest via OAI-PMH are also available for "real-time
+cross search" - via e.g. Z39.50 or SRW/U or some proprietary API. 
+
+But some databases may be available only for harvesting - and in those
+cases "cross-search" is implemented by a "service provider" harvesting
+and storing metadata from multiple repositories and building a search
+service on their "local" copy of that harvested metadata.
+
+Pete
+
+[1] http://www.openarchives.org/OAI/openarchivesprotocol.html#Repository
+
+
+From badenh at cs.mu.OZ.AU  Sat Oct 30 01:58:54 2004
+From: badenh at cs.mu.OZ.AU (Baden Hughes)
+Date: Sat Oct 30 01:59:09 2004
+Subject: [OAI-implementers] Searching open archives
+In-Reply-To: <004501c4bcfa$18b816a0$d0644381@OUCSHOWARD>
+References: <004501c4bcfa$18b816a0$d0644381@OUCSHOWARD>
+Message-ID: <Pine.GSO.4.61.0410301551040.28498@mulga.cs.mu.OZ.AU>
+
+
+Hi Howard
+
+> Can anyone tell me if there is a recommended means for searching an OAI repository? Z3.50, SRW...?
+
+There's many ways to do this, but AFAIK, not a single recommended 
+approach. Certainly the collections aggregated by OAI-PMH can be expressed 
+in a range of alternative formats which lend themselves to existing tools 
+eg Z39.50.
+
+> How are most repositories cross-searched?
+
+>From an end user view there's really 4 models:
+
+1) individual data providers who also provide a search interface directly 
+to their own collections, many of which are embedded with archive 
+management suites;
+
+2) there's a range of aggregation tools which offer search interfaces 
+across all OAI data providers eg ARC, MyOAI, OAIster via web interfaces 
+for each tool;
+
+3) via an application instance, where the application itself is OAI-aware 
+and connects either to a local collection or an online aggregator;
+
+4) through interfaces like DP9 automated services like web search engines 
+can also index the contents, allowing users to search "on the web" and find OAI data provider 
+contents.
+
+If you consider the list at http://www.openarchives.org/tools/tools.html, 
+you'll see a range of these different tools available.
+
+> Also are most repositories open to searching (by users, not harvesting) or do they require authentication?
+
+Most are open access, ipso facto. I presume that there are some 
+repositories which have access restrictions in various forms, but I 
+haven't gone looking specifically.
+
+Regards
+
+Baden
+

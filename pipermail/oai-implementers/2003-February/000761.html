@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML encoding problems with DSpace at MIT
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000760.html">
+   <LINK REL="Next"  HREF="000762.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML encoding problems with DSpace at MIT
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] XML encoding problems with DSpace at MIT">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Fri, 14 Feb 2003 17:07:46 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000760.html">[OAI-implementers] DRH2003 Call for papers (fwd)
+</A></li>
+        <LI> Next message: <A HREF="000762.html">[OAI-implementers] XML encoding problems with DSpace at MIT
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#761">[ date ]</a>
+              <a href="thread.html#761">[ thread ]</a>
+              <a href="subject.html#761">[ subject ]</a>
+              <a href="author.html#761">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In my recent post to oai-general
+<A HREF="http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html">http://www.openarchives.org/pipermail/oai-general/2003-February/000258.html</A>
+I said I'd post a note about the current output of DSpace at MIT to this
+list (which seems a more appropriate forum). I just ran a harvest and got
+the log shown below, I've added comments in [].
+
+Cheers,
+Simeon.
+
+
+
+<A HREF="mailto:simeon@ice">simeon@ice</A> 14Feb03&gt;more log 
+oaiharvest.pl: Harvest from <A HREF="http://hpds1.mit.edu/oai/">http://hpds1.mit.edu/oai/</A> using POST
+OAIGet: Doing POST to <A HREF="http://hpds1.mit.edu/oai/">http://hpds1.mit.edu/oai/</A> args: verb=Identify
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (627bytes decoded to 1328bytes)
+
+[nice, DSpace implements gzip content coding]
+
+oaiharvest.pl: Identify reports OAI-PMH version 2.0
+oaiharvest.pl: Doing complete harvest.
+OAIGet: Doing POST to <A HREF="http://hpds1.mit.edu/oai/">http://hpds1.mit.edu/oai/</A> args: verb=ListMetadataFormats
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (307bytes decoded to 643bytes)
+OAIGet: Doing POST to <A HREF="http://hpds1.mit.edu/oai/">http://hpds1.mit.edu/oai/</A> args: verb=ListSets
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (715bytes decoded to 2140bytes)
+OAIGet: Doing POST to <A HREF="http://hpds1.mit.edu/oai/">http://hpds1.mit.edu/oai/</A> args: metadataPrefix=oai_dc&amp;verb=ListRecords
+OAIGet: Note - Got Content-Encoding 'gzip', decoded with 'gunzip -c'
+OAIGet: Got 200 OK (254096bytes decoded to 1392720bytes)
+oaiharvest.pl: UTF-8/XML errors in ListRecords.1:
+
+[oops, expat parser fails on response
+ my harvester now attempts to do replacement on bad XML/UTF8 bytes/chars
+ using my utf8conditioner, details at 
+ <A HREF="http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/">http://www.cs.cornell.edu/people/simeon/software/utf8conditioner/</A> 
+ Unless the response can be parsed we can't even know if there is a
+ resumptionToken...] 
+
+utf8conditioner: 
+Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C, substituted 0x3F
+Line 324, char 81713, byte 81751: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1839, char 559834, byte 559890: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1840, char 559919, byte 559975: code not allowed in XML: 0x000C, substituted 0x3F
+Line 1843, char 560213, byte 560269: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1846, char 560475, byte 560531: code not allowed in XML: 0x000B, substituted 0x3F
+Line 1850, char 560807, byte 560863: code not allowed in XML: 0x000C, substituted 0x3F
+Line 1851, char 560911, byte 560967: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2249, char 658132, byte 658188: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2250, char 658230, byte 658286: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2253, char 658449, byte 658505: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2271, char 662207, byte 662263: code not allowed in XML: 0x000B, substituted 0x3F
+Line 2274, char 662411, byte 662467: code not allowed in XML: 0x000E, substituted 0x3F
+Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, substituted 0x3F
+
+[utf8conditioner detected and did replacements for a number of characeters] 
+
+oaiharvest.pl: Got 752 records (running total: 752)
+oaiharvest.pl: No resumptionToken, end of complete list.
+
+[expat could then parse response extracting 752 records, no resumptionToken]
+
+oaiharvest.pl: Done.
+<A HREF="mailto:simeon@ice">simeon@ice</A> 14Feb03&gt;
+
+
+[doing the same tests with Xerces...]
+
+<A HREF="mailto:simeon@ice">simeon@ice</A> 14Feb03&gt;xercesCountElements lr
+[Fatal Error] lr:320:76: An invalid XML character (Unicode: 0xc) was found in the element content of the document.
+
+<A HREF="mailto:simeon@ice">simeon@ice</A> 14Feb03&gt;cat lr | utf8conditioner -x &gt; lrc
+Line 320, char 81453, byte 81491: code not allowed in XML: 0x000C, substituted 0x3F
+[..etc, same output as above...]
+Line 2287, char 663373, byte 663429: code not allowed in XML: 0x000B, substituted 0x3F
+
+<A HREF="mailto:simeon@ice">simeon@ice</A> 14Feb03&gt;xercesCountElements lrc
+lrc: 4665;519;10 ms (18104 elems, 3013 attrs, 0 spaces, 740197 chars)
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000760.html">[OAI-implementers] DRH2003 Call for papers (fwd)
+</A></li>
+	<LI> Next message: <A HREF="000762.html">[OAI-implementers] XML encoding problems with DSpace at MIT
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#761">[ date ]</a>
+              <a href="thread.html#761">[ thread ]</a>
+              <a href="subject.html#761">[ subject ]</a>
+              <a href="author.html#761">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

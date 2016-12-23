@@ -1,0 +1,1358 @@
+From s.lewis at auckland.ac.nz  Mon Jul 20 17:32:25 2009
+From: s.lewis at auckland.ac.nz (Stuart Lewis)
+Date: Mon Jul 20 17:33:03 2009
+Subject: [OAI-implementers] Is this a valid OAI-PMH response?
+Message-ID: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+
+Hi,
+
+We have a vendor provided system with an OAI-PMH interface. When issuing
+a ListRecords command, it returns (edited for brevity):
+
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+   
+   <responseDate>2009-07-20T21:05:43Z</responseDate>
+
+   <request verb="ListRecords" metadataPrefix="oai_dc" set="SET1">
+       http://www.example.com/oai
+   </request>
+   
+   <ListRecords>
+
+      <record>
+         <header>
+            <identifier>oai:record:1</identifier>
+            <datestamp>2009-06-30T11:29:18Z</datestamp>
+            <setSpec>SET1</setSpec>
+         </header>
+
+         <metadata>
+            <record
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:dcterms="http://purl.org/dc/terms/"
+xmlns:dc="http://purl.org/dc/elements/1.1/">
+               <dc:title>Title</dc:title>
+               <dc:creator>Creator</dc:creator>
+               <dc:description>Description </dc:description>
+               ...
+            </record>
+         </metadata>
+
+      </ListRecords>
+
+   </record>
+
+</OAI-PMH>
+
+To me this looks invalid - the <record> element within the metadata is
+not expected to be there (a <record> is defined as being the top level
+of a record, and thus contains a header and metadata). Most OAI-PMH
+interfaces I have seen put an <oai_dc:dc> wrapper around the metadata.
+
+The http://www.validome.org/ validator backs this up, and reports that:
+
+Invalid content found starting with element 'record'. One of
+'{WC[##other:"http://www.openarchives.org/OAI/2.0/"]}' is expected
+
+However our vendor is sure that this valid output, and when we checked
+it, the site passed the OAI-PMH registration validation system OK.
+
+Any advice appreciated! :)
+
+Thanks,
+
+
+Stuart Lewis
+IT Innovations Analyst and Developer
+Te Tumu Herenga The University of Auckland Library
+Auckland Mail Centre, Private Bag 92019, Auckland 1142, New Zealand
+Ph: 64 9 373-7599 x81928
+http://www.library.auckland.ac.nz/
+
+
+
+From mln at cs.odu.edu  Mon Jul 20 19:04:39 2009
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Mon Jul 20 19:04:43 2009
+Subject: [OAI-implementers] Is this a valid OAI-PMH response?
+In-Reply-To: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+References: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+Message-ID: <alpine.GSO.1.10.0907201858190.12554@vega.cs.odu.edu>
+
+
+Stuart,
+
+Here's the short version: you're correct and your vendor is wrong.  The 
+inner <record> in the example below should be <oai_dc:dc> as you correctly 
+surmised in your email.
+
+Regardless of what the validators say, tell them a quick inspection of:
+
+http://www.openarchives.org/OAI/openarchivesprotocol.html#Record
+http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords
+
+should make the intent clear.
+
+regards,
+
+Michael
+
+On Tue, 21 Jul 2009, Stuart Lewis wrote:
+
+> Hi,
+>
+> We have a vendor provided system with an OAI-PMH interface. When issuing
+> a ListRecords command, it returns (edited for brevity):
+>
+> <?xml version="1.0" encoding="UTF-8" ?>
+>
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>
+>   <responseDate>2009-07-20T21:05:43Z</responseDate>
+>
+>   <request verb="ListRecords" metadataPrefix="oai_dc" set="SET1">
+>       http://www.example.com/oai
+>   </request>
+>
+>   <ListRecords>
+>
+>      <record>
+>         <header>
+>            <identifier>oai:record:1</identifier>
+>            <datestamp>2009-06-30T11:29:18Z</datestamp>
+>            <setSpec>SET1</setSpec>
+>         </header>
+>
+>         <metadata>
+>            <record
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xmlns:dcterms="http://purl.org/dc/terms/"
+> xmlns:dc="http://purl.org/dc/elements/1.1/">
+>               <dc:title>Title</dc:title>
+>               <dc:creator>Creator</dc:creator>
+>               <dc:description>Description </dc:description>
+>               ...
+>            </record>
+>         </metadata>
+>
+>      </ListRecords>
+>
+>   </record>
+>
+> </OAI-PMH>
+>
+> To me this looks invalid - the <record> element within the metadata is
+> not expected to be there (a <record> is defined as being the top level
+> of a record, and thus contains a header and metadata). Most OAI-PMH
+> interfaces I have seen put an <oai_dc:dc> wrapper around the metadata.
+>
+> The http://www.validome.org/ validator backs this up, and reports that:
+>
+> Invalid content found starting with element 'record'. One of
+> '{WC[##other:"http://www.openarchives.org/OAI/2.0/"]}' is expected
+>
+> However our vendor is sure that this valid output, and when we checked
+> it, the site passed the OAI-PMH registration validation system OK.
+>
+> Any advice appreciated! :)
+>
+> Thanks,
+>
+>
+> Stuart Lewis
+> IT Innovations Analyst and Developer
+> Te Tumu Herenga The University of Auckland Library
+> Auckland Mail Centre, Private Bag 92019, Auckland 1142, New Zealand
+> Ph: 64 9 373-7599 x81928
+> http://www.library.auckland.ac.nz/
+>
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From Claudia.Juergen at ub.uni-dortmund.de  Tue Jul 21 11:07:17 2009
+From: Claudia.Juergen at ub.uni-dortmund.de (=?ISO-8859-1?Q?Claudia_J=FCrgen?=)
+Date: Tue Jul 21 11:07:56 2009
+Subject: [OAI-implementers] Is this a valid OAI-PMH response?
+In-Reply-To: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+References: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+Message-ID: <4A65D9A5.4040608@ub.uni-dortmund.de>
+
+Hi Stuart,
+
+this is no valid response. See:
+http://www.openarchives.org/OAI/openarchivesprotocol.html#ListRecords
+http://www.openarchives.org/OAI/openarchivesprotocol.html#Record
+and
+http://www.openarchives.org/OAI/openarchivesprotocol.html#OAIPMHschema
+
+Did you try http://re.cs.uct.ac.za/? It usefull in order to test one's 
+OAI data provider prior to registration.
+
+Sunny Greetings
+
+Claudia J?rgen
+
+
+Stuart Lewis schrieb:
+> Hi,
+> 
+> We have a vendor provided system with an OAI-PMH interface. When issuing
+> a ListRecords command, it returns (edited for brevity):
+> 
+> <?xml version="1.0" encoding="UTF-8" ?>
+> 
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>    
+>    <responseDate>2009-07-20T21:05:43Z</responseDate>
+> 
+>    <request verb="ListRecords" metadataPrefix="oai_dc" set="SET1">
+>        http://www.example.com/oai
+>    </request>
+>    
+>    <ListRecords>
+> 
+>       <record>
+>          <header>
+>             <identifier>oai:record:1</identifier>
+>             <datestamp>2009-06-30T11:29:18Z</datestamp>
+>             <setSpec>SET1</setSpec>
+>          </header>
+> 
+>          <metadata>
+>             <record
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xmlns:dcterms="http://purl.org/dc/terms/"
+> xmlns:dc="http://purl.org/dc/elements/1.1/">
+>                <dc:title>Title</dc:title>
+>                <dc:creator>Creator</dc:creator>
+>                <dc:description>Description </dc:description>
+>                ...
+>             </record>
+>          </metadata>
+> 
+>       </ListRecords>
+> 
+>    </record>
+> 
+> </OAI-PMH>
+> 
+> To me this looks invalid - the <record> element within the metadata is
+> not expected to be there (a <record> is defined as being the top level
+> of a record, and thus contains a header and metadata). Most OAI-PMH
+> interfaces I have seen put an <oai_dc:dc> wrapper around the metadata.
+> 
+> The http://www.validome.org/ validator backs this up, and reports that:
+> 
+> Invalid content found starting with element 'record'. One of
+> '{WC[##other:"http://www.openarchives.org/OAI/2.0/"]}' is expected
+> 
+> However our vendor is sure that this valid output, and when we checked
+> it, the site passed the OAI-PMH registration validation system OK.
+> 
+> Any advice appreciated! :)
+> 
+> Thanks,
+> 
+> 
+> Stuart Lewis
+> IT Innovations Analyst and Developer
+> Te Tumu Herenga The University of Auckland Library
+> Auckland Mail Centre, Private Bag 92019, Auckland 1142, New Zealand
+> Ph: 64 9 373-7599 x81928
+> http://www.library.auckland.ac.nz/
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+From gary at hulmail.harvard.edu  Tue Jul 21 15:50:57 2009
+From: gary at hulmail.harvard.edu (Gary McGath)
+Date: Tue Jul 21 15:51:37 2009
+Subject: [OAI-implementers] Is this a valid OAI-PMH response?
+In-Reply-To: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+References: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+Message-ID: <4A661C21.7020808@hulmail.harvard.edu>
+
+Stuart Lewis wrote:
+> Hi,
+> 
+> We have a vendor provided system with an OAI-PMH interface. When issuing
+> a ListRecords command, it returns (edited for brevity):
+> 
+> <?xml version="1.0" encoding="UTF-8" ?>
+> 
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>    
+>    <responseDate>2009-07-20T21:05:43Z</responseDate>
+> 
+>    <request verb="ListRecords" metadataPrefix="oai_dc" set="SET1">
+>        http://www.example.com/oai
+>    </request>
+>    
+>    <ListRecords>
+> 
+>       <record>
+>          <header>
+>             <identifier>oai:record:1</identifier>
+>             <datestamp>2009-06-30T11:29:18Z</datestamp>
+>             <setSpec>SET1</setSpec>
+>          </header>
+> 
+>          <metadata>
+>             <record
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xmlns:dcterms="http://purl.org/dc/terms/"
+> xmlns:dc="http://purl.org/dc/elements/1.1/">
+>                <dc:title>Title</dc:title>
+>                <dc:creator>Creator</dc:creator>
+>                <dc:description>Description </dc:description>
+>                ...
+>             </record>
+>          </metadata>
+> 
+>       </ListRecords>
+> 
+>    </record>
+> 
+> </OAI-PMH>
+> 
+> To me this looks invalid - the <record> element within the metadata is
+> not expected to be there (a <record> is defined as being the top level
+> of a record, and thus contains a header and metadata). Most OAI-PMH
+> interfaces I have seen put an <oai_dc:dc> wrapper around the metadata.
+> 
+> The http://www.validome.org/ validator backs this up, and reports that:
+> 
+> Invalid content found starting with element 'record'. One of
+> '{WC[##other:"http://www.openarchives.org/OAI/2.0/"]}' is expected
+> 
+> However our vendor is sure that this valid output, and when we checked
+> it, the site passed the OAI-PMH registration validation system OK.
+> 
+> Any advice appreciated! :)
+
+The response is not delivering the promised metadata format. "record" is 
+the root tag of the metadata, according to the OAI/PMH definition. This 
+means that the provider is delivering metadata in a format which isn't 
+Dublin Core or any other standard metadata format, in spite of the cd 
+elements within the root element. But the request specifies 
+metadataPrefix="oai_dc", so the response is expected to deliver Dublin 
+Core. Any client that issues a request for DC metadata and gets that 
+response will be unable to cope with it.
+
+
+-- 
+Gary McGath
+Digital Library Software Engineer
+Harvard University Library Office for Information Systems
+http://hul.harvard.edu/~gary/index.html
+
+
+From eosisek at library.rochester.edu  Wed Jul 22 16:14:11 2009
+From: eosisek at library.rochester.edu (Osisek, Eric)
+Date: Wed Jul 22 16:13:43 2009
+Subject: [OAI-implementers] Are URL parameters identifying an OAI repository
+	valid?
+Message-ID: <AE19ECAB747B564A8A85AB6339545570C78067@ITS-EXC2.UR.Rochester.edu>
+
+Greetings,
+
+We are building an application which can have multiple OAI repositories
+accessible through the same Java Servelet, and are looking for a way to
+differentiate between them.  Our current thought is to pass a GET
+parameter in the URL to the Servelet indicating which OAI repository to
+access, but I wanted to confirm that this wouldn't get mixed up in the
+OAI parameters and thus result in invalid repositories.  Our plan would
+result in URLs similar to the following  for two distinct OAI
+repositories:
+
+http://www.domain.com/oai?id=1
+http://www.domain.com/oai?id=2
+
+Requests to these repositories would then look like this:
+
+http://www.domain.com/oai?id=1&verb=identify
+http://www.domain.com/oai?id=2&verb=identify
+
+Is this valid?
+
+Thanks,
+   Eric Osisek
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090722/4003440f/attachment.htm
+From mln at cs.odu.edu  Wed Jul 22 16:42:11 2009
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Wed Jul 22 16:42:13 2009
+Subject: [OAI-implementers] Are URL parameters identifying an OAI
+	repository valid?
+In-Reply-To: <AE19ECAB747B564A8A85AB6339545570C78067@ITS-EXC2.UR.Rochester.edu>
+References: <AE19ECAB747B564A8A85AB6339545570C78067@ITS-EXC2.UR.Rochester.edu>
+Message-ID: <alpine.GSO.1.10.0907221635560.16146@vega.cs.odu.edu>
+
+
+Eric,
+
+Strictly speaking, you should not have extra arguments like:
+
+http://www.domain.com/oai?id=1&verb=identify
+http://www.domain.com/oai?id=2&verb=identify
+
+Some clients & servers might let you get away with doing that, but not all 
+will.  And you'll appear to have 1 baseURL instead of 2.
+
+It is pretty easy to use something like mod_rewrite 
+(http://www.modrewrite.com/) to expose the above urls as:
+
+http://www.domain.com/oai/repo1/?verb=identify
+http://www.domain.com/oai/repo2/?verb=identify
+
+this way you have 2 distinct baseURLs and none of the external OAI tools 
+get confused, but you could still have 1 script that handles everything.
+
+regards,
+
+Michael
+
+On Wed, 22 Jul 2009, Osisek, Eric wrote:
+
+> 
+> Greetings,
+> 
+> We are building an application which can have multiple OAI repositories accessible
+> through the same Java Servelet, and are looking for a way to differentiate between
+> them.? Our current thought is to pass a GET parameter in the URL to the Servelet
+> indicating which OAI repository to access, but I wanted to confirm that this
+> wouldn?t get mixed up in the OAI parameters and thus result in invalid
+> repositories.? Our plan would result in URLs similar to the following? for two
+> distinct OAI repositories:
+> 
+> http://www.domain.com/oai?id=1
+> 
+> http://www.domain.com/oai?id=2
+> 
+> Requests to these repositories would then look like this:
+> 
+> http://www.domain.com/oai?id=1&verb=identify
+> 
+> http://www.domain.com/oai?id=2&verb=identify
+> 
+> Is this valid?
+> 
+> Thanks,
+> 
+> ?? Eric Osisek
+> 
+> 
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+From gary at hulmail.harvard.edu  Wed Jul 22 16:52:08 2009
+From: gary at hulmail.harvard.edu (Gary McGath)
+Date: Wed Jul 22 16:52:42 2009
+Subject: [OAI-implementers] Are URL parameters identifying an OAI
+	repository valid?
+In-Reply-To: <AE19ECAB747B564A8A85AB6339545570C78067@ITS-EXC2.UR.Rochester.edu>
+References: <AE19ECAB747B564A8A85AB6339545570C78067@ITS-EXC2.UR.Rochester.edu>
+Message-ID: <4A677BF8.4060609@hulmail.harvard.edu>
+
+Osisek, Eric wrote:
+> Greetings,
+> 
+> We are building an application which can have multiple OAI repositories
+> accessible through the same Java Servelet, and are looking for a way to
+> differentiate between them.  Our current thought is to pass a GET
+> parameter in the URL to the Servelet indicating which OAI repository to
+> access, but I wanted to confirm that this wouldn't get mixed up in the
+> OAI parameters and thus result in invalid repositories.  Our plan would
+> result in URLs similar to the following  for two distinct OAI
+> repositories:
+> 
+> http://www.domain.com/oai?id=1
+> http://www.domain.com/oai?id=2
+> 
+> Requests to these repositories would then look like this:
+> 
+> http://www.domain.com/oai?id=1&verb=identify
+> http://www.domain.com/oai?id=2&verb=identify
+
+I can't see anything in the OAI-PMH spec that excludes URL parameters 
+other than those which the protocol knows about, but some clients might 
+have trouble providing such URLs.
+
+Is there a reason why you don't want to treat these as sets?
+
+
+-- 
+Gary McGath
+Digital Library Software Engineer
+Harvard University Libraries, Office for Information Systems
+
+From simeon.warner at cornell.edu  Wed Jul 22 18:04:17 2009
+From: simeon.warner at cornell.edu (Simeon Warner)
+Date: Wed Jul 22 18:04:19 2009
+Subject: [OAI-implementers] Are URL parameters identifying an OAI
+	repository valid?
+In-Reply-To: <4A677BF8.4060609@hulmail.harvard.edu>
+References: <AE19ECAB747B564A8A85AB6339545570C78067@ITS-EXC2.UR.Rochester.edu>
+	<4A677BF8.4060609@hulmail.harvard.edu>
+Message-ID: <20090722220417.GA30172@ice.library.cornell.edu>
+
+
+On Wed, Jul 22, 2009 at 04:52:08PM -0400, Gary McGath wrote:
+> Osisek, Eric wrote:
+>> Greetings,
+>>
+>> We are building an application which can have multiple OAI repositories
+>> accessible through the same Java Servelet, and are looking for a way to
+>> differentiate between them.  Our current thought is to pass a GET
+>> parameter in the URL to the Servelet indicating which OAI repository to
+>> access, but I wanted to confirm that this wouldn't get mixed up in the
+>> OAI parameters and thus result in invalid repositories.  Our plan would
+>> result in URLs similar to the following  for two distinct OAI
+>> repositories:
+>>
+>> http://www.domain.com/oai?id=1
+>> http://www.domain.com/oai?id=2
+>>
+>> Requests to these repositories would then look like this:
+>>
+>> http://www.domain.com/oai?id=1&verb=identify
+>> http://www.domain.com/oai?id=2&verb=identify
+>
+> I can't see anything in the OAI-PMH spec that excludes URL parameters other 
+> than those which the protocol knows about, but some clients might have 
+> trouble providing such URLs.
+
+I think the intention was that addition arguments are not
+permitted. The badArgument error condition is described thus:
+
+"badArgument -- The request includes illegal arguments, is missing
+required arguments, includes a repeated argument, or values for
+arguments have an illegal syntax."
+
+[http://www.openarchives.org/OAI/openarchivesprotocol.html#ErrorConditions]
+
+Cheers,
+Simeon
+
+
+
+> Is there a reason why you don't want to treat these as sets?
+>
+>
+> -- 
+> Gary McGath
+> Digital Library Software Engineer
+> Harvard University Libraries, Office for Information Systems
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+From bdrhoa at gmail.com  Wed Jul 22 18:56:45 2009
+From: bdrhoa at gmail.com (Brad Rhoads)
+Date: Wed Jul 22 18:57:17 2009
+Subject: [OAI-implementers] Are URL parameters identifying an OAI 
+	repository valid?
+In-Reply-To: <20090722220417.GA30172@ice.library.cornell.edu>
+References: <AE19ECAB747B564A8A85AB6339545570C78067@ITS-EXC2.UR.Rochester.edu>
+	<4A677BF8.4060609@hulmail.harvard.edu>
+	<20090722220417.GA30172@ice.library.cornell.edu>
+Message-ID: <676ffb3b0907221556r54d89fbv9ef4cffa070f0bbc@mail.gmail.com>
+
+Hi Eric,
+
+I'll be tackling this same issue very soon. My initial thoughts are 1)
+sets, as already suggested and 2) do something like:
+
+http://www.domain.com/repo1/oai
+http://www.domain.com/repo2/oai
+
+I think with url mapping that could work. And the url could be used to
+limit the user's results. (e.g. The set list could be limited to only
+return the sets in "his" repository).
+
+-Brad
+
+On Wed, Jul 22, 2009 at 4:04 PM, Simeon Warner<simeon.warner@cornell.edu> wrote:
+>
+> On Wed, Jul 22, 2009 at 04:52:08PM -0400, Gary McGath wrote:
+>> Osisek, Eric wrote:
+>>> Greetings,
+>>>
+>>> We are building an application which can have multiple OAI repositories
+>>> accessible through the same Java Servelet, and are looking for a way to
+>>> differentiate between them. ?Our current thought is to pass a GET
+>>> parameter in the URL to the Servelet indicating which OAI repository to
+>>> access, but I wanted to confirm that this wouldn't get mixed up in the
+>>> OAI parameters and thus result in invalid repositories. ?Our plan would
+>>> result in URLs similar to the following ?for two distinct OAI
+>>> repositories:
+>>>
+>>> http://www.domain.com/oai?id=1
+>>> http://www.domain.com/oai?id=2
+>>>
+>>> Requests to these repositories would then look like this:
+>>>
+>>> http://www.domain.com/oai?id=1&verb=identify
+>>> http://www.domain.com/oai?id=2&verb=identify
+>>
+>> I can't see anything in the OAI-PMH spec that excludes URL parameters other
+>> than those which the protocol knows about, but some clients might have
+>> trouble providing such URLs.
+>
+> I think the intention was that addition arguments are not
+> permitted. The badArgument error condition is described thus:
+>
+> "badArgument -- The request includes illegal arguments, is missing
+> required arguments, includes a repeated argument, or values for
+> arguments have an illegal syntax."
+>
+> [http://www.openarchives.org/OAI/openarchivesprotocol.html#ErrorConditions]
+>
+> Cheers,
+> Simeon
+>
+>
+>
+>> Is there a reason why you don't want to treat these as sets?
+>>
+>>
+>> --
+>> Gary McGath
+>> Digital Library Software Engineer
+>> Harvard University Libraries, Office for Information Systems
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+
+
+-- 
+---------------------------
+www.maf.org/rhoads
+www.ontherhoads.org
+
+From s.lewis at auckland.ac.nz  Thu Jul 23 17:33:46 2009
+From: s.lewis at auckland.ac.nz (Stuart Lewis)
+Date: Thu Jul 23 17:34:27 2009
+Subject: [OAI-implementers] Is this a valid OAI-PMH response?
+In-Reply-To: <4A661C21.7020808@hulmail.harvard.edu>
+References: <A30994AC067CB646AAD4698C727A1A020517EB43@libex1.lbr.auckland.ac.nz>
+	<4A661C21.7020808@hulmail.harvard.edu>
+Message-ID: <A30994AC067CB646AAD4698C727A1A02051ED436@libex1.lbr.auckland.ac.nz>
+
+Thanks to everyone who responded. The vendor has now adjusted the xsl
+that generates the records, and the oai_dc element is now being
+generated as required.
+
+Thanks,
+
+
+Stuart Lewis
+IT Innovations Analyst and Developer
+Te Tumu Herenga The University of Auckland Library
+Auckland Mail Centre, Private Bag 92019, Auckland 1142, New Zealand
+Ph: 64 9 373-7599 x81928
+http://www.library.auckland.ac.nz/
+
+
+
+
+-----Original Message-----
+From: Gary McGath [mailto:gary@hulmail.harvard.edu] 
+Sent: Wednesday, 22 July 2009 7:51 a.m.
+To: Stuart Lewis
+Cc: oai-implementers@openarchives.org
+Subject: Re: [OAI-implementers] Is this a valid OAI-PMH response?
+
+Stuart Lewis wrote:
+> Hi,
+> 
+> We have a vendor provided system with an OAI-PMH interface. When
+issuing
+> a ListRecords command, it returns (edited for brevity):
+> 
+> <?xml version="1.0" encoding="UTF-8" ?>
+> 
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>    
+>    <responseDate>2009-07-20T21:05:43Z</responseDate>
+> 
+>    <request verb="ListRecords" metadataPrefix="oai_dc" set="SET1">
+>        http://www.example.com/oai
+>    </request>
+>    
+>    <ListRecords>
+> 
+>       <record>
+>          <header>
+>             <identifier>oai:record:1</identifier>
+>             <datestamp>2009-06-30T11:29:18Z</datestamp>
+>             <setSpec>SET1</setSpec>
+>          </header>
+> 
+>          <metadata>
+>             <record
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xmlns:dcterms="http://purl.org/dc/terms/"
+> xmlns:dc="http://purl.org/dc/elements/1.1/">
+>                <dc:title>Title</dc:title>
+>                <dc:creator>Creator</dc:creator>
+>                <dc:description>Description </dc:description>
+>                ...
+>             </record>
+>          </metadata>
+> 
+>       </ListRecords>
+> 
+>    </record>
+> 
+> </OAI-PMH>
+> 
+> To me this looks invalid - the <record> element within the metadata is
+> not expected to be there (a <record> is defined as being the top level
+> of a record, and thus contains a header and metadata). Most OAI-PMH
+> interfaces I have seen put an <oai_dc:dc> wrapper around the metadata.
+> 
+> The http://www.validome.org/ validator backs this up, and reports
+that:
+> 
+> Invalid content found starting with element 'record'. One of
+> '{WC[##other:"http://www.openarchives.org/OAI/2.0/"]}' is expected
+> 
+> However our vendor is sure that this valid output, and when we checked
+> it, the site passed the OAI-PMH registration validation system OK.
+> 
+> Any advice appreciated! :)
+
+The response is not delivering the promised metadata format. "record" is
+
+the root tag of the metadata, according to the OAI/PMH definition. This 
+means that the provider is delivering metadata in a format which isn't 
+Dublin Core or any other standard metadata format, in spite of the cd 
+elements within the root element. But the request specifies 
+metadataPrefix="oai_dc", so the response is expected to deliver Dublin 
+Core. Any client that issues a request for DC metadata and gets that 
+response will be unable to cope with it.
+
+
+-- 
+Gary McGath
+Digital Library Software Engineer
+Harvard University Library Office for Information Systems
+http://hul.harvard.edu/~gary/index.html
+
+
+From khage at umich.edu  Tue Jul 28 11:11:45 2009
+From: khage at umich.edu (Hagedorn, Kat)
+Date: Tue Jul 28 11:12:22 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+Message-ID: <C6948D71.28103%khage@umich.edu>
+
+All,
+
+This may be a stupid question, but does anyone know of a list of tools used
+to harvest OAI metadata? I know of ours
+<http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't
+able to come up with others by perusing the obvious web sites. Even if
+there's no list, I'd be interested in individual suggestions.
+
+Thanks,
+ -Kat
+
+-------------------
+Kat Hagedorn 
+OAIster/Metadata Harvesting Librarian
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From robert.robertson at strath.ac.uk  Tue Jul 28 11:50:09 2009
+From: robert.robertson at strath.ac.uk (Robert Robertson)
+Date: Tue Jul 28 11:50:16 2009
+Subject: [OAI-implementers] RE: List of tools used to harvest OAI metadata
+In-Reply-To: <C6948D71.28103%khage@umich.edu>
+References: <C6948D71.28103%khage@umich.edu>
+Message-ID: <9C0140C91395D74BAD253635B1AC2985B7F5CCFE5B@E2K7-MS2.ds.strath.ac.uk>
+
+Hi Kat,
+
+I'm not aware of any lists and you're probably already familiar with these 'lists', but as a starting point:
+
+There's the handout on OAI tools from Metascholar (2005) - http://blog.lib.umn.edu/silvi003/codenotes//OAIToolsFinal.pdf
+Though it predates ARC from ODU (2006) http://oaiarc.sourceforge.net/
+
+http://www.openarchives.org/pmh/tools/tools.php lists some harvesters among the repository software listed (this amalgamated list may be the best current list but it's dated in 2006 as well).
+
+Hopefully someone knows of a more current list.
+
+Of possible interest though:
+the repinf wiki / International Repositories Infrastructure wiki has lists of harvesters:
+http://repinf.pbworks.com/Harvesters+-+national+and+international
+http://repinf.pbworks.com/Harvesters+-+subject-+or+discipline-based
+
+depending on what sort of information you're looking for - working back from these could give an indication of what's in use and how much people are growing their own software.
+
+Cheers,
+john
+
+--
+R. John Robertson
+skype: rjohnrobertson
+Repositories Research Officer (JISC CETIS),
+Centre for Academic Practice and Learning Enhancement
+University of Strathclyde
+Tel:    +44 (0) 141 548 3072
+http://blogs.cetis.ac.uk/johnr/
+The University of Strathclyde is a charitable body, registered in Scotland, with registration number SC015263
+
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Hagedorn, Kat
+Sent: 28 July 2009 16:12
+To: OAI-implementers@openarchives.org
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+
+All,
+
+This may be a stupid question, but does anyone know of a list of tools used
+to harvest OAI metadata? I know of ours
+<http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't
+able to come up with others by perusing the obvious web sites. Even if
+there's no list, I'd be interested in individual suggestions.
+
+Thanks,
+ -Kat
+
+-------------------
+Kat Hagedorn
+OAIster/Metadata Harvesting Librarian
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From stephane.pouyllau at cn2sv.cnrs.fr  Tue Jul 28 12:38:40 2009
+From: stephane.pouyllau at cn2sv.cnrs.fr (=?ISO-8859-1?Q?St=E9phane_POUYLLAU?=)
+Date: Tue Jul 28 12:38:46 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <C6948D71.28103%khage@umich.edu>
+References: <C6948D71.28103%khage@umich.edu>
+Message-ID: <4A6F2990.5070401@cn2sv.cnrs.fr>
+
+Hi,
+We developed in last winter this tools : "MonCarnet 2.0" (in english : 
+MyNotebook 2.0) available on the french academic tools forge : 
+http://sourcesup.cru.fr/projects/mc2/ (in french too, but to download 
+clic on "t?l?chargement"). Our PHP/MySQL tool, harvests OAI-PMH 
+repositories for storage m?tadata, open accounts for users.
+
+Best,
+
+St?phane.
+
+-- 
+St?phane POUYLLAU
+Ing?nieur d'?tudes au CNRS.
+Sp?cialis? en digital humanities.
+
+Responsable du Centre national pour la num?risation de sources visuelles 
+du CNRS (CN2SV)
+
+email : stephane.pouyllau@cn2sv.cnrs.fr
+t?l. : +33 (0)1 55 42 83 11
+
+*
+web CNRS : www.cnrs.fr
+web CN2SV : www.cn2sv.cnrs.fr
+**
+web personnel : www.stephanepouyllau.org
+twitter : www.twitter.com/spouyllau
+photo : http://www.flickr.com/photos/stephanepouyllau/
+
+From khage at umich.edu  Tue Jul 28 14:54:25 2009
+From: khage at umich.edu (Hagedorn, Kat)
+Date: Tue Jul 28 14:54:59 2009
+Subject: [OAI-implementers] Re: List of tools used to harvest OAI metadata
+In-Reply-To: <9C0140C91395D74BAD253635B1AC2985B7F5CCFE5B@E2K7-MS2.ds.strath.ac.uk>
+Message-ID: <C694C1A1.2812A%khage@umich.edu>
+
+Hello Robert and St?phane,
+
+Thank you for this-- I had forgotten about the International Repositories
+wiki, until you reminded me. I'm guessing most folks out there roll their
+own currently, as each aggregator needs records for different reasons.
+
+I will pass this along,
+Many thanks,
+ -Kat
+
+
+On 7/28/09 11:50 AM, "Robert Robertson" <robert.robertson@strath.ac.uk>
+wrote:
+
+> Hi Kat,
+> 
+> I'm not aware of any lists and you're probably already familiar with these
+> 'lists', but as a starting point:
+> 
+> There's the handout on OAI tools from Metascholar (2005) -
+> http://blog.lib.umn.edu/silvi003/codenotes//OAIToolsFinal.pdf
+> Though it predates ARC from ODU (2006) http://oaiarc.sourceforge.net/
+> 
+> http://www.openarchives.org/pmh/tools/tools.php lists some harvesters among
+> the repository software listed (this amalgamated list may be the best current
+> list but it's dated in 2006 as well).
+> 
+> Hopefully someone knows of a more current list.
+> 
+> Of possible interest though:
+> the repinf wiki / International Repositories Infrastructure wiki has lists of
+> harvesters:
+> http://repinf.pbworks.com/Harvesters+-+national+and+international
+> http://repinf.pbworks.com/Harvesters+-+subject-+or+discipline-based
+> 
+> depending on what sort of information you're looking for - working back from
+> these could give an indication of what's in use and how much people are
+> growing their own software.
+> 
+> Cheers,
+> john
+> 
+> --
+> R. John Robertson
+> skype: rjohnrobertson
+> Repositories Research Officer (JISC CETIS),
+> Centre for Academic Practice and Learning Enhancement
+> University of Strathclyde
+> Tel:    +44 (0) 141 548 3072
+> http://blogs.cetis.ac.uk/johnr/
+> The University of Strathclyde is a charitable body, registered in Scotland,
+> with registration number SC015263
+> 
+> 
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org
+> [mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Hagedorn, Kat
+> Sent: 28 July 2009 16:12
+> To: OAI-implementers@openarchives.org
+> Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+> 
+> All,
+> 
+> This may be a stupid question, but does anyone know of a list of tools used
+> to harvest OAI metadata? I know of ours
+> <http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't
+> able to come up with others by perusing the obvious web sites. Even if
+> there's no list, I'd be interested in individual suggestions.
+> 
+> Thanks,
+>  -Kat
+> 
+> -------------------
+> Kat Hagedorn
+> OAIster/Metadata Harvesting Librarian
+> Digital Library Production Service
+> University of Michigan
+> 
+> http://www.oaister.org/
+> http://www.dlxs.org/
+> email: khage@umich.edu
+> phone: 734-615-7618
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-------------------
+Kat Hagedorn 
+HathiTrust Special Initiatives Coordinator
+Library Information Technology
+University of Michigan
+
+http://hathitrust.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From krichel at openlib.org  Wed Jul 29 01:19:05 2009
+From: krichel at openlib.org (Thomas Krichel)
+Date: Wed Jul 29 01:19:08 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <C6948D71.28103%khage@umich.edu>
+References: <C6948D71.28103%khage@umich.edu>
+Message-ID: <20090729051905.GA31756@openlib.org>
+
+  Hagedorn, Kat writes
+
+> Even if there's no list, I'd be interested in individual
+> suggestions.
+
+  I use Tim Brody's HTTP::OAI modules Perl. I am very happy with it.
+  There is also Ed Summers Net::OAI::Harvester module.
+
+
+  Cheers,
+
+  Thomas Krichel                    http://openlib.org/home/krichel
+                                RePEc:per:1965-06-05:thomas_krichel
+                                               skype: thomaskrichel
+
+From jlb at ist.utl.pt  Wed Jul 29 05:11:55 2009
+From: jlb at ist.utl.pt (=?iso-8859-1?Q?Jos=E9_Borbinha?=)
+Date: Wed Jul 29 05:12:06 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <C6948D71.28103%khage@umich.edu>
+References: <C6948D71.28103%khage@umich.edu>
+Message-ID: <009801ca102c$9ee873c0$dcb95b40$@utl.pt>
+
+Hi!
+
+REPOX is a framework developed by the IST (the engineering school of the
+Lisbon Technical University, in Portugal) in the scope of European initiatives
+TEL and Europeana, to manage large numbers of data providers and the
+respective harvestings. It already is in production among several TEL data
+providers all over the Europe (in this moment it is mainly focused in
+requirements from TEL), but we are continuously releasing new versions, so we
+might be able to also address other new relevant features...
+Details at:
+
+http://repox.ist.utl.pt/
+
+Any specific questions can be addressed to Diogo Reis
+(diogo.menareis@ist.utl.pt)
+
+Best Regards
+Jos? Borbinha
+
+
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Hagedorn, Kat
+Sent: Tuesday, July 28, 2009 4:12 PM
+To: OAI-implementers@openarchives.org
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+
+All,
+
+This may be a stupid question, but does anyone know of a list of tools used to
+harvest OAI metadata? I know of ours
+<http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't able
+to come up with others by perusing the obvious web sites. Even if there's no
+list, I'd be interested in individual suggestions.
+
+Thanks,
+ -Kat
+
+-------------------
+Kat Hagedorn
+OAIster/Metadata Harvesting Librarian
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From folgadaunica at gmail.com  Wed Jul 29 08:00:15 2009
+From: folgadaunica at gmail.com (Gina Paihama)
+Date: Wed Jul 29 08:01:22 2009
+Subject: [OAI-implementers] Interoperability Protocol Survey Results
+Message-ID: <d3844650907290500k3344f4eelb01d7cba68df893e@mail.gmail.com>
+
+Good day
+
+
+
+My name is Jorgina Paihama (Digital Libraries Laboratory, Department of
+Computer Science, at the University of Cape Town).
+
+
+
+I would like to thank everyone who participated on the interoperability
+survey (http://banzai.cs.uct.ac.za/survey/index.php?sid=97137&lang=en).
+
+
+
+A summary of the findings obtained from the survey results can be found at
+the following address:
+http://pubs.cs.uct.ac.za/archive/00000530/01/Interoperability_Survey_Results_Technical_Report.pdf
+
+
+
+Thank You
+
+Jorgina Paihama
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090729/2c9b5e0a/attachment.htm
+From khage at umich.edu  Wed Jul 29 09:23:40 2009
+From: khage at umich.edu (Hagedorn, Kat)
+Date: Wed Jul 29 09:24:14 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <20090729051905.GA31756@openlib.org>
+Message-ID: <C695C59C.2818D%khage@umich.edu>
+
+Thanks, Thomas. Is there a link you can point me to for either Brody's or
+Summers' tools?
+
+
+On 7/29/09 1:19 AM, "Thomas Krichel" <krichel@openlib.org> wrote:
+
+>   Hagedorn, Kat writes
+> 
+>> Even if there's no list, I'd be interested in individual
+>> suggestions.
+> 
+>   I use Tim Brody's HTTP::OAI modules Perl. I am very happy with it.
+>   There is also Ed Summers Net::OAI::Harvester module.
+> 
+> 
+>   Cheers,
+> 
+>   Thomas Krichel                    http://openlib.org/home/krichel
+>                                 RePEc:per:1965-06-05:thomas_krichel
+>                                                skype: thomaskrichel
+
+-------------------
+Kat Hagedorn 
+HathiTrust Special Initiatives Coordinator
+Library Information Technology
+University of Michigan
+
+http://hathitrust.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+From krichel at openlib.org  Wed Jul 29 09:28:39 2009
+From: krichel at openlib.org (Thomas Krichel)
+Date: Wed Jul 29 09:28:41 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <C695C59C.2818D%khage@umich.edu>
+References: <20090729051905.GA31756@openlib.org>
+	<C695C59C.2818D%khage@umich.edu>
+Message-ID: <20090729132839.GC3231@openlib.org>
+
+  Hagedorn, Kat writes
+> Thanks, Thomas. Is there a link you can point me to for either Brody's or
+> Summers' tools?
+
+  As with all things Perl, they are on CPAN
+
+http://search.cpan.org/perldoc?HTTP::OAI
+http://search.cpan.org/.../OAI-Harvester-1.0/.../Net/OAI/Harvester.pl
+
+
+
+  Cheers,
+
+  Thomas Krichel                    http://openlib.org/home/krichel
+                                RePEc:per:1965-06-05:thomas_krichel
+                                               skype: thomaskrichel
+
+From scott.yeadon at anu.edu.au  Wed Jul 29 18:10:31 2009
+From: scott.yeadon at anu.edu.au (Scott Yeadon)
+Date: Wed Jul 29 18:10:41 2009
+Subject: [OAI-implementers] Re: List of tools used to harvest OAI metadata
+Message-ID: <0KNK00IRODLNKL20@messaging4.anu.edu.au>
+
+Hi Kat,
+
+We also have a Tomcat-based harvester for scheduling multiple harvests 
+which can be embedded into other applications. See 
+http://www.apsr.edu.au/software.htm#harvester_package
+
+Scott.
+
+From thabing at illinois.edu  Thu Jul 30 09:52:04 2009
+From: thabing at illinois.edu (Thomas G. Habing)
+Date: Thu Jul 30 09:52:09 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <C6948D71.28103%khage@umich.edu>
+References: <C6948D71.28103%khage@umich.edu>
+Message-ID: <4A71A584.6030208@illinois.edu>
+
+Hi Kat,
+
+I'm sure you are aware of our Windows-based OAI Harvester.  It is 
+getting a bit dated being implemented as an ActiveX DLL plus a family of 
+VBScripts, but its been working well for us for many years.  If you or 
+anyone else on the list is interested I can share more info.  Our open 
+source code on SourceForge is also outdated, so if there is any interest 
+I can post an updated release.
+
+Kind regards,
+Tom
+
+-- 
+Thomas G. Habing
+Research Programmer
+Grainger Engineering Library Information Center
+University of Illinois at Urbana-Champaign
+
+
+Hagedorn, Kat wrote:
+> All,
+> 
+> This may be a stupid question, but does anyone know of a list of tools used
+> to harvest OAI metadata? I know of ours
+> <http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't
+> able to come up with others by perusing the obvious web sites. Even if
+> there's no list, I'd be interested in individual suggestions.
+> 
+> Thanks,
+>  -Kat
+> 
+> -------------------
+> Kat Hagedorn 
+> OAIster/Metadata Harvesting Librarian
+> Digital Library Production Service
+> University of Michigan
+> 
+> http://www.oaister.org/
+> http://www.dlxs.org/
+> email: khage@umich.edu
+> phone: 734-615-7618
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+
+From Stefka.Kaloyanova at fao.org  Wed Jul 29 02:13:34 2009
+From: Stefka.Kaloyanova at fao.org (Kaloyanova, Stefka (KCEW))
+Date: Mon Aug 10 09:34:37 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+Message-ID: <BA453B6B6B217B4D95AF12DBA0BFB669034C45F5@hqgiex01.fao.org>
+
+Hi Kat,
+We have adaptation of OCLC harvester which harvests in XML files any type of
+data and subsets. We are using it for collecting AGRIS data.
+You can find more at ftp://ext-ftp.fao.org/GI/Data/GILW/stefka/harvester/
+
+And in the ppt attached here
+
+Best regards
+Stefka Kaloyanova, FAO
+
+-----Original Message-----
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of Hagedorn, Kat
+Sent: 28 July 2009 17:12
+To: OAI-implementers@openarchives.org
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+
+
+All,
+
+This may be a stupid question, but does anyone know of a list of tools used
+to harvest OAI metadata? I know of ours
+<http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't able
+to come up with others by perusing the obvious web sites. Even if there's no
+list, I'd be interested in individual suggestions.
+
+Thanks,
+ -Kat
+
+-------------------
+Kat Hagedorn 
+OAIster/Metadata Harvesting Librarian
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+
+_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: AGRISharvester.ppt
+Type: application/vnd.ms-powerpoint
+Size: 965120 bytes
+Desc: AGRISharvester.ppt
+Url : http://www.openarchives.org/pipermail/oai-implementers/attachments/20090729/ce7cbd0b/AGRISharvester-0001.ppt

@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML Schemas and Xerces again
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:thabing%40uiuc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000103.html">
+   <LINK REL="Next"  HREF="000106.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML Schemas and Xerces again
+   </H1>
+    <B>Thomas G. Habing
+    </B> 
+    <A HREF="mailto:thabing%40uiuc.edu"
+       TITLE="[OAI-implementers] XML Schemas and Xerces again">thabing@uiuc.edu
+       </A><BR>
+    <I>Wed, 25 Apr 2001 13:21:28 -0500</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000103.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+        <LI> Next message: <A HREF="000106.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#104">[ date ]</a>
+              <a href="thread.html#104">[ thread ]</a>
+              <a href="subject.html#104">[ subject ]</a>
+              <a href="author.html#104">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Jeff-
+
+Regarding the 1.3.1 error, like Herbert we think Xerces is probably wrong
+here, but at the same time, we also wonder if the namespace='##any' is
+actually necessary in the XSD, since ##any is the default for the namespace
+attribute.  Does Xerces not give an error if the XSD leaves out the
+namespace='##any'?
+
+Regarding the 1.3.0 error, our guess is that Xerces is trying to do too much
+when validating uriReference string.  [Note, 'uriReference' has been changed
+to 'anyURI' in the latest version of the schema spec.]  
+
+Quoting from the latest XML schema spec (datatype):
+
+&quot;NOTE: Each URI scheme imposes specialized syntax rules for URIs in that
+scheme, including restrictions on the syntax of allowed fragment
+identifiers. Because it is impractical for processors to check that a value
+is a context-appropriate URI reference, this specification follows the lead
+of [RFC 2396] (as amended by [RFC 2732]) in this matter: such rules and
+restrictions are not part of type validity and are not checked by minimally
+conforming processors. Thus in practice the above definition imposes only
+very modest obligations on minimally conforming processors.&quot;
+
+From looking at RFC2396 and RFC2732, we're fairly certain that OAI
+Identifiers are valid URIs.  The second colon might be considered an issue
+by some, but looking at the RFC2396:
+
+   ...An absolute URI contains the name of the scheme being used (&lt;scheme&gt;)
+   followed by a colon (&quot;:&quot;) and then a string (the &lt;scheme-specific-
+   part&gt;) whose interpretation depends on the scheme. The URI syntax does 
+   not require that the scheme-specific-part have any general structure or
+   set of semantics which is common among all URI...
+
+Colons are commonly considered reserved (i.e., needing to be escaped), but
+the RFC also says about reserved characters:
+
+   The &quot;reserved&quot; syntax class above refers to those characters that are
+   allowed within a URI, but which may not be allowed within a
+   particular component of the generic URI syntax; they are used as
+   delimiters of the components described in Section 3.
+   Characters in the &quot;reserved&quot; set are not reserved in all contexts.
+   The set of characters actually reserved within any given URI
+   component is defined by that component.  In general, a character is
+   reserved if the semantics of the URI changes if the character is
+   replaced with its escaped US-ASCII encoding.
+
+On this basis and looking at the &quot;Collected BNF for URI&quot; (Appendix A), OAI
+should be allowed to specify that colons used as delimiters in the
+scheme-specific part are allowed unescaped within that component (i.e., the
+&quot;opaque&quot; OAI scheme-specific-part) -- just as some URIs use an unescaped
+colon within the hostport component of their scheme-specific-part.  Which
+means that the only things that a generic URI parser should be able to
+discern from the OAI URIs is scheme:opaque_part.  (It might be interesting
+to see what would happen with Xerces if the second colon was escaped, such
+as oai:etdcat%3Aocm02999966 -- if Xerces no longer objected, then we would
+know that it was &quot;over&quot; validating the identifier element.)
+
+Of course OAI might still want to consider eventually changing the OAI
+identifier scheme (scheme-specific-part of the URI) to something more
+similar to other net URIs, such as <A HREF="oai://etdcat/ocm02999966">oai://etdcat/ocm02999966</A>
+(<A HREF="scheme://registration_name/opaque_part">scheme://registration_name/opaque_part</A>), but we would hesitate to suggest
+that at this stage simply to accommodate what appears to be an overzealous
+parser.
+
+Tim Cole
+Tom Habing
+University of Illinois at UC
+
+&quot;Young,Jeff&quot; wrote:
+&gt;<i> 
+</I>&gt;<i> I'm happy to say that the status=deleted problem appears to be resolved.
+</I>&gt;<i> Unfortunately, I now seem to have a different (unrelated) problem. Someone
+</I>&gt;<i> reported to me that Xerces 1.3.1 is reporting an XML schema error where
+</I>&gt;<i> 1.3.0 didn't. It seems that I had failed to call setErrorHandler() which is
+</I>&gt;<i> key to reporting any validation errors. Xerces 1.3.0 let this slide where
+</I>&gt;<i> 1.3.1 complains about it. Now that I've corrected this oversight, I'm now
+</I>&gt;<i> seeing some parser errors related to the XML schema. I've attached another
+</I>&gt;<i> small demo application that shows the effects. To add to the confusion,
+</I>&gt;<i> 1.3.0 reports a different error than does 1.3.1.
+</I>&gt;<i> 
+</I>&gt;<i> Using Xerces 1.3.0, the demo application produces:
+</I>&gt;<i> 
+</I>&gt;<i> error
+</I>&gt;<i> org.xml.sax.SAXParseException: Datatype error: In element 'identifier' :
+</I>&gt;<i> Value 'oai:etdcat:ocm02999966' is a Malformed URI .
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1068)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.checkContent(XMLValidator.j
+</I>&gt;<i> ava:3609)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+</I>&gt;<i> .java:1133)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+</I>&gt;<i> LDocumentScanner.java:1201)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+</I>&gt;<i> java:381)
+</I>&gt;<i>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:12
+</I>&gt;<i> 3)
+</I>&gt;<i>         at Test.main(Test.java:34)
+</I>&gt;<i> 
+</I>&gt;<i> Using Xerces 1.3.1, the demo produces:
+</I>&gt;<i> 
+</I>&gt;<i> error
+</I>&gt;<i> org.xml.sax.SAXParseException: The content of element type &quot;metadata&quot; must
+</I>&gt;<i> match &quot;##any:uri=<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords".">http://www.openarchives.org/OAI/1.0/OAI_ListRecords&quot;.</A>
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1067)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.reportRecoverableXMLError(X
+</I>&gt;<i> MLValidator.java:1689)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+</I>&gt;<i> .java:1353)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+</I>&gt;<i> LDocumentScanner.java:1205)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+</I>&gt;<i> java:381)
+</I>&gt;<i>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+</I>&gt;<i>         at
+</I>&gt;<i> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:17
+</I>&gt;<i> 2)
+</I>&gt;<i>         at Test.main(Test.java:34)
+</I>&gt;<i> 
+</I>&gt;<i> As far as I can tell, the schema look fine. My assumption, at this point, is
+</I>&gt;<i> that Xerces is at fault and my only recourse is turn off validation. I must
+</I>&gt;<i> also admit the possibility that my program is flawed in some way. On the
+</I>&gt;<i> slim chance that I've found the 2nd and 3rd XML schema errors within the
+</I>&gt;<i> span of a week, though, I thought I'd pass along my findings.
+</I>&gt;<i> 
+</I>&gt;<i>  &lt;&lt;Test.java&gt;&gt;
+</I>&gt;<i> Cheers,
+</I>&gt;<i> 
+</I>&gt;<i> Jeff
+</I>&gt;<i> 
+</I>&gt;<i> ---
+</I>&gt;<i> Jeffrey A. Young
+</I>&gt;<i> Senior Consulting Systems Analyst
+</I>&gt;<i> Office of Research, Mail Code 710
+</I>&gt;<i> OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> 6565 Frantz Road
+</I>&gt;<i> Dublin, OH   43017-3395
+</I>&gt;<i> www.oclc.org
+</I>&gt;<i> 
+</I>&gt;<i> Voice:  614-764-4342
+</I>&gt;<i> Voice:  800-848-5878, ext. 4342
+</I>&gt;<i> Fax:    614-718-7477
+</I>&gt;<i> Email:  <A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> 
+</I>&gt;<i>   ----------------------------------------------------------------------------
+</I>&gt;<i>                 Name: Test.java
+</I>&gt;<i>    Test.java    Type: java/*
+</I>&gt;<i>             Encoding: quoted-printable
+</I>
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+<A HREF="mailto:thabing@uiuc.edu">thabing@uiuc.edu</A>, (217) 244-7809
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000103.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+	<LI> Next message: <A HREF="000106.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#104">[ date ]</a>
+              <a href="thread.html#104">[ thread ]</a>
+              <a href="subject.html#104">[ subject ]</a>
+              <a href="author.html#104">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

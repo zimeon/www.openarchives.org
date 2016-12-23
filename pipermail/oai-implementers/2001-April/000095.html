@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML Schema problem?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung1%40columbus.rr.com">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000092.html">
+   <LINK REL="Next"  HREF="000096.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML Schema problem?
+   </H1>
+    <B>Jeffrey A. Young
+    </B> 
+    <A HREF="mailto:jyoung1%40columbus.rr.com"
+       TITLE="[OAI-implementers] XML Schema problem?">jyoung1@columbus.rr.com
+       </A><BR>
+    <I>Fri, 20 Apr 2001 19:10:48 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000092.html">[OAI-implementers] UTF-8
+</A></li>
+        <LI> Next message: <A HREF="000096.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#95">[ date ]</a>
+              <a href="thread.html#95">[ thread ]</a>
+              <a href="subject.html#95">[ subject ]</a>
+              <a href="author.html#95">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>This is a multi-part message in MIME format.
+
+------=_NextPart_000_000C_01C0C9CD.9BB9D620
+Content-Type: text/plain;
+	charset=&quot;iso-8859-1&quot;
+Content-Transfer-Encoding: 7bit
+
+Someone noticed that my OAIHarvester isn't working correctly lately. It
+turns out that the Xerces XML parser is convinced that all the records I
+harvest are flagged as status=&quot;deleted&quot;. Since this clearly isn't the case,
+I started stripping the program down until I had a small example program
+showing this effect. The Java source code is attached. Basically, if I do
+DocumentBuilderFactory.setValidating(true) and then convert the XML to a DOM
+Document, it silently &quot;corrects&quot; my records to status=&quot;deleted&quot;. If I dump
+the Document, all looks fine, but when I actually query the status
+attribute, it reports back with a value of &quot;deleted&quot;. On the other hand, if
+I specify setValidating(false), everything works fine. I suspect the problem
+is that the XML Schema needs to make the status attribute optional. Another
+possibility is that Xerces is processing the XML Schema incorrectly. I can
+ignore the problem by always using setValidating(false), but that doesn't
+seem right. If someone has a better solution, I would appreciate it. Thanks.
+
+Jeff
+
+---
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Fax:		614-764-2344
+Email:	<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+
+
+
+------=_NextPart_000_000C_01C0C9CD.9BB9D620
+Content-Type: application/octet-stream;
+	name=&quot;Test.java&quot;
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename=&quot;Test.java&quot;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
+
+public class Test {
+    public static void main(String[] args) {
+	try {
+	    DocumentBuilderFactory factory =3D =
+DocumentBuilderFactory.newInstance();
+	    String arg =3D &quot;&quot;;
+	    if (args.length =3D=3D 1)
+		arg =3D args[0];
+	    if (arg.equals(&quot;true&quot;)) {
+		factory.setValidating(true);
+	    } else if (arg.equals(&quot;false&quot;)) {
+		factory.setValidating(false);
+	    } else {
+		System.err.println(&quot;Usage: java Test [true|false]&quot;);
+		System.exit(-1);
+	    }
+	   =20
+	    factory.setNamespaceAware(true);
+	    DocumentBuilder parser =3D factory.newDocumentBuilder();
+	    String xml =3D &quot;&lt;?xml version=3D\&quot;1.0\&quot; =
+encoding=3D\&quot;UTF-8\&quot;?&gt;&lt;ListRecords =
+xmlns=3D\&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords\"">http://www.openarchives.org/OAI/1.0/OAI_ListRecords\&quot;</A> =
+xmlns:xsi=3D\&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema-instance\"">http://www.w3.org/2000/10/XMLSchema-instance\&quot;</A> =
+xsi:schemaLocation=3D\&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecord=">http://www.openarchives.org/OAI/1.0/OAI_ListRecord=</A>
+s =
+<A HREF="http://www.openarchives.org/OAI/1.0/OAI_ListRecords.xsd\"">http://www.openarchives.org/OAI/1.0/OAI_ListRecords.xsd\&quot;</A>&gt;&lt;responseDate&gt;2=
+001-04-20T14:48:40-05:00&lt;/responseDate&gt;&lt;requestURL&gt;<A HREF="http://orc:4342/etdcat=">http://orc:4342/etdcat=</A>
+/servlet/OAIHandler?metadataPrefix=3Doai_dc&amp;amp;verb=3DListRecords&lt;/reque=
+stURL&gt;&lt;record&gt;&lt;header&gt;&lt;identifier&gt;oai:etdcat:ocm02999966&lt;/identifier&gt;&lt;dat=
+estamp&gt;2001-02-02&lt;/datestamp&gt;&lt;/header&gt;&lt;metadata&gt;&lt;dc =
+xmlns=3D\&quot;<A HREF="http://purl.org/dc/elements/1.1/\"">http://purl.org/dc/elements/1.1/\&quot;</A> =
+xmlns:xsi=3D\&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema-instance\"">http://www.w3.org/2000/10/XMLSchema-instance\&quot;</A> =
+xsi:schemaLocation=3D\&quot;<A HREF="http://purl.org/dc/elements/1.1/">http://purl.org/dc/elements/1.1/</A> =
+<A HREF="http://www.openarchives.org/OAI/dc.xsd\"">http://www.openarchives.org/OAI/dc.xsd\&quot;</A>&gt;&lt;/dc&gt;&lt;/metadata&gt;&lt;/record&gt;&lt;resump=
+tionToken&gt;987796143360:100:oai_dc&lt;/resumptionToken&gt;&lt;/ListRecords&gt;&quot;;
+	    StringReader sr =3D new StringReader(xml);
+	    InputSource is =3D new InputSource(sr);
+	    Document doc =3D parser.parse(is);
+	    Element docEl =3D doc.getDocumentElement();
+	    NodeList list =3D docEl.getElementsByTagName(&quot;record&quot;);
+	    Element recEl =3D (Element)list.item(0);
+	    System.out.println(&quot;status =3D &quot; + recEl.getAttribute(&quot;status&quot;));
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}
+
+------=_NextPart_000_000C_01C0C9CD.9BB9D620--
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000092.html">[OAI-implementers] UTF-8
+</A></li>
+	<LI> Next message: <A HREF="000096.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#95">[ date ]</a>
+              <a href="thread.html#95">[ thread ]</a>
+              <a href="subject.html#95">[ subject ]</a>
+              <a href="author.html#95">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

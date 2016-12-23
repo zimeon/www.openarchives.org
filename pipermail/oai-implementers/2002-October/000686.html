@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Minor annoyance - what is the official name
+ of an OAI site?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000685.html">
+   <LINK REL="Next"  HREF="000687.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Minor annoyance - what is the official name
+ of an OAI site?
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] Minor annoyance - what is the official name
+ of an OAI site?">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Thu, 31 Oct 2002 09:55:45 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000685.html">[OAI-implementers] Minor annoyance - what is the official name of an OAI site?
+</A></li>
+        <LI> Next message: <A HREF="000687.html">[OAI-implementers] new OAI metadata format from the Library of Congress
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#686">[ date ]</a>
+              <a href="thread.html#686">[ thread ]</a>
+              <a href="subject.html#686">[ subject ]</a>
+              <a href="author.html#686">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In the general case, the best identifier for a repository is the &lt;baseURL&gt;
+(the &lt;baseURL&gt;, identifier, metadataPrefix and datestamp uniquely identify
+a record). I would suggest that you use the baseURL internally and display
+the &lt;repositoryName&gt; for human readability.
+
+It is not mandatory that repositories support oai-identifier and it is
+thus not mandatory that repositories have a &lt;repositoryIdentifier&gt;. I
+think that, if anything, the OAI web site should make information about
+repositoryIdenifiers less prominent to avoid this confusion.
+
+In the case of AIM25, they appear to use the oai identifier scheme
+(identifiers like oai:aim25.ac.uk:69) but fail to include the appropriate
+description block in the Identify response. This is broken. (The
+description block should declare aim25.ac.uk to be the
+repositoryIdentifier).
+
+The aggregator guidelines say:
+&quot;Agents which re-export harvested records should do so with different 
+identifiers unless the metadata is unaltered and the original identifier 
+corresponds to a recognized URI scheme. It is also recommended that all 
+repositories re-exporting harvested records use the repeatable provenance 
+containers to provide provenance information.&quot;
+
+The case of AIM25 is unclear, it seems that one could decide that the
+URI scheme is recognized (it starts with oai:) or not (looks like 
+oai-identifier but missing the description).
+
+Dedupping is going to be an interesting problem as the number of OAI
+services that re-export metadata grows. Both the use of globally
+resolvable identifier schemes and provenance containers will help address
+problem.
+
+At the moment, the situation is complicated by the presence of a number of
+duplicate data providers for v1.1 and v2.0 listed on the OAI website. This
+should be improved when v1.1 repositories are removed from the canonical
+data-providers list (scheduled for 1 December 2002:
+<A HREF="http://www.openarchives.org/news/oaiv2press020614.html">http://www.openarchives.org/news/oaiv2press020614.html</A>).
+
+I hope that the central registry of OAI sites will become less important
+over time. I hope that the &quot;friends&quot; container
+(<A HREF="http://www.openarchives.org/OAI/2.0/guidelines-friends.htm">http://www.openarchives.org/OAI/2.0/guidelines-friends.htm</A>) will be used
+to create a decentralized web allowing repository discovery.
+
+Cheers,
+Simeon
+
+
+
+On Thu, 31 Oct 2002, Alan Kent wrote:
+&gt;<i> Hi,
+</I>&gt;<i> 
+</I>&gt;<i> One minor annoyance (that I think I have reported before) is that the
+</I>&gt;<i> list of OAI data providers on the www.openarchives.org site does not
+</I>&gt;<i> list a 'id' for all bases in the XML document returned.
+</I>&gt;<i> 
+</I>&gt;<i> I then started thinking, what was the id attribute? Is it the repository
+</I>&gt;<i> name, repository identifier, or just some other id that people decided
+</I>&gt;<i> to type in when registering the repository? (I think its the latter)
+</I>&gt;<i> 
+</I>&gt;<i> So I thought, well OAI 2.0 has the &lt;oaiIdentifier&gt; description stuff now,
+</I>&gt;<i> so I can go to a site and work out its identifier. The problem is not
+</I>&gt;<i> everyone supports it. I just went to AIM25 for example (because
+</I>&gt;<i> it was alphabetically at the start of the list). It returns a
+</I>&gt;<i> repository name with spaces
+</I>&gt;<i> 
+</I>&gt;<i>     &lt;repositoryName&gt;AIM25 - Archives in London&lt;/repositoryName&gt;
+</I>&gt;<i> 
+</I>&gt;<i> but no repository identifier. Doing a ListRecords showed me the
+</I>&gt;<i> repository identifier I think is aim25.ac.uk, but I guessed this
+</I>&gt;<i> as a human by looking at the first record that came back.
+</I>&gt;<i> Records in a repository should keep the identifier of the original
+</I>&gt;<i> record in the case of an aggregator, so this is not a reliable
+</I>&gt;<i> approach to use.
+</I>&gt;<i> 
+</I>&gt;<i> Is it mandatory that all repositories have a 'repository identifier'?
+</I>&gt;<i> 
+</I>&gt;<i> Is it mandatory that Identify for OAI 2.0 make the identifier available?
+</I>&gt;<i> 
+</I>&gt;<i> Should the list on the open archives web site be updated to make sure
+</I>&gt;<i> it has the correct repository identifiers for all sites?
+</I>&gt;<i> 
+</I>&gt;<i> I know I can go look up the spec, but I am trying to be provocative
+</I>&gt;<i> here and elicit responses like &quot;no, but it should be&quot; or &quot;don't be silly&quot;.
+</I>&gt;<i> Do aggregators (who just get other people's data) have repository
+</I>&gt;<i> identifiers even if they don't have any of their &quot;own&quot; content?
+</I>&gt;<i> 
+</I>&gt;<i> I guess my bottom line is that I think the page on the open archives
+</I>&gt;<i> web site would be better if it included the official repository identifiers
+</I>&gt;<i> for each registered data provider. I can write a script to generate my
+</I>&gt;<i> own XML document (get all the URLs, do an Identify - if not good enough,
+</I>&gt;<i> do a ListRecords).
+</I>&gt;<i> 
+</I>&gt;<i> I guess I am also encouraging people to go to the effort of including
+</I>&gt;<i> the &lt;oaiIdentifier&gt; description in their OAI data provider implementations
+</I>&gt;<i> too.
+</I>&gt;<i> 
+</I>&gt;<i> Maybe its just me being pedantic. We have tried to automate the updating
+</I>&gt;<i> of our list of sites to harvest (for interop testing), but it keeps
+</I>&gt;<i> getting duplicates.
+</I>&gt;<i> 
+</I>&gt;<i> Alan
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I> 
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000685.html">[OAI-implementers] Minor annoyance - what is the official name of an OAI site?
+</A></li>
+	<LI> Next message: <A HREF="000687.html">[OAI-implementers] new OAI metadata format from the Library of Congress
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#686">[ date ]</a>
+              <a href="thread.html#686">[ thread ]</a>
+              <a href="subject.html#686">[ subject ]</a>
+              <a href="author.html#686">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

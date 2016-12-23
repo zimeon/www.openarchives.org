@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Requesting a part of a record possible with
+ OAI-OMH?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:hussein%40cs.uct.ac.za">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001137.html">
+   <LINK REL="Next"  HREF="001142.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Requesting a part of a record possible with
+ OAI-OMH?
+   </H1>
+    <B>Hussein Suleman
+    </B> 
+    <A HREF="mailto:hussein%40cs.uct.ac.za"
+       TITLE="[OAI-implementers] Requesting a part of a record possible with
+ OAI-OMH?">hussein@cs.uct.ac.za
+       </A><BR>
+    <I>Tue, 20 Jan 2004 16:48:09 +0200</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001137.html">[OAI-implementers] Requesting a part of a record possible with OAI-OMH?
+</A></li>
+        <LI> Next message: <A HREF="001142.html">[OAI-implementers] Requesting a part of a record possible with
+ OAI-OMH?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1140">[ date ]</a>
+              <a href="thread.html#1140">[ thread ]</a>
+              <a href="subject.html#1140">[ subject ]</a>
+              <a href="author.html#1140">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi Joachim
+
+no, i do not believe this can be done with OAI-PMH. at the risk of going 
+off on a tangent, let me suggest some solutions ...
+
+maybe what you need is an &quot;extension&quot; or &quot;semantic overload&quot; or a new 
+protocol altogether. now, a number of us have played around with 
+interesting ways to extend OAI-PMH and we have learnt important lessons, 
+many of which may be obvious, but i will try to list anyway:
+
+firstly, look for existing protocols. i dont know any off the top of my 
+head but maybe someone else does. search protocols probably wont do the 
+trick because it sounds like you want to transfer a specific part of 
+each record in the full set.
+
+if you cannot find an existing protocol, do NOT then overload/extend the 
+meaning of OAI-PMH! instead, design a completely separate protocol if 
+you need to. generally, it is not a good idea to muddy the waters with 
+different versions of OAI-PMH, especially if you intend to interoperate 
+with other people (what you do wholly within your system is of course a 
+different matter).
+
+for example, you could define a small specification called &quot;Part 
+Extraction Protocol (PEP?)&quot; as follows:
+-- ListRecordParts returns the metadata similarly to OAI-PMH but with 
+additional parameters that specify (maybe using XPath) subtrees of the 
+metadata records (noting that there will be validation issues)
+-- GetRecordPart does the same but with a single record
+
+there is no rule that states a single repository should support only one 
+protocol - your repository can then support OAI-PMH on one baseURL and 
+&quot;PEP&quot; on another, in just the same way as some current repositories 
+support OAI-PMH on one baseURL and SRW on another (for searching).
+
+lastly, adopt current best practices and standards as defined by the OAI 
+and Web community. what this means is:
+- don't use a different style of record encoding if people already 
+understand the OAI style ... i.e., header/metadata/etc
+- think about SOAP - it is now a standard so there is no reason why new 
+protocols should not use it and there are some benefits to it (like a 
+large community of practice)
+- be RESTful ... keep the simple things simple
+
+this sounds complicated, but i think we need to get beyond basic 
+OAI-PMH. real services need more interesting protocols for components to 
+interact and metadata harvesting only gives you, well, whole chunks of 
+harvested metadata :)
+
+by now you have probably stopped reading this message, but if not, i 
+have one last suggestion: how about an &quot;other_protocol&quot; description 
+format for OAI-PMH Identify responses? does anyone else think it will be 
+useful to know what other protocols can be used to interact with a data 
+collection? for example, OCLC's ETD collection could list:
+
+&lt;description&gt;
+    &lt;protocol:protocol xmlns:protocol=&quot;...&quot; xmlns:dc=&quot;...&quot;&gt;
+       &lt;dc:title&gt;SRW&lt;/dc:title&gt;
+       &lt;dc:identifier xsi:type=&quot;dcterms:URI&quot;&gt;
+          <A HREF="http://www.loc.gov/z3950/agency/zing/srw/specifications.html">http://www.loc.gov/z3950/agency/zing/srw/specifications.html</A>
+       &lt;/dc:identifier&gt;
+       &lt;dc:coverage xsi:type=&quot;protocol:version&quot;&gt;1.0&lt;/dc:coverage&gt;
+       &lt;protocol:baseURL&gt;
+          <A HREF="http://alcme.oclc.org/srw/search/NDL/SearchRetrieveService">http://alcme.oclc.org/srw/search/NDL/SearchRetrieveService</A>
+       &lt;/protocol:baseURL&gt;
+    &lt;/protocol:protocol&gt;
+&lt;/description&gt;
+
+could this possibly be useful for discovery/advertising of services? it 
+is somewhat halfway between &quot;friends&quot; and WSDL and might already be done 
+- anyone have pointers? or thoughts in general?
+
+ttfn,
+----hussein
+
+
+Joachim Wackerow wrote:
+&gt;<i> Is it possible to offer/request only a part of a record with OAI-PMH?
+</I>&gt;<i> 
+</I>&gt;<i> For example: exists a way to request only the &quot;dc:title&quot; of an identifier?
+</I>&gt;<i> 
+</I>&gt;<i> I browsed the open archives web site and found only the verb 
+</I>&gt;<i> &quot;GetRecord&quot;. In addition to offer or request a whole record, we would 
+</I>&gt;<i> like to offer or request only one element of a XML document stored in a 
+</I>&gt;<i> record.
+</I>&gt;<i> 
+</I>&gt;<i> Background:
+</I>&gt;<i> Requesting a whole record with DC information is no problem. But we are 
+</I>&gt;<i> thinking about using OAI-PMH to offer DDI-structured information on 
+</I>&gt;<i> social science surveys. DDI is an extensive description format (in XML) 
+</I>&gt;<i> with ca. 300 elements on surveys (<A HREF="http://www.icpsr.umich.edu/DDI/">http://www.icpsr.umich.edu/DDI/</A>). For 
+</I>&gt;<i> some scenarios it would be more effective to offer/request only one 
+</I>&gt;<i> element or one element group of the xml document.
+</I>&gt;<i> 
+</I>&gt;<i> Regards, Achim
+</I>&gt;<i> -- 
+</I>&gt;<i> ZUMA - Centre for Survey Research and Methodology
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+-- 
+=====================================================================
+hussein suleman ~ <A HREF="mailto:hussein@cs.uct.ac.za">hussein@cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+=====================================================================
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001137.html">[OAI-implementers] Requesting a part of a record possible with OAI-OMH?
+</A></li>
+	<LI> Next message: <A HREF="001142.html">[OAI-implementers] Requesting a part of a record possible with
+ OAI-OMH?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1140">[ date ]</a>
+              <a href="thread.html#1140">[ thread ]</a>
+              <a href="subject.html#1140">[ subject ]</a>
+              <a href="author.html#1140">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

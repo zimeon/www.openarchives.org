@@ -1,0 +1,2421 @@
+From stamer@uni-oldenburg.de  Mon Sep  2 11:04:39 2002
+From: stamer@uni-oldenburg.de (Heinrich Stamerjohanns)
+Date: Mon, 2 Sep 2002 12:04:39 +0200 (CEST)
+Subject: [OAI-implementers] Data Provider in PHP.
+Message-ID: <Pine.LNX.4.33.0209021129470.354-100000@alexandria.physik.uni-oldenburg.de>
+
+Dear all,
+
+I have written an implementation in PHP for an
+OAI-PMH 2.0 Repository (also known as Data Provider).
+
+This implementation completely complies to OAI-PMH 2.0, including
+the support of on-the-fly output compression which may significantly
+reduce the amount of data being transfered.
+
+Database support is supported through PEAR (PHP Extension and
+Application Repository, included in the PHP distribution), so almost
+any popular SQL-database can be used without any changes in the code.
+
+The repository can be quite easily configured by just editing
+one file, most possible values and options are explained.
+
+It currently supports only flat table layout (the whole record saved in
+one table), but if there is need, I can easily extend this.
+
+This work is based on an OAI-1.1 implementation done by U. Müller, HUB
+Berlin, and can be found via
+
+http://physnet.uni-oldenburg.de/oai/
+
+Any comments are welcome.
+
+Heinrich
+
+
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  stamer@uni-oldenburg.de
+  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+
+
+
+
+From simeon@cs.cornell.edu  Tue Sep  3 16:24:03 2002
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Tue, 3 Sep 2002 11:24:03 -0400 (EDT)
+Subject: [OAI-implementers] responsible harvesting (is good for both harvesters and repositories)
+Message-ID: <Pine.LNX.4.44.0209031111420.16375-100000@ice.cs.cornell.edu>
+
+Recent attempts to harvest from arXiv.org by tips.imag.fr 
+consisted of 11700 requests spaced at about 3-4 per second, each one
+receiving a 503 reply saying to wait 60s. 
+
+Eventually this site was blocked automatically at our firewall by our
+robot detection script, and even though 11700 requests adds a bunch of
+junk to our logs it doesn't really hurt us. No 'From' address was supplied
+with the requests so we have no way of contacting the operator of this
+harvester. The net result of all of this is wasting a little of our time
+and of the harvester operator's time, without achieving the original goal
+of sharing arXiv metadata.
+
+Lessons (see also sections 2 and 2.1 of 
+http://www.openarchives.org/OAI/2.0/guidelines-harvester.htm):
+
+1) include a 'From' header with requests
+2) respect 503
+3) make sure that a harvester will not blindly keep on making the same 
+request for more than a few tries
+4) put in a small delay between robot requests so that if there is a bug
+the sequence of requests can never get too rapid.
+
+Cheers,
+Simeon.
+
+
+
+From ran@cs.utk.edu  Mon Sep  9 14:39:09 2002
+From: ran@cs.utk.edu (Mei Ran)
+Date: Mon, 9 Sep 2002 09:39:09 -0400
+Subject: [OAI-implementers] question about the implementation of Identify
+Message-ID: <3DB974C0@webmail.utk.edu>
+
+Hi,
+
+when I'm trying to implement Identify, I'm not sure if I should just show one 
+repository or the whole repositories. For our project, there maybe a lot of 
+repositories exists at the same baseURL, I think everything should be same, 
+shall I treat same as a whole and give a new repository name, or treat them as 
+a whole and show all the repositories' names, or treat them seperately? I 
+prefer to look at them as a whole and show all of theirs repositories name. 
+But if I do so, how can I follow the Identify response schema?
+
+Is there anyone can give me some help? Thank you very much!
+
+Mei
+
+*******************************************
+Mei Ran
+Research Assistant
+Computer Science Dept., Univ. of Tennessee
+http://www.cs.utk.edu/~ran
+Tel: (865) 974-6722
+*******************************************
+
+
+From simeon@cs.cornell.edu  Mon Sep  9 15:16:41 2002
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Mon, 9 Sep 2002 10:16:41 -0400 (EDT)
+Subject: [OAI-implementers] question about the implementation of Identify
+In-Reply-To: <3DB974C0@webmail.utk.edu>
+Message-ID: <Pine.LNX.4.44.0209091014010.12508-100000@ice.cs.cornell.edu>
+
+In OAI-PMH 1.0, 1.1, 2.0:   one baseURL <=> one repository
+
+If you want to divide a repository (things behind one baseURL) to permit
+selective harvesting of only some parts and not others then you should use
+sets.
+
+Cheers,
+Simeon.
+
+On Mon, 9 Sep 2002, Mei Ran wrote:
+> Hi,
+> 
+> when I'm trying to implement Identify, I'm not sure if I should just show one 
+> repository or the whole repositories. For our project, there maybe a lot of 
+> repositories exists at the same baseURL, I think everything should be same, 
+> shall I treat same as a whole and give a new repository name, or treat them as 
+> a whole and show all the repositories' names, or treat them seperately? I 
+> prefer to look at them as a whole and show all of theirs repositories name. 
+> But if I do so, how can I follow the Identify response schema?
+> 
+> Is there anyone can give me some help? Thank you very much!
+> 
+> Mei
+> 
+> *******************************************
+> Mei Ran
+> Research Assistant
+> Computer Science Dept., Univ. of Tennessee
+> http://www.cs.utk.edu/~ran
+> Tel: (865) 974-6722
+> *******************************************
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+From E.A.Gadd@lboro.ac.uk  Mon Sep  9 14:57:09 2002
+From: E.A.Gadd@lboro.ac.uk (Elizabeth Gadd)
+Date: Mon, 9 Sep 2002 14:57:09 +0100
+Subject: [OAI-implementers] New JISC-funded Rights Metadata for Open archiving (RoMEO) project
+Message-ID: <010c01c25808$ca8239f0$f15d7d9e@pc2000lbeag>
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0109_01C25811.2C29F230
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+ Looking for RoMEO?=20
+In Higher Education today there are many calls for change in the =
+scholarly communication process.  One suggestion receiving a lot of =
+publicity is that academics 'self-archive' their research papers either =
+by making them available on their own web pages, or by submitting them =
+to an institutional repository or a subject-based archive.  The Open =
+Archives Initiative has supported this activity by developing an open =
+standard by which metadata about the research papers can be disclosed =
+and harvested, thus increasing the visibility and impact of the =
+research.=20
+
+
+Even though such research papers are 'given away' by academics, and =
+metadata about them is freely created and disclosed, intellectual =
+property rights issues are still being raised.  Academics may not care =
+who copies their paper, but who's to stop someone publishing it under =
+someone else's name?  Or altering the text in some way?  Data providers =
+may be pleased that their metadata is being harvested, but what if =
+someone then starts selling access to it?
+
+
+To address some of these questions, the UK Joint Information Systems =
+Committee have funded a one-year investigation into the rights issues =
+surrounding the self-archiving movement.  The project, called RoMEO =
+(Rights MEtadata for Open archiving), is based at Loughborough =
+University and will run for one year until July 2003.  The Project is =
+being directed by Professor Charles Oppenheim, with Professor Stevan =
+Harnad chairing the Advisory Board.
+
+
+The principal aims of the project are to map all the rights issues =
+relevant to the self-archiving of research papers in UK HE under the =
+Open Archive Initiative's Protocol for Metadata Harvesting (OAI-PMH) and =
+to consider ways of addressing them.  One particular goal will be the =
+development of some simple rights metadata which can be assigned by =
+academics depositing papers in institutional (or other) archives, =
+disclosed by data providers, harvested by service providers, and =
+displayed to end-users, via the OAI-PMH.
+
+
+The Project Team are inviting input from interested parties, in =
+particular academics, publishers, OAI data and service providers, on the =
+rights issues they face throughout the self-archiving process.  Please =
+contact Elizabeth Gadd, Research Associate, Project RoMEO, Dept of =
+Information Science, Loughborough University, Loughborough, Leics, LE11 =
+3TU. Tel. 01509 228053, Email. e.a.gadd@lboro.ac.uk
+
+
+Project web pages, including our first survey for academic authors, are =
+now available at =
+http://www.lboro.ac.uk/departments/ls/disresearch/romeo/index.html and =
+will be updated throughout the course of the project.
+
+Apologies for cross-postings of this press release.
+
+*************************************************
+Elizabeth Gadd, Research Associate &
+Editor,  Library and Information Research News
+Department of Information Science
+Loughborough University
+Loughborough, Leics, LE11 3TU
+Tel: +44 (0)1509 228053  Fax: +44 (0)1509 223072
+Email: E.A.Gadd@lboro.ac.uk
+************************************************
+
+------=_NextPart_000_0109_01C25811.2C29F230
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 5.50.4522.1800" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY>
+<DIV><FONT face=3DArial><FONT size=3D2><STRONG>&nbsp;<SPAN=20
+style=3D"FONT-SIZE: 14pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt">Looking=20
+for RoMEO?</SPAN></STRONG><SPAN=20
+style=3D"FONT-FAMILY: 'Century Gothic'">&nbsp;<?xml:namespace prefix =3D =
+o ns =3D=20
+"urn:schemas-microsoft-com:office:office" =
+/><o:p></o:p></SPAN></FONT></FONT>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><FONT=20
+size=3D2>In Higher Education today there are many calls for change in =
+the=20
+scholarly communication process.<SPAN style=3D"mso-spacerun: yes">&nbsp; =
+
+</SPAN>One suggestion receiving a lot of publicity is that academics=20
+&#8216;self-archive&#8217; their research papers either by making them =
+available on their=20
+own web pages, or by submitting them to an institutional repository or a =
+
+subject-based archive.<SPAN style=3D"mso-spacerun: yes">&nbsp; =
+</SPAN>The Open=20
+Archives Initiative has supported this activity by developing an open =
+standard=20
+by which metadata about the research papers can be disclosed and =
+harvested, thus=20
+increasing the visibility and impact of the research.=20
+<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><o:p><FONT=20
+face=3D"Century Gothic" size=3D2></FONT></o:p></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><FONT=20
+size=3D2>Even though such research papers are &#8216;given away&#8217; =
+by academics, and=20
+metadata about them is freely created and disclosed, intellectual =
+property=20
+rights issues are still being raised.<SPAN style=3D"mso-spacerun: =
+yes">&nbsp;=20
+</SPAN>Academics may not care who copies their paper, but who&#8217;s to =
+stop someone=20
+publishing it under someone else&#8217;s name?<SPAN =
+style=3D"mso-spacerun: yes">&nbsp;=20
+</SPAN>Or altering the text in some way?<SPAN style=3D"mso-spacerun: =
+yes">&nbsp;=20
+</SPAN>Data providers may be pleased that their metadata is being =
+harvested, but=20
+what if someone then starts selling access to =
+it?<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><o:p><FONT=20
+face=3D"Century Gothic" size=3D2></FONT></o:p></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><FONT=20
+size=3D2>To address some of these questions<STRONG>, the UK Joint =
+Information=20
+Systems Committee have funded a one-year investigation into the rights =
+issues=20
+surrounding the self-archiving movement</STRONG>.<SPAN=20
+style=3D"mso-spacerun: yes">&nbsp; </SPAN>The project, called RoMEO =
+(Rights=20
+MEtadata for Open archiving), is based at Loughborough University and =
+will run=20
+for one year until July 2003.<SPAN style=3D"mso-spacerun: yes">&nbsp; =
+</SPAN>The=20
+Project is being directed by Professor Charles Oppenheim, with Professor =
+Stevan=20
+Harnad chairing the Advisory Board.<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><o:p><FONT=20
+face=3D"Century Gothic" size=3D2></FONT></o:p></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><FONT=20
+size=3D2>The principal aims of the project are to map all the rights =
+issues=20
+relevant to the self-archiving of research papers in UK HE under the =
+Open=20
+Archive Initiative&#8217;s Protocol for Metadata Harvesting (OAI-PMH) =
+and to consider=20
+ways of addressing them.<SPAN style=3D"mso-spacerun: yes">&nbsp; =
+</SPAN>One=20
+particular goal will be the development of some simple rights metadata =
+which can=20
+be assigned by academics depositing papers in institutional (or other) =
+archives,=20
+disclosed by data providers, harvested by service providers, and =
+displayed to=20
+end-users, via the OAI-PMH.<o:p></o:p></FONT></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><o:p><FONT=20
+face=3D"Century Gothic" size=3D2></FONT></o:p></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><FONT=20
+size=3D2>The Project Team are inviting input from interested parties, in =
+
+particular academics, publishers, OAI data and service providers, on the =
+rights=20
+issues they face throughout the self-archiving process.<SPAN=20
+style=3D"mso-spacerun: yes">&nbsp; </SPAN>Please contact Elizabeth Gadd, =
+Research=20
+Associate, Project RoMEO, Dept of Information Science, Loughborough =
+University,=20
+Loughborough, Leics, LE11 3TU. Tel. 01509 228053, Email. </FONT><A=20
+href=3D"mailto:e.a.gadd@lboro.ac.uk"><FONT=20
+size=3D2>e.a.gadd@lboro.ac.uk</FONT></A><o:p></o:p></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><o:p><FONT=20
+face=3D"Century Gothic" size=3D2></FONT></o:p></SPAN></P>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt; mso-bidi-font-family: Arial"><FONT=20
+size=3D2>Project web pages, including our first <STRONG>survey for =
+academic=20
+authors</STRONG>, are now available at </FONT><A=20
+href=3D"http://www.lboro.ac.uk/departments/ls/disresearch/romeo/index.htm=
+l"><FONT=20
+size=3D2>http://www.lboro.ac.uk/departments/ls/disresearch/romeo/index.ht=
+ml</FONT></A><FONT=20
+size=3D2> </FONT></SPAN><FONT size=3D2><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt">and=20
+wil</SPAN><SPAN style=3D"FONT-FAMILY: 'Century Gothic'">l be updated =
+throughout=20
+the course of the project.</SPAN></FONT></P>
+<P class=3DMsoNormal><FONT size=3D2><SPAN=20
+style=3D"FONT-FAMILY: 'Century Gothic'">Apologies for cross-postings of =
+this press=20
+release.</SPAN></FONT></P></DIV>
+<DIV><FONT face=3DArial=20
+size=3D2>*************************************************<BR>Elizabeth =
+Gadd,=20
+Research Associate &amp;<BR>Editor,&nbsp; Library and Information =
+Research=20
+News<BR>Department of Information Science<BR>Loughborough=20
+University<BR>Loughborough, Leics, LE11 3TU<BR>Tel: +44 (0)1509 =
+228053&nbsp;=20
+Fax: +44 (0)1509 223072<BR>Email: </FONT><A=20
+href=3D"mailto:E.A.Gadd@lboro.ac.uk"><FONT face=3DArial=20
+size=3D2>E.A.Gadd@lboro.ac.uk</FONT></A><BR><FONT face=3DArial=20
+size=3D2>************************************************</FONT></DIV></B=
+ODY></HTML>
+
+------=_NextPart_000_0109_01C25811.2C29F230--
+
+
+From liu_x@cs.odu.edu  Mon Sep  9 19:46:42 2002
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Mon, 9 Sep 2002 14:46:42 -0400 (EDT)
+Subject: [OAI-implementers] Availability of Arc source code
+Message-ID: <Pine.SOL.4.10.10209091439470.25551-100000@defiant.cs.odu.edu>
+
+Dear all,
+
+The Digital Library Group in Old Dominion University is pleased to
+announce the availability of Arc through SourceForge
+(http://sourceforge.net/projects/oaiarc/). Arc is released under the NCSA
+Open Source License.  Arc is a federated search service based on the Open
+Archives Initiative Protocol for Metadata Harvesting (OAI-PMH).  It
+includes a harvester which can harvests both OAI-PMH 1.x and 2.0 compliant
+repositories, a search engine together with a simple and advanced search
+interface, and an OAI-PMH layer over harvested metadata. It is based on
+Java Servlet technology and requires JDK1.4, Tomcat 4.0x, and a RDBMS
+server (tested with Oracle and MySQL).
+
+Arc can be configured for a specific community, We encourage the community
+to participate in (besides using), extending and enhancing  Arc by
+providing support for parallel metada set specific to different
+communities, enhancing and customizing search interface, adding post
+processing etc. A demonstration instantiation is running at
+http://arc.cs.odu.edu, it currently harvests some 100 OAI-PMH compliant
+repositories. 
+
+regards,
+
+Xiaoming Liu
+
+
+
+From E.A.Gadd@lboro.ac.uk  Wed Sep 11 15:00:37 2002
+From: E.A.Gadd@lboro.ac.uk (Elizabeth Gadd)
+Date: Wed, 11 Sep 2002 15:00:37 +0100
+Subject: [OAI-implementers] Questionnaire for academic authors
+Message-ID: <00f201c2599b$9b524be0$f15d7d9e@pc2000lbeag>
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_00EF_01C259A3.FD0ACD00
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+I should be grateful if OAI implementers would advertise this online =
+survey to any academic communities they are a part of.  It emanates from =
+the UK RoMEO project which aims to ascertain and address the rights =
+issues relating to self-archiving.=20
+
+The survey asks academic authors for their views on the copyright in =
+their research papers and how they would want their rights to be =
+protected in a self-archiving environment.  We are hoping that the =
+results will support the development of open-archiving by demonstrating =
+exactly what academics are (and are not) concerned about with relation =
+to copyright protection of their research.
+
+The questionnaire can be found at =
+http://www-staff.lboro.ac.uk/~lbeag/Academic%20author%20questionnaire.htm=
+=20
+Further information about the RoMEO Project can be found at =
+http://www.lboro.ac.uk/departments/ls/disresearch/romeo/index.html
+
+Many thanks
+
+Elizabeth
+*************************************************
+Elizabeth Gadd, Research Associate &
+Editor,  Library and Information Research News
+Department of Information Science
+Loughborough University
+Loughborough, Leics, LE11 3TU
+Tel: +44 (0)1509 228053  Fax: +44 (0)1509 223072
+Email: E.A.Gadd@lboro.ac.uk
+************************************************
+
+------=_NextPart_000_00EF_01C259A3.FD0ACD00
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=3DContent-Type content=3D"text/html; =
+charset=3Diso-8859-1">
+<META content=3D"MSHTML 5.50.4522.1800" name=3DGENERATOR>
+<STYLE></STYLE>
+</HEAD>
+<BODY>
+<DIV><FONT face=3DArial size=3D2>I should be grateful if OAI =
+implementers=20
+would&nbsp;advertise this online survey to any academic communities they =
+are a=20
+part of.&nbsp; It&nbsp;emanates from the UK RoMEO project&nbsp;which =
+aims=20
+to&nbsp;ascertain and address the rights issues relating to=20
+self-archiving.&nbsp;</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>The survey asks academic =
+authors&nbsp;for their=20
+views on the copyright in their research papers and how they would want =
+their=20
+rights to be protected in a self-archiving environment.&nbsp; We are =
+hoping that=20
+the results will&nbsp;support the development of open-archiving&nbsp;by=20
+demonstrating exactly what academics&nbsp;are (and are not) concerned =
+about with=20
+relation to copyright protection of their research.</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>The questionnaire can be found at =
+</FONT><A=20
+href=3D"http://www-staff.lboro.ac.uk/~lbeag/Academic author =
+questionnaire.htm"><FONT=20
+face=3DArial=20
+size=3D2>http://www-staff.lboro.ac.uk/~lbeag/Academic%20author%20question=
+naire.htm</FONT></A><FONT=20
+face=3DArial size=3D2> </FONT>
+<P class=3DMsoNormal><SPAN=20
+style=3D"FONT-SIZE: 11pt; FONT-FAMILY: 'Century Gothic'; =
+mso-bidi-font-size: 12.0pt"><FONT=20
+face=3DArial size=3D2>Further information about the RoMEO Project can be =
+found at=20
+</FONT><A=20
+href=3D"http://www.lboro.ac.uk/departments/ls/disresearch/romeo/index.htm=
+l"><FONT=20
+face=3DArial=20
+size=3D2>http://www.lboro.ac.uk/departments/ls/disresearch/romeo/index.ht=
+ml</FONT></A></SPAN></P></DIV>
+<DIV><FONT face=3DArial size=3D2>Many thanks</FONT></DIV>
+<DIV><FONT face=3DArial size=3D2></FONT>&nbsp;</DIV>
+<DIV><FONT face=3DArial size=3D2>Elizabeth</FONT></DIV>
+<DIV><FONT face=3DArial=20
+size=3D2>*************************************************<BR>Elizabeth =
+Gadd,=20
+Research Associate &amp;<BR>Editor,&nbsp; Library and Information =
+Research=20
+News<BR>Department of Information Science<BR>Loughborough=20
+University<BR>Loughborough, Leics, LE11 3TU<BR>Tel: +44 (0)1509 =
+228053&nbsp;=20
+Fax: +44 (0)1509 223072<BR>Email: </FONT><A=20
+href=3D"mailto:E.A.Gadd@lboro.ac.uk"><FONT face=3DArial=20
+size=3D2>E.A.Gadd@lboro.ac.uk</FONT></A><BR><FONT face=3DArial=20
+size=3D2>************************************************</FONT></DIV></B=
+ODY></HTML>
+
+------=_NextPart_000_00EF_01C259A3.FD0ACD00--
+
+
+From krichel@openlib.org  Wed Sep 18 20:06:33 2002
+From: krichel@openlib.org (Thomas Krichel)
+Date: Wed, 18 Sep 2002 14:06:33 -0500
+Subject: [OAI-implementers] mime types
+Message-ID: <20020918190633.GB674@openlib.org>
+
+  Greetings,
+
+  for work relating to the Academic Metadata Format, I have prepare a 
+  script that generates an XML Schema type "mimeType" that contains
+  XML schema file to check for correct values of mime types. The
+  schema is available at 
+
+http://amf.openlib.org/2001/mime-types.xsd
+
+  I will keep this file up to date at this URL, but if you prefer to
+  generate the list yourself, you can get the script from
+
+http://amf.openlib.org/tool/mimetypexsd
+
+  I trust this will holp others writing schema files.
+
+  I will be grateful for reports on any mistakes that I made. 
+
+
+  Cheers,
+
+  Thomas Krichel                                   mailto:krichel@openlib.org
+                                              http://openlib.org/home/krichel
+                                          RePEc:per:1965-06-05:thomas_krichel
+
+From ajaved@usc.edu  Thu Sep 19 00:31:18 2002
+From: ajaved@usc.edu (arslan javed)
+Date: Wed, 18 Sep 2002 16:31:18 -0700
+Subject: [OAI-implementers] help required!!!
+Message-ID: <1617de61615772.16157721617de6@usc.edu>
+
+Hi 
+   I am just starting the implementation of the OAI protocol.Can anyone tell me if i can find some sequence diagrams or class diagrams for a previous implementation of this protocol so that i have a good idea before starting and i can compare my design with that.
+   Secondly on the service provider end after parsing the xml returned from the data provider what would be a good choice for use of database used for storing the data returned since i have to later access it from the web site.
+
+Thanx
+Arslan
+     
+
+
+From ajaved@usc.edu  Thu Sep 19 09:30:48 2002
+From: ajaved@usc.edu (arslan javed)
+Date: Thu, 19 Sep 2002 01:30:48 -0700
+Subject: [OAI-implementers] Inquiry!!!
+Message-ID: <11381b11759f.11759f11381b@usc.edu>
+
+Hi
+   Can any one give me an idea of what exactly is contained in the meta-data.
+My task is to harvest data from  4 data-bases and then make avaiable the contents on the website.According to the design the harvestor will refresh the data from the db after 1 week.Now will i keep the meta-data in some database so that when ever a user comes and requets for some data he doesnt have to again connect to all the databases to serach for the particular content.All that is to be done is that the web-site will connect to the harvestor which will contain the meta-data in db and then according to meta-data it will connect to particular db or the meta-data contains actual contents which can be used without connecting to the db for one-week.The main confusion i have is on the elaboration of meta-data.
+
+If any one can help me in this regard i will be thankful.
+
+Arslan
+
+
+From jyoung@oclc.org  Thu Sep 19 14:21:33 2002
+From: jyoung@oclc.org (Young,Jeff)
+Date: Thu, 19 Sep 2002 09:21:33 -0400
+Subject: [OAI-implementers] OAIHarvester News
+Message-ID: <E5431CF93E29F9478878F623E5B9CE9834289E@OA3-SERVER.oa.oclc.org>
+
+I have a couple of announcements regarding our OAIHarvester software
+(http://www.oclc.org/research/software/oai/harvester.shtm).
+
+*	Users of OAIHarvester should download the latest jar file from
+http://purl.oclc.org/NET/OPENSRC/downloads/oaiharvester/jars/oaiharvester.ja
+r. The new jar contains a fix for a significant bug in the software that
+could cause data corruption. I've already contacted users I know about
+directly, but there may be others I missed. Users can contact me for
+details.
+*	I added a new class to the oaiharvester.jar file named OAIReader.
+This class provides a simple and familiar Reader interface for Java
+programmers to use
+(http://pubserv.oclc.org/os/oaiharvester/jars/api/ORG/oclc/oai/harvester/io/
+OAIReader.html). This is included as an alternative to the Harvester Java
+application that already comes with the OAIHarvester package. OAIReader
+would be appropriate for people who wanted to integrate OAI harvesting
+capability directly into their own Java applications or who wish to write
+their own harvester driver rather than use the Harvester application that I
+wrote.
+
+Thanks.
+
+Jeff
+
+---
+Jeffrey A. Young
+Consulting Software Engineer
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From simeon@cs.cornell.edu  Thu Sep 19 15:29:41 2002
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Thu, 19 Sep 2002 10:29:41 -0400 (EDT)
+Subject: [OAI-implementers] Inquiry!!!
+In-Reply-To: <11381b11759f.11759f11381b@usc.edu>
+Message-ID: <Pine.LNX.4.44.0209191016270.6674-100000@ice.cs.cornell.edu>
+
+Arslan,
+
+Your question is a little like the question "what is contained within a 
+bag?" ... pretty hard to answer in the general case.
+
+It seems that you really need a better spec for your project if you intend
+to do anything with the metadata other than re-export it. From the OAI-PMH
+point of view, "the metadata" is simply the XML block encased by
+<metadata> tags within a record (identified by identifier, metadataPrefix,
+and datestamp)
+[http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Record].
+If all you intend to do is harvest and re-export the metadata then you
+need know no more than this.
+
+For an introduction to metadata in the context of an OAI-based system, try
+reading the Overview section of Diane Hillmann's "NSDL Metadata Primer"
+[http://metamanagement.comm.nsdlib.org/overview.html]
+
+Cheers,
+Simeon.
+
+
+On Thu, 19 Sep 2002, arslan javed wrote:
+> Hi
+>    Can any one give me an idea of what exactly is contained in the
+> meta-data. My task is to harvest data from 4 data-bases and then make
+> avaiable the contents on the website.According to the design the
+> harvestor will refresh the data from the db after 1 week.Now will i keep
+> the meta-data in some database so that when ever a user comes and
+> requets for some data he doesnt have to again connect to all the
+> databases to serach for the particular content.All that is to be done is
+> that the web-site will connect to the harvestor which will contain the
+> meta-data in db and then according to meta-data it will connect to
+> particular db or the meta-data contains actual contents which can be
+> used without connecting to the db for one-week.The main confusion i have
+> is on the elaboration of meta-data.
+> 
+> If any one can help me in this regard i will be thankful.
+> 
+> Arslan
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+
+From jyoung@oclc.org  Thu Sep 19 20:32:31 2002
+From: jyoung@oclc.org (Young,Jeff)
+Date: Thu, 19 Sep 2002 15:32:31 -0400
+Subject: [OAI-implementers] XTCat - Experimental Thesis Catalog announcement
+Message-ID: <E5431CF93E29F9478878F623E5B9CE983428A3@OA3-SERVER.oa.oclc.org>
+
+OCLC's XTCat - Experimental Thesis Catalog is now available for OAI-PMH v2
+harvesting from baseURL http://alcme.oclc.org/xtcat/servlet/OAIHandler. This
+repository contains 4.3 million thesis and dissertation records extracted
+from OCLC's WorldCat Database and is available in oai_dc and NDLTD's
+oai_etdms (http://www.ndltd.org/standards/metadata/current.html) formats. A
+subset of about 8000 electronic theses and dissertations is available by
+specifying the set "ETD".
+
+Due to the size of this repository, please review the notes at
+http://alcme.oclc.org/xtcat/index.html to optimize harvesting.
+
+Interesting features include:
+*	An XSL stylesheet reference is included in XTCat OAI responses. This
+allows modern web browsers (e.g. IE 6.0 and Netscape 7.0) to render the
+responses in HTML automatically (e.g.
+http://alcme.oclc.org/xtcat/servlet/OAIHandler?verb=GetRecord&metadataPrefix
+=oai_dc&identifier=oai:xtcat.oclc.org:OCLCNo/ocm00000012). To view the
+underlying XML, right click on the browser display and select "View Source".
+(No promises are made for people using older browsers.) Typical OAI
+harvesters will naturally ignore the stylesheet and see only the XML
+response. 
+*	The oai_etdms format defines a "resource" attribute to associate
+name authority URIs with names that occur in the metadata (e.g. in record
+http://alcme.oclc.org/xtcat/servlet/OAIHandler?verb=GetRecord&metadataPrefix
+=oai_etdms&identifier=oai:xtcat.oclc.org:OCLCNo/ocm00002277). XTCat's
+oai_etdms records include such resource attributes for names that exist in
+the Library of Congress Name Authority File (LCNAF). The URLs used take the
+form of http://authlink.oclc.org/ndltd/oai:laf.oclc.org:LCCN/n78-95332 (IE
+users may get a "Access is denied" error. Hitting the browser's refresh
+button corrects the problem. Send me a message if you want to know why).
+Note that a URL for any record in the LCNAF can be created by substituting
+another LCCN for the one in this example. The product of this URL is
+actually an OAI GetRecord response using the marcxml metadataFormat. Again,
+an XSL stylesheet is included in the response so modern browsers can render
+it into HTML automatically.
+I'm interested to hear people's experiences with this repository.
+Jeff
+---
+Jeffrey A. Young
+Consulting Software Engineer
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+From saiful@drtc.isibang.ac.in  Mon Sep 23 21:53:52 2002
+From: saiful@drtc.isibang.ac.in (Saiful Amin)
+Date: Tue, 24 Sep 2002 02:23:52 +0530 (IST)
+Subject: [OAI-implementers] Help on E-prints, anybody?
+Message-ID: <1675.192.168.1.58.1032814432.squirrel@mail.drtc.isibang.ac.in>
+
+Greetings,
+
+I am pretty new to this protocol.  I am still going through the OAI
+protocol document.  I have one project on OAI-PMH and wanted to get
+hands-on experience on this by working on eprints software.
+
+I am still unable to install eprints in my linux box (redhat 7.2) after
+three tries.  After editing the User and Group in the httpd.conf as
+mentioned the Apache webserver fails to start.
+
+Can somebody help me out of this mess.  I was unable to find any eprints
+user mailing list on the web, thus I had to put this request here.
+
+With regards,
+
+-Saiful Amin
+DRTC
+Indian Statistical Institute
+Bangalore, India.
+
+
+
+From ran@cs.utk.edu  Tue Sep 24 16:17:44 2002
+From: ran@cs.utk.edu (Mei Ran)
+Date: Tue, 24 Sep 2002 11:17:44 -0400
+Subject: [OAI-implementers] question about the date in OAI-PMH
+Message-ID: <3D9B8E5A@webmail.utk.edu>
+
+Hi,
+
+I'm not sure if I'm right for all the dates in the OAI. would you like to give 
+me some help:
+
+1. the earliestDatestamp in Identify response. is this refer to the resource 
+creation or modification time?
+
+2. the Date in metadata, DC. is this refer to resource creation or 
+modification time too?
+
+3. the datestamp in the header of DC. I think this one should refer to the 
+creation or modification of the item in the repository, is that right?
+
+Thank you very much for your help!
+
+Mei
+
+*******************************************
+Mei Ran
+Research Assistant
+Computer Science Dept., Univ. of Tennessee
+http://www.cs.utk.edu/~ran
+Tel: (865) 974-6722
+*******************************************
+
+
+From hussein@vt.edu  Tue Sep 24 16:31:53 2002
+From: hussein@vt.edu (Hussein Suleman)
+Date: Tue, 24 Sep 2002 11:31:53 -0400
+Subject: [OAI-implementers] question about the date in OAI-PMH
+References: <3D9B8E5A@webmail.utk.edu>
+Message-ID: <3D908569.4040800@vt.edu>
+
+hi
+
+Mei Ran wrote:
+
+> 1. the earliestDatestamp in Identify response. is this refer to the resource 
+> creation or modification time?
+
+
+it refers to item modification date/time. i.e. the earliest date/time on 
+which any metadata corresponding to any resource was last changed
+
+> 2. the Date in metadata, DC. is this refer to resource creation or 
+> modification time too?
+
+
+this is not defined by OAI. it can be either or both, depending on your 
+needs.
+
+> 3. the datestamp in the header of DC. I think this one should refer to the 
+> creation or modification of the item in the repository, is that right?
+
+
+yes - modification of item. (remember that "item" is an abstract container for 
+
+all the metadata records corresponding to a single resource)
+
+
+hope this helps ...
+
+
+ttfn,
+----hussein
+
+-- 
+======================================================================
+hussein suleman - hussein@vt.edu - vtcs - http://www.husseinsspace.com
+======================================================================
+
+
+From simeon@cs.cornell.edu  Tue Sep 24 16:38:19 2002
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Tue, 24 Sep 2002 11:38:19 -0400 (EDT)
+Subject: [OAI-implementers] Re: question about the date in OAI-PMH
+In-Reply-To: <3D9B8E5A@webmail.utk.edu>
+Message-ID: <Pine.LNX.4.44.0209241118480.24166-100000@ice.cs.cornell.edu>
+
+On Tue, 24 Sep 2002, Mei Ran wrote:
+> Hi,
+> 
+> I'm not sure if I'm right for all the dates in the OAI. would you like
+> to give me some help:
+> 
+> 1. the earliestDatestamp in Identify response. is this refer to the
+> resource creation or modification time?
+
+The earliestDatestamp is a datestamp that is earlier than or equal to the
+earliest datestamp for any metadata RECORD in the repository. Datestamps
+in OAI refer to the last addition, delete or modification of RECORDS and
+not resources. (The metadata records themselves describe resources. The 
+semantics of the metadata are outside the scope of OAI-PMH, they are 
+defined, for example, by Dublib Core.)
+
+Definition of resource, item, record in OAI:
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Repository
+Definition of Identify response with earliestDate element:
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Identify
+Datestamps in OAI:
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#DatestampsResponses
+ 
+> 2. the Date in metadata, DC. is this refer to resource creation or
+> modification time too?
+
+The metadata is about the resource, so yes broadly speaking.
+
+Definition of Date element in unqualified DC:
+http://dublincore.org/documents/1999/07/02/dces/#date 
+
+> 3. the datestamp in the header of DC. I think this one should refer to
+> the creation or modification of the item in the repository, is that
+> right?
+
+The OAI record header is not part of the DC (or other format) metadata.
+
+See answer to 1). However, you now mention 'item' which is slightly
+different. In OAI-PMH v2.0 (change from v1.1) an item is conceptually
+some union or source of the all the metadata records corresponding
+to a particular identifier. No datestamp is exposed for items, just
+for the metadata records.
+
+In practice, it may be the case that the item is the thing inside the 
+repository that has a datestamp. In that case all records disseminated
+from the item (all metadata formats) will have that datestamp.
+
+Definition of 'item' in OAI:
+http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Item
+Section 3 of the Repository Guidelines also notes some issues with 
+datestamps:
+http://www.openarchives.org/OAI/2.0/guidelines-repository.htm
+
+Cheers,
+Simeon
+
+
+> Thank you very much for your help!
+> 
+> Mei
+> 
+> *******************************************
+> Mei Ran
+> Research Assistant
+> Computer Science Dept., Univ. of Tennessee
+> http://www.cs.utk.edu/~ran
+> Tel: (865) 974-6722
+> *******************************************
+> 
+
+
+From ran@cs.utk.edu  Tue Sep 24 18:28:17 2002
+From: ran@cs.utk.edu (Mei Ran)
+Date: Tue, 24 Sep 2002 13:28:17 -0400 (EDT)
+Subject: [OAI-implementers] question about the date in OAI-PMH
+In-Reply-To: <3D908569.4040800@vt.edu>
+Message-ID: <Pine.GSO.4.33.0209241327480.14775-100000@hydra4c.cs.utk.edu>
+
+Hussein,
+
+Got it. Thank you very much!
+
+--Mei
+On Tue, 24 Sep 2002, Hussein Suleman wrote:
+
+
+> hi
+>
+> Mei Ran wrote:
+>
+> > 1. the earliestDatestamp in Identify response. is this refer to the resource
+> > creation or modification time?
+>
+>
+> it refers to item modification date/time. i.e. the earliest date/time on
+> which any metadata corresponding to any resource was last changed
+>
+> > 2. the Date in metadata, DC. is this refer to resource creation or
+> > modification time too?
+>
+>
+> this is not defined by OAI. it can be either or both, depending on your
+> needs.
+>
+> > 3. the datestamp in the header of DC. I think this one should refer to the
+> > creation or modification of the item in the repository, is that right?
+>
+>
+> yes - modification of item. (remember that "item" is an abstract container for
+>
+> all the metadata records corresponding to a single resource)
+>
+>
+> hope this helps ...
+>
+>
+> ttfn,
+> ----hussein
+>
+> --
+> ======================================================================
+> hussein suleman - hussein@vt.edu - vtcs - http://www.husseinsspace.com
+> ======================================================================
+>
+>
+
+******************************************************
+Mei Ran
+Research Assistant
+Computer Science Dept, Univ of Tennessee, Knoxville
+http://www.cs.utk.edu/~ran
+Tel: 865-974-6722
+******************************************************
+
+
+From ran@cs.utk.edu  Tue Sep 24 18:29:53 2002
+From: ran@cs.utk.edu (Mei Ran)
+Date: Tue, 24 Sep 2002 13:29:53 -0400 (EDT)
+Subject: [OAI-implementers] Re: question about the date in OAI-PMH
+In-Reply-To: <Pine.LNX.4.44.0209241118480.24166-100000@ice.cs.cornell.edu>
+Message-ID: <Pine.GSO.4.33.0209241329260.14775-100000@hydra4c.cs.utk.edu>
+
+Simeon,
+
+Thank you very much for your help!
+
+--Mei
+On Tue, 24 Sep 2002, Simeon Warner
+wrote:
+
+> On Tue, 24 Sep 2002, Mei Ran wrote:
+> > Hi,
+> >
+> > I'm not sure if I'm right for all the dates in the OAI. would you like
+> > to give me some help:
+> >
+> > 1. the earliestDatestamp in Identify response. is this refer to the
+> > resource creation or modification time?
+>
+> The earliestDatestamp is a datestamp that is earlier than or equal to the
+> earliest datestamp for any metadata RECORD in the repository. Datestamps
+> in OAI refer to the last addition, delete or modification of RECORDS and
+> not resources. (The metadata records themselves describe resources. The
+> semantics of the metadata are outside the scope of OAI-PMH, they are
+> defined, for example, by Dublib Core.)
+>
+> Definition of resource, item, record in OAI:
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Repository
+> Definition of Identify response with earliestDate element:
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Identify
+> Datestamps in OAI:
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#DatestampsResponses
+>
+> > 2. the Date in metadata, DC. is this refer to resource creation or
+> > modification time too?
+>
+> The metadata is about the resource, so yes broadly speaking.
+>
+> Definition of Date element in unqualified DC:
+> http://dublincore.org/documents/1999/07/02/dces/#date
+>
+> > 3. the datestamp in the header of DC. I think this one should refer to
+> > the creation or modification of the item in the repository, is that
+> > right?
+>
+> The OAI record header is not part of the DC (or other format) metadata.
+>
+> See answer to 1). However, you now mention 'item' which is slightly
+> different. In OAI-PMH v2.0 (change from v1.1) an item is conceptually
+> some union or source of the all the metadata records corresponding
+> to a particular identifier. No datestamp is exposed for items, just
+> for the metadata records.
+>
+> In practice, it may be the case that the item is the thing inside the
+> repository that has a datestamp. In that case all records disseminated
+> from the item (all metadata formats) will have that datestamp.
+>
+> Definition of 'item' in OAI:
+> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Item
+> Section 3 of the Repository Guidelines also notes some issues with
+> datestamps:
+> http://www.openarchives.org/OAI/2.0/guidelines-repository.htm
+>
+> Cheers,
+> Simeon
+>
+>
+> > Thank you very much for your help!
+> >
+> > Mei
+> >
+> > *******************************************
+> > Mei Ran
+> > Research Assistant
+> > Computer Science Dept., Univ. of Tennessee
+> > http://www.cs.utk.edu/~ran
+> > Tel: (865) 974-6722
+> > *******************************************
+> >
+>
+>
+
+******************************************************
+Mei Ran
+Research Assistant
+Computer Science Dept, Univ of Tennessee, Knoxville
+http://www.cs.utk.edu/~ran
+Tel: 865-974-6722
+******************************************************
+
+
+From herbertv@lanl.gov  Tue Sep 24 18:35:18 2002
+From: herbertv@lanl.gov (herbert van de sompel)
+Date: Tue, 24 Sep 2002 11:35:18 -0600
+Subject: [OAI-implementers] question about the date in OAI-PMH
+References: <3D908569.4040800@vt.edu>
+Message-ID: <3D90A256.7156EA8F@lanl.gov>
+
+Hussein Suleman wrote:
+
+> > 3. the datestamp in the header of DC. I think this one should refer to the
+> > creation or modification of the item in the repository, is that right?
+>
+> yes - modification of item. (remember that "item" is an abstract container
+> for
+
+as mentioned by Simeon, I am afraid this is not correct.  datestamp in version 2
+of the protocol is a property at the level of the metadata, not at the level of
+the item.  so, different metadata records available from the same item can have
+different datestamps.  in version 1 of the protocol all such records had the
+same datastamp.  a subtle, but truly important nuance.
+
+greetings
+
+herbert
+
+
+--
+Herbert Van de Sompel
+digital library research & prototyping
+Los Alamos National Laboratory - Research Library
++ 1 (505) 667 1267 / http://lib-www.lanl.gov/~herbertv/
+
+objects on mirror sites are closer than they appear
+
+
+
+From ramon@ibict.br  Tue Sep 24 18:44:52 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Tue, 24 Sep 2002 14:44:52 -0300
+Subject: [OAI-implementers] ListSets!
+Message-ID: <3DB871E13177D61198850000E222F2EB2470FC@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C263F2.164AC6F0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello group,
+
+I=B4m receiving this error when asking for the ListSets verb.
+Our sets will probably be in Portuguese, so I wonder how to make this
+work...
+
+here=B4s the message.. on the OAI Explorer:
+XML Schema Validation Error !
+[Error] filedbMtlJ:12:64: The content of element type "setDescription" =
+must
+match "(##other:uri=3Dhttp://www.openarchives.org/OAI/2.0/)".
+[Error] filedbMtlJ:16:88: The content of element type "setDescription" =
+must
+match "(##other:uri=3Dhttp://www.openarchives.org/OAI/2.0/)".
+[Error] filedbMtlJ:20:89: The content of element type "setDescription" =
+must
+match "(##other:uri=3Dhttp://www.openarchives.org/OAI/2.0/)".
+[Error] filedbMtlJ:24:85: The content of element type "setDescription" =
+must
+match "(##other:uri=3Dhttp://www.openarchives.org/OAI/2.0/)".
+/tmp/filedbMtlJ: 1125 ms (20 elems, 4 attrs, 44 spaces, 376 chars)
+<?xml version=3D"1.0" encoding=3D"UTF-8"?>
+
+<OAI-PMH xmlns=3D"http://www.openarchives.org/OAI/2.0/"
+xmlns:xsi=3D"http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation=3D"http://www.openarchives.org/OAI/2.0/
+http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+
+<responseDate>2002-09-24T17:40:06Z</responseDate>
+<request =
+verb=3D"ListSets">http://www.ibict.br/cgi-bin/ibict/oai.pl</request>
+
+<ListSets>
+<set>
+  <setSpec>quimica</setSpec>
+  <setName>Teses e Dissertacoes:PUC-RIO</setName>
+ <setDescription>Teses eletronicas da PUC-RIO</setDescription></set>
+<set>
+  <setSpec>matematica</setSpec>
+  <setName>Grupo de Teses da USP</setName>
+ <setDescription>Grupo de teses com grau de formacao igual a
+Mestrado</setDescription></set>
+<set>
+  <setSpec>informacao</setSpec>
+  <setName>Grupo de Teses da USP</setName>
+ <setDescription>Grupo de teses com grau de formacao igual a
+Doutorado</setDescription></set>
+<set>
+  <setSpec>fisica</setSpec>
+  <setName>Grupo de Teses da Virginia Tech</setName>
+ <setDescription>Teses e Dissertacoes eletronicas da Virginia
+Tech</setDescription></set>
+</ListSets>
+
+</OAI-PMH>
+
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C263F2.164AC6F0
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+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
+kcEQ8JKfv3zvei9+H55PmC+ZOC91rb+ltl6lXckaqxxKCiAgJeFvqq+rv6x5HERSedAdEGb6MwOg
+Rm0CZhAcRFHBisA/A6CdMB0QGQA0MAWgICb5BdB1bC1grgEJgFzwrtg9CfB2BvAZkFDiG8BXZW8M
+MBxTleAAwGxPoDUQNP8yAHb1tFOzsTBAHFOsf7ZvX6yvqiMBQBxTFvEAuZAAAAMAJgAAAAAAAwA2
+AAAAAAALAAIAAQAAAB4AcAABAAAACgAAAExpc3RTZXRzIQAAAAIBcQABAAAAFgAAAAHCY/E8mu/I
+hf7PsxHWtV8AoMmv280AAEAAOQDwxkoW8mPCAQMA8T8WBAAAHgAxQAEAAAAGAAAAUkFNT04AAAAD
+ABpAAAAAAB4AMEABAAAABgAAAFJBTU9OAAAAAwAZQAAAAAADAP0/5AQAAAMAgBD/////AgFHAAEA
+AAAuAAAAYz1CUjthPSA7cD1pYmljdDtsPUVCQU5PMi0wMjA5MjQxNzQ0NTJaLTEyNTI4AAAAAgH5
+PwEAAABDAAAAAAAAANynQMjAQhAatLkIACsv4YIBAAAAAAAAAC9PPUlCSUNUL09VPUJTQi9DTj1S
+RUNJUElFTlRTL0NOPVJBTU9OAAAeAPg/AQAAACAAAABSYW1vbiBNYXJ0aW5zIFNvZG9tYSBkYSBG
+b25zZWNhAB4AOEABAAAABgAAAFJBTU9OAAAAAgH7PwEAAABDAAAAAAAAANynQMjAQhAatLkIACsv
+4YIBAAAAAAAAAC9PPUlCSUNUL09VPUJTQi9DTj1SRUNJUElFTlRTL0NOPVJBTU9OAAAeAPo/AQAA
+ACAAAABSYW1vbiBNYXJ0aW5zIFNvZG9tYSBkYSBGb25zZWNhAB4AOUABAAAABgAAAFJBTU9OAAAA
+QAAHMNLLShbyY8IBQAAIMEh8WxbyY8IBHgA9AAEAAAABAAAAAAAAAB4AHQ4BAAAACgAAAExpc3RT
+ZXRzIQAAAB4ANRABAAAAOQAAADwzREI4NzFFMTMxNzdENjExOTg4NTAwMDBFMjIyRjJFQjI0NzBG
+Q0BlYmFubzIuaWJpY3QuYnI+AAAAAAsAKQAAAAAACwAjAAAAAAADAAYQNhtUSwMABxC6BgAAAwAQ
+EAAAAAADABEQMAAAAB4ACBABAAAAZQAAAEhFTExPR1JPVVAsSbRNUkVDRUlWSU5HVEhJU0VSUk9S
+V0hFTkFTS0lOR0ZPUlRIRUxJU1RTRVRTVkVSQk9VUlNFVFNXSUxMUFJPQkFCTFlCRUlOUE9SVFVH
+VUVTRSxTT0lXT04AAAAAAgF/AAEAAAA5AAAAPDNEQjg3MUUxMzE3N0Q2MTE5ODg1MDAwMEUyMjJG
+MkVCMjQ3MEZDQGViYW5vMi5pYmljdC5icj4AAAAAi60=
+
+------_=_NextPart_000_01C263F2.164AC6F0--
+
+From ramon@ibict.br  Tue Sep 24 19:10:37 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Tue, 24 Sep 2002 15:10:37 -0300
+Subject: [OAI-implementers] More about ListSets
+Message-ID: <3DB871E13177D61198850000E222F2EB2470FD@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C263F5.AF2F1170
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello again,
+
+Does anyonone know how to implement the sets on the header portion of =
+the
+record??
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C263F5.AF2F1170
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+eJ8+IicSAQaQCAAEAAAAAAABAAEAAQeQBgAIAAAA5AQAAAAAAADoAAEIgAcAGAAAAElQTS5NaWNy
+b3NvZnQgTWFpbC5Ob3RlADEIAQWAAwAOAAAA0gcJABgADwAKACUAAgA6AQEggAMADgAAANIHCQAY
+AA8ACgAlAAIAOgEBCYABACEAAAAxOTJDQjI2N0JDQ0ZENjExOTg5MzAwMDBFMjIyRjJFQgAhBwEE
+gAEAFAAAAE1vcmUgYWJvdXQgTGlzdFNldHMAKQcBDYAEAAIAAAACAAIAAQOQBgB8BgAALQAAAAMA
+AIAIIAYAAAAAAMAAAAAAAABGAAAAAFKFAADzFQAAHgABgAggBgAAAAAAwAAAAAAAAEYAAAAAVIUA
+AAEAAAAFAAAAOC4wNAAAAAADAAOACCAGAAAAAADAAAAAAAAARgAAAAABhQAAAAAAAAsABIAIIAYA
+AAAAAMAAAAAAAABGAAAAAAOFAAAAAAAACwAFgAggBgAAAAAAwAAAAAAAAEYAAAAADoUAAAAAAAAD
+AAaACCAGAAAAAADAAAAAAAAARgAAAAAQhQAAAAAAAAMAB4AIIAYAAAAAAMAAAAAAAABGAAAAABGF
+AAAAAAAAAwAIgAggBgAAAAAAwAAAAAAAAEYAAAAAGIUAAAAAAAAeAAqACCAGAAAAAADAAAAAAAAA
+RgAAAAA2hQAAAQAAAAEAAAAAAAAAHgALgAggBgAAAAAAwAAAAAAAAEYAAAAAN4UAAAEAAAABAAAA
+AAAAAB4ADIAIIAYAAAAAAMAAAAAAAABGAAAAADiFAAABAAAAAQAAAAAAAAACAQkQAQAAAFUBAABR
+AQAACQIAAExaRnUS3M8BAwAKAHJjcGcxMjUWMgD4C2BuDhAwNDZPAfcCpARkAgBjaArAc4BldDAg
+QW5kB0DWZQXQAiBvAoB9CoAIyOwgOwlpDiA4CiMT8QKAJQqBdgiQd2sLgGQ0bQxgYwBQCwNjAEEL
+szEgOCBIZWwJACBhOmcLcSwKogqECoBEb6sHkQBweRIBbhHQaxIQdQfgaBlhdBcgB3ALUGX3B4AC
+MBnAaBHQETEEIAIgSxqTGrBhBIEgcAkRaTkbMW9mGpMJcAWhZD/mPxeqCiAgLh5/H48gawEXpFJh
+bVwnZjPNA6BGAiARMGNhGAUHkGRpZwOgR3IiABRgZssN4BcgJgXQdWwcQCHx3QmAZAcwItcJ8HYG
+8BTwsxpSFyBXZQwwF7NyIeCBB0A6IDY0NDMXpPYgKEQnoTcXpCBvKl8gny8eEwFAF7MSUQAtgAAA
+AAMAJgAAAAAAAwA2AAAAAAALAAIAAQAAAB4AcAABAAAAFAAAAE1vcmUgYWJvdXQgTGlzdFNldHMA
+AgFxAAEAAAAWAAAAAcJj9NV178iGCc+zEda1XwCgya/bzQAAQAA5AHARL6/1Y8IBAwDxPxYEAAAe
+ADFAAQAAAAYAAABSQU1PTgAAAAMAGkAAAAAAHgAwQAEAAAAGAAAAUkFNT04AAAADABlAAAAAAAMA
+/T/kBAAAAwCAEP////8CAUcAAQAAAC4AAABjPUJSO2E9IDtwPWliaWN0O2w9RUJBTk8yLTAyMDky
+NDE4MTAzN1otMTI1NjMAAAACAfk/AQAAAEMAAAAAAAAA3KdAyMBCEBq0uQgAKy/hggEAAAAAAAAA
+L089SUJJQ1QvT1U9QlNCL0NOPVJFQ0lQSUVOVFMvQ049UkFNT04AAB4A+D8BAAAAIAAAAFJhbW9u
+IE1hcnRpbnMgU29kb21hIGRhIEZvbnNlY2EAHgA4QAEAAAAGAAAAUkFNT04AAAACAfs/AQAAAEMA
+AAAAAAAA3KdAyMBCEBq0uQgAKy/hggEAAAAAAAAAL089SUJJQ1QvT1U9QlNCL0NOPVJFQ0lQSUVO
+VFMvQ049UkFNT04AAB4A+j8BAAAAIAAAAFJhbW9uIE1hcnRpbnMgU29kb21hIGRhIEZvbnNlY2EA
+HgA5QAEAAAAGAAAAUkFNT04AAABAAAcwECGWifVjwgFAAAgwfItEr/VjwgEeAD0AAQAAAAEAAAAA
+AAAAHgAdDgEAAAAUAAAATW9yZSBhYm91dCBMaXN0U2V0cwAeADUQAQAAADkAAAA8M0RCODcxRTEz
+MTc3RDYxMTk4ODUwMDAwRTIyMkYyRUIyNDcwRkRAZWJhbm8yLmliaWN0LmJyPgAAAAALACkAAAAA
+AAsAIwAAAAAAAwAGEEhUJjsDAAcQkwAAAAMAEBAAAAAAAwAREDAAAAAeAAgQAQAAAGUAAABIRUxM
+T0FHQUlOLERPRVNBTllPTk9ORUtOT1dIT1dUT0lNUExFTUVOVFRIRVNFVFNPTlRIRUhFQURFUlBP
+UlRJT05PRlRIRVJFQ09SRD8/UkFN805GT05TRUNBREVTSUdOR1LhAAAAAAIBfwABAAAAOQAAADwz
+REI4NzFFMTMxNzdENjExOTg4NTAwMDBFMjIyRjJFQjI0NzBGREBlYmFubzIuaWJpY3QuYnI+AAAA
+ADxG
+
+------_=_NextPart_000_01C263F5.AF2F1170--
+
+From hussein@vt.edu  Tue Sep 24 19:29:06 2002
+From: hussein@vt.edu (Hussein Suleman)
+Date: Tue, 24 Sep 2002 14:29:06 -0400
+Subject: [OAI-implementers] question about the date in OAI-PMH
+References: <3D908569.4040800@vt.edu> <3D90A256.7156EA8F@lanl.gov>
+Message-ID: <3D90AEF2.6010101@vt.edu>
+
+of course - my slip-up.
+
+thanks for the correction Herbert/Simeon.
+
+ttfn,
+----hussein
+
+herbert van de sompel wrote:
+
+> Hussein Suleman wrote:
+> 
+> 
+>>>3. the datestamp in the header of DC. I think this one should refer to the
+>>>creation or modification of the item in the repository, is that right?
+>>>
+>>yes - modification of item. (remember that "item" is an abstract container
+>>for
+>>
+> 
+> as mentioned by Simeon, I am afraid this is not correct.  datestamp in version 2
+> of the protocol is a property at the level of the metadata, not at the level of
+> the item.  so, different metadata records available from the same item can have
+> different datestamps.  in version 1 of the protocol all such records had the
+> same datastamp.  a subtle, but truly important nuance.
+> 
+> greetings
+> 
+> herbert
+> 
+> 
+> --
+> Herbert Van de Sompel
+> digital library research & prototyping
+> Los Alamos National Laboratory - Research Library
+> + 1 (505) 667 1267 / http://lib-www.lanl.gov/~herbertv/
+> 
+> objects on mirror sites are closer than they appear
+> 
+> 
+
+
+-- 
+======================================================================
+hussein suleman - hussein@vt.edu - vtcs - http://www.husseinsspace.com
+======================================================================
+
+
+From liu_x@cs.odu.edu  Tue Sep 24 19:33:31 2002
+From: liu_x@cs.odu.edu (Xiaoming Liu)
+Date: Tue, 24 Sep 2002 14:33:31 -0400 (EDT)
+Subject: [OAI-implementers] ListSets!
+In-Reply-To: <3DB871E13177D61198850000E222F2EB2470FC@ebano2.ibict.br>
+Message-ID: <Pine.SOL.4.10.10209241424040.4270-100000@tango.cs.odu.edu>
+
+On Tue, 24 Sep 2002, Ramon Martins Sodoma da Fonseca wrote:
+
+> Hello group,
+> 
+> I´m receiving this error when asking for the ListSets verb.
+> Our sets will probably be in Portuguese, so I wonder how to make this
+> work...
+
+
+In OAI-PMH2, the setDescription is a "description" container, see the
+example in the protocol,
+<setDescription>
+      <oai_dc:dc 
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+.....................
+
+
+>Does anyonone know how to implement the sets on the header portion of the
+>record??
+
+Probably you can simply maintain a mapping table between identifier and
+its sets membership. 
+
+regards,
+liu
+
+
+
+
+> 
+> here´s the message.. on the OAI Explorer:
+> XML Schema Validation Error !
+> [Error] filedbMtlJ:12:64: The content of element type "setDescription" must
+> match "(##other:uri=http://www.openarchives.org/OAI/2.0/)".
+> [Error] filedbMtlJ:16:88: The content of element type "setDescription" must
+> match "(##other:uri=http://www.openarchives.org/OAI/2.0/)".
+> [Error] filedbMtlJ:20:89: The content of element type "setDescription" must
+> match "(##other:uri=http://www.openarchives.org/OAI/2.0/)".
+> [Error] filedbMtlJ:24:85: The content of element type "setDescription" must
+> match "(##other:uri=http://www.openarchives.org/OAI/2.0/)".
+> /tmp/filedbMtlJ: 1125 ms (20 elems, 4 attrs, 44 spaces, 376 chars)
+> <?xml version="1.0" encoding="UTF-8"?>
+> 
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+> xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+> xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+> http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+> 
+> <responseDate>2002-09-24T17:40:06Z</responseDate>
+> <request verb="ListSets">http://www.ibict.br/cgi-bin/ibict/oai.pl</request>
+> 
+> <ListSets>
+> <set>
+>   <setSpec>quimica</setSpec>
+>   <setName>Teses e Dissertacoes:PUC-RIO</setName>
+>  <setDescription>Teses eletronicas da PUC-RIO</setDescription></set>
+> <set>
+>   <setSpec>matematica</setSpec>
+>   <setName>Grupo de Teses da USP</setName>
+>  <setDescription>Grupo de teses com grau de formacao igual a
+> Mestrado</setDescription></set>
+> <set>
+>   <setSpec>informacao</setSpec>
+>   <setName>Grupo de Teses da USP</setName>
+>  <setDescription>Grupo de teses com grau de formacao igual a
+> Doutorado</setDescription></set>
+> <set>
+>   <setSpec>fisica</setSpec>
+>   <setName>Grupo de Teses da Virginia Tech</setName>
+>  <setDescription>Teses e Dissertacoes eletronicas da Virginia
+> Tech</setDescription></set>
+> </ListSets>
+> 
+> </OAI-PMH>
+> 
+> 
+> ................................................
+> Ramón Fonseca
+> Design Gráfico & Multimídia
+> Desenvolvimento Web
+> ramal: 6443
+>        6447
+> ................................................
+> 
+> 
+
+
+From ramon@ibict.br  Wed Sep 25 19:34:26 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Wed, 25 Sep 2002 15:34:26 -0300
+Subject: [OAI-implementers] Order of keys in hashes
+Message-ID: <3DB871E13177D61198850000E222F2EB2470FF@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C264C2.2CF98BE0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Does anyone know why Perl changes the order of keys in a hash??
+I need the order to be the following:
+          my %afiliacao =3D (
+                        Nome    =3D> $tupla11[4],
+                        Sigla   =3D> $tupla11[5],
+                        Pais    =3D> $tupla11[6],
+                        UF      =3D> $tupla11[7],
+                        CNPJ    =3D> $tupla11[8],  **
+                        URL     =3D> $tupla11[9],
+
+instead of printing the order above in the XML, it prints the =
+following:
+<Afiliacao>=20
+   <Nome>Biblioteca Digital de Teses e Disserta=E7=F5es</Nome>=20
+   <Sigla>BDTD</Sigla>=20
+   <CNPJ>123456</CNPJ>  **
+   <Pais>BRA</Pais>=20
+   <UF>DF</UF>=20
+   <URL>http://www.ibict.br/bdtd/</URL>=20
+</Afiliacao>=20
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C264C2.2CF98BE0
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+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
+PVJFQ0lQSUVOVFMvQ049UkFNT04AAB4A+j8BAAAAIAAAAFJhbW9uIE1hcnRpbnMgU29kb21hIGRh
+IEZvbnNlY2EAHgA5QAEAAAAGAAAAUkFNT04AAABAAAcwyGZ0rsFkwgFAAAgwug77LcJkwgEeAD0A
+AQAAAAEAAAAAAAAAHgAdDgEAAAAYAAAAT3JkZXIgb2Yga2V5cyBpbiBoYXNoZXMAHgA1EAEAAAA5
+AAAAPDNEQjg3MUUxMzE3N0Q2MTE5ODg1MDAwMEUyMjJGMkVCMjQ3MEZGQGViYW5vMi5pYmljdC5i
+cj4AAAAACwApAAAAAAALACMAAAAAAAMABhBQV8YjAwAHENkBAAADABAQAAAAAAMAERAwAAAAHgAI
+EAEAAABlAAAARE9FU0FOWU9ORUtOT1dXSFlQRVJMQ0hBTkdFU1RIRU9SREVST0ZLRVlTSU5BSEFT
+SD8/SU5FRURUSEVPUkRFUlRPQkVUSEVGT0xMT1dJTkc6TVklQUZJTElBQ0FPPShOT01FPQAAAAAC
+AX8AAQAAADkAAAA8M0RCODcxRTEzMTc3RDYxMTk4ODUwMDAwRTIyMkYyRUIyNDcwRkZAZWJhbm8y
+LmliaWN0LmJyPgAAAAA20w==
+
+------_=_NextPart_000_01C264C2.2CF98BE0--
+
+From ssarapat@enc.org  Wed Sep 25 19:38:44 2002
+From: ssarapat@enc.org (Steve Sarapata)
+Date: Wed, 25 Sep 2002 14:38:44 -0400
+Subject: [OAI-implementers] RE: Order of keys in hashes
+Message-ID: <A05D4B246586C34E907B5EF9E17CA5F301C4E9D8@sagan.enc.org>
+
+This is a multi-part message in MIME format.
+
+------_=_NextPart_001_01C264C2.C6EDB068
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hashes don't maintain key order. To get them in sorted order try:
+
+    foreach $i (sort keys(%afiliacao))
+    {
+    }
+
+
+		-----Original Message-----
+		From: oai-implementers-admin@oaisrv.nsdl.cornell.edu =
+[mailto:oai-implementers-admin@oaisrv.nsdl.cornell.edu] On Behalf Of =
+Ramon Martins Sodoma da Fonseca
+		Sent: Wednesday, September 25, 2002 2:34 PM
+		To: 'OAI Implementers'
+		Subject: Order of keys in hashes
+
+		Does anyone know why Perl changes the order of keys in a hash??
+		I need the order to be the following:
+		          my %afiliacao =3D (
+		                        Nome    =3D> $tupla11[4],
+		                        Sigla   =3D> $tupla11[5],
+		                        Pais    =3D> $tupla11[6],
+		                        UF      =3D> $tupla11[7],
+		                        CNPJ    =3D> $tupla11[8],  **
+		                        URL     =3D> $tupla11[9],
+
+		instead of printing the order above in the XML, it prints the =
+following:
+		<Afiliacao>=20
+		   <Nome>Biblioteca Digital de Teses e Disserta=E7=F5es</Nome>=20
+		   <Sigla>BDTD</Sigla>=20
+		   <CNPJ>123456</CNPJ>  **
+		   <Pais>BRA</Pais>=20
+		   <UF>DF</UF>=20
+		   <URL>http://www.ibict.br/bdtd/</URL>=20
+		</Afiliacao>=20
+
+		................................................
+		Ram=F3n Fonseca
+		Design Gr=E1fico & Multim=EDdia
+		Desenvolvimento Web
+		ramal: 6443
+		       6447
+		................................................
+
+
+------_=_NextPart_001_01C264C2.C6EDB068
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<META NAME=3D"Generator" CONTENT=3D"MS Exchange Server version =
+6.0.6249.1">
+<TITLE>RE: Order of keys in hashes</TITLE>
+</HEAD>
+<BODY>
+<!-- Converted from text/rtf format -->
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT COLOR=3D"#000080" SIZE=3D2 =
+FACE=3D"Arial">Hashes don</FONT></SPAN><SPAN LANG=3D"en-us"><FONT =
+COLOR=3D"#000080" SIZE=3D2 FACE=3D"Arial">&#8217;</FONT></SPAN><SPAN =
+LANG=3D"en-us"><FONT COLOR=3D"#000080" SIZE=3D2 FACE=3D"Arial">t =
+maintain</FONT></SPAN><SPAN LANG=3D"en-us"> <FONT COLOR=3D"#000080" =
+SIZE=3D2 FACE=3D"Arial">key</FONT></SPAN><SPAN LANG=3D"en-us"> <FONT =
+COLOR=3D"#000080" SIZE=3D2 FACE=3D"Arial">order. To get them in sorted =
+order try:</FONT></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT COLOR=3D"#000080" SIZE=3D2 =
+FACE=3D"Arial">&nbsp;&nbsp;&nbsp; foreach $i (sort =
+keys(%</FONT></SPAN><SPAN LANG=3D"en-us"><FONT COLOR=3D"#000080" =
+SIZE=3D2 FACE=3D"Arial">a</FONT></SPAN><SPAN LANG=3D"en-us"><FONT =
+COLOR=3D"#000080" SIZE=3D2 FACE=3D"Arial">filiacao</FONT></SPAN><SPAN =
+LANG=3D"en-us"><FONT COLOR=3D"#000080" SIZE=3D2 =
+FACE=3D"Arial">))</FONT></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT COLOR=3D"#000080" SIZE=3D2 =
+FACE=3D"Arial">&nbsp;&nbsp;&nbsp; {</FONT></SPAN><SPAN =
+LANG=3D"en-us"></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT COLOR=3D"#000080" SIZE=3D2 =
+FACE=3D"Arial">&nbsp;&nbsp;&nbsp; }</FONT></SPAN><SPAN =
+LANG=3D"en-us"></SPAN></P>
+<BR>
+<UL><UL>
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT SIZE=3D2 =
+FACE=3D"Tahoma">-----Original Message-----<BR>
+</FONT></SPAN><SPAN LANG=3D"en-us"><B></B></SPAN><SPAN =
+LANG=3D"en-us"><B><FONT SIZE=3D2 =
+FACE=3D"Tahoma">From:</FONT></B></SPAN><SPAN LANG=3D"en-us"></SPAN><SPAN =
+LANG=3D"en-us"><FONT SIZE=3D2 FACE=3D"Tahoma"> =
+oai-implementers-admin@oaisrv.nsdl.cornell.edu [<A =
+HREF=3D"mailto:oai-implementers-admin@oaisrv.nsdl.cornell.edu">mailto:oai=
+-implementers-admin@oaisrv.nsdl.cornell.edu</A>]</FONT></SPAN><SPAN =
+LANG=3D"en-us"><B></B></SPAN><SPAN LANG=3D"en-us"><B> <FONT SIZE=3D2 =
+FACE=3D"Tahoma">On Behalf Of</FONT></B></SPAN><SPAN =
+LANG=3D"en-us"></SPAN><SPAN LANG=3D"en-us"> <FONT SIZE=3D2 =
+FACE=3D"Tahoma">Ramon Martins Sodoma da Fonseca<BR>
+</FONT></SPAN><SPAN LANG=3D"en-us"><B></B></SPAN><SPAN =
+LANG=3D"en-us"><B><FONT SIZE=3D2 =
+FACE=3D"Tahoma">Sent:</FONT></B></SPAN><SPAN LANG=3D"en-us"></SPAN><SPAN =
+LANG=3D"en-us"><FONT SIZE=3D2 FACE=3D"Tahoma"> Wednesday, September 25, =
+2002 2:34 PM<BR>
+</FONT></SPAN><SPAN LANG=3D"en-us"><B></B></SPAN><SPAN =
+LANG=3D"en-us"><B><FONT SIZE=3D2 =
+FACE=3D"Tahoma">To:</FONT></B></SPAN><SPAN LANG=3D"en-us"></SPAN><SPAN =
+LANG=3D"en-us"><FONT SIZE=3D2 FACE=3D"Tahoma"> 'OAI Implementers'<BR>
+</FONT></SPAN><SPAN LANG=3D"en-us"><B></B></SPAN><SPAN =
+LANG=3D"en-us"><B><FONT SIZE=3D2 =
+FACE=3D"Tahoma">Subject:</FONT></B></SPAN><SPAN =
+LANG=3D"en-us"></SPAN><SPAN LANG=3D"en-us"><FONT SIZE=3D2 =
+FACE=3D"Tahoma"> Order of keys in hashes</FONT></SPAN><SPAN =
+LANG=3D"en-us"></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">Does anyone know why Perl changes the order of keys =
+in a hash??</FONT></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">I need the order to be the =
+following:</FONT></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; my =
+%afiliacao =3D (</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+Nome&nbsp;&nbsp;&nbsp; =3D&gt; $tupla11[4],</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+Sigla&nbsp;&nbsp; =3D&gt; $tupla11[5],</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+Pais&nbsp;&nbsp;&nbsp; =3D&gt; $tupla11[6],</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+UF&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =3D&gt; =
+$tupla11[7],</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+CNPJ&nbsp;&nbsp;&nbsp; =3D&gt; $tupla11[8],&nbsp; =
+**</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+URL&nbsp;&nbsp;&nbsp;&nbsp; =3D&gt; $tupla11[9],</FONT></B></SPAN><SPAN =
+LANG=3D"en-us"></SPAN><SPAN LANG=3D"en-us"></SPAN><SPAN =
+LANG=3D"en-us"></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">instead of printing the order above in the XML, it =
+prints the following:</FONT></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&lt;Afiliacao&gt; </FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&nbsp;&nbsp; &lt;Nome&gt;Biblioteca Digital de =
+Teses e Disserta=E7=F5es&lt;/Nome&gt; </FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&nbsp;&nbsp; &lt;Sigla&gt;BDTD&lt;/Sigla&gt; =
+</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&nbsp;&nbsp; &lt;CNPJ&gt;123456&lt;/CNPJ&gt;&nbsp; =
+**</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&nbsp;&nbsp; &lt;Pais&gt;BRA&lt;/Pais&gt; =
+</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&nbsp;&nbsp; &lt;UF&gt;DF&lt;/UF&gt; =
+</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&nbsp;&nbsp; &lt;URL&gt;<A =
+HREF=3D"http://www.ibict.br/bdtd/">http://www.ibict.br/bdtd/</A>&lt;/URL&=
+gt; </FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#800000" SIZE=3D2 =
+FACE=3D"Andale Mono">&lt;/Afiliacao&gt;</FONT></B></SPAN><SPAN =
+LANG=3D"en-us"><B></B></SPAN><SPAN LANG=3D"en-us"><B> </B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">................................................</FONT></B></SPAN><=
+/P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">Ram=F3n Fonseca</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">Design Gr=E1fico &amp; =
+Multim=EDdia</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">Desenvolvimento Web</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">ramal: 6443</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale Mono">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+6447</FONT></B></SPAN></P>
+
+<P ALIGN=3DLEFT><SPAN LANG=3D"en-us"><B><FONT COLOR=3D"#008080" SIZE=3D2 =
+FACE=3D"Andale =
+Mono">................................................</FONT></B></SPAN><=
+/P>
+</UL></UL>
+</BODY>
+</HTML>
+------_=_NextPart_001_01C264C2.C6EDB068--
+
+From ramon@ibict.br  Fri Sep 27 14:06:38 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Fri, 27 Sep 2002 10:06:38 -0300
+Subject: [OAI-implementers] SPECIAL CHARACTERS...
+Message-ID: <3DB871E13177D61198850000E222F2EB247107@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C26626.B73E50A0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello group,
+
+We are having problems with the character encoding.
+We need to display special charaters, like "=E7, =E3, =F6", and others, =
+and our
+question is:
+
+1) does Perl (or the OAI) have any function to encode correctly the
+characters coming from the DataBase?
+
+or
+
+2) Do we have to insert the characters with the correct encoding =
+(UTF-8)
+into the database (because the Protocol requires it)??
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C26626.B73E50A0
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+eJ8+IisNAQaQCAAEAAAAAAABAAEAAQeQBgAIAAAA5AQAAAAAAADoAAEIgAcAGAAAAElQTS5NaWNy
+b3NvZnQgTWFpbC5Ob3RlADEIAQWAAwAOAAAA0gcJABsACgAGACYABQA4AQEggAMADgAAANIHCQAb
+AAoABgApAAUAOwEBCYABACEAAAA2RTNFOUVGMTBFRDJENjExOTg5MzAwMDBFMjIyRjJFQgAmBwEE
+gAEAFgAAAFNQRUNJQUwgQ0hBUkFDVEVSUy4uLgCLBQENgAQAAgAAAAIAAgABA5AGAHAHAAAtAAAA
+AwAAgAggBgAAAAAAwAAAAAAAAEYAAAAAUoUAAPMVAAAeAAGACCAGAAAAAADAAAAAAAAARgAAAABU
+hQAAAQAAAAUAAAA4LjA0AAAAAAMAA4AIIAYAAAAAAMAAAAAAAABGAAAAAAGFAAAAAAAACwAEgAgg
+BgAAAAAAwAAAAAAAAEYAAAAAA4UAAAAAAAALAAWACCAGAAAAAADAAAAAAAAARgAAAAAOhQAAAAAA
+AAMABoAIIAYAAAAAAMAAAAAAAABGAAAAABCFAAAAAAAAAwAHgAggBgAAAAAAwAAAAAAAAEYAAAAA
+EYUAAAAAAAADAAiACCAGAAAAAADAAAAAAAAARgAAAAAYhQAAAAAAAB4ACoAIIAYAAAAAAMAAAAAA
+AABGAAAAADaFAAABAAAAAQAAAAAAAAAeAAuACCAGAAAAAADAAAAAAAAARgAAAAA3hQAAAQAAAAEA
+AAAAAAAAHgAMgAggBgAAAAAAwAAAAAAAAEYAAAAAOIUAAAEAAAABAAAAAAAAAAIBCRABAAAAQQIA
+AD0CAABmAwAATFpGdYsUgJkDAAoAcmNwZzEyNRYyAPgLYG4OEDA0Nk8B9wKkBGQCAGNoCsBzgGV0
+MCBBbmQHQNZlBdACIG8CgH0KgAjI7CA7CWkOIDgKIxPxAoAlCoF2CJB3awuAZDRtDGBjAFALA2MA
+QQuzMaA4IEhlbAkAIAnAuQhgcCwKogqECoBXEdCfCsAR0BEAFPAPICBwA2AZAmBlbQQgA/B0aCCv
+GfAR0BDyANB0BJAgCfBVBaBkGQEuGAduCeBklxoQFyAbQHMLUXkgHMAPBZAHMRpUGsFzLCBsBGlr
+EdAiXCdlN4seMB6xMx7yZjYiHjB7AHAcUG8aIR4SH+MIcCCicQpQc3RpAiAgBABSOheqMSkckG8H
+kVAbBJADICgFsRoiT0FJlyKwGNEYcW4dAGZ1GxB/IWMccRsDGkEFsAlwGrBs7x0AGisEIAWgbRkC
+A1IaE6JEHeBhQmERMD8XqqsFsBeqMiKwRBcgdxiz/xHQHHELgBEwACAmnhnYJhSDGvcjYFVURi04
+IrB/C4AccRoiEaABkSjhI2Bi2QWQYXUwQRoiUANgHHDtCOEgCXAhIGkJcAQgGeCMKT8pGwr0YiAu
+M/9HNQ816xekUmFtH3EzvQOgRgIgETAwoBekRAeQNGlnA6BHKfAewDFmyw3gFyAmBdB1bCFgN3Hv
+CYAbQDhICfB2BvAU8AeAPy9iGGAMMBezGpAAwGw6oCA2NDQzF6QgPcT9PSE3F6Q17z/fNh8zSAFA
+CxezElEAQ1AAAAADACYAAAAAAAMANgAAAAAACwACAAEAAAAeAHAAAQAAABYAAABTUEVDSUFMIENI
+QVJBQ1RFUlMuLi4AAAACAXEAAQAAABYAAAABwmYl20h5V9Pe0fUR1rVfAKDJr9vNAABAADkAoFA+
+tyZmwgEDAPE/FgQAAB4AMUABAAAABgAAAFJBTU9OAAAAAwAaQAAAAAAeADBAAQAAAAYAAABSQU1P
+TgAAAAMAGUAAAAAAAwD9P+QEAAADAIAQ/////wIBRwABAAAALgAAAGM9QlI7YT0gO3A9aWJpY3Q7
+bD1FQkFOTzItMDIwOTI3MTMwNjM4Wi0xNDg3NQAAAAIB+T8BAAAAQwAAAAAAAADcp0DIwEIQGrS5
+CAArL+GCAQAAAAAAAAAvTz1JQklDVC9PVT1CU0IvQ049UkVDSVBJRU5UUy9DTj1SQU1PTgAAHgD4
+PwEAAAAgAAAAUmFtb24gTWFydGlucyBTb2RvbWEgZGEgRm9uc2VjYQAeADhAAQAAAAYAAABSQU1P
+TgAAAAIB+z8BAAAAQwAAAAAAAADcp0DIwEIQGrS5CAArL+GCAQAAAAAAAAAvTz1JQklDVC9PVT1C
+U0IvQ049UkVDSVBJRU5UUy9DTj1SQU1PTgAAHgD6PwEAAAAgAAAAUmFtb24gTWFydGlucyBTb2Rv
+bWEgZGEgRm9uc2VjYQAeADlAAQAAAAYAAABSQU1PTgAAAEAABzB8n6DgH2bCAUAACDCYUw+5JmbC
+AR4APQABAAAAAQAAAAAAAAAeAB0OAQAAABYAAABTUEVDSUFMIENIQVJBQ1RFUlMuLi4AAAAeADUQ
+AQAAADkAAAA8M0RCODcxRTEzMTc3RDYxMTk4ODUwMDAwRTIyMkYyRUIyNDcxMDdAZWJhbm8yLmli
+aWN0LmJyPgAAAAALACkAAAAAAAsAIwAAAAAAAwAGEB9f1PoDAAcQhQEAAAMAEBAAAAAAAwAREDAA
+AAAeAAgQAQAAAGUAAABIRUxMT0dST1VQLFdFQVJFSEFWSU5HUFJPQkxFTVNXSVRIVEhFQ0hBUkFD
+VEVSRU5DT0RJTkdXRU5FRURUT0RJU1BMQVlTUEVDSUFMQ0hBUkFURVJTLExJS0Ui5yzjLPYiLEFO
+AAAAAAIBfwABAAAAOQAAADwzREI4NzFFMTMxNzdENjExOTg4NTAwMDBFMjIyRjJFQjI0NzEwN0Bl
+YmFubzIuaWJpY3QuYnI+AAAAANWM
+
+------_=_NextPart_000_01C26626.B73E50A0--
+
+From m.muilwijk@library.uu.nl  Fri Sep 27 14:46:30 2002
+From: m.muilwijk@library.uu.nl (Marina Muilwijk)
+Date: Fri, 27 Sep 2002 15:46:30 +0200
+Subject: [OAI-implementers] SPECIAL CHARACTERS...
+In-Reply-To: <3DB871E13177D61198850000E222F2EB247107@ebano2.ibict.br>
+Message-ID: <3D947D56.5239.15552697@localhost>
+
+On 27 Sep 2002 at 10:06, Ramon Martins Sodoma da Fonseca wrote:
+
+> We are having problems with the character encoding.
+> We need to display special charaters, like "ç, ã, ö", and others, and
+> our question is:
+
+We use Perl's sprintf function. For instance:
+$creators =~ s/([^<>:a-zA-Z, .\/-])/sprintf "&#x%04X;", ord($1)/ei;
+
+which converts everything but the characters within brackets to their 
+hexadecimal value and adds the "&#X" required for Unicode encoding. 
+
+
+
+
+From tim@tim.brody.btinternet.co.uk  Fri Sep 27 14:52:38 2002
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Fri, 27 Sep 2002 14:52:38 +0100
+Subject: [OAI-implementers] Re: SPECIAL CHARACTERS...
+References: <3DB871E13177D61198850000E222F2EB247107@ebano2.ibict.br>
+Message-ID: <0ce201c2662d$242bd8d0$14414e98@Shrek>
+
+utf-8 support in Perl 5.6 isn't very good.
+
+I haven't tried Perl 5.8, but it should allow you do handle multiple
+character sets more gracefully (see
+http://www.perldoc.com/perl5.8.0/pod/perluniintro.html).
+
+Without installing it myself I don't know how it works with databases.
+
+The Encode module in 5.8 would seem to provide whatever conversions would be
+needed from your database character set to utf-8.
+(its entirely possible Perl 5.8 will just work transparently ...)
+
+All the best,
+Tim.
+
+----- Original Message -----
+From: "Ramon Martins Sodoma da Fonseca" <ramon@ibict.br>
+To: "OAI Implementers" <oai-implementers@oaisrv.nsdl.cornell.edu>; "Steve
+Sarapata" <ssarapat@enc.org>; "Tim Brody" <tim@tim.brody.btinternet.co.uk>
+Sent: Friday, September 27, 2002 2:06 PM
+Subject: SPECIAL CHARACTERS...
+
+
+Hello group,
+
+We are having problems with the character encoding.
+We need to display special charaters, like "ç, ã, ö", and others, and our
+question is:
+
+1) does Perl (or the OAI) have any function to encode correctly the
+characters coming from the DataBase?
+
+or
+
+2) Do we have to insert the characters with the correct encoding (UTF-8)
+into the database (because the Protocol requires it)??
+
+................................................
+Ramón Fonseca
+Design Gráfico & Multimídia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+
+
+From ramon@ibict.br  Fri Sep 27 16:03:40 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Fri, 27 Sep 2002 12:03:40 -0300
+Subject: [OAI-implementers] XML Validation
+Message-ID: <3DB871E13177D61198850000E222F2EB247113@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C26637.1039C0D0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello again...
+
+can anyone tell me what=B4s wrong with the validation of our =
+proprietary
+XML...
+
+you can test it with the OAI Explorer with this address:
+
+http://bdtd.ibict.br/cgi-bin/ibict/oai.pl
+
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C26637.1039C0D0
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+eJ8+IjEPAQaQCAAEAAAAAAABAAEAAQeQBgAIAAAA5AQAAAAAAADoAAEIgAcAGAAAAElQTS5NaWNy
+b3NvZnQgTWFpbC5Ob3RlADEIAQWAAwAOAAAA0gcJABsADAADACgABQA5AQEggAMADgAAANIHCQAb
+AAwAAwAvAAUAQAEBCYABACEAAABGNTUwOUVGMTBFRDJENjExOTg5MzAwMDBFMjIyRjJFQgATBwEE
+gAEADwAAAFhNTCBWYWxpZGF0aW9uABwFAQ2ABAACAAAAAgACAAEDkAYA9AYAAC0AAAADAACACCAG
+AAAAAADAAAAAAAAARgAAAABShQAA8xUAAB4AAYAIIAYAAAAAAMAAAAAAAABGAAAAAFSFAAABAAAA
+BQAAADguMDQAAAAAAwADgAggBgAAAAAAwAAAAAAAAEYAAAAAAYUAAAAAAAALAASACCAGAAAAAADA
+AAAAAAAARgAAAAADhQAAAAAAAAsABYAIIAYAAAAAAMAAAAAAAABGAAAAAA6FAAAAAAAAAwAGgAgg
+BgAAAAAAwAAAAAAAAEYAAAAAEIUAAAAAAAADAAeACCAGAAAAAADAAAAAAAAARgAAAAARhQAAAAAA
+AAMACIAIIAYAAAAAAMAAAAAAAABGAAAAABiFAAAAAAAAHgAKgAggBgAAAAAAwAAAAAAAAEYAAAAA
+NoUAAAEAAAABAAAAAAAAAB4AC4AIIAYAAAAAAMAAAAAAAABGAAAAADeFAAABAAAAAQAAAAAAAAAe
+AAyACCAGAAAAAADAAAAAAAAARgAAAAA4hQAAAQAAAAEAAAAAAAAAAgEJEAEAAADXAQAA0wEAAMIC
+AABMWkZ1OfyT1wMACgByY3BnMTI1FjIA+Atgbg4QMDQ2TwH3AqQEZAIAY2gKwHOAZXQwIEFuZAdA
+9mUF0AIgbwKDAFAC8hDZNwhVB7ICgH0KgAjIIDt7CWkOIDgKIxYBAoAKgXZJCJB3awuAZDQMYGMb
+AFALA2MScgvCMTggiEhlbAkAIGFnC3HeLhmgCqIKhAqAYwORAHBWeQIgEdB0GQEgB4AggncRAHRc
+J2I0BCCOdwNgDyAbsGl0aBswKmgR0HYHQGkRoHRpMQIgIG9mHfAIcCBwDwNgHnAIkAGQcnkgWMxN
+TBmtGvB1IBqSG0AOcwVAHNAcuE9BSSD8RXgLUAWwE+EcxQQAGUDsZGQJcAQQOhnaGCEC0RMSgQvx
+IGgCQHA6LwAvYmR0ZC5pYgEN4HQuYnIvY2ckaS0mMG4vJiMvbz0LcC4LUCQ3GFcj22IgHxmhKi8r
+Pyv5GdRSYW3pHABmMwOgRgIgETAakCUZ1EQHkGlnA6BHclscABZwZg3gGTAmBdB17mwdsC2BCYBk
+BzAuZwnwPnYG8BcAB4ACMBkwV2UbDDAZ43ItcAdAOiA2aDQ0MxnUIDPUMzE3/xnUK/817ywvKaMB
+QBnjFGECADkQAAMAJgAAAAAAAwA2AAAAAAALAAIAAQAAAB4AcAABAAAADwAAAFhNTCBWYWxpZGF0
+aW9uAAACAXEAAQAAABYAAAABwmY2M+d5V9Q60fUR1rVfAKDJr9vNAABAADkA0MA5EDdmwgEDAPE/
+FgQAAB4AMUABAAAABgAAAFJBTU9OAAAAAwAaQAAAAAAeADBAAQAAAAYAAABSQU1PTgAAAAMAGUAA
+AAAAAwD9P+QEAAADAIAQ/////wIBRwABAAAALgAAAGM9QlI7YT0gO3A9aWJpY3Q7bD1FQkFOTzIt
+MDIwOTI3MTUwMzQwWi0xNTExNAAAAAIB+T8BAAAAQwAAAAAAAADcp0DIwEIQGrS5CAArL+GCAQAA
+AAAAAAAvTz1JQklDVC9PVT1CU0IvQ049UkVDSVBJRU5UUy9DTj1SQU1PTgAAHgD4PwEAAAAgAAAA
+UmFtb24gTWFydGlucyBTb2RvbWEgZGEgRm9uc2VjYQAeADhAAQAAAAYAAABSQU1PTgAAAAIB+z8B
+AAAAQwAAAAAAAADcp0DIwEIQGrS5CAArL+GCAQAAAAAAAAAvTz1JQklDVC9PVT1CU0IvQ049UkVD
+SVBJRU5UUy9DTj1SQU1PTgAAHgD6PwEAAAAgAAAAUmFtb24gTWFydGlucyBTb2RvbWEgZGEgRm9u
+c2VjYQAeADlAAQAAAAYAAABSQU1PTgAAAEAABzBy65PLNmbCAUAACDBuY8wUN2bCAR4APQABAAAA
+AQAAAAAAAAAeAB0OAQAAAA8AAABYTUwgVmFsaWRhdGlvbgAAHgA1EAEAAAA5AAAAPDNEQjg3MUUx
+MzE3N0Q2MTE5ODg1MDAwMEUyMjJGMkVCMjQ3MTEzQGViYW5vMi5pYmljdC5icj4AAAAACwApAAAA
+AAALACMAAAAAAAMABhCDjnASAwAHEOAAAAADABAQAAAAAAMAERAwAAAAHgAIEAEAAABlAAAASEVM
+TE9BR0FJTkNBTkFOWU9ORVRFTExNRVdIQVS0U1dST05HV0lUSFRIRVZBTElEQVRJT05PRk9VUlBS
+T1BSSUVUQVJZWE1MWU9VQ0FOVEVTVElUV0lUSFRIRU9BSUVYUExPUgAAAAACAX8AAQAAADkAAAA8
+M0RCODcxRTEzMTc3RDYxMTk4ODUwMDAwRTIyMkYyRUIyNDcxMTNAZWJhbm8yLmliaWN0LmJyPgAA
+AAAUag==
+
+------_=_NextPart_000_01C26637.1039C0D0--
+
+From hussein@vt.edu  Fri Sep 27 16:18:55 2002
+From: hussein@vt.edu (Hussein Suleman)
+Date: Fri, 27 Sep 2002 11:18:55 -0400
+Subject: [OAI-implementers] XML Validation
+References: <3DB871E13177D61198850000E222F2EB247113@ebano2.ibict.br>
+Message-ID: <3D9476DF.1010606@vt.edu>
+
+hi
+
+i didn't scrutinize too much, but here are some things to look at for 
+starters:
+
+- when i issued GetRecord, the record that came back had the wrong root 
+node - "MTD-BR" as opposed to "Documento.teses" used in the schema
+
+- the Identify response used the wrong schema (and namespace too?) for 
+the toolkit portion so it did not validate
+
+- ListIdentifiers did not work because the completeListSize is an empty 
+string - if it appears in the XML, i think it has to be a positive integer
+
+- you may need a "targetNamespace" attribute at the top of your schema - 
+see the OAI protocol schema for an example of how its done
+
+hope this is useful to you (and to others too)
+
+ttfn,
+----hussein
+
+Ramon Martins Sodoma da Fonseca wrote:
+
+> Hello again...
+> 
+> can anyone tell me what´s wrong with the validation of our proprietary
+> XML...
+> 
+> you can test it with the OAI Explorer with this address:
+> 
+> http://bdtd.ibict.br/cgi-bin/ibict/oai.pl
+> 
+> 
+> ................................................
+> Ramón Fonseca
+> Design Gráfico & Multimídia
+> Desenvolvimento Web
+> ramal: 6443
+>        6447
+> ................................................
+> 
+> 
+
+
+-- 
+======================================================================
+hussein suleman - hussein@vt.edu - vtcs - http://www.husseinsspace.com
+======================================================================
+
+
+From ramon@ibict.br  Mon Sep 30 19:56:06 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Mon, 30 Sep 2002 15:56:06 -0300
+Subject: [OAI-implementers] XML Schemas
+Message-ID: <3DB871E13177D61198850000E222F2EB247123@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C268B3.07F72FB0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+could anyone take a look at our schema and test the address with the =
+OAI
+Explorer and tell me why there are so many errors in the output?
+
+http://www.ibict.br/schema/mtd-br(v1.0).xsd
+
+http://bdtd.ibict.br/cgi-bin/ibict/oai.pl
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C268B3.07F72FB0
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+eJ8+Ig4SAQaQCAAEAAAAAAABAAEAAQeQBgAIAAAA5AQAAAAAAADoAAEIgAcAGAAAAElQTS5NaWNy
+b3NvZnQgTWFpbC5Ob3RlADEIAQWAAwAOAAAA0gcJAB4ADwA4AAYAAQBOAQEggAMADgAAANIHCQAe
+AA8AOAAMAAEAVAEBCYABACEAAAAzQkYxMDdEMDc5RDRENjExOTg5MzAwMDBFMjIyRjJFQgACBwEE
+gAEADAAAAFhNTCBTY2hlbWFzANUDAQ2ABAACAAAAAgACAAEDkAYA/AYAAC0AAAADAACACCAGAAAA
+AADAAAAAAAAARgAAAABShQAA8xUAAB4AAYAIIAYAAAAAAMAAAAAAAABGAAAAAFSFAAABAAAABQAA
+ADguMDQAAAAAAwADgAggBgAAAAAAwAAAAAAAAEYAAAAAAYUAAAAAAAALAASACCAGAAAAAADAAAAA
+AAAARgAAAAADhQAAAAAAAAsABYAIIAYAAAAAAMAAAAAAAABGAAAAAA6FAAAAAAAAAwAGgAggBgAA
+AAAAwAAAAAAAAEYAAAAAEIUAAAAAAAADAAeACCAGAAAAAADAAAAAAAAARgAAAAARhQAAAAAAAAMA
+CIAIIAYAAAAAAMAAAAAAAABGAAAAABiFAAAAAAAAHgAKgAggBgAAAAAAwAAAAAAAAEYAAAAANoUA
+AAEAAAABAAAAAAAAAB4AC4AIIAYAAAAAAMAAAAAAAABGAAAAADeFAAABAAAAAQAAAAAAAAAeAAyA
+CCAGAAAAAADAAAAAAAAARgAAAAA4hQAAAQAAAAEAAAAAAAAAAgEJEAEAAADmAQAA4gEAAM4CAABM
+WkZ1xjRmEwMACgByY3BnMTI1FjIA+Atgbg4QMDQ2TwH3AqQEZAIAY2gKwHOAZXQwIEFuZAdA9mUF
+0AIgbwKDAFAC8hDZNwhVB7ICgH0KgAjIIDt7CWkOIDgKIxYBAoAKgXZJCJB3awuAZDQMYGMbAFAL
+A2MScgvCMTggoQWgdWxkIABweQIgSxHQAZBrEdBhIAkAby5rGUAFQAhhIATwaGW3AMAZQRkwdAeQ
+BUB0GxD5GUBkZAlwBBED8BvwG+PAT0FJIEV4C1AFsDsT4RtkbAMgB4AcoGh5zxviCXAZQB9Bc28e
+kBlR7iAEkANgESAgC4Ab4whgdHRwISA/CqIKhAqAaEECQHA6Ly93IrAuBGliDeB0LmJyL0Ea9C9t
+dGQtI1AoAHYxLjApLnhzvwsxIagYIQLREoEL8SAiRYxiZCQAIuhjZ2kkIKULgC8i8y9vC3AuC1DH
+JVcYVyGFYiAuKs8r3wMsuyGEUmFtXCdmmjMDoEYCIBEwY2EhhJJEB5BpZwOgR3IuUG0WcGYN4B/A
+JgXQGRB0vwdwMBEcQAcwLycJ8HYG8M8XAAeAAjAfwFdlDDAhkwZyLjAHQDogNjQ02jMhhCA0lDPx
+NyGELL+/Nq8s7ypjAUAhkxRhADnQAAADACYAAAAAAAMANgAAAAAACwACAAEAAAAeAHAAAQAAAAwA
+AABYTUwgU2NoZW1hcwACAXEAAQAAABYAAAABwmiyKL176fLV1HUR1rVfAKDJr9vNAABAADkAsC/3
+B7NowgEDAPE/FgQAAB4AMUABAAAABgAAAFJBTU9OAAAAAwAaQAAAAAAeADBAAQAAAAYAAABSQU1P
+TgAAAAMAGUAAAAAAAwD9P+QEAAADAIAQ/////wIBRwABAAAALgAAAGM9QlI7YT0gO3A9aWJpY3Q7
+bD1FQkFOTzItMDIwOTMwMTg1NjA2Wi0xNjQ2MQAAAAIB+T8BAAAAQwAAAAAAAADcp0DIwEIQGrS5
+CAArL+GCAQAAAAAAAAAvTz1JQklDVC9PVT1CU0IvQ049UkVDSVBJRU5UUy9DTj1SQU1PTgAAHgD4
+PwEAAAAgAAAAUmFtb24gTWFydGlucyBTb2RvbWEgZGEgRm9uc2VjYQAeADhAAQAAAAYAAABSQU1P
+TgAAAAIB+z8BAAAAQwAAAAAAAADcp0DIwEIQGrS5CAArL+GCAQAAAAAAAAAvTz1JQklDVC9PVT1C
+U0IvQ049UkVDSVBJRU5UUy9DTj1SQU1PTgAAHgD6PwEAAAAgAAAAUmFtb24gTWFydGlucyBTb2Rv
+bWEgZGEgRm9uc2VjYQAeADlAAQAAAAYAAABSQU1PTgAAAEAABzCYsxCmsmjCAUAACDAWBKULs2jC
+AR4APQABAAAAAQAAAAAAAAAeAB0OAQAAAAwAAABYTUwgU2NoZW1hcwAeADUQAQAAADkAAAA8M0RC
+ODcxRTEzMTc3RDYxMTk4ODUwMDAwRTIyMkYyRUIyNDcxMjNAZWJhbm8yLmliaWN0LmJyPgAAAAAL
+ACkAAAAAAAsAIwAAAAAAAwAGEDmbzcoDAAcQ/wAAAAMAEBAAAAAAAwAREDAAAAAeAAgQAQAAAGUA
+AABDT1VMREFOWU9ORVRBS0VBTE9PS0FUT1VSU0NIRU1BQU5EVEVTVFRIRUFERFJFU1NXSVRIVEhF
+T0FJRVhQTE9SRVJBTkRURUxMTUVXSFlUSEVSRUFSRVNPTUFOWUVSUk9SU0lOAAAAAAIBfwABAAAA
+OQAAADwzREI4NzFFMTMxNzdENjExOTg4NTAwMDBFMjIyRjJFQjI0NzEyM0BlYmFubzIuaWJpY3Qu
+YnI+AAAAADlw
+
+------_=_NextPart_000_01C268B3.07F72FB0--
+
+From ramon@ibict.br  Mon Sep 30 20:27:38 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Mon, 30 Sep 2002 16:27:38 -0300
+Subject: [OAI-implementers] [OAI Implementers] - OAI_DC XML ERRORS
+Message-ID: <3DB871E13177D61198850000E222F2EB247125@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C268B7.6FEB2320
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello all, (again.. )
+
+does anyone know what this error is?
+
+XML Schema Validation Error !
+[Error] fileTk4ibk:94:49: Datatype error: '' is not a decimal.
+/tmp/fileTk4ibk: 2125 ms (75 elems, 19 attrs, 247 spaces, 2681 chars)
+
+it=B4s showing when running the following verb in the OAI Explorer:
+
+http://bdtd.ibict.br/cgi-bin/ibict/oai.pl?verb=3DListRecords&metadataPre=
+fix=3Doa
+i_dc
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C268B7.6FEB2320
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+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
+AEMAAAAAAAAA3KdAyMBCEBq0uQgAKy/hggEAAAAAAAAAL089SUJJQ1QvT1U9QlNCL0NOPVJFQ0lQ
+SUVOVFMvQ049UkFNT04AAB4A+j8BAAAAIAAAAFJhbW9uIE1hcnRpbnMgU29kb21hIGRhIEZvbnNl
+Y2EAHgA5QAEAAAAGAAAAUkFNT04AAABAAAcwAijrb7dowgFAAAgwSnzJcrdowgEeAD0AAQAAAAEA
+AAAAAAAAHgAdDgEAAAAnAAAAW09BSSBJbXBsZW1lbnRlcnNdIC0gT0FJX0RDIFhNTCBFUlJPUlMA
+AB4ANRABAAAAOQAAADwzREI4NzFFMTMxNzdENjExOTg4NTAwMDBFMjIyRjJFQjI0NzEyNUBlYmFu
+bzIuaWJpY3QuYnI+AAAAAAsAKQAAAAAACwAjAAAAAAADAAYQRcmqUQMABxB5AQAAAwAQEAAAAAAD
+ABEQMAAAAB4ACBABAAAAZQAAAEhFTExPQUxMLChBR0FJTilET0VTQU5ZT05FS05PV1dIQVRUSElT
+RVJST1JJUz9YTUxTQ0hFTUFWQUxJREFUSU9ORVJST1JFUlJPUkZJTEVUSzRJQks6OTQ6NDk6REFU
+QVRZUEUAAAAAAgF/AAEAAAA5AAAAPDNEQjg3MUUxMzE3N0Q2MTE5ODg1MDAwMEUyMjJGMkVCMjQ3
+MTI1QGViYW5vMi5pYmljdC5icj4AAAAADtg=
+
+------_=_NextPart_000_01C268B7.6FEB2320--
+
+From simeon@cs.cornell.edu  Mon Sep 30 20:32:02 2002
+From: simeon@cs.cornell.edu (Simeon Warner)
+Date: Mon, 30 Sep 2002 15:32:02 -0400 (EDT)
+Subject: [OAI-implementers] [OAI Implementers] - OAI_DC XML ERRORS
+In-Reply-To: <3DB871E13177D61198850000E222F2EB247125@ebano2.ibict.br>
+Message-ID: <Pine.LNX.4.44.0209301530060.10224-100000@ice.cs.cornell.edu>
+
+I don't know if this is the reason for the particular message you
+report, but a quick look at the response shows:
+
+<resumptionToken cursor="0" completeListSize=""></resumptionToken>
+
+which doesn't match the schema:
+
+          <attribute name="completeListSize" type="positiveInteger" 
+                     use="optional"/>
+
+Cheers,
+Simeon
+
+
+On Mon, 30 Sep 2002, Ramon Martins Sodoma da Fonseca wrote:
+
+> Hello all, (again.. )
+> 
+> does anyone know what this error is?
+> 
+> XML Schema Validation Error !
+> [Error] fileTk4ibk:94:49: Datatype error: '' is not a decimal.
+> /tmp/fileTk4ibk: 2125 ms (75 elems, 19 attrs, 247 spaces, 2681 chars)
+> 
+> it´s showing when running the following verb in the OAI Explorer:
+> 
+> http://bdtd.ibict.br/cgi-bin/ibict/oai.pl?verb=ListRecords&metadataPrefix=oa
+> i_dc
+> 
+> ................................................
+> Ramón Fonseca
+> Design Gráfico & Multimídia
+> Desenvolvimento Web
+> ramal: 6443
+>        6447
+> ................................................
+> 
+> 
+
+
+From ramon@ibict.br  Mon Sep 30 21:32:32 2002
+From: ramon@ibict.br (Ramon Martins Sodoma da Fonseca)
+Date: Mon, 30 Sep 2002 17:32:32 -0300
+Subject: [OAI-implementers] [OAI Implementers]
+Message-ID: <3DB871E13177D61198850000E222F2EB24712D@ebano2.ibict.br>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C268C0.80A742D0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+Hello list!!
+
+gladly enough we found we had a few errors in our XML schema, which has =
+been
+updated...
+
+now we only have the resumption token error...
+
+................................................
+Ram=F3n Fonseca
+Design Gr=E1fico & Multim=EDdia
+Desenvolvimento Web
+ramal: 6443
+       6447
+................................................
+
+
+------_=_NextPart_000_01C268C0.80A742D0
+Content-Type: application/ms-tnef
+Content-Transfer-Encoding: base64
+
+eJ8+IiYUAQaQCAAEAAAAAAABAAEAAQeQBgAIAAAA5AQAAAAAAADoAAEIgAcAGAAAAElQTS5NaWNy
+b3NvZnQgTWFpbC5Ob3RlADEIAQWAAwAOAAAA0gcJAB4AEQAgACAAAQBSAQEggAMADgAAANIHCQAe
+ABEAIAAkAAEAVgEBCYABACEAAAA5NEFEREUxRkFERDRENjExOTg5MzAwMDBFMjIyRjJFQgBCBwEE
+gAEAEwAAAFtPQUkgSW1wbGVtZW50ZXJzXQCmBgENgAQAAgAAAAIAAgABA5AGALgGAAAtAAAAAwAA
+gAggBgAAAAAAwAAAAAAAAEYAAAAAUoUAAPMVAAAeAAGACCAGAAAAAADAAAAAAAAARgAAAABUhQAA
+AQAAAAUAAAA4LjA0AAAAAAMAA4AIIAYAAAAAAMAAAAAAAABGAAAAAAGFAAAAAAAACwAEgAggBgAA
+AAAAwAAAAAAAAEYAAAAAA4UAAAAAAAALAAWACCAGAAAAAADAAAAAAAAARgAAAAAOhQAAAAAAAAMA
+BoAIIAYAAAAAAMAAAAAAAABGAAAAABCFAAAAAAAAAwAHgAggBgAAAAAAwAAAAAAAAEYAAAAAEYUA
+AAAAAAADAAiACCAGAAAAAADAAAAAAAAARgAAAAAYhQAAAAAAAB4ACoAIIAYAAAAAAMAAAAAAAABG
+AAAAADaFAAABAAAAAQAAAAAAAAAeAAuACCAGAAAAAADAAAAAAAAARgAAAAA3hQAAAQAAAAEAAAAA
+AAAAHgAMgAggBgAAAAAAwAAAAAAAAEYAAAAAOIUAAAEAAAABAAAAAAAAAAIBCRABAAAAlAEAAJAB
+AABIAgAATFpGdf35U8IDAAoAcmNwZzEyNRYyAPgLYG4OEDA0Nk8B9wKkBGQCAGNoCsBzgGV0MCBB
+bmQHQNZlBdACIG8CgH0KgAjI7CA7CWkOIDgKIxPxAoAlCoF2CJB3awuAZDRtDGBjAFALA2MAQQuz
+MSA4IEhlbAkAIGxxBAB0ISEKogqECoBnYQtgZGx5IAnwCGBn2GggdxHQAhB1EZAZMvsRABmwYRlg
+B9EEkANgESAKIAuAIAhhIFhNTFIgBPBoZQDALBkwaC8N4BkgEQAEIGIJ4SB16nARoHQJgC4doBeq
+EhBfB+AZQQIgGKERAHYR0HRFG+AgCXBzdW0FMGnzAiAfkG9rHQEaox2tCiA+IB2hIo8jnyRZF6RS
+YaBtXCdmMwOgRgIgKREwY2EXpEQHkGln2QOgR3Il8BRgZg3gFyByJgXQdWwgQCXhCYBk9wcwJscJ
+8HYG8BTwB4ACMNkXIFdlDDAXs3Il0AdAQDogNjQ0MxekIPssNCuRNxekJF8uTySPIgMXAUAXsxJR
+ADFwAwAmAAAAAAADADYAAAAAAAsAAgABAAAAHgBwAAEAAAATAAAAW09BSSBJbXBsZW1lbnRlcnNd
+AAACAXEAAQAAABYAAAABwmi/njp76fMF1HUR1rVfAKDJr9vNAABAADkA0EKngMBowgEDAPE/FgQA
+AB4AMUABAAAABgAAAFJBTU9OAAAAAwAaQAAAAAAeADBAAQAAAAYAAABSQU1PTgAAAAMAGUAAAAAA
+AwD9P+QEAAADAIAQ/////wIBRwABAAAALgAAAGM9QlI7YT0gO3A9aWJpY3Q7bD1FQkFOTzItMDIw
+OTMwMjAzMjMyWi0xNjY4NQAAAAIB+T8BAAAAQwAAAAAAAADcp0DIwEIQGrS5CAArL+GCAQAAAAAA
+AAAvTz1JQklDVC9PVT1CU0IvQ049UkVDSVBJRU5UUy9DTj1SQU1PTgAAHgD4PwEAAAAgAAAAUmFt
+b24gTWFydGlucyBTb2RvbWEgZGEgRm9uc2VjYQAeADhAAQAAAAYAAABSQU1PTgAAAAIB+z8BAAAA
+QwAAAAAAAADcp0DIwEIQGrS5CAArL+GCAQAAAAAAAAAvTz1JQklDVC9PVT1CU0IvQ049UkVDSVBJ
+RU5UUy9DTj1SQU1PTgAAHgD6PwEAAAAgAAAAUmFtb24gTWFydGlucyBTb2RvbWEgZGEgRm9uc2Vj
+YQAeADlAAQAAAAYAAABSQU1PTgAAAEAABzDQQqeAwGjCAUAACDAOsf2CwGjCAR4APQABAAAAAQAA
+AAAAAAAeAB0OAQAAABMAAABbT0FJIEltcGxlbWVudGVyc10AAB4ANRABAAAAOQAAADwzREI4NzFF
+MTMxNzdENjExOTg4NTAwMDBFMjIyRjJFQjI0NzEyREBlYmFubzIuaWJpY3QuYnI+AAAAAAsAKQAA
+AAAACwAjAAAAAAADAAYQpVk9fgMABxC1AAAAAwAQEAAAAAADABEQMAAAAB4ACBABAAAAZQAAAEhF
+TExPTElTVEdMQURMWUVOT1VHSFdFRk9VTkRXRUhBREFGRVdFUlJPUlNJTk9VUlhNTFNDSEVNQSxX
+SElDSEhBU0JFRU5VUERBVEVETk9XV0VPTkxZSEFWRVRIRVJFU1VNUFQAAAAAAgF/AAEAAAA5AAAA
+PDNEQjg3MUUxMzE3N0Q2MTE5ODg1MDAwMEUyMjJGMkVCMjQ3MTJEQGViYW5vMi5pYmljdC5icj4A
+AAAAfls=
+
+------_=_NextPart_000_01C268C0.80A742D0--
+

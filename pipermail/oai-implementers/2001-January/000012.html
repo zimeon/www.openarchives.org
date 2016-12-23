@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: [oai-alpha] Re: Help!
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:thabing%40uiuc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000011.html">
+   <LINK REL="Next"  HREF="000013.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: [oai-alpha] Re: Help!
+   </H1>
+    <B>Thomas G. Habing
+    </B> 
+    <A HREF="mailto:thabing%40uiuc.edu"
+       TITLE="[OAI-implementers] Re: [oai-alpha] Re: Help!">thabing@uiuc.edu
+       </A><BR>
+    <I>Mon, 29 Jan 2001 15:06:01 -0600</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000011.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+        <LI> Next message: <A HREF="000013.html">[OAI-implementers] ListMetadataFormats problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#12">[ date ]</a>
+              <a href="thread.html#12">[ thread ]</a>
+              <a href="subject.html#12">[ subject ]</a>
+              <a href="author.html#12">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi all,
+
+Just thought I would add to the discussion re. 400 errors versus empty
+results.
+
+Our repository currently has 14 cases which return 400 errors (although
+based on the previous messages, I am thinking of adding some more):
+
+1) If there is no verb parameter at all:
+	400 Bad Request ('verb' is a required parameter)
+
+2) An unknown verb is encountered:
+	400 Bad Request('&quot; &amp; verb &amp; &quot;' is not a valid verb)
+
+GetRecord
+---------
+3) If there is no identifier:
+	400 Bad Request ('identifier' is a required parameter)
+
+4) If there is no metadaPrefix:
+	400 Bad Request ('metadataPrefix' is a required parameter)
+
+ListIdentifiers
+---------------
+5) If there is a resumptionToken plus other parameters:
+	400 Bad Request ('resumptionToken' must be the only parameter)
+
+6) If until is not a valid date:
+	400 Bad Request ('&quot; &amp; untilDateStr &amp; &quot;' is not a valid date)
+
+7) If from is not a valid date:
+	400 Bad Request ('&quot; &amp; fromDateStr &amp; &quot;' is not a valid date)
+
+8) An unrecognized resumptionToken is sent:
+	400 Bad Request ('&quot; &amp; server.urlencode(resumptionToken)&amp; &quot;' is not a valid
+	resumptionToken)
+
+ListRecords
+-----------
+9) If there is no metadaPrefix:
+	400 Bad Request ('metadataPrefix' is a required parameter)
+
+10) If there is a resumptionToken plus other parameters:
+	400 Bad Request ('resumptionToken' must be the only parameter)
+
+11) If until is not a valid date:
+	400 Bad Request ('&quot; &amp; untilDateStr &amp; &quot;' is not a valid date)
+
+12) If from is not a valid date:
+	400 Bad Request ('&quot; &amp; fromDateStr &amp; &quot;' is not a valid date)
+
+13) An unrecognized resumptionToken is sent:
+	400 Bad Request ('&quot; &amp; server.urlencode(resumptionToken)&amp; &quot;' is not a valid
+	resumptionToken)
+
+ListSets
+--------
+14) A resumption token is sent (our ListSets doesn't implement this):
+	400 Bad Request ('&quot; &amp; server.urlencode(resumptionToken) &amp; &quot;' is not a valid
+	resumptionToken)
+
+Weighing in on the current controversy, I agree with Simeon that malformed
+arguments should probably result in 400s, but correctly formed arguments
+that just can't be supported by the repository should result in empty XML. 
+Based on this I am considering adding (in addition to the above):
+
+1) checks that an 'identifier' is a valid URI (but not necessarily using the
+OAI scheme),
+
+2) that 'metadataPrefix' conforms to the given regular expression
+
+3) that 'set' conforms to the given regular expression
+
+4) possibly, that the the dates 'from' &lt;= 'until'?
+
+Another issue relating to errors is the addition of non-standard parameters.
+For example, there might be a community of providers and harvesters which
+decide to extend the protocol, possibly by adding non-standard parameters to
+some of the verbs. For example, adding a 'creator' param to the ListRecords
+verb so that only records with a given creator are returned.  The question
+is, should providers return a 400 if they encounter an unknown parameter,
+or, assuming all else is correct, should they just ignore the extra param,
+and process the request as usual.  In other words, should communities be
+allowed to extend the protocol with the expectation that providers who do
+not support the extension will degrade gracefully, and continue to honor
+their requests, simply ignoring the extensions?  Should providers that do
+this be allowed to register as conformant to the OAI spec?
+
+Note that I have no intention of doing this with our system, but since it
+just occurred to me I thought I should bring it up.
+
+Regards,
+	Tom
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+<A HREF="mailto:thabing@uiuc.edu">thabing@uiuc.edu</A>, (217) 244-7809
+
+
+Hussein Suleman wrote:
+&gt;<i> 
+</I>&gt;<i> hi
+</I>&gt;<i> 
+</I>&gt;<i> from the perspective of someone writing conformance tests, i am probably
+</I>&gt;<i> going to use a 2-fold certification scheme, possibly calling the levels
+</I>&gt;<i> &quot;correct&quot; and &quot;robust&quot; ... where correct implies that the repository
+</I>&gt;<i> responds properly to correctly formatted requests and robust meaning
+</I>&gt;<i> that the repository responds properly to incorrect requests ...
+</I>&gt;<i> 
+</I>&gt;<i> so, if your repository responds properly to all the verbs (with all the
+</I>&gt;<i> correct parameter combinations) your repository will be &quot;correct&quot;
+</I>&gt;<i> 
+</I>&gt;<i> and, if you can handle erroneous requests gracefully, where illegal
+</I>&gt;<i> combinations of arguments generate 400's and illegal values of arguments
+</I>&gt;<i> generate either 400's or valid XML, then your implementation is &quot;robust&quot;
+</I>&gt;<i> and you can add your archive to the repository explorer as a
+</I>&gt;<i> demonstration archive.
+</I>&gt;<i> 
+</I>&gt;<i> i think since we didnt rigorously define what illegal parameter values
+</I>&gt;<i> are, we need to be prepared to accept both 400's and empty responses as
+</I>&gt;<i> correct since the interpretation is going to be archive-specific.
+</I>&gt;<i> 
+</I>&gt;<i> [disclaimer: of course this is not how it works at the moment - right
+</I>&gt;<i> now the definitions are still fuzzy but i will change those as soon as i
+</I>&gt;<i> see agreement emerging from this discussion.]
+</I>&gt;<i> 
+</I>&gt;<i> one more concern i have is about list sizes... validation is a wonderful
+</I>&gt;<i> feature to have but more validation = more requests = more responses =
+</I>&gt;<i> more record metadata ... for illustration, if i wrote a &quot;good&quot;
+</I>&gt;<i> validation test (which, mind you i have not because of this exact issue)
+</I>&gt;<i> for &quot;ListRecords&quot; i would need at least 4 metadata formats (default,
+</I>&gt;<i> non-default, bad, missing), 8 date pairs (valid from, valid until, valid
+</I>&gt;<i> both, from&gt;until, invalid from, invalid until, invalid both, missing), 3
+</I>&gt;<i> sets (valid, invalid, missing), 3 resumptionTokens (valid, invalid,
+</I>&gt;<i> missing), etc ...
+</I>&gt;<i> 
+</I>&gt;<i> so without going into more combinatorial explosion math, its obvious
+</I>&gt;<i> that testing is a delicate balance between correctness and denial of
+</I>&gt;<i> service :)) ... i would like to provide more correctness testing and the
+</I>&gt;<i> greatest obstacle to this is massive ListRecords/ListIdentifiers
+</I>&gt;<i> responses from some repositories ... so, a plea to all out there: flow
+</I>&gt;<i> control is a wonderful feature - lets all use it :)
+</I>&gt;<i> 
+</I>&gt;<i> ttfn
+</I>&gt;<i> 
+</I>&gt;<i> hussein
+</I>&gt;<i> 
+</I>&gt;<i> --
+</I>&gt;<i> =========================================================================
+</I>&gt;<i> hussein suleman -- <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> -- vt cs --
+</I>&gt;<i> <A HREF="http://purl.org/net/hussein">http://purl.org/net/hussein</A>
+</I>&gt;<i> =========================================================================
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000011.html">[OAI-implementers] Re: [oai-alpha] Re: Help!
+</A></li>
+	<LI> Next message: <A HREF="000013.html">[OAI-implementers] ListMetadataFormats problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#12">[ date ]</a>
+              <a href="thread.html#12">[ thread ]</a>
+              <a href="subject.html#12">[ subject ]</a>
+              <a href="author.html#12">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

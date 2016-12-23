@@ -1,0 +1,390 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XSD file for qualified DC
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:tim%40tim.brody.btinternet.co.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000531.html">
+   <LINK REL="Next"  HREF="000537.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XSD file for qualified DC
+   </H1>
+    <B>Tim Brody
+    </B> 
+    <A HREF="mailto:tim%40tim.brody.btinternet.co.uk"
+       TITLE="[OAI-implementers] XSD file for qualified DC">tim@tim.brody.btinternet.co.uk
+       </A><BR>
+    <I>Thu, 20 Jun 2002 17:06:10 +0100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000531.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+        <LI> Next message: <A HREF="000537.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#535">[ date ]</a>
+              <a href="thread.html#535">[ thread ]</a>
+              <a href="subject.html#535">[ subject ]</a>
+              <a href="author.html#535">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Carl et al,
+
+The short answer is I disagree with you Carl, but please read on ...
+
+[Parallel meta formats]
+
+I would argue it is marginally beneficial to have both the relations
+(&quot;reference data&quot;) and metadata (&quot;citation data&quot;, or &quot;context&quot;) in the same
+record. In the same record it is the XML that defines the relation, in
+parallel metadata formats it is the format (breaking the model of records
+being self-contained).
+
+Regardless, there will always need to be at least two metadata formats:
+unqualified DC, and some &quot;relatedto&quot; aware format.
+
+[Abstract view]
+
+I'm interested in making links from A to B. To achieve that needs a
+comparable thing contained in A that is also contained in B. The &quot;thing&quot; is
+either a URI, a string, or structured data:
+
+&lt;a&gt;
+&lt;relatedto&gt;
+    &lt;identifier/&gt;
+    &lt;unstructured_metadata_string/&gt;
+    &lt;structured_metadata/&gt;
+&lt;/relatedto&gt;
+&lt;/a&gt;
+
+&lt;b&gt;
+&lt;identifier/&gt;
+&lt;unstructured_metadata_string/&gt;
+&lt;structured_metadata/&gt;
+&lt;/b&gt;
+
+Instantiating this in DC:
+
+&quot;dc:identifier is an unambiguous reference to a resource&quot; - citations are
+intended to be unambiguous references.
+&quot;dc:relation is a reference to a related resource&quot; - I believe reference
+data falls under this description.
+
+So unqualified DC can contain all the data that I'm interested in, and can
+be heuristically parsed later on (just as most OAI services do now with
+dc.creator and dc.date, and I do now with dc:identifier).
+
+The reason for exposing more structure than strings in OAI is so:
+
+1) Structured source documents don't lose that structure (e.g. BMC XML
+articles) and,
+2) That Gateway services can provide structured data to downstream services
+(e.g. Citebase, CERN)
+
+As I understand DC qualifiers, they give greater structure without breaking
+the principal of lowest-common denominator (i.e. remove all the
+qualifications and its still understandable and actionable by a system that
+talks DC):
+
+&lt;a_dc&gt;
+&lt;dc:relation&gt;Smith, John (1992) Functional Principles in Functions v5
+44-50&lt;/dc:relation&gt;
+&lt;/a_dc&gt;
+
+Passed through a citation-aware gateway would produce:
+
+&lt;a_dcq&gt;
+&lt;dcq:relation.references&gt;
+&lt;dcterms:citation&gt;Smith, John (1992) &quot;Functional Principles in Functions&quot; v5
+44-50&lt;/dcterms:citation&gt;
+&lt;dcq:identifier.citation&gt;
+&lt;dc:creator&gt;Smith, John&lt;/dc:creator&gt;
+&lt;dc:date&gt;1992&lt;/dc:date&gt;
+&lt;dc:title&gt;Functional Principles in Functions&lt;/dc:title&gt;
+&lt;ja:volume&gt;5&lt;/ja:volume&gt;
+&lt;/dcq:identifier.citation&gt;
+&lt;/dcq:relation.references&gt;
+&lt;/a_dcq&gt;
+
+And could be linked against B using {creator,title,date}:
+
+&lt;b&gt;
+&lt;dc:identifier&gt;doi:24-23123/xxxyyy&lt;/dc:identifier&gt;
+&lt;dc:identifier&gt;Smith, John, Smith, Joan (1992) Functional Principles in
+Functions, J-Principles volume 5 45-50&lt;/dc:identifier&gt;
+&lt;dc:creator&gt;Smith, John&lt;/dc:creator&gt;
+&lt;dc:creator&gt;Smith, Joan&lt;/dc:creator&gt;
+&lt;dc:title&gt;Functional Principles in Functions&lt;/dc:title&gt;
+&lt;dc:date&gt;1992&lt;/dc:date&gt;
+&lt;/b&gt;
+
+I've no doubt the same can be achieved through OpenURL, but DC is more
+widely used (so the closer to DC, and the more use of DC elements, the
+greater the adoption will be, hence the greater the interoperability).
+
+I don't like marc XML because IMHO &quot;&lt;id type='xxx'&gt;&quot;, where xxx is a code,
+is not useful beyond library systems (i.e. marc XML isn't comprehensible to
+the human-reader, at which point you may as well use more efficient binary
+mark-up).
+
+All the best,
+Tim.
+
+----- Original Message -----
+From: &quot;Carl Lagoze&quot; &lt;<A HREF="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt;
+To: &quot;Ann Apps&quot; &lt;<A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>&gt;
+Cc: &quot;herbert van de sompel&quot; &lt;<A HREF="mailto:herbertv@lanl.gov">herbertv@lanl.gov</A>&gt;;
+&lt;<A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>&gt;
+Sent: Thursday, June 20, 2002 12:58 PM
+Subject: RE: [OAI-implementers] XSD file for qualified DC
+
+
+&gt;<i> Ann,
+</I>&gt;<i>
+</I>&gt;<i> Thanks for the clarifications here.  Yes, I understand the overloading
+</I>&gt;<i> of the term &quot;citation&quot;.  My colleague Donna Bergmark here at Cornell in:
+</I>&gt;<i>
+</I>&gt;<i> Bergmark, D. and Lagoze, C., &quot;An Architecture for Automatic Reference
+</I>&gt;<i> Linking,&quot; presented at 5th European Conference on Research and Advanced
+</I>&gt;<i> Technology for Digital Libraries, Darmstadt, Germany, 2001,
+</I>&gt;<i>
+</I>&gt;<i> Was much more systematic in calling the in-links in the link graph
+</I>&gt;<i> &quot;citations&quot; and the out links &quot;references&quot;; in that sense we should then
+</I>&gt;<i> really talk about &quot;citation data&quot; as your category one below (the
+</I>&gt;<i> bibliographic information for the resource itself) and &quot;reference data&quot;
+</I>&gt;<i> as your category two below (bibliographic information for the resources
+</I>&gt;<i> referenced by the resource).
+</I>&gt;<i>
+</I>&gt;<i> Using this terminology I think we all agree that putting reference data
+</I>&gt;<i> into Dublin Core is not right.  This is very much a &quot;one-to-one&quot;
+</I>&gt;<i> violation in that it would involve putting metadata about another
+</I>&gt;<i> resource into the metadata container of some source resource.  Thus,
+</I>&gt;<i> there is a clear application of some parallel metadata form to expose
+</I>&gt;<i> the reference data; probably following the openURL, bison-fute concepts
+</I>&gt;<i> that Herbert has outlines.
+</I>&gt;<i>
+</I>&gt;<i> Turning attention to the citation data issue, I will argue equally
+</I>&gt;<i> strongly that slotting these into the dc identifier element is
+</I>&gt;<i> inappropriate.  Citation data is implicitely structured whereas dc
+</I>&gt;<i> elements should be simply &quot;appropriate literals&quot; as defined by Tom
+</I>&gt;<i> Baker.  Playing a syntactic trick and serializing that data into an
+</I>&gt;<i> &quot;appropriate literal&quot; through the use of punctuation such as &quot;Library
+</I>&gt;<i> and Information Science Research 22(3), 311-338 (2000)&quot; as you suggest
+</I>&gt;<i> in <A HREF="http://epub.mimas.ac.uk/DC/citproposal.html,">http://epub.mimas.ac.uk/DC/citproposal.html,</A> seems ill-advised with
+</I>&gt;<i> data that screams out for markup such as:
+</I>&gt;<i>
+</I>&gt;<i> &lt;citation&gt;
+</I>&gt;<i> &lt;journalTitle&gt;Library and Information Science
+</I>&gt;<i> Research&lt;/journalTitle&gt;
+</I>&gt;<i> &lt;journalVolume&gt;22&lt;/journalVolume&gt;
+</I>&gt;<i> ....
+</I>&gt;<i> &lt;/citation&gt;
+</I>&gt;<i>
+</I>&gt;<i> Since this explicit structure is not currently allowed in DC (and I
+</I>&gt;<i> question whether it ever should be) and given the fact that OAI-PMH is
+</I>&gt;<i> quite happy expressing parallel structured form, it might be time to
+</I>&gt;<i> write the schema for such citation data and encourage people to expose
+</I>&gt;<i> it for harvesting, and not characterize it as &quot;dublin core&quot;.
+</I>&gt;<i>
+</I>&gt;<i> Carl
+</I>&gt;<i>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; On Wed, 19 Jun 2002, Ann Apps wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt; Herbert,
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; I agree entirely with your suggestion about using OpenURL as a
+</I>&gt;<i> &gt; &gt; parallel metadata format.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; However, as the question which started this was about
+</I>&gt;<i> &gt; qualified DC, I
+</I>&gt;<i> &gt; &gt; would like to point out that there may be some confusion about the
+</I>&gt;<i> &gt; &gt; meaning of 'citation', especially about the DC-Citation
+</I>&gt;<i> &gt; stuff, which
+</I>&gt;<i> &gt; &gt; has also been referred to as connected with OpenURL by the Ariadne
+</I>&gt;<i> &gt; &gt; paper (<A HREF="http://www.ariadne.ac.uk/issue27/metadata/">http://www.ariadne.ac.uk/issue27/metadata/</A>). A
+</I>&gt;<i> &gt; confusion which
+</I>&gt;<i> &gt; &gt; probably wasn't helped by my earlier email.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; The term 'citation' is used to describe 2 similar but different
+</I>&gt;<i> &gt; &gt; things. It is easiest to desribe this for journal articles.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; 1. The bibliographic citation information (journal, issue,
+</I>&gt;<i> &gt; pagination)
+</I>&gt;<i> &gt; &gt; for an article as part of the metadata for the article
+</I>&gt;<i> &gt; itself. This is
+</I>&gt;<i> &gt; &gt; what publishers refer to as the header information for the article.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; 2. The citation information for papers cited by an article
+</I>&gt;<i> &gt; which are
+</I>&gt;<i> &gt; &gt; listed in the references section of the article.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; The DC-Citation work is, so far, about (1). Maybe the choice of the
+</I>&gt;<i> &gt; &gt; term 'citation' was unfortunate, because everyone assumes it means
+</I>&gt;<i> &gt; &gt; (2), but it's difficult to think of a better word. This is why the
+</I>&gt;<i> &gt; &gt; encoding suggested for dc-citation is within a
+</I>&gt;<i> &gt; dc:identifier element,
+</I>&gt;<i> &gt; &gt; because of the recognition that the bibliographic citation can
+</I>&gt;<i> &gt; &gt; effectively identify the article. [This could obviously be
+</I>&gt;<i> &gt; &gt; extrapolated to (2) but would be within a
+</I>&gt;<i> &gt; &gt; dc:relation/dcterms:references element.]
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; The scenario you describe is for citation (2). Here the parallel
+</I>&gt;<i> &gt; &gt; metadata format within a context object you describe looks perfect.
+</I>&gt;<i> &gt; &gt; This is obviously a major OAI requirement, for initiatives such as
+</I>&gt;<i> &gt; &gt; Citebase.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; But I think that citation (1) will also be needed as OAI is
+</I>&gt;<i> &gt; used for
+</I>&gt;<i> &gt; &gt; more than just eprints repositories. For instance, if you wanted to
+</I>&gt;<i> &gt; &gt; provide OAI records from an A+I database, or a journal
+</I>&gt;<i> &gt; article table
+</I>&gt;<i> &gt; &gt; of contents database, you would need to be able to detail the
+</I>&gt;<i> &gt; &gt; journal/issue information within each record. I could see
+</I>&gt;<i> &gt; this being
+</I>&gt;<i> &gt; &gt; of use for harvesting records for the latest journal issues
+</I>&gt;<i> &gt; available
+</I>&gt;<i> &gt; &gt; in such a service. I think you can still use the OpenURL
+</I>&gt;<i> &gt; metadata for
+</I>&gt;<i> &gt; &gt; this but that it would be 'nested' within the DC record, similar to
+</I>&gt;<i> &gt; &gt; the noddy example I previously wrote. At the moment we're
+</I>&gt;<i> &gt; still stuck
+</I>&gt;<i> &gt; &gt; with using unrecognised DC structured values in literal
+</I>&gt;<i> &gt; strings within
+</I>&gt;<i> &gt; &gt; simple DC to pass this information around.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; But at present, I think that the OAI priority is citations(2), and
+</I>&gt;<i> &gt; &gt; this current development looks really promising. Citations(1) will
+</I>&gt;<i> &gt; &gt; need more discussion within DC.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Best wishes,
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Ann
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; On Tue, 18 Jun 2002 herbert van de sompel wrote:
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &lt;color&gt;&lt;param&gt;7F00,0000,0000&lt;/param&gt;&gt; 1. In the context of the
+</I>&gt;<i> &gt; &gt; OAI-PMH, it would make a lot of sense to
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; treat citations as a parallel metadata format.  The unqualified DC
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; record describes the &quot;paper&quot;, whereas another record
+</I>&gt;<i> &gt; (under the same
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; item) describes all the citations made in the &quot;paper&quot;.
+</I>&gt;<i> &gt; That is what
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Carl suggested in his mail.  And that is the approach that Stevan
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Harnad and I discussed at last year's OAI-related conference in
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; Geneva.  This approach makes sense in that it is extensible: it
+</I>&gt;<i> &gt; &gt; &gt; allows
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; other stuff related to the &quot;paper&quot; (for instance usage logs,
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; certification metadata, preservation metadata, etc.) to
+</I>&gt;<i> &gt; be treated
+</I>&gt;<i> &gt; &gt; &gt; in
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; yet other parallel records under the same item.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; 2. When it comes to choosing a &quot;metadata format&quot; to describe those
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; citations, looking at OpenURL makes a lot of sense.  Not only
+</I>&gt;<i> &gt; &gt; &gt; because
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; it is becoming a standard, but because its purpose really IS to
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; describe stuff (read &quot;citations&quot; in this context) by building on a
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; broad range of identifier-namespaces and a multitude of metadata
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; formats.  Moreover, OpenURL allows not only for the
+</I>&gt;<i> &gt; description of a
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; &quot;citation&quot; but (optionally) also of entities that make up the
+</I>&gt;<i> &gt; &gt; &gt; context
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; in which the &quot;citation&quot; appears.  That is very significant when
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; thinking about the possibility of open linking at the level of OAI
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; service providers. And it is significant when thinking of using
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; &quot;OpenURL&quot; as a parallel metadata format, as it allows the
+</I>&gt;<i> &gt; citation
+</I>&gt;<i> &gt; &gt; &gt; to
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt; remain attached to the thing in which it is cited.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &lt;/color&gt;[...]
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; &lt;nofill&gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; ----------------------------------------------------------------------
+</I>&gt;<i> &gt; &gt; ----
+</I>&gt;<i> &gt; &gt; Mrs. Ann Apps. Senior Analyst - Research &amp; Development, MIMAS,
+</I>&gt;<i> &gt; &gt;      University of Manchester, Oxford Road, Manchester, M13 9PL, UK
+</I>&gt;<i> &gt; &gt; Tel: +44 (0) 161 275 6039    Fax: +44 (0) 0161 275 6040
+</I>&gt;<i> &gt; &gt; Email: <A HREF="mailto:ann.apps@man.ac.uk">ann.apps@man.ac.uk</A>  WWW: <A HREF="http://epub.mimas.ac.uk/ann.html">http://epub.mimas.ac.uk/ann.html</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; --------------------------------------------------------------
+</I>&gt;<i> &gt; ------------
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000531.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+	<LI> Next message: <A HREF="000537.html">[OAI-implementers] XSD file for qualified DC
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#535">[ date ]</a>
+              <a href="thread.html#535">[ thread ]</a>
+              <a href="subject.html#535">[ subject ]</a>
+              <a href="author.html#535">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

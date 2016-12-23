@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Re: A question on OAI-PMH 2.0 / Selective
+	Harvesting and Sets
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Re%3A%20A%20question%20on%20OAI-PMH%202.0%20/%20Selective%0A%09Harvesting%20and%20Sets&In-Reply-To=4DA489B0020000ED0001655E%40gwia.bsb-muenchen.de">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="002051.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Re: A question on OAI-PMH 2.0 / Selective
+	Harvesting and Sets</H1>
+    <B>Simeon Warner</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Re%3A%20A%20question%20on%20OAI-PMH%202.0%20/%20Selective%0A%09Harvesting%20and%20Sets&In-Reply-To=4DA489B0020000ED0001655E%40gwia.bsb-muenchen.de"
+       TITLE="[OAI-implementers] Re: A question on OAI-PMH 2.0 / Selective
+	Harvesting and Sets">simeon.warner at cornell.edu
+       </A><BR>
+    <I>Wed Apr 13 10:17:59 EDT 2011</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="002051.html">[OAI-implementers] unsubscribe
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2050">[ date ]</a>
+              <a href="thread.html#2050">[ thread ]</a>
+              <a href="subject.html#2050">[ subject ]</a>
+              <a href="author.html#2050">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Tue, Apr 12, 2011 at 05:19:44PM +0200, Mathias Kratzer wrote:
+&gt;<i> please forgive if this question had already been raised, discussed, and perhaps even resolved on any of the community platforms. I wasn't able to find an answer on the net so I decided to ask for your advice.
+</I>&gt;<i> 
+</I>&gt;<i> Let R denote an OAI-PMH 2.0 compliant repository with the following set hierarchy:
+</I>&gt;<i> - institution
+</I>&gt;<i> - institution:nebraska
+</I>&gt;<i> - institution:florida
+</I>&gt;<i> 
+</I>&gt;<i> Now let's assume we want to set up a local database consisting of all the items of R which are grouped in the set institution:florida. Of course, we can easily do so by sending a ListRecords request to R which includes the argument set=institution:florida. We can even keep our local database in sync with R by scheduling a daily ListRecords request to R which does not only include the argument set=institution:florida but also the relevant &quot;from&quot; and &quot;until&quot; datestamps.
+</I>&gt;<i> 
+</I>&gt;<i> My question is: If an item X belongs to set institution:florida only by mistake (e.g. due to wrong metadata) and we harvest it today will we ever get a chance to notice that X doesn't belong to set institution:florida any longer after the mistake has been corrected? 
+</I>
+Indeed. If you are harvesting a particular set from the data provider
+then you will not be able to tell if an item moves out of that
+set. See, for example,
+<A HREF="http://www.openarchives.org/pipermail/oai-implementers/2003-October/001036.html">http://www.openarchives.org/pipermail/oai-implementers/2003-October/001036.html</A>
+and other parts of that thread.
+
+&gt;<i>The only solution I can think of was to reset the &quot;from&quot; datestamp of our harvester request to some date way back in the past and do a full re-sync but is there also a way which is less brute-force?
+</I>
+Not specifying the &quot;from&quot; and &quot;until&quot; datastamps will do a complete
+re-harvest. In the case that you are harvesting from only a particular
+set then this is the only way to be sure you know whether items have
+moved out of the set.
+
+In the case that you are harvesting the entire repository then,
+provided the data provider updates an item's datestamp for set
+membership changes, then you will be able to pick up set membership
+changes.
+
+This is an understood flaw in the sets mechanism and one of the
+reasons that I think sets should be used only to support selective
+harvesting needs. I.e. unless you really expect someone to want to
+harvest just the institution:nebraska or institution:florida sets, it
+is probably best not to create them. If the goal is to indicate a
+metadata property then that should go in the metadata.
+
+Cheers,
+Simeon
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="002051.html">[OAI-implementers] unsubscribe
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2050">[ date ]</a>
+              <a href="thread.html#2050">[ thread ]</a>
+              <a href="subject.html#2050">[ subject ]</a>
+              <a href="author.html#2050">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

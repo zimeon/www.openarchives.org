@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI] Eprints Upgrade for OAI 1.0 Compliance: Some Queries</TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:harnad%40coglit.ecs.soton.ac.uk">
+   <LINK REL="Previous"  HREF="000217.html">
+   <LINK REL="Next" HREF="000219.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI] Eprints Upgrade for OAI 1.0 Compliance: Some Queries</H1>
+    <B>Stevan Harnad</B> 
+    <A HREF="mailto:harnad%40coglit.ecs.soton.ac.uk"
+       TITLE="[OAI] Eprints Upgrade for OAI 1.0 Compliance: Some Queries">harnad@coglit.ecs.soton.ac.uk</A><BR>
+    <I>Fri, 12 Jan 2001 12:25:46 +0000 (GMT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000217.html">[OAI] Berlin OAI Open Meeting</A></li>
+        <LI> Next message: <A HREF="000219.html">[OAI] Open Archives Metadata Harvesting Protocol</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#218">[ date ]</a>
+              <a href="thread.html#218">[ thread ]</a>
+              <a href="subject.html#218">[ subject ]</a>
+              <a href="author.html#218">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Christopher Gutteridge is making Eprints 1.1 compliant with the the
+January 23 release of OAI 1.0. He has some queries along the way that
+some of you might wish to respond to:
+
+---------- Forwarded message ----------
+Date: Fri, 12 Jan 2001 12:02:53 +0000
+From: ePrints Support &lt;<A HREF="mailto:support@eprints.com">support@eprints.com</A>&gt;
+Subject: Current State of Play for EPrints
+
+Hi, I'm Christopher Gutteridge.
+
+I'm working to make eprints OAI1.0 compliant.
+
+I'm pretty much up to speed on the system, and hope/plan to have
+eprints 1.1 ready for Jan 23rd. 
+
+Some thoughts and comments are below, not all of these are of interest
+to everyone getting this mail, so I've split them into themed
+sections.
+
+----------------------
+GOING FROM OAI 0.2 to OAI 1.0 (0.9e)
+
+The protocol seems to no longer use XML namespace prefixes, I'll remove
+them; can someone explain the implications of this (briefly)?
+
+the new &lt;about&gt; section in GetRecord is optional so I'm ignoring it. 
+Is this wise?
+
+It would seem helpful to provide data on what sets a record is in, as a
+list of OAI setSpec's. Although I admit it's rather late in the day to
+be adding things - if someone really needs it, they could use &lt;about&gt;,
+although it would seem more logical to add it to the header (or another
+section in &lt;record&gt;)
+
+---------------------- 
+EPRINTS 1.1 (OAI 1.0)
+
+I've been through the current bugs in jitterbug, and I think I can 
+address a number (most?) of them.
+
+the change log [should] look roughly like this:
+
+Core code changes:
+- Added cgi/oai to release and modified OpenArchives.pm
+  System now supports oai 1.0
+- modified configure to no longer use gnu-only features of commands
+- added database port and host options to configure
+- modified Database.pm, bin/erase_archive, bin/update_htaccess to
+  know about database_host and database_port.
+- improved the error messages in the Makefile if a user or group
+  already exist.
+
+Configuration changes/additions:
+- Extra fields added to describe the oai identity (for oai 1.0)
+- added database_host and database_port fields
+- modifed default html to refer to &quot;items&quot; rather than &quot;papers&quot;
+
+----------------------
+UPGRADING EPRINTS 1.0 TO USE OAI 1.0
+
+For people running 1.0 who don't want to reinstall/overinstall I plan
+to supply the new versions of OpenArchives.pm and cgi/oai which should 
+drop in plus the list of things to add to SiteInfo.pm - this should be
+safer than an autoconf-upgrade.
+
+The other changes planned for 1.1 are primarily to make configuration 
+and installation slightly easier.
+----------------------
+TESTING 
+
+I plan to do the live test of the OAI1.0 version files on cogprints sometime 
+late next week, hopefully it can be then checked for compliance.
+
+Once I've got the code roughly together I'll create an eprints 1.1 
+pre-release for testing.
+
+----------------------
+IDEAS FOR MODIFYING EPRINTS FOR A DEPARTMENTAL DATABASE
+
+[This may be of interest to those who wish to adapt Eprints for
+specialized internal use]
+
+I'm investigating replacing the current departmental database with
+eprints. The current database is very site-specific, although Robert
+Tansley reused some of the good parts of the design for Eprints, and,
+more importantly, improved some of the problems.
+
+The big problems using eprints for our needs are:
+
+- We don't want public subscription. The 'registered' users list and
+user info should be created and updated from the departmental systems.
+
+:<i> I think I can implement this relatively easily - it mostly involves
+</I>pruning eprints code and writing one or two nightly scripts.
+
+- We need to be able to reference which papers belong to which members
+of staff. One paper could have 3 authors, 2 of which are in the
+department.
+
+:<i> Solution - a field which has a (comma seperated?) list of local
+</I>usernames, and then an addition to the script which builds the static
+pages for sets to build a static page for each staff member.
+
+- This is the tricky one. We can't make all the records in the database
+public, the metadata can be, but the content must be restricted. My
+current idea is to create a &quot;private&quot; data type in addition to ASCII,
+HTML etc. which is spotted by the bit of code that stores the files and
+have it pop a .htaccess file (or a symlink to a system wide one) which
+can limit who can download the contents of that directory.
+
+---------------
+
+Any advice, suggestions, or even praise is most welcome.
+
+Christopher Gutteridge 
+ePrints Technical Support
+<A HREF="mailto:support@eprints.org">support@eprints.org</A>
+
+
+
+</pre>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000217.html">[OAI] Berlin OAI Open Meeting</A></li>
+	<LI> Next message: <A HREF="000219.html">[OAI] Open Archives Metadata Harvesting Protocol</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#218">[ date ]</a>
+              <a href="thread.html#218">[ thread ]</a>
+              <a href="subject.html#218">[ subject ]</a>
+              <a href="author.html#218">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

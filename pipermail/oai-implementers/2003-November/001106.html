@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] character vs entity references
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:stamer%40uni-oldenburg.de">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001105.html">
+   <LINK REL="Next"  HREF="001107.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] character vs entity references
+   </H1>
+    <B>Heinrich Stamerjohanns
+    </B> 
+    <A HREF="mailto:stamer%40uni-oldenburg.de"
+       TITLE="[OAI-implementers] character vs entity references">stamer@uni-oldenburg.de
+       </A><BR>
+    <I>Wed, 5 Nov 2003 19:09:11 +0100 (CET)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001105.html">[OAI-implementers] character vs entity references
+</A></li>
+        <LI> Next message: <A HREF="001107.html">[OAI-implementers] character vs entity references
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1106">[ date ]</a>
+              <a href="thread.html#1106">[ thread ]</a>
+              <a href="subject.html#1106">[ subject ]</a>
+              <a href="author.html#1106">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, 5 Nov 2003, Tim Brody wrote:
+
+&gt;<i> AFAIK a character reference is a reference into the Unicode character set,
+</I>&gt;<i> so its invalid whether its in &amp;#xx; form, utf-8, utf16 or whatever.
+</I>&gt;<i>
+</I>I do not know what you exactly mean by that, but &quot;&amp;#241;&quot; is certainly a
+correct character reference. The byte presentation of characters
+above 127 is just different (ISO-8859-1:1 byte, UTF-8:more bytes),
+but the character-reference &amp;#241 represents the same character in
+XML(iso-8859-1) and XML(UTF-8).
+
+&gt;<i> You should either remove the characters or convert the character to its
+</I>&gt;<i> nearest equivalent in Unicode (for control characters there probably isn't
+</I>&gt;<i> one).
+</I>
+I remove invalid characters with this (PHP code with perlregex):
+// just remove invalid control characters
+$pattern =&quot;/[\x-\x8\xb-\xc\xe-\x1f]/&quot;;
+$string = preg_replace($pattern,'',$string);
+
+Heinrich
+
+&gt;<i> e.g.
+</I>&gt;<i> use XML::Parser;
+</I>&gt;<i> while(&lt;&gt;) {
+</I>&gt;<i> s/([^ -~])/'&amp;#' . ord($1) . ';'/eg;
+</I>&gt;<i> print $_, &quot;\n&quot;;
+</I>&gt;<i> eval { XML::Parser-&gt;new-&gt;parse(&quot;&lt;root&gt;$_&lt;/root&gt;&quot;); };
+</I>&gt;<i> print $@ if $@;
+</I>&gt;<i> }
+</I>&gt;<i>
+</I>&gt;<i> Creates errors if you input formfeed (CTRL+L).
+</I>&gt;<i>
+</I>&gt;<i> All the best,
+</I>&gt;<i> Tim.
+</I>&gt;<i>
+</I>&gt;<i> &gt; On Tue, 4 Nov 2003, Ed Summers wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt; On Tue, Nov 04, 2003 at 09:58:55AM -0500, Todd White wrote:
+</I>&gt;<i> &gt; &gt; &gt; $string =~ tr/\0-\x{ff}//UC;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Search for tr/ in the following pages for some fun Perl archaeology.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;     <A HREF="http://www.perldoc.com/perl5.005_03/pod/perlop.html">http://www.perldoc.com/perl5.005_03/pod/perlop.html</A>
+</I>&gt;<i> &gt; &gt;     <A HREF="http://www.perldoc.com/perl5.6.0/pod/perlop.html">http://www.perldoc.com/perl5.6.0/pod/perlop.html</A>
+</I>&gt;<i> &gt; &gt;     <A HREF="http://www.perldoc.com/perl5.6.1/pod/perlop.html">http://www.perldoc.com/perl5.6.1/pod/perlop.html</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; You can see the UC modifiers were introduced in 5.6.0 and quickly
+</I>&gt;<i> &gt; &gt; dropped in 5.6.1 (and in versions thereafter). 5.6.0 is a notoriously
+</I>&gt;<i> &gt; &gt; buggy release, I think in part because of it's UTF8 handling. These
+</I>&gt;<i> &gt; &gt; problems have been fixed in versions &gt;= 5.8.0, which is the first
+</I>&gt;<i> &gt; &gt; recommended release of Perl for safely working with UTF8.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Funny, I always thought Perl held backwards compatability sacrosanct...
+</I>&gt;<i> &gt; &gt; not including Perl6 of course :)
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; You might be interested in this list for Perl library folks:
+</I>&gt;<i> &gt; &gt; <A HREF="http://perl4lib.perl.org">http://perl4lib.perl.org</A> for discussion of Perl esoterica and more.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; //Ed
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  <A HREF="mailto:stamer@uni-oldenburg.de">stamer@uni-oldenburg.de</A>
+  University of Oldenburg           <A HREF="http://isn.uni-oldenburg.de/~stamer">http://isn.uni-oldenburg.de/~stamer</A>
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001105.html">[OAI-implementers] character vs entity references
+</A></li>
+	<LI> Next message: <A HREF="001107.html">[OAI-implementers] character vs entity references
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1106">[ date ]</a>
+              <a href="thread.html#1106">[ thread ]</a>
+              <a href="subject.html#1106">[ subject ]</a>
+              <a href="author.html#1106">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

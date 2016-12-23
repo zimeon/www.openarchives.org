@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] XML Schema problem?
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000099.html">
+   <LINK REL="Next"  HREF="000100.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] XML Schema problem?
+   </H1>
+    <B>Young,Jeff
+    </B> 
+    <A HREF="mailto:jyoung%40oclc.org"
+       TITLE="[OAI-implementers] XML Schema problem?">jyoung@oclc.org
+       </A><BR>
+    <I>Mon, 23 Apr 2001 10:31:56 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000099.html">[OAI-implementers] XML Schema problem?
+</A></li>
+        <LI> Next message: <A HREF="000100.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#97">[ date ]</a>
+              <a href="thread.html#97">[ thread ]</a>
+              <a href="subject.html#97">[ subject ]</a>
+              <a href="author.html#97">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Herbert,
+
+I tried the new schemas and Xerces seems to be happy with them. Thanks!
+
+Jeff
+
+-----Original Message-----
+From: herbert van de sompel [mailto:<A HREF="mailto:herbertv@cs.cornell.edu">herbertv@cs.cornell.edu</A>]
+Sent: Sunday, April 22, 2001 2:44 PM
+To: OAI-implementers
+Subject: Re: [OAI-implementers] XML Schema problem?
+
+
+hi Jeff,
+
+Thanks for this.  Your consideration is correct, there is a problem in
+the schema that use the &quot;status&quot; attribute.  That is GetRecord,
+ListRecords and ListIdentifiers.
+
+This is what the September 2000 schema specs say re specifying
+occurencies of attributes.  In the excerpt that I include, reference is
+made to the following declaration in an xsd file:
+
+&lt;xsd:attribute name=&quot;country&quot; type=&quot;xsd:NMTOKEN&quot; use=&quot;fixed&quot;
+value=&quot;US&quot;/&gt;
+
+&quot;
+Attributes may appear once or not at all (the default), and so the
+syntax for specifying occurrences of attributes
+is different than the syntax for elements. In particular, a use
+attribute is used in an attribute declaration to
+indicate whether the attribute is required or optional, and if optional
+whether the attribute's value is fixed or
+whether there is a default. A second attribute, value, provides any
+value that is called for. To illustrate, po.xsd
+contains a declaration for the country attribute, which is declared with
+use and value values of fixed and US
+respectively. This declaration means that the appearance of a country
+attribute is optional, although its value
+must be US if it does appear, and if it does not appear, a schema
+processor will create a country attribute with
+this value. 
+&quot;
+
+This last line indicates that Xerces is doing the right thing, which is
+obviously not what we want to happen.
+
+With Michael Nelson, I have revised the XML Schema that involved a
+status attribute.  The solution was less straightforward than one would
+hope.  There is no simple way to express what we really would like to
+express: the status attribute may occur, and if it occurs its value must
+be &quot;deleted&quot;.  The workaround is to list legitimate values of the status
+attribute and specify a default.  We chose the values to be &quot;deleted&quot;
+and &quot;not deleted&quot;, with &quot;not deleted&quot; as the default.  With this in
+place, one can express in a schema that the status attribute may appear,
+and that its default value (if the attribute does not appear) is &quot;not
+deleted&quot;.  One can also express that there is only one other legitimate
+value for status.  It is &quot;deleted&quot;.  And this one must be specified,
+since it is not the default value.  
+
+
+Using this approach nothing really changes for data providers (nor
+service providers, really).  But I guess Xerces will do the right thing,
+now, add the default value of &quot;not deleted&quot; to all records that do not
+have the status attribute specified.
+
+The way to express the above approach in the schema is different for the
+Sep/Oct 2000 specs that we use and for the most recent XML specs.  but
+that is another story, to be addressed later.  
+
+I attach the edited xsd files.  I will put them in place, unless someone
+disagrees with the approach taken.
+
+many greetings
+
+herbert
+
+
+
+&quot;Jeffrey A. Young&quot; wrote:
+&gt;<i> 
+</I>&gt;<i> Someone noticed that my OAIHarvester isn't working correctly lately. It
+</I>&gt;<i> turns out that the Xerces XML parser is convinced that all the records I
+</I>&gt;<i> harvest are flagged as status=&quot;deleted&quot;. Since this clearly isn't the
+</I>case,
+&gt;<i> I started stripping the program down until I had a small example program
+</I>&gt;<i> showing this effect. The Java source code is attached. Basically, if I do
+</I>&gt;<i> DocumentBuilderFactory.setValidating(true) and then convert the XML to a
+</I>DOM
+&gt;<i> Document, it silently &quot;corrects&quot; my records to status=&quot;deleted&quot;. If I dump
+</I>&gt;<i> the Document, all looks fine, but when I actually query the status
+</I>&gt;<i> attribute, it reports back with a value of &quot;deleted&quot;. On the other hand,
+</I>if
+&gt;<i> I specify setValidating(false), everything works fine. I suspect the
+</I>problem
+&gt;<i> is that the XML Schema needs to make the status attribute optional.
+</I>Another
+&gt;<i> possibility is that Xerces is processing the XML Schema incorrectly. I can
+</I>&gt;<i> ignore the problem by always using setValidating(false), but that doesn't
+</I>&gt;<i> seem right. If someone has a better solution, I would appreciate it.
+</I>Thanks.
+&gt;<i> 
+</I>&gt;<i> Jeff
+</I>&gt;<i> 
+</I>&gt;<i> ---
+</I>&gt;<i> Jeffrey A. Young
+</I>&gt;<i> Senior Consulting Systems Analyst
+</I>&gt;<i> Office of Research, Mail Code 710
+</I>&gt;<i> OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> 6565 Frantz Road
+</I>&gt;<i> Dublin, OH   43017-3395
+</I>&gt;<i> www.oclc.org
+</I>&gt;<i> 
+</I>&gt;<i> Voice:  614-764-4342
+</I>&gt;<i> Fax:            614-764-2344
+</I>&gt;<i> Email:  <A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> 
+</I>&gt;<i>   ------------------------------------------------------------------------
+</I>&gt;<i>                 Name: Test.java
+</I>&gt;<i>    Test.java    Type: unspecified type (application/octet-stream)
+</I>&gt;<i>             Encoding: quoted-printable
+</I>
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+<A HREF="http://www.cs.cornell.edu/people/herbertv/">http://www.cs.cornell.edu/people/herbertv/</A>
+digital life in libraries used to be primitive
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000099.html">[OAI-implementers] XML Schema problem?
+</A></li>
+	<LI> Next message: <A HREF="000100.html">[OAI-implementers] XML Schema problem?
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#97">[ date ]</a>
+              <a href="thread.html#97">[ thread ]</a>
+              <a href="subject.html#97">[ subject ]</a>
+              <a href="author.html#97">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

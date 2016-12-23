@@ -1,0 +1,1341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE User Guide - Resource Map Implementation in Atom</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.2/ore-spec.css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - Resource Map Implementation in Atom</h2>
+  <h3 class="subTitle">29 February 2008</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of an alpha release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.2/atom-implementation">http://www.openarchives.org/ore/0.2/atom-implementation</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/atom-implementation">http://www.openarchives.org/ore/atom-implementation</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.1/atom-implementation">http://www.openarchives.org/ore/0.1/atom-implementation</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE User Guide - Resource Map Implementation in Atom-->
+<!--VAR-SUBTITLE=29 February 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.2/atom-implementation-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/atom-implementation-->
+<!--VAR-PREVIOUSURI=http://www.openarchives.org/ore/0.1/atom-implementation-->
+<div class="abstract">
+<h2><a name="abstract" id="abstract"></a>Abstract</h2>
+<p>
+Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+defines standards for the description and exchange of aggregations
+of Web resources. OAI-ORE introduces the notion of a Resource
+Map, which is a specialization of a named graph that asserts a
+finite set of resources (the Aggregated Resources), their types,
+intra-relationships, and relationships with resources external
+to this finite set (the external resources). A Resource Map
+Document is a machine-readable representation of a Resource Map.
+Although multiple serializations of Resource Maps are possible,
+the initial serialization is done using the Atom Syndication
+Format [<cite><a href="#RFC4287">RFC4287</a></cite>].  A detailed
+examination of the mapping of ORE Data Model concepts to the Atom
+Syndication Format is known as the Resource Map Profile of Atom
+[<cite><a href="#ReMProfileofAtom">ReMProfileofAtom</a></cite>].
+The purpose of this document is to provide guidance to application
+developers on how to implement and interpret the  Resource Map
+Profile of Atom.
+This user guide is one of several documents comprising the
+<a href="http://www.openarchives.org/ore/0.2/toc">OAI-ORE specification and
+user guide</a>.</p>
+</div>
+
+<div class="toc">
+        <h2><a name="contents" id="contents"></a>Table of Contents</h2>
+        <p class="toc">
+        1. <a href="#Introduction">Introduction</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 1.1 <a href="#Notational_Conventions">Notational Conventions</a><br />
+        2. <a href="#PopulatingElements">Populating Elements</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 2.1 <a href="#id">/feed/id and /feed/entry/id</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 2.2 <a href="#link">/feed/link[@rel="self"] and /feed/entry/link[@rel="alternate"]</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 2.3 <a href="#title">/feed/title and /feed/entry/title</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 2.4 <a href="#updated">/feed/updated and /feed/entry/updated</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 2.5 <a href="#GRDDL">GRDDL crosswalk from Atom XML to RDF/XML</a><br />
+        3. <a href="#ProvidingMetadata">Providing Metadata for the Aggregation</a><br />
+        4. <a href="#CommonScenarios">Common Scenarios</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 4.1 <a href="#MultipleFormats">Multiple Formats</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 4.2 <a href="#MirrorCopies">Mirror Copies</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 4.3 <a href="#Versions">Versions</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 4.4 <a href="#SplashPages">Splash Pages</a><br />
+        5. <a href="#LinkingtoOtherAggregations">Linking to Other Aggregations</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 5.1 <a href="#source">/feed/entry/source</a><br />
+        &nbsp;&nbsp;&nbsp;&nbsp; 5.2 <a href="#entrylink">/feed/entry/link[@rel="via"]/@href</a><br />
+        6. <a href="#References">References</a><br />
+        </p>
+        <h3><a name="appendices" id="appendices"></a>Appendices</h3>
+        <p class="toc">A. <a href="#acknowledgments">Acknowledgments</a><br />
+        B. <a href="#changelog">Change Log</a><br />
+        </p>
+</div>
+<hr />
+
+<div class="body">
+        <h2><a name="Introduction" id="Introduction"></a>1. Introduction</h2>
+        <p>
+        Open Archives Initiative Object Reuse and Exchange (OAI-ORE)
+        defines standards for the description and exchange of aggregations
+        of Web resources. OAI-ORE introduces the notion of a Resource
+        Map, which is a specialization of a named graph that asserts a
+        finite set of resources (the Aggregated Resources), their types,
+        intra-relationships, and relationships with resources external
+        to this finite set (the external resources). A Resource Map
+        Document is a machine-readable representation of a Resource Map.
+        Although multiple serializations of Resource Maps are possible,
+        the initial serialization is done using the Atom Syndication
+        Format [<cite><a href="#RFC4287">RFC4287</a></cite>].  A detailed
+        examination of the mapping of ORE Data Model concepts to the Atom
+        Syndication Format is known as the Resource Map Profile of Atom
+        [<cite><a href="#ReMProfileofAtom">ReMProfileofAtom</a></cite>].
+        The purpose of this document is to provide guidance to application
+        developers on how to implement and interpret the Resource Map
+        Profile of Atom.  We anticipate that the contents and guidance
+        given in this document to evolve over time to reflect the best
+        practices of the community.  
+        </p>
+        <p>
+        This document does not address ReM validation.  Readers
+        interested in validation are referred to Appendix C of [<cite><a
+        href="#ReMProfileofAtom">ReMProfileofAtom</a></cite>] for a
+        Schematron Schema of the Resource Map Profile of Atom.
+        </p>
+
+<h3><a name="notation" id="notation"></a>1.1 <a name="Notational_Conventions">Notational Conventions</a></h3>
+        <p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;, 
+                &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are 
+                to be interpreted as described in RFC 2119 [<cite><a href="#RFC2119">IETF 
+                RFC 2119</a></cite>].</p>
+
+
+<h2><a name="PopulatingElements" id="PopulatingElements"></a>2. Populating Elements</h2>
+        <p>
+        The Atom Syndication Format defines many elements
+        and the Resource Map Profile of Atom [<cite><a
+        href="#ReMProfileofAtom">ReMProfileofAtom</a></cite>] defines
+        which elements have special meaning when a ReM is serialized as
+        an Atom feed.  In this section, the most common and potentially
+        confusing elements are examined and best practices are put
+        forward regarding their population.  Throughout document, we
+        will use the following arXiv eprint as the defining example:
+        </p>
+        <p>
+        <code>http://arxiv.org/abs/astro-ph/0601007</code>
+        </p>
+        <p>
+        This is an interesting example because it has multiple
+        identifiers, versions, formats, mirrors and external
+        relationships.  Although arXiv does not yet support ReMs, we
+        will assume in the examples below a hypothetical ReM available at the following URI
+        ("URI-R" from [<cite><a href="#ORE_Model">ORE Model</a></cite>]):
+        </p>
+        <p>
+        <code>http://arxiv.org/rem/astro-ph/0601007</code>
+        </p>
+
+<h3><a name="id"></a>2.1 /feed/id and /feed/entry/id</h3>
+        <p>
+        The most important thing to address are the nature of
+        the identifiers of Atom feeds and entries.  To begin with,
+        there is a conceptual difference between identifiers in Atom
+        (<code>/feed/id</code> and <code>/feed/entry/id</code>) and
+        the protocol-based URIs found in the <code>/feed/link</code>
+        and <code>/feed/entry/link</code> elements in Atom:</p>
+<ul>
+          <li>The meaning of the Atom <code>/feed/link</code> and
+          <code>/feed/entry/link</code> elements in a Resource Map
+          is explained in the Resource Map Profile of Atom [<cite><a
+          href="#ReMProfileofAtom">ReMProfileofAtom</a></cite>]. For
+          example, the href attribute of a <code>/feed/entry/link</code>
+          with a rel attribute equal to &quot;alternate&quot; points at
+          an Aggregated Resource. The URI that is used as the value
+          the href attribute of the Atom <code>/feed/link</code>
+          and <code>/feed/entry/link</code> elements must be
+          protocol-based. </li>
+
+          <li>The identifiers from Atom (<code>/feed/id</code> and
+          <code>/feed/entry/id</code>) have no meaning in the ORE Model,
+          but must be provided to make Resource Maps that are valid Atom
+          feeds. These Atom  identifiers can be protocol-based URIs, or
+            they can be non-protocol-based URIs (i.e., the URI scheme
+            is not dereferencable).      In the examples, to maintain
+            this distinction, we will use non-protocol-based URIs for
+            Atom identifiers. Good candidates for non-protocol-based
+            URIs include uuids [<cite><a href="#RFC4122">RFC4122</a></cite>],
+            tag URIs [<cite><a href="#RFC4151">RFC4151</a></cite>], and
+            info URIs [<cite><a href="#RFC4452">RFC4452</a></cite>].
+            The tag and info schemes are good for conveying semantics
+            in the identifier and uuids are good for opaque identifiers.
+            Two considerations regarding the minting of these identifiers
+            are important:
+
+            <ul>
+                <li>The identifiers need to be globally unqiue and they
+                need to persist. For example, once an Atom entry is
+                created, that entry should always be served with the
+                same Atom identifier. </li>
+
+                <li>Systems that make the Atom feed accessible should
+                consider how this persistence can be achieved. Obviously,
+                storing the Atom identifiers is one approach. But
+                sometimes doing so may cause unwanted overhead. As will
+                be shown, in the case of ReMs, Atom entry identifiers
+                can be generated based on metadata that is available to
+                the system that makes the ReM available.</li>
+
+            </ul>
+
+          </li>
+</ul>
+
+        <p> 
+        In summary, the URIs in <code>/feed/entry/link</code> elements
+        identify the resource that is being aggregated and do not
+        change based on who is doing the aggregating.  The URIs in
+        <code>/feed/entry/id</code> elements do change based on who is
+        doing the aggregating.
+        </p> 
+
+        <p> 
+        For the arXiv eprint described above,
+        we will assume just 3 Aggregated Resources
+        (<code>http://arxiv.org/ps/astro-ph/0601007</code> ;
+        <code>http://arxiv.org/pdf/astro-ph/0601007</code> ;
+        <code>http://arxiv.org/e-print/astro-ph/0601007</code>) and
+        that the ReM is being authored by arXiv itself, thus putting
+        the burden of minting Atom identifiers on the arXiv itself .
+        If a third party were to create a Resource Map for the arXiv
+        eprint, it would have to mint the Atom identifiers. In both
+        cases, however, the Aggregated Resources would be the same 3
+        ones. The skeleton of the ReM is shown below (note the
+        necessary <code>category</code> element that declares this Atom
+        Feed Document conforms to the Resource Map Profile of Atom and the 
+	<code>link</code> element that establishes the "describes" relationship
+	between this ReM and the Aggregation the ReM describes):
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_1.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_1.xml-->
+</div>
+
+        <p>
+        As can be seen, arXiv minted Atom identifiers in the tag URI
+        namespace, and using metadata that pertains to each of the
+        Aggregated Resources of the ReM. It should be noted that for
+        each Aggregated Resource of a ReM, there is a unique combination
+        of values that could be used for the creation of an Atom entry
+        identifier, namely the URI of the ReM itself and the URI of the
+        Aggregated Resource conveyed by the Atom entry. This combination
+        could be used as the seed to achieve a unique re-computable
+        identifier, for example by concatenating the URIs and creating
+        a hash over them.
+        </p>
+
+<h3><a name="link"></a>2.2 /feed/link[@rel="self"] and /feed/entry/link[@rel="alternate"]</h3>
+        <p>
+        Now that Atom identifiers are populated, we turn to the
+        values of the link elements.  The ReM asserts its own URI
+        by means of <code>/feed/link[@rel="self"]</code>, and it
+        asserts the URIs of the Aggregated Resources by means of
+        <code>/feed/entry/link[@rel="alternate"]</code>, for the remainder
+        of this section referred to as the feed link and the entry
+        links, respectively.  The feed link, like the Atom 
+        identifiers described <a href="#id">above</a> is relative to 
+        the author of the ReM.  In particular, it gives the URI where 
+        this particular ReM can be found.
+        </p>
+        <p>
+        Unlike the feed link and Atom identifiers described above which
+        would change based on the author of the ReM (i.e., 1st or 3rd
+        party ReMs), the URIs in the entry links do not change.  They 
+        are the Aggregated Resources, regardless of who is doing the
+        aggregation.  
+        </p>
+        <p>
+        Expanding our skeleton ReM, we now have:
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_2.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_2.xml-->
+</div>
+
+<h3><a name="title"></a>2.3 /feed/title, /feed/entry/title, and /feed/author </h3>
+        <p>
+        The values for <code>/feed/author</code>, <code>/feed/title</code>
+        and <code>/feed/entry/title</code> are not necessarily
+        what one would first expect.  These elements are not
+        for encoding metadata about the the Atom feed (ReM) and
+        Atom entries.  This means the <code>/feed/title</code> is
+        not "Parametrization of K-essence and Its Kinetic Term",
+        and similarly the <code>/feed/author/name</code> is not
+        "Hui Li, Zong-Kuan Guo, Yuan-Zhong Zhang".  The section
+        <a href="#ProvidingMetadata">below</a> addresses how to
+        incorporate metadata about the Aggregation into the Resource
+        Map Profile of Atom.  We recommend listing the URI, prepended
+        with the literal "Resource Map" or "Aggregated Resource" for
+        <code>/feed/title</code> and <code>/feed/entry/title</code>,
+        respectively.  This gives meaningful values for the
+        titles, but at the same time underscores that they are
+        titles and not link elements.  In this example, the author
+        of the ReM is the arXiv repository itself.  Note that the
+        <code>/feed/entry/author element</code> MUST NOT be used in ReMs.
+        Authorship is inherited from the <code>/feed/author</code>
+        element or from the <code>/feed/entry/source/author
+        </code>element if that exists. See <a
+        href="http://www.openarchives.org/ore/0.2/atom#ORE.element.author">section
+        4.2.1</a> of [<cite><a
+        href="#ReMProfileofAtom">ReMProfileofAtom</a></cite>] for a
+        detailed explanation.
+        </p>
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_3.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_3.xml-->
+</div>
+
+<h3><a name="updated"></a>2.4 /feed/updated and /feed/entry/updated</h3>
+        <p>
+        Whereas RFC-4287 allows <code>updated</code> to be changed
+        "when an entry or feed was modified in a way the publisher
+        considers significant", the Resource Map Profile of Atom
+        is more strict.  The <code>/feed/updated</code> value SHOULD
+        match the "Last-Modified" HTTP response header  [<cite><a
+        href="#RFC2616">RFC2616</a></cite>], if that header exists.  If
+        the "Last-Modified" header does not exist (which can happen when a
+        resource is dynamically generated), the <code>/feed/updated</code>
+        MAY be the value in the "Date" HTTP response header (the date
+        the HTTP response was generated).  However, in this case of the
+        "Last-Modified" HTTP response header not being available, it is
+        RECOMMENDED that the ReM publisher keep track of what the correct
+        value of <code>/feed/updated</code> should be and strictly update
+        its value based on any modification, significant or not.  See 
+        section 4.2.15 of [<cite><a href="#ReMProfileofAtom">ReMProfileofAtom</a></cite>]
+        for a detailed explanation.
+        </p>
+        <p>
+        Populating <code>/feed/entry/updated</code> is more subtle.  Even
+        in the case of 1st party ReMs (such as the arXiv example explored here),
+        <code>/feed/entry/updated</code> is not "Last-Modified" HTTP response header
+        of the Aggregated Resource, but rather the last time the Aggregation
+        described by the ReM made an assertion about the Aggregated Resource.  
+        In other words, <code>/feed/entry/updated</code> is the datestamp of 
+        that particular Atom entry, not the Aggregated Resource described by that
+        entry.
+        </p>
+        <p>
+        Finally, the value of <code>/feed/updated</code> MUST
+        always be equal to or later in time than the values of all
+        <code>/feed/entry/updated</code> elements.  
+        </p>
+        <p>
+        In our example ReM, we have all the <code>/feed/entry/updated</code> values
+        being the same (in the case of arXiv, all the resources were aggregated
+        at the same time), but we show a different datestamp for <code>/feed/updated</code>
+        to correspond with an edit of the ReM.  
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_4.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_4.xml-->
+</div>
+
+<h3><a name="GRDDL"></a>2.5 GRDDL crosswalk from Atom XML to RDF/XML</h3>
+        <p>
+        The up-to-date version of the GRDDL-compliant
+        XSLT to transform an Atom-based serialization of a
+        Resource Map  into a serialization in RDF/XML is available at <a
+        href="http://www.openarchives.org/ore/atom-grddl.xsl">http://www.openarchives.org/ore/atom-grddl.xsl</a>.
+        In order to allow Atom-based Resource Maps to be readily
+        transformed in this manner, it is RECOMMENDED to add GRDDL
+        namespace and transformation information as attributes to the
+        <code>/feed</code> element.
+        </p>
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_5.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:grddl="http://www.w3.org/2003/g/data-view#" 
+      grddl:transformation="http://www.openarchives.org/ore/atom-grddl.xsl"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex2_5.xml-->
+</div>
+
+<h2><a name="ProvidingMetadata" id="ProvidingMetadata"></a>3. Providing Metadata for the Aggregation</h2>
+        <p>
+        With few exceptions, typical bibliographic metadata about either
+        the Aggregation or the Aggregated Resources is conveyed with
+        elements outside the Atom namespace.  In this section we look out
+        how to handle common metadata requirements.
+        </p>
+
+        <p>
+        We show three ways to add metadata to and about the Aggregation.
+        First, the aggregation can have additional identifiers
+        such as DOIs or Handles.  The arXiv example has an info URI
+        associated with the aggregation and we encode it with the
+        <code>feed/link[@rel="related"]</code> element.  This element
+        can be repeated for additional identifiers as well.  Second,
+        we provide some minimal bibliographic metadata (title, creator)
+        by importing from another namespace, in this case from the Dublin
+        Core namespace.  To facilitate conversion to RDF, we encourage the
+        use URIs instead of literal values (e.g., "Zong-Kuan Guo"), but we
+        acknowledge that often these URIs are unavailable.  As described
+        in <a href="#title">section 2.3</a>, the <code>/feed/title</code>
+        and <code>/feed/author</code> elements MUST NOT be used for
+        this purpose.  Finally, we add a fourth Aggregated Resource,
+        which is the OAI-PMH metadata available from the arXiv E-print
+        repository.  Although not required, in this example, we modify
+        the <code>/feed/entry/title</code> to add a human-readable hint
+        that this Aggregated Resource is metadata.  To unambiguously mark
+        it as bibliographic metadata, we import an element from the RDF
+        namespace (although in the example below, it uses an Info URI
+        namespace (eu-repo) that is pending registration).  We also show
+        a different <code>/feed/entry/updated</code> value.
+        </p>
+        <p>
+        It is up to the author of the ReM to decide what best approach for
+        including Aggregation metadata: importing from other namespaces,
+        aggregating resources that are metadata, or some combination
+        of both.
+        </p>
+        <p>
+        Providing bibliographic metadata for the Aggregated Resources 
+        is done similarly, but the elements in the imported namespaces
+        are enclosed in the appropriate <code>/feed/entry</code> elements.  
+        In this example, we annotate the last Aggregated Resource with
+        a free text description that the Aggregated Resource is LaTeX source 
+        files.
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex3.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:grddl="http://www.w3.org/2003/g/data-view#" 
+      grddl:transformation="http://www.openarchives.org/ore/atom-grddl.xsl"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+  &lt;link href="info:arxiv/astro-ph/0601007v2" rel="related"/&gt;
+  &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+  &lt;dc:creator&gt;Hui Li&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Zong-Kuan Guo&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Yuan-Zhong Zhang&lt;/dc:creator&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:oai-opmh&lt;/id&gt;
+   &lt;link href="http://export.arxiv.org/oai2?verb=GetRecord&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007" 
+   rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource Dublin Core Metadata&lt;/title&gt;
+   &lt;rdf:type&gt;info:eu-repo/semantics/DescriptiveMetadata&lt;/rdf:type&gt;
+   &lt;updated&gt;2006-09-27T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+   &lt;dc:description&gt;LaTeX Source Files&lt;/dc:description&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex3.xml-->
+</div>
+
+<h2><a name="CommonScenarios" id="CommonScenarios"></a>4. Common Scenarios</h2>
+        <p>
+        In this section we review the appropriate techniques within
+        the Resource Map Profile of Atom for handling common scenarios
+        for Aggregations.
+        </p>
+
+<h3><a name="MultipleFormats"></a>4.1 Multiple Formats</h3>
+        <p>
+        In the example we have been working with, the PostScript, PDF and 
+        the page containing links to other formats are all considered
+        separate Aggregated Resources and not simply the same Aggregated
+        Resource realized in multiple MIME types.  This differs from the
+        typical Atom Syndication Format idiom, where multiple MIME types
+        are often grouped in the same <code>entry</code> element.
+        </p>
+        <p>
+        We can also express that Aggregated Resources share a format
+        relationship.  In this example, we link the PostScript and
+        PDF formats together by placing <code>hasFormat</code> elements
+        (from the <code>dcterms</code> namespace) in each Atom entry,
+        referencing each other.
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_1.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:grddl="http://www.w3.org/2003/g/data-view#" 
+      grddl:transformation="http://www.openarchives.org/ore/atom-grddl.xsl"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+  &lt;link href="info:arxiv/astro-ph/0601007v2" rel="related"/&gt;
+  &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+  &lt;dc:creator&gt;Hui Li&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Zong-Kuan Guo&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Yuan-Zhong Zhang&lt;/dc:creator&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:oai-opmh&lt;/id&gt;
+   &lt;link href="http://export.arxiv.org/oai2?verb=GetRecord&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007" 
+   rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource Dublin Core Metadata&lt;/title&gt;
+   &lt;rdf:type&gt;info:eu-repo/semantics/DescriptiveMetadata&lt;/rdf:type&gt;
+   &lt;updated&gt;2006-09-27T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/pdf/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/ps/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+   &lt;dc:description&gt;LaTeX Source Files&lt;/dc:description&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_1.xml-->
+</div>
+
+<h3><a name="MirrorCopies"></a>4.2 Mirror Copies </h3>
+        <p>
+        arXiv maintains many mirrors throughout the world.  For example, the 
+        the same e-print can be accessed at the mirror repository in Japan
+        with this URI:
+        </p>
+        <p>
+        <code>http://jp.arxiv.org/abs/astro-ph/0601007</code>
+        </p>
+        <p>
+        We treat this the same as adding an additional
+        identifier (such as the arXiv info URI) and use the
+        <code>feed/link[@rel="related"]</code> element.  
+        </p>
+
+<div class="exampleInner"> 
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_2.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:grddl="http://www.w3.org/2003/g/data-view#" 
+      grddl:transformation="http://www.openarchives.org/ore/atom-grddl.xsl"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+  &lt;link href="info:arxiv/astro-ph/0601007v2" rel="related"/&gt;
+  &lt;link href="http://jp.arxiv.org/abs/astro-ph/0601007" rel="related"/&gt;
+  &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+  &lt;dc:creator&gt;Hui Li&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Zong-Kuan Guo&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Yuan-Zhong Zhang&lt;/dc:creator&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:oai-opmh&lt;/id&gt;
+   &lt;link href="http://export.arxiv.org/oai2?verb=GetRecord&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007" 
+   rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource Dublin Core Metadata&lt;/title&gt;
+   &lt;rdf:type&gt;info:eu-repo/semantics/DescriptiveMetadata&lt;/rdf:type&gt;
+   &lt;updated&gt;2006-09-27T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/ps/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/ps/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+   &lt;dc:description&gt;LaTeX Source Files&lt;/dc:description&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_2.xml-->
+</div>
+
+<h3><a name="Versions"></a>4.3 Versions </h3>
+        <p>
+        The arXiv example we have been working with is actually version
+        2 of the e-print.  Up until now, we have not distinguished
+        the second (current) version vs. the first (older version).
+        To do so, we import the <code>hasVersion</code> element from
+        the <code>dcterms</code> namespace and place this new metadata
+        element at the Aggregation level.  The value of this element is
+        the URI of the previous version.  If we wanted to inform the
+        agent that the older version should be considered deprecated,
+        we would use the replaces element from the same namespace.
+        </p>
+        <p>
+        This example also has a DOI identifying a related (i.e.,
+        published) version of the e-print.  We express this DOI with
+        the <code>feed/link[@rel="related"]</code> element.
+        </p>
+
+<div class="exampleInner"> 
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_3.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:grddl="http://www.w3.org/2003/g/data-view#" 
+      grddl:transformation="http://www.openarchives.org/ore/atom-grddl.xsl"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+  &lt;link href="info:doi/10.1142/S0217732306019475" rel="related"/&gt;
+  &lt;link href="info:arxiv/astro-ph/0601007v2" rel="related"/&gt;
+  &lt;link href="http://jp.arxiv.org/abs/astro-ph/0601007" rel="related"/&gt;
+  &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+  &lt;dc:creator&gt;Hui Li&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Zong-Kuan Guo&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Yuan-Zhong Zhang&lt;/dc:creator&gt;
+  &lt;dcterms:hasVersion&gt;http://arxiv.org/abs/astro-ph/0601007v1&lt;/dcterms:hasVersion&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:oai-opmh&lt;/id&gt;
+   &lt;link href="http://export.arxiv.org/oai2?verb=GetRecord&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007" 
+   rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource Dublin Core Metadata&lt;/title&gt;
+   &lt;rdf:type&gt;info:eu-repo/semantics/DescriptiveMetadata&lt;/rdf:type&gt;
+   &lt;updated&gt;2006-09-27T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/pdf/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/ps/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+   &lt;dc:description&gt;LaTeX Source Files&lt;/dc:description&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_3.xml-->
+</div>
+
+<h3><a name="SplashPages"></a>4.4 Splash Pages </h3>
+        <p>
+        So-called "splash" pages that conventionally serve as a
+        human-readable surrogate for an Aggregation other resources; they
+        are the page that human agents "start" at.  From the point of view
+        of the ReM, they are just another Aggregated Resource, albeit
+        with an element from the RDF namespace indicating to automated
+        agents that one of the Aggregated Resources is distinguished
+        and can serve as the entry point for humans navigating the
+        Aggregation.  This is done in the same manner as marking the
+        bibliographic metadata above, using the values from the proposed
+        <code>info:eu-repo/</code> namespace.  In our example, the arXiv
+        "splash" page is added as an Aggregated Resource.
+        </p>
+
+<div class="exampleInner"> 
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_4.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:grddl="http://www.w3.org/2003/g/data-view#" 
+      grddl:transformation="http://www.openarchives.org/ore/atom-grddl.xsl"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:dcterms="http://purl.org/dc/terms/"&gt;
+
+  &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+  &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+    &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+    &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+  &lt;link href="info:doi/10.1142/S0217732306019475" rel="related"/&gt;
+  &lt;link href="info:arxiv/astro-ph/0601007v2" rel="related"/&gt;
+  &lt;link href="http://jp.arxiv.org/abs/astro-ph/0601007" rel="related"/&gt;
+  &lt;dc:title&gt;Parametrization of K-essence and Its Kinetic Term&lt;/dc:title&gt;
+  &lt;dc:creator&gt;Hui Li&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Zong-Kuan Guo&lt;/dc:creator&gt;
+  &lt;dc:creator&gt;Yuan-Zhong Zhang&lt;/dc:creator&gt;
+  &lt;dcterms:hasVersion&gt;http://arxiv.org/abs/astro-ph/0601007v1&lt;/dcterms:hasVersion&gt;
+
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:abs&lt;/id&gt;
+   &lt;link href="http://arxiv.org/abs/astro-ph/0601007" rel="alternate" type="text/html"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/abs/astro-ph/0601007&lt;/title&gt;
+   &lt;rdf:type&gt;info:eu-repo/semantics/humanStartPage&lt;/rdf:type&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:oai-opmh&lt;/id&gt;
+   &lt;link href="http://export.arxiv.org/oai2?verb=GetRecord&amp;amp;metadataPrefix=oai_dc&amp;amp;identifier=astro-ph/0601007" 
+   rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource Dublin Core Metadata&lt;/title&gt;
+   &lt;rdf:type&gt;info:eu-repo/semantics/DescriptiveMetadata&lt;/rdf:type&gt;
+   &lt;updated&gt;2006-09-27T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:ps&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/pdf/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/pdf/astro-ph/0601007" rel="alternate" type="application/pdf"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/pdf/astro-ph/0601007&lt;/title&gt;
+   &lt;dcterms:hasFormat&gt;http://arxiv.org/ps/astro-ph/0601007v1&lt;/dcterms:hasFormat&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:e-print&lt;/id&gt;
+   &lt;link href="http://arxiv.org/e-print/astro-ph/0601007" rel="alternate"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/e-print/astro-ph/0601007&lt;/title&gt;
+   &lt;dc:description&gt;LaTeX Source Files&lt;/dc:description&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex4_4.xml-->
+</div>
+
+<h2><a name="LinkingtoOtherAggregations" id="LinkingtoOtherAggregations"></a>5. Linking to Other Aggregations</h2>
+
+
+        <p>
+
+	The Data Model Document [<cite><a href="#ORE_Model">ORE
+	Model</a></cite>] defines the notion of Aggregations
+	linking to other Aggregations with two relationships:
+	<span class="definition"> ore:aggregates</span> and <span
+	class="definition">ore:isAggregatedBy</span>.  The latter
+	allows a ReM to reference the origin of its Aggregated
+	Resources in another ReM, providing a verifiable lineage of
+	discovery and provenance.  Atom provides two mechanisms for
+	establishing the provenance of <code>/feed/entry</code> elements:
+	<code>/feed/entry/source</code> (used to link to the initial
+	occurence) and <code>feed/entry/link[@rel="via"]/@href</code>
+	(used to link to the most recent occurence).  The
+	<code>feed/entry/link[@rel="via"]/@href</code> approach is used
+	to implement the ore:isAggregatedBy relationship (for details,
+	see Table 3 of the [<cite><a href="#ReMProfileofAtom">ReM Profile
+	of Atom</a></cite>]).  Although <code>/feed/entry/source</code>
+	has no direct correspondence in the ORE Abstract Data Model
+	[<cite><a href="#ORE_Model">ORE Model</a></cite>], it is covered
+	here because it is part of the Atom idiom.
+
+	</p>
+
+<h3><a name="source"></a>5.1 /feed/entry/source</h3>
+        <p>
+        Imagine our example arXiv e-print has been selected for inclusion
+        in an overlay journal, and this overlay journal also uses
+        ReMs to describe Aggregations (in this case, journal issues)
+        at their site.  The journal wishes to use only the PDF version
+        of the e-print and not the entire arXiv Aggregation.
+        </p>
+        <p>
+        As described in section 4.2.11 of [<cite><a
+        href="#ReMProfileofAtom">ReM Profile of Atom</a></cite>], the
+        overlay journal MUST copy and paste the entire <code>entry</code>
+        element that conveys the PDF file as an Aggrgated Resource
+        into the ReM of the overlay journal.  In addition, they MUST
+        populate the Atom <code>/feed/entry/source</code> element
+        with metadata from the original (arXiv) ReM, specifically
+        the <code>/feed/id</code>, <code>/feed/link</code>,
+        <code>/feed/title</code>, <code>/feed/rights</code>,
+        <code>/feed/category</code>, and <code>/feed/updated</code>
+        elements MUST be copied.  In the example below, we are looking
+        at the ReM of the overlay journal, with only the entry element
+        from the arXiv ReM shown.
+        </p>
+
+<div class="exampleInner"> 
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex5_1.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+  &lt;id&gt;tag:overlay-journal.org,2007:vol=12,number=5&lt;/id&gt;
+  &lt;link href="http://www.overlay-journal.org/12/05/rem.atom" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://www.overlay-journal.org/12/05/rem.atom#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://www.overlay-journal.org/12/05/rem.atom&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;Overlay Journal for Frog &amp;amp; Toad Studies&lt;/name&gt;
+    &lt;uri&gt;http://www.overlay-journal.org/&lt;/uri&gt;
+    &lt;email&gt;help@overlay-journal.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-12-12T15:30:02Z&lt;/updated&gt;
+
+&lt;!--other entries of the overlay journal--&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+   &lt;source&gt;
+     &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+     &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+     &lt;category scheme="http://www.openarchives.org/ore/terms/"
+     term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+     &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+     &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+     &lt;author&gt;
+       &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+       &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+       &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+     &lt;/author&gt;
+     &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+     &lt;link href="info:doi/10.1142/S0217732306019475" rel="related"/&gt;
+     &lt;link href="info:arxiv/astro-ph/0601007v2" rel="related"/&gt;
+     &lt;link href="http://jp.arxiv.org/abs/astro-ph/0601007" rel="related"/&gt;
+   &lt;/source&gt;
+ &lt;/entry&gt;
+ 
+&lt;!--other entries of the overlay journal--&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex5_1.xml-->
+</div>
+
+<h3><a name="entrylink"></a>5.2 /feed/entry/link[@rel="via"]/@href </h3>
+        <p>
+        Now imagine this issue of the overlay journal becomes popular in the 
+        scientific blog community, and this particular arXiv PDF is linked to
+        many times.  If the arXiv ReM is the first occurrence and 
+        the overlay journal is the second occurrence, then the first blog to comment
+        on it is the third occurrence, and if a second blog discovers the PDF   
+        from the first blog, that is then the fourth occurrence and so forth.
+        </p>
+        <p>
+        Now because the <code>/feed/entry/source</code> element
+        is already present in the ReM of the overlay journal, each
+        subsequent blog reference will be copied verbatim with
+        the original arXiv information retained in each blog's
+        <code>/feed/entry/source</code> element.  That means the 98th,
+        99th and 100th blog will each have the a reference back to the
+        original arXiv ReM.  But we would also like to capture that blog
+        100 discovered the PDF from blog 99.  This is accomplished using
+        the <code>/feed/entry/link[@rel="via"]/@href</code> element.
+        If <code>/feed/entry/source</code> always maintains a reference to
+        the original ReM, <code>/feed/entry/link[@rel="via"]/@href</code>
+        always maintains a reference to the previous (i.e., "n-1") ReM.
+        In the example below, the ReM for blog 100 is shown with
+        a <code>/feed/entry/link[@rel="via"]/@href</code> element
+        establishing the lineage to the ReM of blog 99 and the arXiv ReM.
+        </p>
+
+<div class="exampleInner"> 
+<!--START-ESCAPEINCLUDEPRE=atom-implementation-examples/ex5_2.xml-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt; 
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+  &lt;id&gt;tag:blog100.blogsrus.org,2007:entry1322&lt;/id&gt;
+  &lt;link href="http://blog100.blogsrus.org/entry/1322.atom" rel="self" type="application/atom+xml"/&gt;
+  &lt;category scheme="http://www.openarchives.org/ore/terms/" 
+  term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+  &lt;link rel="describes" href="http://blog100.blogsrus.org/entry/1322.atom#aggregation" /&gt;
+  &lt;title&gt;Resource Map http://blog100.blogsrus.org/entry/1322.atom&lt;/title&gt;
+  &lt;author&gt;
+    &lt;name&gt;Blog100&lt;/name&gt;
+    &lt;uri&gt;http://blog100.blogsrus.org//&lt;/uri&gt;
+    &lt;email&gt;blog100@blogsrus.org&lt;/email&gt;
+  &lt;/author&gt;
+  &lt;updated&gt;2007-12-25T12:30:42Z&lt;/updated&gt;
+
+&lt;!--other entries of the blog100--&gt;
+ 
+ &lt;entry&gt;
+   &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2:pdf&lt;/id&gt;
+   &lt;link href="http://arxiv.org/ps/astro-ph/0601007" rel="alternate" type="application/postscript"/&gt;
+   &lt;title&gt;Aggregated Resource http://arxiv.org/ps/astro-ph/0601007&lt;/title&gt;
+   &lt;updated&gt;2006-05-31T12:52:00Z&lt;/updated&gt;
+   &lt;link href="http://blog99.toadscience.com/entry742.atom" rel="via" type="application/atom+xml"/&gt;
+   &lt;source&gt;
+     &lt;id&gt;tag:arxiv.org,2007:astro-ph/0601007v2&lt;/id&gt;
+     &lt;link href="http://arxiv.org/rem/astro-ph/0601007" rel="self" type="application/atom+xml"/&gt;
+     &lt;category scheme="http://www.openarchives.org/ore/terms/"
+     term="http://www.openarchives.org/ore/terms/ResourceMap" label="Resource Map" /&gt;
+     &lt;link rel="describes" href="http://arxiv.org/rem/astro-ph/0601007#aggregation" /&gt;
+     &lt;title&gt;Resource Map http://arxiv.org/rem/astro-ph/0601007&lt;/title&gt;
+     &lt;author&gt;
+       &lt;name&gt;arXiv.org e-Print Repository&lt;/name&gt;
+       &lt;uri&gt;http://arxiv.org/&lt;/uri&gt;
+       &lt;email&gt;www-admin@arxiv.org&lt;/email&gt;
+     &lt;/author&gt;
+     &lt;updated&gt;2007-10-10T18:30:02Z&lt;/updated&gt;
+     &lt;link href="info:doi/10.1142/S0217732306019475" rel="related"/&gt;
+     &lt;link href="info:arxiv/astro-ph/0601007v2" rel="related"/&gt;
+     &lt;link href="http://jp.arxiv.org/abs/astro-ph/0601007" rel="related"/&gt;
+   &lt;/source&gt;
+ &lt;/entry&gt;
+ 
+&lt;!--other entries of blog100--&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=atom-implementation-examples/ex5_2.xml-->
+</div>
+        <p>
+        Note that in section 5.1 above, the overlay journal could have
+        used <code>/feed/entry/link[@rel="via"]/@href element</code>
+        in addition to <code>/feed/entry/source</code> to reference the
+        original arXiv ReM.  However, this was omitted from section 5.1
+        for clarity because that is a special case where the original
+        ReM and the previous ReM were the same (i.e., the arXiv ReM).
+        </p>
+
+
+<h2><a name="References"></a>6. References</h2>
+                <dl>
+
+                       <dt>[<a name="ORE_Model" id="ORE_Model">ORE Model</a>] </dt>
+                        <dd><cite><a href="http://www.openarchives.org/ore/datamodel">ORE Specification -  Abstract Data Model</a></cite>, C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2007, Available at http://www.openarchives.org/ore/datamodel.</dd>
+
+                        <dt>[<a name="ReMProfileofAtom" id="ReMProfileofAtom">ReMProfileofAtom</a>] </dt>
+                        <dd><cite><a href="http://www.openarchives.org/ore/atom">ORE Specification - Resource Map Profile of Atom</a></cite>, C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2007, Available at http://www.openarchives.org/ore/atom.</dd>
+
+                        <dt>[<a id="RFC2119" shape="rect" name="RFC2119">RFC2119</a>] </dt>
+                        <dd>IETF <cite>
+                        <a href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119: 
+                        Key words for use in RFCs to Indicate Requirement Levels</a></cite>, 
+                        S. Bradner, March 1997. Available at http://www.ietf.org/rfc/rfc2119.txt.
+                        </dd>
+
+                        <dt>[<a id="RFC2616" name="RFC2616">RFC2616</a>] </dt>
+                        <dd>IETF <cite>
+                        <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616: 
+                        Hypertext Transfer Protocol - HTTP/1.1</a></cite>, R. Fielding, J. Gettys, J. Mogul, H. Frystyk, L. Masinter, P. Leach, T. Berners-Lee, June 1999. Available 
+                        at http://www.ietf.org/rfc/rfc2616.txt. </dd>
+
+                        <dt>[<a name="RFC4122" id="RFC4122">RFC4122</a>] </dt>
+                        <dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4122.txt">RFC 4122: A Universally Unique IDentifier (UUID) URN Namespace</a></cite>, P. Leach, M. Mealling, R. Salz, July 2005. Available at http://www.ietf.org/rfc/rfc4122.txt.</dd>
+
+                        <dt>[<a name="RFC4151" id="RFC4151">RFC4151</a>] </dt>
+                        <dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4151.txt">RFC 4151: The 'tag' URI Scheme</a></cite>, T. Kindberg, S. Hawke, October 2005. Available at http://www.ietf.org/rfc/rfc4151.txt.</dd>
+
+                        <dt>[<a name="RFC4287" id="RFC4287">RFC4287</a>] </dt>
+                        <dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287: The Atom Syndication Format</a></cite>, M. Nottingham, R. Sayre, December 2005. Available at http://www.ietf.org/rfc/rfc4287.txt.</dd>
+
+                        <dt>[<a name="RFC4452" id="RFC4452">RFC4452</a>] </dt>
+                        <dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4452.txt">RFC 4452: The "info" URI Scheme for Information Assets with Identifiers in Public Namespaces</a></cite>, H. Van de Sompel, T. Hammond, Manifest Solutions, S. Weibel, April 2006. Available at http://www.ietf.org/rfc/rfc4452.txt.</dd>
+
+                </dl>
+</div>
+
+<div class="back">
+<!--START-INCLUDE=_acknowledgements_with_lanl.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+<p>Many thanks to the Digital Library Research &amp; Prototyping Team of the Los Alamos 
+National Laboratory for their inspiring explorations into Atom and ORE space: Lyudmilla 
+Balakireva, Ryan Chute, Stephan Drescher, Alberto Pepe, Zhiwu Xie.</p>
+</div>
+<!--END-INCLUDE=_acknowledgements_with_lanl.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+        <tbody><tr>
+                <th>Date</th>
+                <th>Editor</th>
+                <th>Description</th>
+        </tr>
+        <tr>
+                <td>2008-02-29</td>
+                <td>mln</td>
+                <td>public alpha 0.2 release</td>
+        </tr>
+        <tr>
+                <td>2007-12-10</td>
+                <td>mln</td>
+                <td>public alpha 0.1 release</td>
+        </tr>
+        <tr>
+                <td>2007-10-15</td>
+                <td>mln</td>
+                <td>alpha release to ORE-TC</td>
+        </tr></tbody>
+</table>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

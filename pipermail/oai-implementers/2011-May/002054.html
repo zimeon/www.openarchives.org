@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] (no subject)
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20%28no%20subject%29&In-Reply-To=4DDE2ED3.6080809%40ubib.eur.nl">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="002056.html">
+   <LINK REL="Next"  HREF="002058.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] (no subject)</H1>
+    <B>Thomas Berger</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20%28no%20subject%29&In-Reply-To=4DDE2ED3.6080809%40ubib.eur.nl"
+       TITLE="[OAI-implementers] (no subject)">thb-oai-implementers at lists.gymel.com
+       </A><BR>
+    <I>Thu May 26 08:22:05 EDT 2011</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="002056.html">[OAI-implementers] harvester guidelines
+</A></li>
+        <LI>Next message: <A HREF="002058.html">[OAI-implementers] harvester guidelines
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2054">[ date ]</a>
+              <a href="thread.html#2054">[ thread ]</a>
+              <a href="subject.html#2054">[ subject ]</a>
+              <a href="author.html#2054">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi Jasper,
+
+&gt;<i> &gt; Another issue that came up recently has to do with incremental harvesting. The
+</I>&gt;<i> &gt; harvester guidelines mention that for the value of the from parameter, the
+</I>&gt;<i> &gt; `responseDate` should be used, and that it is advisable to overlap by a small
+</I>&gt;<i> &gt; additional amount.
+</I>&gt;<i> &gt; I think it would be better if a harvester does not use the responseDate, but
+</I>&gt;<i> &gt; instead uses the latest datestamp of all harvested records.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Consider the following situation:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Someone modifies a document in a database at 4 o'clock.
+</I>&gt;<i> &gt; An external OAI service gets updated once an hour, so it will have the changes
+</I>&gt;<i> &gt; at 5 o'clock. The OAI software will use the modification dates from the
+</I>&gt;<i> &gt; database, so at 5 o'clock the modified record is added with a datestamp of 4
+</I>&gt;<i> &gt; o'clock.
+</I>Wich in turn evoces the fatal consequences you describe.
+
+Whenever you have an intermediate service as base for the repository,
+you have two choices:
+
+- Keep copies and on update of each individual record modify its
+  datestamp to the time of update (or - if you get a copy of everything:
+  modify the datestamps of all records newer than the last update
+
+- Keep a *complete* list of all individual times an update of the
+  service has taken place and adjust all internal queries for time
+  intervals and all Datestamps in OAI-Headers to the correct (upper
+  or lower) interval boundary from this list.
+
+Personally I'm involved with repositories for which unfortunately none
+of these strategies is feasible: The OAI service does not have a
+database of its own and the database it utilizes is updated infrequently
+by prompting administrators to upload a &quot;production version&quot; of the
+database onto the web-exposed host. And none of the persons involved
+takes the trouble adding the timestamp of this action to a config file.
+
+But also better-kept repositories sometimes have trouble with their
+indexing and erroneously deliver no records for intervals where there
+actually had been some changes, thus arising the need to re-harvest.
+Unfortunately the protocol specification does not include measures to
+communicate such reharvesting instructions, the known harvesters then
+are alerted by a mailing list, but of course OAI-PMH is mostly
+about giving access without the need of prior &quot;registration&quot;...
+
+The strategy you describe fits the above scenarios very well and
+can be implemented in harvesters very cheaply: For incremental harvesting
+the timestamp of &quot;last successful harvest&quot; has to be stored anyway and
+noting the first (of several delivered) ResponseDates or the maximum
+of all delivered dateStamp's does not make much of a difference.
+Semantically it would constitute the &quot;evidenced last known state&quot;
+of the repository...
+
+
+viele Gruesse
+Thomas Berger
+
+</PRE>
+
+
+
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="002056.html">[OAI-implementers] harvester guidelines
+</A></li>
+	<LI>Next message: <A HREF="002058.html">[OAI-implementers] harvester guidelines
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2054">[ date ]</a>
+              <a href="thread.html#2054">[ thread ]</a>
+              <a href="subject.html#2054">[ subject ]</a>
+              <a href="author.html#2054">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] rdf
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:eric_morgan%40ncsu.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000105.html">
+   <LINK REL="Next"  HREF="000108.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] rdf
+   </H1>
+    <B>Eric Lease Morgan
+    </B> 
+    <A HREF="mailto:eric_morgan%40ncsu.edu"
+       TITLE="[OAI-implementers] rdf">eric_morgan@ncsu.edu
+       </A><BR>
+    <I>Mon, 30 Apr 2001 07:16:07 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000105.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+        <LI> Next message: <A HREF="000108.html">[OAI-implementers] rdf
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#107">[ date ]</a>
+              <a href="thread.html#107">[ thread ]</a>
+              <a href="subject.html#107">[ subject ]</a>
+              <a href="author.html#107">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>In a mad flash of creativity (I get these every once in a while), I have
+implemented about 80% of the OAI against the Mark Twain records of my Alex
+Catalogue of Electronic Texts, and I am wondering whether or not (or how) I
+can use RDF in the content of my metadata GetRecords response element. See:
+
+  <A HREF="http://www.infomotions.com/alex/oai/">http://www.infomotions.com/alex/oai/</A>
+
+My OAI implementation is still bare-bones. I don't necessarily return the
+correct error codes, etc., and I have yet to fully implement some of the
+verbs such as ListRecords and ListSets.
+
+As per the protocol, I have implemented a Dublin Core metadata scheme, but
+like everybody else, Dublin Core is not quite rich enough for me. Each item
+in the Catalogue is associated with a few functions such as a concordance,
+make ebook, make PDF document, and freeWAIS index. For you RDF fans, you can
+see what I mean by looking at a sample RDF description of a record:
+
+  <A HREF="http://bliss.lib.ncsu.edu/xml/rdf/twain-30-44.xml">http://bliss.lib.ncsu.edu/xml/rdf/twain-30-44.xml</A>
+
+Is there some mechanism whereby I can insert RDF into the metadata element
+of a GetRecord request so I can crawl my site with an as-of-yet-created OAI
+harvester, save the RDF with something like rdfdb, RDFStore, or Redland, and
+then finally serve out my content again? A possible GetRecord response could
+look like this:
+
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;GetRecord xmlns=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"">http://www.openarchives.org/OAI/1.0/OAI_GetRecord&quot;</A>
+ xmlns:xsi=&quot;<A HREF="http://www.w3.org/2000/10/XMLSchema-instance"">http://www.w3.org/2000/10/XMLSchema-instance&quot;</A>
+ xsi:schemaLocation=&quot;<A HREF="http://www.openarchives.org/OAI/1.0/OAI_GetRecord">http://www.openarchives.org/OAI/1.0/OAI_GetRecord</A>
+ <A HREF="http://www.openarchives.org/OAI/1.0/OAI_GetRecord.xsd"">http://www.openarchives.org/OAI/1.0/OAI_GetRecord.xsd&quot;</A>&gt;
+ &lt;responseDate&gt;2001-04-30T07:24:56-7:00&lt;/responseDate&gt;
+ &lt;requestURL&gt;<A HREF="http://www.infomotio...30-44</requestURL">http://www.infomotio...30-44&lt;/requestURL</A>&gt;
+ &lt;record&gt;
+  &lt;header&gt;
+   &lt;identifier&gt;twain-30-44&lt;/identifier&gt;
+   &lt;datestamp&gt;1999&lt;/datestamp&gt;
+  &lt;/header&gt;
+  &lt;metadata&gt;
+   &lt;rdf:RDF xmlns:rdf=&quot;<A HREF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"">http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot;</A>
+    xmlns:dc=&quot;<A HREF="http://purl.org/dc/elements/1.1/"">http://purl.org/dc/elements/1.1/&quot;</A>
+    xmlns:alex=&quot;<A HREF="http://bliss.lib.ncsu.edu/xml/rdf/alex-01-rdf-ns#"">http://bliss.lib.ncsu.edu/xml/rdf/alex-01-rdf-ns#&quot;</A>&gt;
+    &lt;rdf:Description rdf:about=&quot;<A HREF="http://www....erature/am...44.txt"">http://www....erature/am...44.txt&quot;</A>&gt;
+     &lt;dc:identifier&gt;twain-30-44&lt;/dc:identifier&gt;
+     &lt;dc:creator&gt;Twain, Mark&lt;/dc:creator&gt;
+     &lt;dc:title&gt;$30,000 Bequest And Other Stories, The&lt;/dc:title&gt;
+     &lt;dc:source rdf:resource=&quot;<A HREF="gopher://.../Classic/bequest.mt"">gopher://.../Classic/bequest.mt&quot;</A> /&gt;
+     &lt;dc:format&gt;text/plain&lt;/dc:format&gt;
+     &lt;dc:publisher&gt;Project Gutenburg&lt;/dc:publisher&gt;
+     &lt;dc:type&gt;text&lt;/dc:type&gt;
+     &lt;dc:language&gt;en-US&lt;/dc:language&gt;
+     &lt;dc:rights&gt;This document in the the Public Domain.&lt;/dc:rights&gt;
+     &lt;alex:hasIndex rdf:resource=&quot;<A HREF="http://ww...sDatabase=twain-30-44"">http://ww...sDatabase=twain-30-44&quot;</A> /&gt;
+     &lt;alex:hasConcordance rdf:resource=&quot;ht..nce&amp;amp;bookcode=twain-30-44&quot; /&gt;
+     &lt;alex:makeEbook rdf:resource=&quot;<A HREF="http://www.info...andle=twain-30-44"">http://www.info...andle=twain-30-44&quot;</A> /&gt;
+     &lt;alex:makePDF rdf:resource=&quot;h...cgi-bin/pdf.pl?handle=twain-30-44&quot; /&gt;
+     &lt;dc:relation rdf:resource=&quot;<A HREF="http://www.infomotions.com/alex/"">http://www.infomotions.com/alex/&quot;</A> /&gt;
+    &lt;/rdf:Description&gt;
+   &lt;/rdf:RDF&gt;
+  &lt;/metadata&gt;
+ &lt;/record&gt;
+&lt;/GetRecord&gt;
+
+Inquisitive minds would like to know.
+
+-- 
+Eric Lease Morgan
+Digital Library Initiatives, NCSU Libraries
+<A HREF="http://www.lib.ncsu.edu/staff/morgan/">http://www.lib.ncsu.edu/staff/morgan/</A>
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000105.html">[OAI-implementers] XML Schemas and Xerces again
+</A></li>
+	<LI> Next message: <A HREF="000108.html">[OAI-implementers] rdf
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#107">[ date ]</a>
+              <a href="thread.html#107">[ thread ]</a>
+              <a href="subject.html#107">[ subject ]</a>
+              <a href="author.html#107">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,370 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Part II: Proposed corrections/fixes to OAI-PMH
+	protocol document and schema
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Part%20II%3A%20Proposed%20corrections/fixes%20to%20OAI-PMH%0A%09protocol%20document%20and%20schema&In-Reply-To=Pine.LNX.4.58.0409161928190.28886%40dhcp103-124.cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001288.html">
+   <LINK REL="Next"  HREF="001290.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Part II: Proposed corrections/fixes to OAI-PMH
+	protocol document and schema</H1>
+    <B>Hussein Suleman</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Part%20II%3A%20Proposed%20corrections/fixes%20to%20OAI-PMH%0A%09protocol%20document%20and%20schema&In-Reply-To=Pine.LNX.4.58.0409161928190.28886%40dhcp103-124.cs.cornell.edu"
+       TITLE="[OAI-implementers] Part II: Proposed corrections/fixes to OAI-PMH
+	protocol document and schema">hussein at cs.uct.ac.za
+       </A><BR>
+    <I>Mon Sep 20 12:13:16 EDT 2004</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001288.html">[OAI-implementers] Part II: Proposed corrections/fixes to OAI-PMH
+ protocol document and schema
+</A></li>
+        <LI>Next message: <A HREF="001290.html">[OAI-implementers] Part II: Proposed corrections/fixes to
+	OAI-PMHprotocol document and schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1289">[ date ]</a>
+              <a href="thread.html#1289">[ thread ]</a>
+              <a href="subject.html#1289">[ subject ]</a>
+              <a href="author.html#1289">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi Simeon (et al)
+
+to follow on, i agree that we will always need to escape &quot;:&quot; because of 
+PMH semantics.
+
+the clean solution is to propose the use of a special OAI escape 
+character, say &quot;!&quot;. then, we could use the forward mapping:
+   : -&gt; !:
+   ! -&gt; !!
+then, specify that setSpecs and mdps are simply unrestricted Unicode, 
+with service providers having to apply URL-encoding when submitting 
+requests involving setSpecs and mdps, and data providers having to apply 
+XML encoding when returning such information (with reverse 
+transformation as needed). there are a few other issues here - like 
+Unicode use in URLs, but lets punt on that for now ...
+
+now, i know this proposes to change semantics - i believe we are already 
+on the slippery slope of trying to patch things up by introducing more 
+complexity and greater reliance on basic HTTP.
+
+practically, in the short term, i support option 3, to tackle only issue 
+A and not issue B. in the long term, maybe when we consider SOAP, we 
+really should clean up the data model.
+
+ttfn,
+----hussein
+
+
+Simeon Warner wrote:
+
+&gt;<i> I'd like to solicit further comment regarding issues 1 and 2 of the set of
+</I>&gt;<i> proposed corrections and fixes to the OAI-PMH protocol document and schema
+</I>&gt;<i> that I sent back in June (copied below, alternatively see:
+</I>&gt;<i> <A HREF="http://openarchives.org/pipermail/oai-implementers/2004-June/001216.html">http://openarchives.org/pipermail/oai-implementers/2004-June/001216.html</A>).
+</I>&gt;<i> These are really the same issue repeated for both setSpec and
+</I>&gt;<i> metadataPrefix. Both cases involve the same two parts which I describe
+</I>&gt;<i> below: part A I assume is not controversial; part B Hussein commented on.
+</I>&gt;<i> A lack of other comments presumably indicates lack of other objections but
+</I>&gt;<i> I'd like to confirm that since the proposal will involve minor changes in
+</I>&gt;<i> some implementations.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> A) The values of setSpec and metadataPrefix permitted protocol document
+</I>&gt;<i> and the by the schema simply do not agree. This should be corrected.
+</I>&gt;<i> 
+</I>&gt;<i> The meaning of the current wording &quot;any characters that are safe in a
+</I>&gt;<i> query component of a URI&quot; is unclear and cannot be construed to agree with
+</I>&gt;<i> the schema.  I suggest the simplest way to clarify and fix this is to
+</I>&gt;<i> rephrase as &quot;a string consisting of any valid URI 'unreserved' characters&quot;
+</I>&gt;<i> which would give the following changes in allowed values (both of which
+</I>&gt;<i> add ~ and disallow $ and + ):
+</I>&gt;<i> 
+</I>&gt;<i> setSpec from:
+</I>&gt;<i> &lt;pattern value=&quot;([A-Za-z0-9_!'$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'$\(\)\+\-\.\*]+)*&quot;/&gt;
+</I>&gt;<i> to:
+</I>&gt;<i> &lt;pattern value=&quot;([A-Za-z0-9\-_\.!~\*'\(\)])+(:[A-Za-z0-9\-_\.!~\*'\(\)]+)*&quot;/&gt;
+</I>&gt;<i> 
+</I>&gt;<i> metadataPrefix from:
+</I>&gt;<i> &lt;pattern value=&quot;[A-Za-z0-9_!'$\(\)\+\-\.\*]+&quot;/&gt;
+</I>&gt;<i> to:
+</I>&gt;<i> &lt;pattern value=&quot;[A-Za-z0-9\-_\.!~\*'\(\)]+&quot;/&gt;
+</I>&gt;<i> 
+</I>&gt;<i> The setSpec pattern is more complicated because elements are separated by
+</I>&gt;<i> colons [:].
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> B) There should be some standard way to permit straightforward use,
+</I>&gt;<i> perhaps via escaping, of setSpec and metadataPrefix values native to
+</I>&gt;<i> repositories.
+</I>&gt;<i> 
+</I>&gt;<i> The suggestion is to permit URI &quot;escaped&quot; characters (%xx where xx are two
+</I>&gt;<i> hex digits). I note that a number of repositories have already adopted
+</I>&gt;<i> encoding using hex but that in most cases the escape character is simply
+</I>&gt;<i> omitted; in a few cases another escape character has been chosen (e.g. *)
+</I>&gt;<i> because % is not permitted. The fact that implementers are already doing
+</I>&gt;<i> this demonstrates a desire to encode values native to other systems.
+</I>&gt;<i> Permitting URI &quot;escaped&quot; characters is a simple way to standardize this
+</I>&gt;<i> using and well-known escaping mechanism without significantly increasing
+</I>&gt;<i> complexity.
+</I>&gt;<i> 
+</I>&gt;<i> Alternatives include:
+</I>&gt;<i> 
+</I>&gt;<i> 1) Use another escaping mechanism. Another obvious choice would be to use
+</I>&gt;<i> XML numeric entities (e.g. '&amp;#58;' (decimal) or '&amp;#x3A;' (hex) for a
+</I>&gt;<i> quotation mark).  These entities would themselves have to be escaped in
+</I>&gt;<i> XML responses (otherwise you have alternative 2) so responses might
+</I>&gt;<i> include XML of the form &lt;setSpec&gt;&amp;amp;#x3A;&lt;/setSpec&gt; to encode a setSpec
+</I>&gt;<i> which is internally a colon [:]. One might also want to restrict to
+</I>&gt;<i> just-decimal or just-hex to reduce complexity. It seems to me that one
+</I>&gt;<i> ends up with a complex set of restrictions on XML entity encoding which
+</I>&gt;<i> largely negate any benefit of adopting that standard. Perhaps there is
+</I>&gt;<i> another good option?
+</I>&gt;<i> 
+</I>&gt;<i> 2) Permit a much larger character set in the first place (the limit being
+</I>&gt;<i> &quot;anything&quot; - the XML schema &quot;string&quot; type). I see three issues with this.
+</I>&gt;<i> First, when OAI-PMH was first designed we decided on a limited character
+</I>&gt;<i> set to make implementation easier, I think this still has some merit.
+</I>&gt;<i> Second, in the setSpec there will always be a potential need to escape a
+</I>&gt;<i> colon [:], since that has special meaning in OAI-PMH (which may not
+</I>&gt;<i> correspond to use in values native to a repository). Third, this would be
+</I>&gt;<i> a significant change requiring updates to most harvesting software.
+</I>&gt;<i> Significant extension of the character set is beyond the scope of the
+</I>&gt;<i> present proposal.
+</I>&gt;<i> 
+</I>&gt;<i> 3) Do not include a standard way to permit the use of setSpec and
+</I>&gt;<i> metadataPrefix values native to repositories (simply make the protocol
+</I>&gt;<i> document and schema agree as described in A).
+</I>&gt;<i> 
+</I>&gt;<i> Note that this issue is quite separate from URL-encoding of OAI requests
+</I>&gt;<i> made over HTTP. Characters used in any escaping mechanism for setSpec and
+</I>&gt;<i> metadataPrefix may need to be further escaped when used in URLs.
+</I>&gt;<i> 
+</I>&gt;<i> On Mon, 21 Jun 2004, Hussein Suleman wrote:
+</I>&gt;<i> ...
+</I>&gt;<i> 
+</I>&gt;&gt;<i>1/2: i have some reservations about us requiring URL-encoding within
+</I>&gt;&gt;<i>XML. this mixes syntax with intended semantics of use and further
+</I>&gt;&gt;<i>entrenches the implicit support for URL-encoding, which is irrelevant
+</I>&gt;&gt;<i>if, for example, OAI-PMH makes the jump to using a SOAP request/response
+</I>&gt;&gt;<i>model. the model and abstractions must be clean and separable, they
+</I>&gt;&gt;<i>arent quite so already and i would prefer they didnt get more complicated.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> In response, I don't think the proposal was to _require_ URL-encoding. It
+</I>&gt;<i> was to allow it at a data-provider's choice; service providers should (in
+</I>&gt;<i> the absence of other information, e.g. oai_dc is special) treat both
+</I>&gt;<i> setSpec and metadataPrefix values as opaque tokens. OAI-PMH's special use
+</I>&gt;<i> of the colon means that this issue would not entirely go away even if
+</I>&gt;<i> OAI-PMH used an XML-clean transport such as SOAP, and we were no longer
+</I>&gt;<i> concerned about the burden on harvesters of permitting any string to be
+</I>&gt;<i> used.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Ug, that got longer than I hoped...
+</I>&gt;<i> 
+</I>&gt;<i> Cheers,
+</I>&gt;<i> Simeon
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;&gt;<i>Simeon Warner wrote:
+</I>&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>...
+</I>&gt;&gt;&gt;<i>PROPOSED FIXES TO OAI PROTOCOL DOCUMENT AND SCHEMA
+</I>&gt;&gt;&gt;<i>--------------------------------------------------
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>1) Correct protocol document and schema definition of setSpec to be
+</I>&gt;&gt;&gt;<i>consistent, and also to permit the use of URL encoding.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>1.1) Motivation
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>First, the protocol document and the schema simply do not agree. The use
+</I>&gt;&gt;&gt;<i>of the wording &quot;any characters that are safe in a query component of a
+</I>&gt;&gt;&gt;<i>URI&quot; is unclear and cannot be construed to agree with the schema. Second,
+</I>&gt;&gt;&gt;<i>many repositories are using URL-like encoding to create setSpecs so it
+</I>&gt;&gt;&gt;<i>seems better to permit the recognized URL encoding. The practical change
+</I>&gt;&gt;&gt;<i>to meet both of these criteria is very small: the schema regular
+</I>&gt;&gt;&gt;<i>expression should be changed to remove $ and +, and to add ~ and %xx (URL
+</I>&gt;&gt;&gt;<i>encoding). This will bring the protocol document in line with the terms
+</I>&gt;&gt;&gt;<i>&quot;escaped&quot; and &quot;unreserved&quot; as used in the URI RFC.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>1.2) Impact
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>The only conforming repository that we know of using setSpecs affected by
+</I>&gt;&gt;&gt;<i>this change is Jeff Young's OpenURL repository
+</I>&gt;&gt;&gt;<i>(<A HREF="http://alcme.oclc.org/openurl/servlet/OAIHandler">http://alcme.oclc.org/openurl/servlet/OAIHandler</A>) where he uses '+' as
+</I>&gt;&gt;&gt;<i>an encoding for space. Jeff agrees that a change would be sensible and
+</I>&gt;&gt;&gt;<i>that he could be replace '+' with '%20'. Repositories using URL-like
+</I>&gt;&gt;&gt;<i>encodings will not be affected although they may choose to change to use
+</I>&gt;&gt;&gt;<i>real URL encoding. All OAI software maintainers should, however, review
+</I>&gt;&gt;&gt;<i>the change and update their parsing code accordingly.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>1.3) Changes
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>1.3.1) Change wording in protocol document
+</I>&gt;&gt;&gt;<i><A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#Set</A>
+</I>&gt;&gt;&gt;<i>from:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>a setSpec -- a colon [:] separated list indicating the path from the root
+</I>&gt;&gt;&gt;<i>of the set hierarchy to the respective node.  Each element in the list is
+</I>&gt;&gt;&gt;<i>a string consisting of any characters that are safe in a query component
+</I>&gt;&gt;&gt;<i>of a URI , which must not contain any colons [ :].  Since a setSpec forms
+</I>&gt;&gt;&gt;<i>a unique identifier for the set within the repository, it must be unique
+</I>&gt;&gt;&gt;<i>for each set.  Flat set organizations have only sets with setSpec that do
+</I>&gt;&gt;&gt;<i>not contain any colons [ :].
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>to:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>a setSpec -- a colon [:] separated list indicating the path from the root
+</I>&gt;&gt;&gt;<i>of the set hierarchy to the respective node. Each element in the list is a
+</I>&gt;&gt;&gt;<i>string consisting of any valid URI &quot;unreserved&quot; and &quot;escaped&quot; characters.
+</I>&gt;&gt;&gt;<i>A setTag must not contain URI &quot;reserved&quot; characters, for example the colon
+</I>&gt;&gt;&gt;<i>[:] which is used to delimit setTags. Since a setSpec forms a unique
+</I>&gt;&gt;&gt;<i>identifier for the set within the repository, it must be unique for each
+</I>&gt;&gt;&gt;<i>set. Flat set organizations have only sets with setSpec that do not
+</I>&gt;&gt;&gt;<i>contain any colons [:].
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>The corresponding parts of the specification of allowed characters in URIs
+</I>&gt;&gt;&gt;<i>are:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>unreserved    = alphanum | mark
+</I>&gt;&gt;&gt;<i>mark          = &quot;-&quot; | &quot;_&quot; | &quot;.&quot; | &quot;!&quot; | &quot;~&quot; | &quot;*&quot; | &quot;'&quot; |
+</I>&gt;&gt;&gt;<i>                &quot;(&quot; | &quot;)&quot;
+</I>&gt;&gt;&gt;<i>escaped       = &quot;%&quot; hex hex
+</I>&gt;&gt;&gt;<i>hex           = digit | &quot;A&quot; | &quot;B&quot; | &quot;C&quot; | &quot;D&quot; | &quot;E&quot; | &quot;F&quot; |
+</I>&gt;&gt;&gt;<i>                &quot;a&quot; | &quot;b&quot; | &quot;c&quot; | &quot;d&quot; | &quot;e&quot; | &quot;f&quot;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>1.3.2) Change definition of setSpecType in the schema to match the definition
+</I>&gt;&gt;&gt;<i>from:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i> &lt;simpleType name=&quot;setSpecType&quot;&gt;
+</I>&gt;&gt;&gt;<i>    &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;&gt;&gt;<i>      &lt;pattern value=
+</I>&gt;&gt;&gt;<i>       &quot;([A-Za-z0-9_!'$\(\)\+\-\.\*])+(:[A-Za-z0-9_!'$\(\)\+\-\.\*]+)*&quot;/&gt;
+</I>&gt;&gt;&gt;<i>    &lt;/restriction&gt;
+</I>&gt;&gt;&gt;<i>  &lt;/simpleType&gt;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>to:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>  &lt;simpleType name=&quot;setSpecType&quot;&gt;
+</I>&gt;&gt;&gt;<i>    &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;&gt;&gt;<i>      &lt;pattern value=&quot;([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+(:([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+)*&quot;/&gt;
+</I>&gt;&gt;&gt;<i>    &lt;/restriction&gt;
+</I>&gt;&gt;&gt;<i>  &lt;/simpleType&gt;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>2) Correct protocol document and schema definition for metadataPrefix to
+</I>&gt;&gt;&gt;<i>be consistent, and also to match the revised setSpec definition.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>2.1) Motivation
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>The protocol document uses the same imprecise wording for metadataPrefix
+</I>&gt;&gt;&gt;<i>as it does for setSpec (&quot;any characters that are safe in a query
+</I>&gt;&gt;&gt;<i>component of a URI&quot;) and the schema does not even follow a reasonable
+</I>&gt;&gt;&gt;<i>interpretation of this wording. It seems sensible to use the same
+</I>&gt;&gt;&gt;<i>character restrictions in a consistent fashion. This will bring the
+</I>&gt;&gt;&gt;<i>protocol document in line with the terms &quot;escaped&quot; and &quot;unreserved&quot; as
+</I>&gt;&gt;&gt;<i>used in the URI RFC.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>2.2) Impact
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>This change is not expected to impact any known repository.  All OAI
+</I>&gt;&gt;&gt;<i>software maintainers should, however, review the change and update their
+</I>&gt;&gt;&gt;<i>parsing code accordingly.
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>2.3) Changes
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>2.2.1) Change wording in protocol document
+</I>&gt;&gt;&gt;<i><A HREF="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#metadataPrefix">http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#metadataPrefix</A>
+</I>&gt;&gt;&gt;<i>from:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>The metadataPrefix - a string to specify the metadata format in OAI-PMH
+</I>&gt;&gt;&gt;<i>requests issued to the repository. metadataPrefix consists of any
+</I>&gt;&gt;&gt;<i>characters that are safe in a query component of a URI. metadataPrefix
+</I>&gt;&gt;&gt;<i>arguments are used in ListRecords, ListIdentifiers, and GetRecord
+</I>&gt;&gt;&gt;<i>requests to retrieve records, or the headers of records that include
+</I>&gt;&gt;&gt;<i>metadata in the format specified by the metadataPrefix;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>to:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>The metadataPrefix - a string to specify the metadata format in OAI-PMH
+</I>&gt;&gt;&gt;<i>requests issued to the repository. metadataPrefix consists of any valid
+</I>&gt;&gt;&gt;<i>URI &quot;unreserved&quot; and &quot;escaped&quot;  characters. A metadataPrefix must not
+</I>&gt;&gt;&gt;<i>contain URI &quot;reserved&quot; characters. metadataPrefix arguments are used in
+</I>&gt;&gt;&gt;<i>ListRecords, ListIdentifiers, and GetRecord requests to retrieve records,
+</I>&gt;&gt;&gt;<i>or the headers of records that include metadata in the format specified
+</I>&gt;&gt;&gt;<i>by the metadataPrefix;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>2.3.2) Change definition of metadataPrefixType in schema to match the
+</I>&gt;&gt;&gt;<i>definition from:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>  &lt;simpleType name=&quot;metadataPrefixType&quot;&gt;
+</I>&gt;&gt;&gt;<i>    &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;&gt;&gt;<i>      &lt;pattern value=&quot;[A-Za-z0-9_!'$\(\)\+\-\.\*]+&quot;/&gt;
+</I>&gt;&gt;&gt;<i>    &lt;/restriction&gt;
+</I>&gt;&gt;&gt;<i>  &lt;/simpleType&gt;
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>to:
+</I>&gt;&gt;&gt;<i>
+</I>&gt;&gt;&gt;<i>  &lt;simpleType name=&quot;metadataPrefixType&quot;&gt;
+</I>&gt;&gt;&gt;<i>    &lt;restriction base=&quot;string&quot;&gt;
+</I>&gt;&gt;&gt;<i>      &lt;pattern value=&quot;([A-Za-z0-9\-_\.!~\*'\(\)]|(%[A-Fa-f0-9]{2}))+&quot;/&gt;
+</I>&gt;&gt;&gt;<i>    &lt;/restriction&gt;
+</I>&gt;&gt;&gt;<i>  &lt;/simpleType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ----------------------------------------------------------
+</I>&gt;<i> Simeon Warner                 Email: <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">simeon at cs.cornell.edu</A>
+</I>&gt;<i> Cornell Information Science              Tel: 607-254-8605
+</I>&gt;<i> 301 College Ave                          Fax: 607-255-5196
+</I>&gt;<i> Ithaca, NY 14850-4623, USA
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">http://openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+-- 
+=====================================================================
+hussein suleman ~ <A HREF="http://openarchives.org/mailman/listinfo/oai-implementers">hussein at cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+=====================================================================
+
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001288.html">[OAI-implementers] Part II: Proposed corrections/fixes to OAI-PMH
+ protocol document and schema
+</A></li>
+	<LI>Next message: <A HREF="001290.html">[OAI-implementers] Part II: Proposed corrections/fixes to
+	OAI-PMHprotocol document and schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1289">[ date ]</a>
+              <a href="thread.html#1289">[ thread ]</a>
+              <a href="subject.html#1289">[ subject ]</a>
+              <a href="author.html#1289">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

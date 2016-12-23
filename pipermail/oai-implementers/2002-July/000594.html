@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Lists/Flow-control/Emptiness
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:mln%40ruby.ils.unc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000593.html">
+   <LINK REL="Next"  HREF="000596.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Lists/Flow-control/Emptiness
+   </H1>
+    <B>Michael L. Nelson
+    </B> 
+    <A HREF="mailto:mln%40ruby.ils.unc.edu"
+       TITLE="[OAI-implementers] Lists/Flow-control/Emptiness">mln@ruby.ils.unc.edu
+       </A><BR>
+    <I>Tue, 16 Jul 2002 18:58:35 -0400 (EDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000593.html">[OAI-implementers] Lists/Flow-control/Emptiness - correction
+</A></li>
+        <LI> Next message: <A HREF="000596.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>(combining emails)
+
+&gt;<i> If the repository implementation is simpler by always including a resumption
+</I>&gt;<i> token element, and it doesn't cause a problem with the protocol, then it
+</I>&gt;<i> should be ok to do this?
+</I>
+i suppose its a moot point:  for good or bad, its already in version 2.0
+of the protocol
+
+&gt;<i> 
+</I>&gt;<i> I came up with the same solution. But I wouldn't class this as &quot;trivial&quot;, as
+</I>&gt;<i> the logic intersects with other aspects of the protocol (below...).
+</I>&gt;<i> 
+</I>
+&gt;<i> &gt; if you have a resumptionToken *and* no records match, then something  ugly
+</I>&gt;<i> &gt; did happen:  either the harvester is trying to &quot;forge&quot; the
+</I>&gt;<i> &gt; resumptionTokens, or the repository had (potentially significant) changes.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; I think returning both noRecordsMatch and badResumptionToken would be the
+</I>&gt;<i> &gt; safe way to handle it.
+</I>
+&gt;<i> Ok. This is kinda &quot;overloading&quot; errors though. An error hasn't occurred - a
+</I>&gt;<i> change occurred in the repository that resulted in an empty list.
+</I>
+yeah, its not really an error; but &quot;error&quot; in the protocol doc has always
+been shorthand for &quot;errors &amp; exceptions&quot; (cf. title of section 3.6).  this
+is clearly an exception condition.
+
+&gt;<i> 
+</I>&gt;<i> noRecordsMatch is defined as resulting from the original query, not as a
+</I>&gt;<i> side-effect of flow-control, and the resumption token in question is valid?
+</I>
+badResumptionToken is defined as:  &quot;The value of the resumptionToken
+argument is invalid or expired.  &quot;
+
+in this case, the repository has simply decided to expire the
+resumptionToken, which is well within its right (see 3.5.1)
+
+(from Liu):
+
+&gt;<i> I agree with Tim that using badResumptionToken is a bit of dangerous here.
+</I>&gt;<i> It looks like this situation most likely will happend at the end of
+</I>&gt;<i> harvesting, a badResumptionToken will simply invalidate all previous works  
+</I>&gt;<i> in same session. For a large archive, it means a lot of work.
+</I>
+yes, that could be the case.  of course, this condition was always present
+-- even 1.1, if a harvester recvd a resumptionToken, and if it got an
+empty list when it used that resumptionToken, then something funny
+happened at the repository didn't it?  the fact that this condition was
+prevoiusly more slightly obscured doesn't remove the danger.
+
+&gt;<i> 
+</I>&gt;<i> So logic is now:
+</I>&gt;<i> 
+</I>&gt;<i> if( no records ) {
+</I>&gt;<i>     if( CGI resumption token ) {
+</I>&gt;<i>         add noRecordsMatch (&quot;no records match resumption token&quot;)
+</I>&gt;<i>         add badResumptionToken (&quot;because it doesn't match any records&quot;)
+</I>&gt;<i>     } else {
+</I>&gt;<i>         add noRecordsMatch
+</I>&gt;<i>     }
+</I>&gt;<i> } else if( no resumption Token &amp;&amp; CGI resumption token ) {
+</I>&gt;<i>     add empty token
+</I>&gt;<i> }
+</I>
+rewriting the block inside the first if yields a more compact:
+
+if (no results) {
+	error(noRecordsMatch);
+	if (CGI resumptionToken) {  	# 1
+		error(badResumptionToken)
+	}
+} else if ( no resumptionToken &amp;&amp; CGI resumptionToken ) { # 2
+	empty resumptionToken
+}
+
+#1 handles the case where you want to flag if your incomplete list has no
+results.  #2 handles distinguishing between the final incomplete list and
+a complete list.  I don't think this would make my top 10 list of &quot;things
+wrong in OAI&quot;  ;-)
+
+regards,
+
+Michael
+
+&gt;<i> 
+</I>&gt;<i> All the best,
+</I>&gt;<i> Tim.
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>
+---
+Michael L. Nelson
+NASA Langley Research Center		<A HREF="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>
+MS 158, Hampton, VA 23681		<A HREF="http://www.ils.unc.edu/~mln/">http://www.ils.unc.edu/~mln/</A>
++1 757 864 8511				+1 757 864 8342 (f)
+
+
+
+
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000593.html">[OAI-implementers] Lists/Flow-control/Emptiness - correction
+</A></li>
+	<LI> Next message: <A HREF="000596.html">[OAI-implementers] Lists/Flow-control/Emptiness
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#594">[ date ]</a>
+              <a href="thread.html#594">[ thread ]</a>
+              <a href="subject.html#594">[ subject ]</a>
+              <a href="author.html#594">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,563 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE User Guide - Primer</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.3/ore-spec.css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - Primer</h2>
+  <h3 class="subTitle">2 April 2008</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of an alpha release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.3/primer">http://www.openarchives.org/ore/0.3/primer</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/primer">http://www.openarchives.org/ore/primer</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.2/overview">http://www.openarchives.org/ore/0.2/overview</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE User Guide - Primer-->
+<!--VAR-SUBTITLE=2 April 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.3/primer-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/primer-->
+<!--VAR-PREVIOUSURI=http://www.openarchives.org/ore/0.2/overview-->
+
+<div class="abstract">
+<h2><a name="abstract" id="abstract"></a>Abstract</h2>
+<p>Open Archives Initiative Object Reuse and Exchange (OAI-ORE) defines 
+standards for the description and exchange of aggregations of Web 
+resources. This document provides a brief overview of the abstract data 
+model underlying these standards, serializations, implementation with 
+HTTP, and discovery. 
+This user guide is one of several documents comprising the
+<a href="http://www.openarchives.org/ore/0.3/toc">OAI-ORE specification and
+user guide</a>. It is intended as the place to start for first time readers.</p>
+</div>
+
+<div class="toc">
+<h2><a name="contents" id="contents"></a>Table of Contents</h2>
+<p class="toc">1. <a href="#Introduction">Introduction</a> <br />
+2. <a href="#Foundations">Foundations</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#Web_Arch">Web Architecture</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.2 <a href="#Semantic_Web_and_RDF">Semantic Web and RDF</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.3 <a href="#Named_Graphs">Named Graphs</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.4 <a href="#Namespaces">Namespaces and Vocabularies</a><br />
+3. <a href="#DataModel">Data Model</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.1 <a href="#Aggregation">Aggregation</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.2 <a href="#ResourceMap">Resource Map</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;3.3 <a href="#Relationships">Relationships to other Aggregations</a><br />
+4. <a href="#Serialization">Serialization</a><br />
+5. <a href="#HTTP">HTTP implementation</a><br />
+6. <a href="#Discovery">Discovery</a><br />
+7. <a href="#References">References</a><br />
+</p>
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+<p class="toc">A. <a href="#acknowledgments">Acknowledgements</a><br />
+B. <a href="#changelog">Change Log</a></p>
+</div>
+<hr />
+
+<div class="body">
+<h2>1. <a name="Introduction">Introduction</a></h2>
+
+<p>The <span class="definition">ORE Model</span> makes it possible to associate 
+an identity with aggregations of web resources and to describe their structure 
+and semantics. It does this by introducing the <span class="definition">Resource 
+Map</span> (ReM), which is a resource identified by a URI (say 
+<code>ReM-1</code>) that encapsulates a set of RDF statements. These statements 
+instantiate an aggregation as a resource with a URI, enumerate the constituents 
+of the aggregation, the relationships among those constituents, and the Web 
+context of the aggregation.
+The ORE Model can be serialized in a variety of formats which will be described,
+along with mappings of ORE Model concepts, in companion ORE documents. The 
+primary serialization is Atom [<a href="#ref-atom-implementation">ORE Atom 
+User Guide</a>, <a href="#ref-atom">ORE Atom Profile</a>]. Direct RDF 
+serialization is described in [<a href="#ref-rdfsyntax">Representing 
+Resource Maps Using RDF Syntaxes</a>].</p>
+
+
+<h2>2. <a name="Foundations">Foundations</a></h2>
+
+<h3>2.1 <a name="Web_Arch">Web Architecture</a></h3>
+<p>A full description of Web Architecture concepts is contained in 
+[<a href="#Web_Architecture">Web Architecture</a>]. For the remainder of 
+this document, the use of the following terms from the Web Architecture 
+SHOULD be interpreted as briefly summarized below:</p>
+<ul>
+<li><em>Resource</em> - an item of interest.</li>
+<li><em>URI</em> - a uniform global identifier 
+for a Resource [<a href="#URI">URI</a>].&nbsp; This document specializes 
+this with the notion of a <span class="code">Protocol-Based</span> URI, 
+which is a URI that can be <em>de-referenced</em> via a common protocol 
+to provide access to a Representation.&nbsp; The most common example 
+of this in the current implementation of the Web is HTTP 
+[<a href="#RFC2616">RFC2616</a>].</li>
+<li><em>Representation</em> - a data stream corresponding 
+to the state of a Resource at the time of a dereference of its protocol-based 
+URI.&nbsp; The Web Architecture allows for multiple Representations 
+of a Resource with access mediated by <em>Content Negotiation</em>.</li>
+<li><em>Link</em> - a directed connection between 
+two Resources.&nbsp; In most common usage, a link is expressed via link 
+or anchor tags (a <em>hyperlink) </em>in an HTML Representation of the 
+originating Resource to the URI of another Resource.&nbsp; An extension 
+of this, where links are typed relationships, is explained below.</li>
+</ul>
+
+<p>The combination of these concepts forms what is commonly referred to
+as the <em>Web Graph</em>, with nodes that are URIs (which identify 
+Resources), from which Representations are made available, and edges
+that are Links. An example of a Web graph is shown below. Note 
+that this example shows that the Web graph is not necessarily connected 
+- nodes <span class="code">O</span> and <span class="code">P</span> 
+link to each other but not to other nodes in the graph.</p>
+
+<p class="figure"><img alt="Depiction of general web graph" src="primer-images/WebGraphBase.jpg" width="438" height="300" /></p>
+
+<h3>2.2 <a name="Semantic_Web_and_RDF">Semantic Web and RDF</a></h3>
+<p>This specification also leverages Semantic Web concepts from RDF [<a href="#RDF_Concepts">RDF
+Concepts</a>].&nbsp;In RDF, Resources are described using sets of <em>triples</em>,
+each made up of three parts: a <em class="code">subject</em>, a <em class="code">predicate</em> 
+and an <em class="code">object</em>. The subject is a URI that identifies the described Resource;
+the object is either the URI of a second Resource or a <em class="code">literal</em> that 
+identifies values such as numbers and dates by means of a lexical representation; and the Predicate is a URI
+that identifies a type of relationship. Each triple states that a relationship of the type
+indicated by the Predicate (a URI) holds between the Resource identified by the subject (a URI) and the
+object (a URI or a Literal).</p>
+
+<p>A set of RDF triples is referred to as an <em class="code">RDF Graph</em> because it can
+be represented as  a node and directed-arc diagram, in which each triple is represented as a node-arc-node link.
+The <em class="code">nodes</em> of an RDF Graph are the subjects and objects of the constituent triples.
+In an RDF Graph each node is connected to at least one other node in the graph.</p>
+
+<p>Note: this is a slight simplification of the RDF model because 
+it ignores the concept of &quot;blank nodes&quot;. The ORE model 
+does not make use of &quot;blank nodes&quot; and they are not discussed
+further in this document</p>
+
+<p>An example of an RDF Graph
+is shown in the figure below. As shown, the subject and Predicate
+of a triple are always URIs (the URI is indicated by the text in the
+yellow circle and shown with bracketed syntax <span class="code">&lt;A&gt;</span>
+in the table) and the object may be a URI or a literal (shown
+as a blue rounded rectangle in the graph and in quotations in the table).</p>
+
+<p class="figure"><img alt="Example RDF graph and triples" src="primer-images/Triples.jpg" width="468" height="253" /></p>
+
+<p>Example triples in this document are show in Notation3 [<a href="#ref-N3">N3</a>]
+format, e.g.</p>
+<pre class="exampleInner">
+&lt;URI-1&gt;  rdf:type    &lt;T-1&gt;.
+&lt;URI-1&gt;  dc:creator  "Joe Bloggs".
+</pre>
+<p>Which means that resource <code>URI-1</code> has type denoted with the URI <code>T-1</code>,
+and was created by <code>Joe Bloggs</code>.</p>
+
+<div class="open-issue" id="N3_or_not">A number of examples in this document are
+shown in N3. As this is now the primer then it would be better to recast all
+snippets as pictures with tables of triples where necessary (in the manner of 
+the Data Model but with these simpler cases).</div>
+
+<p>Another tool from the Semantic Web, the RDF Vocabulary
+Description Language [<a href="#RDFS">RDFS</a>], provides the mechanisms
+to define vocabularies for defining the types of these relationships.&nbsp;
+In combination with the RDF-defined relationship <span class="code">rdf:type</span>
+this vocabulary makes it possible to express types for Resources.
+The figure below shows an example of this.&nbsp; As shown, the objects of
+the triples with <span class="code">rdf:type</span> Predicates are 
+URIs, that denote classes or types.</p>
+
+<p class="figure"><img alt="Use of rdf:type" src="primer-images/types.jpg" width="555" height="185" /></p>
+
+<h3>2.3 <a name="Named_Graphs">Named Graphs</a></h3>
+
+<p>Finally, this specification builds on the notion of a Named Graph 
+[<a href="#Named_Graph">Named Graph</a>], which extends RDF to allow 
+the association of a name - a URI - with a set of triples - a graph. 
+A number of aspects of Named Graphs are shown in the figure below.</p>
+
+<ul>
+<li>The Named Graph is a Resource, identified by a URI. That URI can be 
+the subject or object of triples. These triples can, for example, express 
+a type for the Named Graph, or associate metadata properties (e.g., 
+<span class="code">dc:creator</span>) with the Named
+Graph. The figure shows a graph that represents three triples in which the URI
+of the Named Graph <span class="code">NG-A</span> occurs as subject or object.</li>
+<li>The Named Graph is NOT the RDF Graph itself. Instead it is a
+Resource with a Representation that encodes a set of triples that form 
+the graph.&nbsp; The relationship between the Named Graph and the RDF 
+Graph that its Representations encode is defined via a function 
+<span class="code"><em>rdfgraph</em></span>. The semantics of a 
+Named Graph are similar to RDF reification 
+[<a href="#RDF_Semantics">RDF Semantics</a>], in the manner that they 
+allow the assertion of relationships between other Resources and the 
+set of triples. This provides the basis for signing, authority, and 
+trust. This is relevant in this specification where Named Graphs 
+are being used to provide descriptions of citable intellectual objects.</li>
+</ul>
+
+<p class="figure"><img alt="Named Graph" src="primer-images/NamedGraph.jpg" width="581" height="395" /></p>
+
+<h3>2.4 <a name="Namespaces">Namespaces and Vocabularies</a></h3>
+
+<p>The ORE Model uses predicates from a number of vocabularies including one specific
+to ORE which is descibed in the <a href="vocabulary">ORE Vocabulary specification</a>. 
+In these specifications we use the following namespace prefixes.</p>
+
+<table class="namespace-table" summary="namespace prefixes used in this document">
+<tr>
+<th>Prefix</th>
+<th>Namespace URI</th>
+<th>Description</th>
+</tr>
+<tr>
+<td><code>dc</code></td>
+<td><code>http://purl.org/dc/elements/1.1/</code></td>
+<td>Dublin Core elements</td>
+</tr>
+<tr>
+<td><code>dcterms</code></td>
+<td><code>http://purl.org/dc/terms/</code></td>
+<td>Dublin Core terms</td>
+</tr>
+<tr>
+<td><code>ore</code></td>
+<td><code>http://www.openarchives.org/ore/terms/</code></td>
+<td>ORE vocabulary terms</td>
+</tr>
+<tr>
+<td><code>owl</code></td>
+<td><code>http://www.w3.org/2002/07/owl#</code></td>
+<td>OWL vocabulary terms</td>
+</tr>
+<tr>
+<td><code>rdf</code></td>
+<td><code>http://www.w3.org/1999/02/22-rdf-syntax-ns#</code></td>
+<td>RDF vocabulary terms</td>
+</tr>
+</table>
+
+
+<h2>3. <a name="DataModel">Data Model</a></h2>
+
+<h3>3.1 <a name="Aggregation">Aggregation</a></h3>
+
+<p>A <span class="definition">Resource Map</span> describes an 
+<span class="definition">Aggregation</span> which is a set of resources, and possibly 
+their types and relationships among the resources. Resources <em>in</em> the 
+Aggregation are called <span class="definition">Aggregated Resources</span>.</p>
+
+<p>In order to be able to talk about the Aggregation on the web, it must have a URI 
+(say <code>A-1</code>). The ORE Model requires that a Resource Map describe just
+on Aggregation. There may be multiple Resource Maps in different formats that 
+describe the same Aggregation. In order that applications and clients can reference
+the Aggregation in an actionable fashion, the URI <code>A-1</code> must yield or
+lead to a the Resource Map when derefenced. This is likely to be achieved in
+on of two ways:</p>
+
+<ol>
+<li>The URI of the Aggregation <code>A-1</code> may be constructed by appending
+a fragment identifier <code>#aggregation</code> to the Resource Map URI 
+<code>ReM-1</code>. For example, the Resource Map available from the URI 
+<code>http://sample.org/ReM-1</code> might describe the Aggregation 
+<code>http://sample.org/ReM-1#aggregation</code>. This syntactic trick 
+allows the creation of an Aggregation URI <code>A-1</code> that correctly
+yeilds the corresponding Resource Map without the need for an additional
+infrastructure beyond a web server to return the Resource Map from URI
+<code>ReM-1</code>.</li>
+<li>In applications where there is more control over the web infrastructure
+or it is desirable to serve Resource Maps in multiple formats, content 
+negotiation or 303-style redirection may be used to link the Aggregation
+URI <code>A-1</code> to the Resource Map. This is described in detail in
+FIXME_WHERE_IS_THIS_DESCRIBED, an example would be <code>A-1</code>
+<code>http://sample.org/A-1</code> which yields 
+<code>http://sample.org/A-1.xml</code> or
+<code>http://sample.org/A-1.rdf</code> depending on content negotiation
+for Atom or RDF/XML serializations.
+</li>
+</ol>
+
+
+<h3>3.2 <a name="ResourceMap">Resource Map</a></h3>
+
+<p>A Resource Map is obtained as a representation of the resource identified
+by the protocol-based URI <code>ReM-1</code>. The following figure shows a 
+complete Resource Map with statements indicated as arrows from subject resource 
+to object resource or literal. The remainder of this section explains the 
+components of this graph step-by-step.</p>
+
+<p class="style2"><img alt="A complete Resource Map" src="primer-images/ORE_Model_Basis.jpg" width="727" height="368" /></p>
+
+<div class="open-issue" id="Update_picture_to_use_similarTo">The figure must be
+updated to use the <code>ore:similarTo</code> predicate instead of 
+<code>owl:analogousTo</code>.</div>
+
+<p>The Resource Map is identified by <code>ReM-1</code> and an HTTP GET on <code>ReM-1</code>
+must yield a serialization of the Resource Map. Note also that <code>ReM-1</code>
+appears as a node in the figure and is the subject of several triples. First, there
+must be triples providing the type of the Resource Map, the type of the Aggregation, 
+and linking the Resource Map to the Aggregation that it describes:</p>
+
+<pre># mandatory, ReM-1 is a Resource Map (shown as T-1)
+&lt;ReM-1&gt;  rdf:type            ore:ResourceMap.
+
+# mandatory, A-1 in an Aggregation (shown as T-2)
+&lt;A-1&gt;    rdf:type            ore:Aggregation.
+
+# mandatory, ReM-1 describes A-1
+&lt;ReM-1&gt;  ore:describes       &lt;A-1&gt;.
+</pre>
+
+<p>Some metadata about the Resource Map is mandatory, and additional 
+metadata may optionally be expressed:</p>
+
+<pre># mandatory: authoring authority and modification time of ReM
+&lt;ReM-1&gt;  dc:creator          &lt;http://example.org/joebloggs&gt;.
+&lt;ReM-1&gt;  dcterms:modified    "2007-10-15T00:00:00Z".
+
+# optional: rights pertaining to and original creation time of ReM
+&lt;ReM-1&gt;  dc:rights           &lt;http://creativecommons.org/licenses/publicdomain/&gt;.
+&lt;ReM-1&gt;  dcterms:created     "2007-10-15T00:00:00Z".
+</pre>
+
+<p>If the Aggregation denotes an information object that has other identifiers 
+then these are expressed using the <code>ore:similarTo</code> predicate:</p>
+
+<pre>&lt;A-1&gt;    ore:similarTo       &lt;DOI-1&gt;.
+</pre>
+
+<p>For the particular case where the ORE Aggregation is also identified 
+by another URI then the <code>owl:sameAs</code> predicate my be used.</p>
+
+<p>All of the Aggregated Resources are linked to the Aggregation with the 
+<code>ore:aggregates</code> predicate:</p>
+
+<pre>&lt;A-1&gt;    ore:aggregates      &lt;AR-1&gt;.
+&lt;A-1&gt;    ore:aggregates      &lt;AR-2&gt;.
+&lt;A-1&gt;    ore:aggregates      &lt;AR-3&gt;.
+</pre>
+
+<p>Thus far, the Aggregation is just a bag of resources, <code>AR-1</code>, 
+<code>AR-2</code>, and <code>AR-3</code>, unrelated except for their status as 
+constituents of the Aggregation. 
+A Resource Map may also describe the structure of the Aggregation by expressing internal
+relationships between the Aggregation and/or Aggregated Resources, for example:</p>
+
+<pre># shown as R-1
+&lt;AR-2&gt;   dc:hasFormat        &lt;AR-3&gt;.
+</pre>
+
+<p>Finally, the Resource Map may include two types of external relationships: 1)
+Semantic types may be associated with either the Aggregation and/or the Aggregeted
+Resources using the <code>rdf:type</code> predicate. 
+2) The context of the Aggregation among other other resources may be expressed using
+predicates in any vocabulary provided either the subject or object is the Aggregation
+or and Aggregated Resource.</p>
+
+<pre># A-1 has type T-4 (journal article perhaps) and is part of resource A
+&lt;A-1&gt;    rdf:type            &lt;T-4&gt;.
+&lt;A-1&gt;    dcterms:isPartOf    &lt;A&gt;.
+
+# AR-1 references B (perhaps another article) and has type Text
+&lt;AR-1&gt;   dcterms:references  &lt;B&gt;.
+&lt;AR-3&gt;   rdf:type            &lt;http://purl.org/dc/dcmitype/Text&gt;.
+</pre>
+
+<h3>3.3 <a name="Relationships">Relationships to other Aggregations</a></h3>
+
+<p>When reusing Resource Maps and the Aggregations that they descibe, it is important
+to remember the distinction between these two concepts. Statements about <code>ReM-1</code>
+are statements about the Resource Map and not the Aggregation; statements about
+<code>A-1</code> are statements about the intellectual object that is the Aggregation.</p>
+
+<p>An Aggregated Resource may be aggregated in more than one Aggregation (say 
+<code>A-1</code> and <code>A-2</code>). The predicate <code>ore:isAggregatedBy</code>
+is the inverse of <code>ore:aggregates</code> and allows membership in another
+Aggregation to be expressed.</p>
+
+<pre># Creator of ReM-1 knows AR-1 aggregated by A-2 as well as A-1
+&lt;AR-1&gt;   ore:isAggregatedBy  &lt;A-2&gt;.
+</pre>
+
+<p>It is expected that a Resource Map describing the Aggregation <code>A-2</code> 
+can be obtained when <code>A-2</code> is dereferenced.</p>
+
+<p>A second use of <code>ore:isAggregatedBy</code> is to indicate nesting, where
+one Aggregation an Aggregated Resource in another Aggregation. Image that 
+<code>A-1</code> is a journal article which is part of a journal issue 
+(Aggregation <code>A-3</code>). This context can be expressed in <code>ReM-1</code> 
+with the following triple.</p>
+
+<pre># ReM-1 indicates that aggregation A-1 is aggregated by A-3
+&lt;A-1&gt;    ore:isAggregatedBy  &lt;A-3&gt;.
+</pre>
+
+
+<h2>4. <a name="Serialization">Serialization</a></h2>
+
+<div class="open-issue" id="Need_Serialization_Primer">Need to write serialization
+section of primer.</div>
+
+
+<h2>5. <a name="HTTP">HTTP implementation</a></h2>
+
+<div class="open-issue" id="Need_HTT_Implementation_Primer">Need to write 
+HTTP implementation section of primer.</div>
+
+
+<h2>6. <a name="Discovery">Discovery</a></h2>
+
+<div class="open-issue" id="Need_Discovery_Primer">Need to write discovery
+section of primer.</div>
+
+
+<h2>7. <a name="References">References</a></h2>
+<dl>
+<dt>[<a name="ref-N3" id="ref-N3">N3</a>]</dt>
+<dd>http://www.w3.org/DesignIssues/Notation3.html</dd>
+<dt>[<a name="ref-datamodel" id="ref-datamodel">ORE Data Model</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.3/datamodel">ORE Specification - Abstract Data Model</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner (editors),
+2008-02-26. Available at http://www.openarchives.org/ore/0.3/datamodel</dd>
+<dt><a name="ref-atom-implementation" id="ref-atom-implementation"></a>[ORE Atom User Guide]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.3/atom-implementation">ORE User Guide - Resource Map 
+Implementation in Atom</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner (editors),
+2008-02-29. Available at http://www.openarchives.org/ore/0.3/atom-implementation</dd>
+<dt>[<a name="ref-atom" id="ref-atom">ORE Atom Profile</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.3/atom">ORE Specification - Resource Map Profile of Atom</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner (editors),
+2008-02-28. Available at http://www.openarchives.org/ore/0.3/atom</dd>
+<dt>[<a name="ref-rdfsyntax" id="ref-rdfsyntax">Representing Resource Maps Using RDF Syntaxes</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.3/rdfsyntax">ORE User Guide - Representing Resource Maps Using RDF Syntaxes</a></cite>,
+Carl Lagoze, Herbert Van de Sompel, Pete Johnston, Michael Nelson, Robert Sanderson, Simeon Warner (editors),
+2008-02-29. Available at http://www.openarchives.org/ore/0.3/rdfsyntax</dd>
+<dt>[<a name="Web_Architecture" id="Web_Architecture">Web Architecture</a>]</dt>
+<dd><a href="http://www.w3.org/TR/webarch/"><em>Architecture of
+the World Wide Web, Volume One</em></a>, I. Jacobs and N. Walsh,
+Editors, World Wide Web Consortium, 15 January 2004.</dd>
+</dl>
+</div>
+<div class="back">
+
+<!--START-INCLUDE=_acknowledgements.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+</div>
+<!--END-INCLUDE=_acknowledgements.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+       <tbody><tr>
+                <th>Date</th>
+                <th>Editor</th>
+                <th>Description</th>
+        </tr>
+	<tr>
+		<td>2008-04-02</td>
+		<td>simeon</td>
+		<td>public alpha 0.3 release</td>
+        </tr>
+	<tr>
+		<td>2008-03-02</td>
+		<td>simeon</td>
+		<td>public alpha 0.2 release</td>
+        </tr>
+	<tr>
+		<td>2008-01-08</td>
+		<td>simeon</td>
+		<td>correct N3 example</td>
+        </tr>
+	<tr>
+		<td>2007-12-10</td>
+		<td>simeon</td>
+		<td>public alpha 0.1 release</td>
+        </tr>
+	<tr>
+		<td>2007-10-15</td>
+		<td>simeon</td>
+		<td>alpha release to ORE-TC</td>
+	</tr></tbody>
+</table>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

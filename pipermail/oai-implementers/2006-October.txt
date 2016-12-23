@@ -1,0 +1,317 @@
+From Matthias.Egger at mpi.nl  Mon Oct  2 04:41:21 2006
+From: Matthias.Egger at mpi.nl (Matthias Egger)
+Date: Mon Oct  2 04:42:13 2006
+Subject: [OAI-implementers] oai :: how to handle errors during ListRecords
+	request?
+Message-ID: <4520D0B1.2050704@mpi.nl>
+
+
+Hi everybody,
+
+maybe this question has already arisen somewhere, but i couldn't make it 
+out in the documentation, so I need to ask the community:
+
+How do I handle errors which may occur during a ListRecords request?
+For example when during reading a destined result-record's dataset (a 
+xml file) some unpredicted error occurs, e.g. an IOException for some 
+reason whatsoever.
+
+So what am I supposed to provide in my response then:
+
+- throw away the whole result list and provide an oai-error code
+   (and which one in that case)?
+
+- just replace that one concerned record-dataset with an oai error-tag
+   (also here: which code then?)
+
+- ignore those errors and remove any failed record-dataset
+   from the returned result list?
+
+- ignore those errors and provide an empty record-tag for those datasets
+
+
+is there a best-practice or any specified procedure?
+suggestions are very welcome.
+
+thanx so long
+matthias
+
+
+From simeon at cs.cornell.edu  Mon Oct  2 18:04:16 2006
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Mon Oct  2 18:05:09 2006
+Subject: [OAI-implementers] oai :: how to handle errors during ListRecords
+	request?
+In-Reply-To: <4520D0B1.2050704@mpi.nl>
+References: <4520D0B1.2050704@mpi.nl>
+Message-ID: <Pine.LNX.4.64.0610021756260.22577@dhcp103-124.cs.cornell.edu>
+
+
+Hi Matthias,
+
+There is no way to cope with an error in part of a ListRecords response. 
+This is essentially outside the OAI model, in which an error-free 
+repository is assumed. I think the server should return an HTTP 500 
+"Internal Server Error", or perhaps a 503 "Retry After" if there is some 
+reasonable hope that the exception would not recur if the request were 
+attempted again. A harvester should abort the harvest if it gets an HTTP 
+500 error.
+
+The other option would be to consider that such an error condition 
+invalidates the resumptionToken and the give a badResumptionToken error
+(http://www.openarchives.org/OAI/2.0/guidelines-harvester.htm#resumptionTokenErrorRecovery).
+
+Cheers,
+Simeon
+
+
+
+On Mon, 2 Oct 2006, Matthias Egger wrote:
+> Hi everybody,
+>
+> maybe this question has already arisen somewhere, but i couldn't make it out 
+> in the documentation, so I need to ask the community:
+>
+> How do I handle errors which may occur during a ListRecords request?
+> For example when during reading a destined result-record's dataset (a xml 
+> file) some unpredicted error occurs, e.g. an IOException for some reason 
+> whatsoever.
+>
+> So what am I supposed to provide in my response then:
+>
+> - throw away the whole result list and provide an oai-error code
+>  (and which one in that case)?
+>
+> - just replace that one concerned record-dataset with an oai error-tag
+>  (also here: which code then?)
+>
+> - ignore those errors and remove any failed record-dataset
+>  from the returned result list?
+>
+> - ignore those errors and provide an empty record-tag for those datasets
+>
+>
+> is there a best-practice or any specified procedure?
+> suggestions are very welcome.
+>
+> thanx so long
+> matthias
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From simeon at cs.cornell.edu  Mon Oct  2 18:04:16 2006
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Tue Oct  3 07:32:53 2006
+Subject: [OAI-implementers] oai :: how to handle errors during ListRecords
+	request?
+In-Reply-To: <4520D0B1.2050704@mpi.nl>
+References: <4520D0B1.2050704@mpi.nl>
+Message-ID: <Pine.LNX.4.64.0610021756260.22577@dhcp103-124.cs.cornell.edu>
+
+
+Hi Matthias,
+
+There is no way to cope with an error in part of a ListRecords response. 
+This is essentially outside the OAI model, in which an error-free 
+repository is assumed. I think the server should return an HTTP 500 
+"Internal Server Error", or perhaps a 503 "Retry After" if there is some 
+reasonable hope that the exception would not recur if the request were 
+attempted again. A harvester should abort the harvest if it gets an HTTP 
+500 error.
+
+The other option would be to consider that such an error condition 
+invalidates the resumptionToken and the give a badResumptionToken error
+(http://www.openarchives.org/OAI/2.0/guidelines-harvester.htm#resumptionTokenErrorRecovery).
+
+Cheers,
+Simeon
+
+
+
+On Mon, 2 Oct 2006, Matthias Egger wrote:
+> Hi everybody,
+>
+> maybe this question has already arisen somewhere, but i couldn't make it out 
+> in the documentation, so I need to ask the community:
+>
+> How do I handle errors which may occur during a ListRecords request?
+> For example when during reading a destined result-record's dataset (a xml 
+> file) some unpredicted error occurs, e.g. an IOException for some reason 
+> whatsoever.
+>
+> So what am I supposed to provide in my response then:
+>
+> - throw away the whole result list and provide an oai-error code
+>  (and which one in that case)?
+>
+> - just replace that one concerned record-dataset with an oai error-tag
+>  (also here: which code then?)
+>
+> - ignore those errors and remove any failed record-dataset
+>  from the returned result list?
+>
+> - ignore those errors and provide an empty record-tag for those datasets
+>
+>
+> is there a best-practice or any specified procedure?
+> suggestions are very welcome.
+>
+> thanx so long
+> matthias
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From kmku at hku.hk  Thu Oct  5 03:41:08 2006
+From: kmku at hku.hk (Dr. Kam-ming Ku)
+Date: Thu Oct  5 03:41:55 2006
+Subject: [OAI-implementers] Any good service provider software
+	recommendation?
+In-Reply-To: <7A4844034B96C94EA898231E11C15BC1EFE5E4@SBS.CLIR.lan>
+Message-ID: <002701c6e851$a26b3dd0$44110893@snet.lib.hku.hk>
+
+Dear ALL,
+
+ 
+
+ 
+
+I am looking for good software for implementation of service provider service.  We harvest data from ~30 sites and the total no. of records is ~200K (English, CJK records). 
+
+ 
+
+FYI: 
+
+We are currently using Dspace for hosting the data, however, the search/browse/data upload speed is too slow. Moreover, it does not handle synchronization (amend/create/delete) of OAI metadata effectively. (we need to handle it by 3rd programs).
+
+ 
+
+Best Regards,
+
+KM Ku
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20061005/9d468067/attachment-0001.htm
+From herbertv at lanl.gov  Fri Oct 13 11:12:50 2006
+From: herbertv at lanl.gov (Herbert Van de Sompel)
+Date: Fri Oct 13 11:10:54 2006
+Subject: [OAI-implementers] Open Archives Initiative Announces Object Reuse
+	and Exchange (ORE)
+Message-ID: <452FACF2.3070103@lanl.gov>
+
+[Apologies for cross-posting]
+
+Open Archives Initiative Announces Object Reuse and Exchange (ORE)
+
+Ithaca, NY and Los Alamos, NM - The Open Archives Initiative (OAI), with
+the generous support of the Andrew W. Mellon Foundation, announces a new
+effort as part of its mission to develop and promote interoperability
+standards that aim to facilitate the efficient dissemination of content.
+Object Reuse and Exchange (ORE) will develop specifications that allow
+distributed repositories to exchange information about their constituent
+digital objects. These specifications will include approaches for
+representing digital objects and repository services that facilitate
+access and ingest of these representations. The specifications will
+enable a new generation of cross-repository services that leverage the
+intrinsic value of digital objects beyond the borders of hosting
+repositories.
+
+The goals of ORE are inspired by advances in scholarly communication and
+the growth of scholarly material that is available in scholarly
+repositories including institutional repositories, discipline-oriented
+repositories, dataset warehouses, and online journal repositories. This
+growth is significant by itself. However, its real importance lies in
+the potential for these distributed repositories and their contained
+objects to act as the foundation of a new digitally-based scholarly
+communication framework. Such a framework would permit fluid reuse,
+refactoring, and aggregation of scholarly digital objects and their
+constituent parts - including text, images, data, and software. This
+framework would include new forms of citation, allow the creation of
+virtual collections of objects regardless of their location, and
+facilitate new workflows that add value to scholarly objects by
+distributed registration, certification, peer review, and preservation
+services. Although scholarly communication is the motivating
+application, we imagine that the specifications developed by ORE may
+extend to other domains.
+
+ORE is funded by Mellon for two years beginning October 2006. It is
+coordinated by Carl Lagoze of Cornell University Information Science and
+Herbert Van de Sompel of the Los Alamos Research Library.  The ORE
+two-year work plan includes:
+
+* Formation of an international advisory committee, consisting of
+leaders in e-Science, institutional repositories, publishing, library,
+and educational technology communities.
+* Formation of an international working group that will meet over the
+two year period and develop the set of ORE specifications.
+* Establishment and management of an experimental deployment community
+that will exercise the developed standards in a variety of contexts.
+* Establishment of a sustainable community to support the widespread
+deployment and management of the standards fabric.
+
+OAI-ORE will co-exist within the Open Archives Initiative with the
+Protocol for Metadata Harvesting (OAI-PMH), the widely deployed standard
+for exchange of metadata.  We expect that the naturally more expressive
+digital object focus of OAI-ORE will complement the  narrower metadata
+focus of OAI-PMH.  OAI-ORE will benefit from the interoperability
+experience and depth of the international OAI community.
+
+For more information contact ore@openarchives.org. The ORE web site is
+at http://www.openarchives.org/ore/.
+
+-- 
+Herbert Van de Sompel
+Digital Library Research & Prototyping
+Los Alamos National Laboratory, Research Library
+http://public.lanl.gov/herbertv/
+tel. +1 505 667 1267
+
+
+From hildebrand_juliette at yahoo.fr  Tue Oct 17 11:18:03 2006
+From: hildebrand_juliette at yahoo.fr (HILDEBRAND Juliette)
+Date: Tue Oct 17 11:18:55 2006
+Subject: [OAI-implementers] status deleted in the header
+Message-ID: <20061017151803.29920.qmail@web25224.mail.ukl.yahoo.com>
+
+   Hello
+   
+  I installed the framwork OAI on an Oracle database :
+   
+  RECORDS
+  ----------------
+  SYSID NUMBER
+  RECORD_IDENTIFIER NOT NULL VARCHAR2(50)
+  TIMESTAMP DATE
+  XMLCONTENT XMLTYPE
+   
+  RECORDSSETS
+  -------------------------
+  RECORD_IDENTIFIER NOT NULL VARCHAR2(50)
+  SET_SPECIFIER                                    VARCHAR2(50)
+   
+   
+  How must I proceed to obtain the attribut status with the value 'deleted' in the header ?
+    on the database, which column i must add
+  on the framework is there changes to be made ?
+   
+   
+  Best regards
+   
+  Juliette Hildebrand
+
+ 		
+---------------------------------
+D?couvrez une nouvelle fa?on d'obtenir des r?ponses ? toutes vos questions ! Demandez ? ceux qui savent sur Yahoo! Questions/R?ponses.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20061017/296272f2/attachment.htm

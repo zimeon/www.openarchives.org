@@ -1,0 +1,1100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ORE User Guide - Resource Map Discovery</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.openarchives.org/ore/favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" type="text/css" href="http://www.openarchives.org/ore/0.9/ore-spec.css" />
+</head>
+
+<body>
+<div id="float-warning">
+DO NOT USE, SEE <a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>
+</div>
+<div id="header">
+  <table class="layout" summary="Logos and OAI-ORE title">
+    <tr>
+      <td><img alt="OAI logo" src="/images/OA100.gif" width="100" height="70" /></td>
+      <td class="OREtext">Open Archives Initiative<br />Object Reuse and Exchange</td>
+      <td><img alt="ORE logo" src="/ore/logos/ore_logo_e_80.png" width="80" height="80" /></td>
+    </tr>
+  </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ORE User Guide - Resource Map Discovery</h2>
+  <h3 class="subTitle">2 June 2008</h3>
+</div>
+<div id="alpha-warning">
+<p>DO NOT USE THIS SPECIFICATION, see instead the
+<a href="http://www.openarchives.org/ore/toc">CURRENT ORE SPECIFICATIONS</a>.</p>
+<p>This document was part of a beta release and has been superseded.</p>
+</div>
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.9/discovery">http://www.openarchives.org/ore/0.9/discovery</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/discovery">http://www.openarchives.org/ore/discovery</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/ore/0.3/discovery">http://www.openarchives.org/ore/0.3/discovery</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors (OAI Executive)</dt>
+  <dd>Carl Lagoze, Cornell University Information Science</dd>
+  <dd>Herbert Van de Sompel, Los Alamos National Laboratory</dd>
+  <dt>Editors (ORE Technical Committee)</dt>
+  <dd>Pete Johnston, Eduserv Foundation</dd>
+  <dd>Michael Nelson, Old Dominion University</dd>
+  <dd>Robert Sanderson, University of Liverpool</dd>
+  <dd>Simeon Warner, Cornell University Information Science</dd>
+</dl>
+
+<!--END-HEADER-->
+<!--VAR-TITLE=ORE User Guide - Resource Map Discovery-->
+<!--VAR-SUBTITLE=2 June 2008-->
+<!--VAR-THISURI=http://www.openarchives.org/ore/0.9/discovery-->
+<!--VAR-LATESTURI=http://www.openarchives.org/ore/discovery-->
+<!--VAR-PREVIOUSURI=http://www.openarchives.org/ore/0.3/discovery-->
+
+<div class="abstract">
+<h2><a name="abstract" id="abstract"></a>Abstract</h2>
+        <p>Crawlers or harvesters must discover <span
+        class="definition">Resource Maps</span> (<span
+        class="definition">ReMs</span>) before the Aggregations described
+        by them can be understood.  ReMs can be discovered in any number
+        of ways and this document discusses some of the recommended
+        discovery mechanisms.  Other discovery mechanisms may evolve over
+        time and vary based on the practices of particular communities.
+This user guide is one of several documents comprising the
+<a href="toc">OAI-ORE specification and
+user guide</a>.</p>
+</div>
+
+<hr />
+<div class="toc">
+<h2><a name="contents" id="contents"></a>Table of Contents</h2>
+<p class="toc">
+1. <a href="#Introduction">Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 1.1 <a href="#notation">Notational Conventions</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 1.2 <a href="#Linking">Linking to Aggregations and Resource Maps</a><br />
+2. <a href="#BatchDiscovery">Batch Discovery</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 2.1 <a href="#OAI_PMH">OAI-PMH</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 2.2 <a href="#SiteMaps">SiteMaps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 2.3 <a href="#SyndicationFeeds">Syndication Feeds</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 2.4 <a href="#CombiningOAI-PMHwithOtherApproaches">Combining OAI-PMH with Other Approaches</a><br />
+3. <a href="#ResourceEmbedding">Resource Embedding</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 3.1 <a href="#HTMLLinkElement">HTML Link Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 3.2 <a href="#HTTPLinkHeader">HTTP Link Header</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 3.3 <a href="#Non-HTMLResources">Non-HTML Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp; 3.4 <a href="#ExposinginHTMLPages">Exposing in HTML Pages</a><br />
+4. <a href="#ProxyURIs">Proxy URIs</a><br />
+5. <a href="#References">References</a></p>
+
+<h3><a name="appendices" id="appendices"></a>Appendices</h3>
+<p class="toc">A. <a href="#acknowledgments">Acknowledgments</a><br />
+B. <a href="#changelog">Change Log</a></p>
+</div>
+
+<hr />
+<div class="body">
+<h2><a name="Introduction" id="Introduction"></a>1. Introduction</h2>
+        <p>
+        <span class="definition">Resource Map </span>(<span
+        class="definition">ReMs</span>) discovery is a precondition of
+        use.  There is no single, best method for discovering ReMs.  This
+        document covers a variety of suggested ReM discovery mechanisms,
+        grouped into the categories of: <span class="definition">Batch
+        Discovery</span>, <span class="definition">Resource
+        Embedding</span> and <span class="definition">Proxy URIs</span>;
+        and examples are explored for each category.  Additional
+        categories and examples are expected to evolve over time.
+
+        </p>
+
+<h3><a name="notation" id="notation"></a>1.1 Notational Conventions</h3>
+        <p>The keywords &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;, &quot;SHOULD&quot;,
+                &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;MAY&quot;, and &quot;OPTIONAL&quot; in this document are
+                to be interpreted as described in RFC 2119 [<cite><a href="#RFC2119">IETF
+                RFC 2119</a></cite>].</p>
+
+<h3><a name="Linking" id="Linking"></a>1.2 Linking to Aggregations and Resource Maps</h3>
+
+        <p>
+        Although this document speaks of discovering ReMs, there are
+        scenarios where it is more natural to link to Aggregations
+        (URI-A in [<cite><a href="#ORE_Model">ORE Model</a></cite>])
+        thereby including all possible ReMs available from URI-A.
+        Similarly, it is sometimes more natural to link to a specific
+        Resource Map (URI-R) (see <a href="#HTMLLinkElement">section
+        3.1</a> below).  Because discovery is orthogonal to description,
+        either strategy, including a combination of both, is acceptable
+        despite the ORE Model not providing a relationship between
+        Aggregated Resources and Resource Maps.  However, because 
+	Aggregations are non-information resources, authors
+        MUST NOT include MIME type information when linking to URI-A.
+	In fact, it is possible for URI-A to return one of several 
+	MIME types when dereferenced.
+        See [<cite><a href="#ORE_HTTP">ORE HTTP</a></cite>] regarding
+        the relationship between URI-A and URI-R and strategies for choosing
+	their values.
+
+        </p>
+
+<h2><a name="BatchDiscovery" id="BatchDiscovery"></a>2. Batch Discovery</h2>
+        <p>
+        Batch discovery exists so agents can discover ReMs en masse.
+        Note that ReMs are not limited to describing Aggregations on the
+        server where the ReMs reside.  Although ReMs can be serialized
+        in a number of formats, a popular serialization is the Atom
+        Syndication Format [<cite><a href="#RFC4287">RFC4287</a></cite>].
+        Thus, in each section a table is provided to clearly map between
+        concepts of identification and datestamps between the transport
+        protocol/format, Atom ReM serialization [<cite><a href="#ReMs_Using_Atom">ReMs Using Atom</a></cite>],
+	and the Abstract Data Model [<cite><a href="#ORE_Model">ORE Model</a></cite>].
+        </p>
+
+<h3><a name="OAI_PMH" id="OAI_PMH"></a>2.1 OAI-PMH</h3>
+        <p>
+        It is possible to define a new <code>metadataPrefix</code> in the Open Archives
+        Initiative Protocol for Metadata Harvesting (OAI-PMH) [<cite><a href="#OAI-PMH">OAI-PMH</a></cite>]
+        that contains ReMs.  For example, this OAI-PMH request:
+        </p>
+        <p>
+        <code>http://www.foo.edu/oai?verb=GetRecord&amp;identifier=oai:foo.edu:object1&amp;metadataPrefix=oai_rem_atom</code>
+        </p>
+        <p>
+        Would yield this response:
+        </p>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2007-02-08T08:55:46Z&lt;/responseDate&gt;
+  &lt;request verb="GetRecord" identifier="oai:foo.edu:object1"
+           metadataPrefix="oai_rem_atom"&gt;http://foo.edu/oai2&lt;/request&gt;
+  &lt;GetRecord&gt;
+   &lt;record&gt;
+    &lt;header&gt;
+      &lt;identifier&gt;oai:foo.edu:object1&lt;/identifier&gt;
+      &lt;datestamp&gt;2007-01-06&lt;/datestamp&gt;
+    &lt;/header&gt;
+    &lt;metadata&gt;
+        &lt;!-- Insert ReM here --&gt;
+    &lt;/metadata&gt;
+  &lt;/record&gt;
+ &lt;/GetRecord&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+</div>
+
+<table border="1" summary="Atom ReMs Discovered via OAI-PMH">
+<caption>Table 1: Atom ReMs Discovered via OAI-PMH</caption>
+ <tr>
+   <th></th>
+   <th>Atom</th>
+   <th>ADM</th>
+ </tr>
+ <tr>
+  <th>Identification</th>
+  <td>OAI-PMH <code>record/header/identifier</code> MUST NOT equal either ReM Atom <code>/feed/id</code> or <code>/feed/link[@rel="self"]/@href</code></td>
+  <td>OAI-PMH <code>record/header/identifier</code> MUST NOT equal either URI-R or URI-A</td>
+ </tr>
+ <tr>
+  <th>Datestamp</th>
+  <td>OAI-PMH <code>record/header/datestamp</code> MUST be equal to ReM Atom <code>/feed/updated</code></td>
+  <td>OAI-PMH <code>record/header/datestamp</code> MUST be the object of the triple <code>URI-R dcterms:modified "datetime"</code></td>
+ </tr>
+</table>
+
+
+<h3><a name="SiteMaps"></a>2.2 SiteMaps</h3>
+        <p>
+        It is possible to construct a SiteMap [<cite><a
+        href="#SiteMap">SiteMap</a></cite>] that consists of just ReMs,
+        or possibly includes ReMs in its list of regular resources.
+        For example, dereferencing this SiteMap URI:
+        </p>
+        <p>
+        <code>http://www.foo.edu/sitemap-rem.xml</code>
+        </p>
+        <p>
+        Would yield this response:
+        </p>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://www.foo.edu/objects/object1.atom#aggregation&lt;/loc&gt;
+      &lt;lastmod&gt;2007-01-06&lt;/lastmod&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://www.foo.edu/objects/object2.atom#aggregation&lt;/loc&gt;
+      &lt;lastmod&gt;2007-08-11&lt;/lastmod&gt;
+      &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+   &lt;/url&gt;
+   &lt;url&gt;
+      &lt;loc&gt;http://www.foo.edu/objects/object3.atom#aggregation&lt;/loc&gt;
+      &lt;lastmod&gt;2007-03-15T18:30:02Z&lt;/lastmod&gt;
+      &lt;priority&gt;0.3&lt;/priority&gt;
+   &lt;/url&gt;
+...
+&lt;/urlset&gt;
+</pre>
+</div>
+
+        <p>
+        Note that SiteMaps have a URI path hierarchy limitation for the resources
+        for which they can describe.  For example, this SiteMap:
+        </p>
+        <p>
+        <code>http://www.foo.edu/a/b/sitemap-rem.xml</code>
+        </p>
+        <p>
+        Can list the Aggregations:
+        </p>
+        <p>
+        <code>http://www.foo.edu/a/b/bar2.atom#aggregation</code>
+        </p>
+        <p>
+        and
+        </p>
+        <p>
+        <code>http://www.foo.edu/a/b/c/bar3.atom#aggregation</code>
+        </p>
+        <p>
+        But not:
+        </p>
+        <p>
+        <code>http://www.foo.edu/bar1.atom#aggregation</code>
+        </p>
+
+<table border="1" summary="Atom ReMs Discovered via SiteMap">
+        <caption>Table 2: Atom ReMs Discovered via SiteMap</caption>
+ 	<tr>
+   	<th></th>
+   	<th>Atom</th>
+   	<th>ADM</th>
+ 	</tr>
+        <tr>
+        <th>Identification</th>
+        <td>SiteMap <code>/urlset/url/loc</code> MUST equal <code>/feed/link[@rel="self"]/@href</code> or <code>/feed/id</code> for the corresponding ReM or Aggregation</td>
+        <td>SiteMap <code>/urlset/url/loc</code> MUST equal URI-R or URI-A for the corresponding ReM or Aggregation</td>
+        </tr>
+        <tr>
+        <th>Datestamp</th>
+        <td>When present, SiteMap <code>/urlset/url/lastmod</code> MUST be equal to ReM Atom <code>/feed/updated</code></td>
+        <td>When present, SiteMap <code>/urlset/url/lastmod</code> MUST be equal to the object of the triple <code>URI-R dcterms:modified "datetime"</code></td>
+        </tr>
+</table>
+
+
+<h3><a name="SyndicationFeeds"></a>2.3 Syndication Feeds</h3>
+        <p>
+        Even though ReMs can be serialized in 
+        the Atom Syndication Format, there is no reason preventing
+        the use of syndication formats such as Atom or RSS [<cite><a
+        href="#RSS">RSS</a></cite>] for ReM discovery.  However, care
+        must be taken to separate conceptually the Resource Map from
+        the syndication file listing the Resource Maps.  In particular,
+        the id of an Atom entry listing the URI of a Resource Map MUST NOT
+        be either URI-R or URI-A of the ReM or Aggregation the syndication
+	file is making available for discovery.
+        In other words, an explicit difference must be
+        made between the Atom feed used for discovery and the Atom feed
+        that is the ReM.  For example, this Atom Feed:
+        </p>
+        <p>
+        <code>http://www.foo.edu/all-rems.atom</code>
+        </p>
+        <p>
+        When dereferenced would yield:
+        </p>
+
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=discovery-examples/ex2_3a.atom-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+ &lt;title&gt;ReMs at www.foo.edu&lt;/title&gt;
+ &lt;link href="http://www.foo.edu/" /&gt;
+ &lt;link href="http://www.foo.edu/all-rems.atom" rel="self"/&gt;
+ &lt;updated&gt;2007-08-15T18:30:02Z&lt;/updated&gt;
+ &lt;author&gt;
+   &lt;name&gt;John Doe&lt;/name&gt;
+   &lt;email&gt;johndoe@foo.edu&lt;/email&gt;
+ &lt;/author&gt;
+ &lt;id&gt;urn:uuid:60a76c80-d399-11d9-b91C-0003939e0af6&lt;/id&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;ReM For Object1&lt;/title&gt;
+   &lt;link href="http://www.foo.org/objects/object1.atom#aggregation"/&gt;
+   &lt;id&gt;urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id&gt;
+   &lt;updated&gt;2007-01-06T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;ReM For Object2&lt;/title&gt;
+   &lt;link href="http://www.foo.org/objects/object2.atom#aggregation"/&gt;
+   &lt;id&gt;urn:uuid:9a2cc699-ccba-9e8b-132e-91da394e9a5c&lt;/id&gt;
+   &lt;updated&gt;2007-08-11T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;ReM For Object3&lt;/title&gt;
+   &lt;link href="http://www.foo.org/objects/object3.atom#aggregation"/&gt;
+   &lt;id&gt;urn:uuid:5225c895-cab8-8ebb-baaa-90da9d4efa6b&lt;/id&gt;
+   &lt;updated&gt;2007-03-15T18:30:02Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=discovery-examples/ex2_3a.atom-->
+</div>
+
+
+<table border="1" summary="Atom ReMs Discovered via Atom">
+<caption>Table 3: Atom ReMs Discovered via Atom</caption>
+ 	<tr>
+   	<th></th>
+   	<th>Atom</th>
+   	<th>ADM</th>
+ 	</tr>
+ <tr>
+  <th>Identification</th>
+  <td>Syndication Atom <code>/feed/entry/id</code> MUST NOT equal ReM Atom <code>/feed/link[@rel="self"]/@href</code> or <code>/feed/id</code>;<br />
+      Syndication Atom <code>/feed/entry/link/@href</code> MUST equal ReM Atom <code>/feed/link[@rel="self"]/@href</code> or <code>/feed/id</code></td>
+  <td>Syndication Atom <code>/feed/entry/id</code> MUST NOT equal URI-R or URI-A;<br />
+      Syndication Atom <code>/feed/entry/link/@href</code> MUST equal URI-R or URI-A</td>
+ </tr>
+ <tr>
+  <th>Datestamp</th>
+  <td>Syndication Atom <code>/feed/entry/updated</code> MUST equal ReM Atom <code>/feed/updated</code></td>
+  <td>Syndication Atom <code>/feed/entry/updated</code> MUST equal the object of the triple <code>URI-R dcterms:modified "datetime"</code></td>
+ </tr>
+</table>
+
+        <p>
+        The same ReMs could be exposed via RSS 2.0.  For example,
+        this RSS feed:
+        </p>
+        <p>
+        <code>http://www.foo.edu/all-rems.rss</code>
+        </p>
+        <p>
+        When dereferenced would yield:
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=discovery-examples/ex2_3b.atom-->
+<pre>
+&lt;?xml version="1.0"?&gt;
+&lt;rss version="2.0"&gt;
+  &lt;channel&gt;
+    &lt;title&gt;ReMs at www.foo.edu&lt;/title&gt;
+    &lt;link&gt;http://www.foo.edu/&lt;/link&gt;
+    &lt;description&gt;All of the Resource Maps for resources at www.foo.edu&lt;/description&gt;
+
+    &lt;item&gt;
+      &lt;title&gt;ReM for Object 1&lt;/title&gt;
+      &lt;link&gt;http://www.foo.org/objects/object1.atom#aggregation&lt;/link&gt;
+      &lt;description&gt;ReM for Object 1&lt;/description&gt;
+      &lt;pubDate&gt;Sat, 06 Jan 2007 00:00:00 GMT&lt;/pubDate&gt;
+    &lt;/item&gt;
+
+    &lt;item&gt;
+      &lt;title&gt;ReM for Object 2&lt;/title&gt;
+      &lt;link&gt;http://www.foo.org/objects/object2.atom#aggregation&lt;/link&gt;
+      &lt;description&gt;ReM for Object 2&lt;/description&gt;
+      &lt;pubDate&gt;Sat, 11 Aug 2007 00:00:00 GMT&lt;/pubDate&gt;
+    &lt;/item&gt;
+
+    &lt;item&gt;
+      &lt;title&gt;ReM for Object 3&lt;/title&gt;
+      &lt;link&gt;http://www.foo.org/objects/object2.atom#aggregation&lt;/link&gt;
+      &lt;description&gt;ReM for Object 3&lt;/description&gt;
+      &lt;pubDate&gt;Thu, 15 Mar 2007 08:30:02 GMT&lt;/pubDate&gt;
+    &lt;/item&gt;
+
+  &lt;/channel&gt;
+&lt;/rss&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=discovery-examples/ex2_3b.atom-->
+</div>
+
+<table border="1" summary="Atom ReMs Discovered via RSS">
+<caption>Table 4: Atom ReMs Discovered via RSS</caption>
+ 	<tr>
+   	<th></th>
+   	<th>Atom</th>
+   	<th>ADM</th>
+ 	</tr>
+ <tr>
+  <th>Identification</th>
+  <td> RSS 2.0 <code>/rss/item/link</code> MUST equal ReM Atom <code>/feed/link[@rel="self"]/@href</code> or <code>/feed/id</code></td>
+  <td> RSS 2.0 <code>/rss/item/link</code> MUST equal URI-R or URI-A</td>
+ </tr>
+ <tr>
+  <th>Datestamp</th>
+  <td>RSS 2.0 <code>/rss/item/pubDate</code> MUST equal ReM Atom <code>/feed/updated</code> (after conversion
+      from RFC-822 format to ISO 8601 format)</td>
+  <td>RSS 2.0 <code>/rss/item/pubDate</code> MUST equal the object of the triple <code>URI-R dcterms:modified "datetime"</code></td>
+ </tr>
+</table>
+
+While the above examples demonstrates how an Atom or RSS Feed consisting
+of nothing but ReMs could be constructed, Atom's more powerful
+<code>link</code> elements allow links to ReMs to be incorporated in
+"regular" Atom Feeds as well.  Consider an institutional repository
+with the most recently accessioned scholarly eprints available at the
+following Atom Feed:
+
+        <p>
+        <code>http://library.foo.edu/repository/latest.atom</code>
+        </p>
+        <p>
+        When dereferenced would yield:
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=discovery-examples/ex2_3c.atom-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+ &lt;title&gt;Latest Scholarly Eprints from Authors at www.foo.edu&lt;/title&gt;
+ &lt;link href="http://library.foo.edu/repository/" /&gt;
+ &lt;link href="http://library.foo.edu/repository/latest.atom" rel="self"/&gt;
+ &lt;updated&gt;2008-08-15T18:30:02Z&lt;/updated&gt;
+ &lt;author&gt;
+   &lt;name&gt;John Q. Librarian&lt;/name&gt;
+   &lt;email&gt;johnq@library.foo.edu&lt;/email&gt;
+ &lt;/author&gt;
+ &lt;id&gt;tag:library.foo.edu,2008:institutional:repository:latest&lt;/id&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;The transformation of scholarly communication&lt;/title&gt;
+   &lt;link rel="alternate" href="http://library.foo.org/repository/report-2008-13.html"/&gt;
+   &lt;link rel="resourcemap" href="http://library.foo.org/repository/report-2008-13.atom"/&gt;
+   &lt;id&gt;tag:library.foo.edu,2008:institutional:repository:report-2008-13&lt;/id&gt;
+   &lt;updated&gt;2008-08-15T18:30:02Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;The arXiv: Fourteen Years of Open Access Scholarly Communication&lt;/title&gt;
+   &lt;link rel="alternate" href="http://library.foo.org/repository/report-2008-12.html"/&gt;
+   &lt;link rel="resourcemap" href="http://library.foo.org/repository/report-2008-12.atom"/&gt;
+   &lt;id&gt;tag:library.foo.edu,2008:institutional:repository:report-2008-12&lt;/id&gt;
+   &lt;updated&gt;2008-08-11T02:23:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=discovery-examples/ex2_3c.atom-->
+</div>
+
+In the above example, the "splash" pages are linked in
+the <code>/feed/entry/link[@rel="alternate"]@href</code>
+elements and the corresponding ReMs are linked in the
+<code>/feed/entry/link[@rel="resourcemap"]@href</code> element
+(The <code>resourcemap</code> relation is introduced in <a
+href="#HTMLLinkElement">section 3.1 below</a>).
+
+<h3><a name="CombiningOAI-PMHwithOtherApproaches"></a>2.4 Combining OAI-PMH with Other Approaches</h3>
+        <p>
+        Resource Map Documents [<cite><a href="#ORE_Model">ORE
+        Model</a></cite>] can be included as metadata records in
+        an OAI-PMH response.  However, the OAI-PMH constructs
+        must be removed before the Resource Map representation can
+        be used as such.  This has implications with respect
+        to embedding the Resource Map in a resource (discussed <a
+        href="#ResourceEmbedding">below</a>).  OAI-PMH repositories issue
+        OAI-PMH responses of MIME type <code>text/xml</code>
+        or <code>application/xml</code>.  These
+        OAI-PMH responses must be processed into ReM responses
+        (e.g., Atom Syndication Format and of MIME type
+        <code>application/atom+xml</code>).  We envision these kinds of
+	OAI-PMH to ReM	
+        services taking an OAI-PMH GetRecord request as an argument,
+        such as:
+        </p>
+        <p>
+        <code>http://some.gateway.org/pmh2ore?=http://foo.edu/oai2?verb=GetRecord&amp;metadataPefix=oai_rem_atom&amp;identifier=oai:foo.edu:object1</code>
+        </p>
+        <p>
+        OCLC has already developed one such service.  It takes an OAI-PMH
+        GetRecord URI as an argument and strips out out the OAI-PMH
+        elements, leaving only the child element of the OAI-PMH's
+        <code>&lt;metadata&gt;</code> element.  For example, this
+        OAI-PMH GetRecord request:
+        </p>
+        <p>
+        <code>http://alcme.oclc.org/oaicat/OAIHandler?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:oaicat.oclc.org:2002/ocm11992160</code>
+        </p>
+        <p>
+        When submitted as an argument to the OCLC service, produces just the
+        <code>&lt;oai_dc&gt;</code> element:
+        </p>
+        <p>
+        <code>http://purl.org/OAIUtil?getRecordURL=http://alcme.oclc.org/oaicat/OAIHandler?verb=GetRecord&amp;metadataPrefix=oai_dc&amp;identifier=oai:oaicat.oclc.org:2002/ocm11992160</code>
+        </p>
+        <p>
+        The values of the OAI-PMH <code>&lt;responseDate&gt;</code>
+        and <code>&lt;request&gt;</code> elements are retained as
+        HTTP response headers.  The above example could also be combined
+        with syndication formats.  For example, if a repository has its
+        ReMs in OAI-PMH, it could export the ReMs in an Atom Feed for
+        applications that are not OAI-PMH aware:
+        </p>
+
+<div class="exampleInner">
+<!--START-ESCAPEINCLUDEPRE=discovery-examples/ex2_4.atom-->
+<pre>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;feed xmlns="http://www.w3.org/2005/Atom"&gt;
+
+ &lt;title&gt;ReMs at www.foo.edu&lt;/title&gt;
+ &lt;link href="http://www.foo.edu/" /&gt;
+ &lt;link href="http://www.foo.edu/all-rems.atom" rel="self"/&gt;
+ &lt;updated&gt;2007-08-15T18:30:02Z&lt;/updated&gt;
+ &lt;author&gt;
+   &lt;name&gt;John Doe&lt;/name&gt;
+   &lt;email&gt;johndoe@foo.edu&lt;/email&gt;
+ &lt;/author&gt;
+ &lt;id&gt;urn:uuid:60a76c80-d399-11d9-b91C-0003939e0af6&lt;/id&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;ReM For Object1&lt;/title&gt;
+   &lt;link href="http://purl.org/OAIUtil?getRecordURL=http://foo.edu/oai2?verb=GetRecord&amp;amp;metadataPefix=oai_rem_atom&amp;amp;identifier=oai:foo.edu:object1"/&gt;
+   &lt;id&gt;urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id&gt;
+   &lt;updated&gt;2007-01-06T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;ReM For Object2&lt;/title&gt;
+   &lt;link href="http://purl.org/OAIUtil?getRecordURL=http://foo.edu/oai2?verb=GetRecord&amp;amp;metadataPefix=oai_rem_atom&amp;amp;identifier=oai:foo.edu:object1"/&gt;
+   &lt;id&gt;urn:uuid:9a2cc699-ccba-9e8b-132e-91da394e9a5c&lt;/id&gt;
+   &lt;updated&gt;2007-08-11T00:00:00Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+ &lt;entry&gt;
+   &lt;title&gt;ReM For Object3&lt;/title&gt;
+   &lt;link href="http://purl.org/OAIUtil?getRecordURL=http://foo.edu/oai2?verb=GetRecord&amp;amp;metadataPefix=oai_rem_atom&amp;amp;identifier=oai:foo.edu:object1"/&gt;
+   &lt;id&gt;urn:uuid:5225c895-cab8-8ebb-baaa-90da9d4efa6b&lt;/id&gt;
+   &lt;updated&gt;2007-03-15T18:30:02Z&lt;/updated&gt;
+ &lt;/entry&gt;
+
+&lt;/feed&gt;
+</pre>
+<!--END-ESCAPEINCLUDEPRE=discovery-examples/ex2_4.atom-->
+</div>
+
+<h2><a name="ResourceEmbedding" id="ResourceEmbedding"></a>3. Resource Embedding</h2>
+        <p>
+        A common scenario for ReM discovery is for a human readable
+        page in an Aggregation to link to its corresponding URI-A.
+        This is most commonly accomplished using the HTML link element
+        [<cite><a href="#HTML">HTML</a></cite>].  This can also be
+        accomplished using the HTTP Link response header.  Alternatively,
+        the URI-A can
+        be exposed as an opaque string for human agents to paste into
+        ORE-aware utilities.
+        </p>
+        <p>
+        We also envision the future availability of browser utilities
+        such as Mozilla plugins that detect the presence of corresponding
+        ReMs when embedded in resources and help guide the user in the
+        (re)use of the aggregated resources.
+        </p>
+
+        <p>
+        There are actually three different scenarios regarding Aggregated
+        Resources and knowledge about their corresponding Aggregations:
+        </p>
+
+        <ol>
+                <li><span class="definition">Full knowledge</span>: the Aggregations is linked to by all resources in the Aggregation.</li>
+                <li><span class="definition">Limited knowledge</span>: only a subset of the resources in the Aggregation
+(typically just a single resource) link to the Aggregations, and the remainder of the resources
+have no links at all.</li>
+                <li><span class="definition">Zero knowledge</span>: none of the resources in the Aggregation link to
+a Aggregations.</li>
+        </ol>
+
+        <p>
+        Note that the above scenarios are relative to a particular ReM.
+        It is possible for aggregated resources to simultaneously have
+        full knowledge about one Aggregation (typically authored by the same
+        creators of the resources) and have zero knowledge about third
+        party Aggregations that aggregate the same resources.
+        </p>
+
+<h3><a name="HTMLLinkElement"></a>3.1 HTML Link Element </h3>
+        <p>
+        The HTML link element can be used to direct agents from the
+        aggregated HTML file to a corresponding URI-A which identifies
+        the Aggregation that is aggregating the HTML file.  This document
+        introduces the value of "resourcemap" for the <code>rel</code>
+        attribute to facilitate discovery of URI-R and URI-A values.
+        </p>
+
+        <p>
+        Below is
+        an example of how an HTML page could link to a corresponding
+        ReM.  Assume we have an Aggregation of an HTML page ("hw.html")
+	and two images ("hello.jpeg" and "world.jpeg").  A limited knowledge 
+	scenario for this Aggregation would be that the HTML file links
+	to the ReM ("hw.atom") but the two images do not.  The method for 
+	non-HTML Aggregated Resources linking to ReMs is <a href="#HTTPLinkHeader">
+	described in section 3.2 below</a>.
+
+        </p>
+
+
+<div class="exampleInner">
+<pre>&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Hello World.&lt;/title&gt;
+&lt;link href="http://example.net/hw.atom" type="application/atom+xml" rel="resourcemap" &gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;img src="hello.jpeg"&gt;
+&lt;img src="world.jpeg"&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</div>
+
+        <p>
+        In the above example, the HTML page links only to a single
+        Aggregation.  It could link to multiple Aggregations, in which
+        case it is the responsibility of the agent to differentiate
+        between the two Aggregations.  </p>
+
+        <p>
+        If you wish to facilitate users subscribing to an
+        Atom-based Resource Map in the same manner as a typical
+        Atom syndication feed, it is possible to use a single HTML
+        link element with the rules for Atom autodiscovery [<cite><a
+        href="#AtomFeedAutodiscovery">AtomFeedAutodiscovery</a></cite>].
+        Since the <code>rel</code> attribute takes a space separated list of
+        values, the necessary value of "alternate" can be combined
+        with "resourcemap" to inform the agent that the URI in the
+        <code>href</code> attribute is both a Resource Map and may be desirable for
+        user subscription.  Note that <code>type</code> attribute is required to be
+        "application/atom+xml", which requires linking to a Resource
+        Map and not an Aggregation.
+
+        </p>
+
+<div class="exampleInner">
+<pre>&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Hello World.&lt;/title&gt;
+&lt;link rel="resourcemap alternate" type="application/atom+xml" href="http://example.net/hw.atom" &gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;img src="hello.jpeg"&gt;
+&lt;img src="world.jpeg"&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</div>
+
+        <p>
+	It is also possible for an Aggregated Resource to link to
+	multiple Resource Maps.  In the example below, the HTML file
+	links to two Resource Maps.  It is up to the agent to verify the
+	relationship (if any) between the Resource Maps.  The Atom-based
+	ReM retains the autodiscovery technique introduced above, but
+	now an RDF/XML-based ReM is linked as well.
+
+        </p>
+
+<div class="exampleInner">
+<pre>&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Hello World.&lt;/title&gt;
+&lt;link rel="resourcemap alternate" type="application/atom+xml" href="http://example.net/hw.atom" &gt;
+&lt;link rel="resourcemap" type="application/rdf+xml" href="http://example.net/hw.rdf" &gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;img src="hello.jpeg"&gt;
+&lt;img src="world.jpeg"&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</div>
+
+
+        <p>
+	It is also possible for an Aggregated Resource to link to
+	both Aggregations and Resource Maps.  In the example below,
+	the HTML file links to the same two Resource Maps as above,
+	and one Aggregation.  Note that <code>rel="resourcemap"</code>
+	is used regardless if it is linking to URI-A or URI-R.	 It is
+	up to the agent to verify the relationship (if any) between
+	the Resource Maps and Aggregations.  Even though in the example
+	below it appears that URI-A is a "Cool URI" for the two URI-R
+	values, the agent in this example MUST dereference all the
+	URIs to establish if this Aggregated Resource is linking to 1,
+	2 or 3 different Aggregations.	In other words, the URIs MUST
+	be considered opaque and relationships MUST NOT be inferred from
+	their values as strings.
+
+        </p>
+
+
+
+<div class="exampleInner">
+<pre>&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Hello World.&lt;/title&gt;
+&lt;link rel="resourcemap alternate" type="application/atom+xml" href="http://example.net/hw.atom" &gt;
+&lt;link rel="resourcemap" type="application/rdf+xml" href="http://example.net/hw.rdf" &gt;
+&lt;link rel="resourcemap" href="http://example.net/hw" &gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;img src="hello.jpeg"&gt;
+&lt;img src="world.jpeg"&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</div>
+
+        <p>
+        For Resource Maps serializations where
+        the HTML carries additional semantics (i.e., <a
+        href="http://en.wikipedia.org/wiki/Microformats">microformats</a>,
+        <a href="http://en.wikipedia.org/wiki/Embedded_RDF">eRDF</a>,
+        and <a href="http://en.wikipedia.org/wiki/RDFa">RDFa</a>),
+        it is RECOMMENDED that the HTML carry the following
+        values in the <code>rel</code> attribute to facilitate discovery
+        techniques that are similar to the above examples:
+
+        </p>
+
+<div class="exampleInner">
+<pre>&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;There is a ReM in This HTML...&lt;/title&gt;
+&lt;link rel="resourcemap self" href=""&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;-- HTML + microformat ReM serialization --&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</div>
+
+<h3><a name="HTTPLinkHeader"></a>3.2 HTTP Link Header</h3>
+        <p>
+        If we wish to have non-HTML resources link to their corresponding Aggregations,
+        we cannot use the HTML link element.  However,
+        we can embed link to the URI(s) of the Aggregation(s) in the HTTP response.
+        </p>
+
+        <p>
+        The concept of a link HTTP response header existed
+        in earlier versions of the HTTP protocol [<cite><a
+        href="#RFC2068">RFC2068</a></cite>], but the lack of a
+        compelling use case probably led to it being removed from the
+        current HTTP specification.  A recent Internet Draft proposes
+        a method for converting HTML link element semantics into HTTP
+        Link response headers [<cite><a href="#HTTPHeaderLinking">HTTP
+        Header Linking</a></cite>].    Although this draft has yet to be
+        promoted to an RFC, the approach is straightforward.  If we wanted
+        to promote the hello world example above from limited knowledge
+        to full knowledge, the JPEGs could link to their corresponding
+        Aggregation with the HTTP link response header.  The example below shows
+        an HTTP request and response with the Aggregation in a link header.
+        </p>
+
+<div class="exampleInner">
+<pre>(request)       HEAD http://www.example.net/hello.jpeg HTTP/1.1
+                Host: www.example.net
+                Connection: close
+
+(response)      HTTP/1.1 200 OK
+                Date: Sat, 26 May 2007 22:43:10 GMT
+                Server: Apache/2.2.0
+                Last-Modified: Sat, 26 May 2007 19:32:04 GMT
+                ETag: "c3596-816-92123500"
+                Accept-Ranges: bytes
+                Content-Length: 2070
+                Link: &lt;http://example.net/hw.atom&gt;; type="application/atom+xml"; rel="resourcemap"
+                Content-Type: image/jpeg
+                Connection: close
+</pre>
+</div>
+
+        <a name="Non-HTMLResources"></a><h3>3.3 Non-HTML Resources</h3>
+        <p>
+        It may be possible to embed links to URI-A in non-HTML resources,
+        such as PDF (e.g., via [<cite><a href="XMP">Adobe XMP</a></cite>])
+        or images, but linking to ReMs with these methods is considered
+        too preliminary to discuss at this time.
+
+        </p>
+
+        <a name="ExposinginHTMLPages"></a><h3>3.4 Exposing in HTML Pages</h3>
+        <p>
+        We propose exposing Aggregation URIs as opaque strings to facilitate
+        future usage scenarios in which people copy and paste Aggregation
+        URIs into applications such as blogs, forums or repository
+        systems.  This is commonly done with sites such as <a
+        href="http://www.youtube.com/watch?v=0PKDJrIMJFs">YouTube</a>
+        and <a
+        href="http://s5.photobucket.com/albums/y167/rmccartney/1955%20Nomad/">Photobucket</a>,
+        and <a
+        href="http://www.hemmings.com/classifieds/carsforsale/ford/fairlane/">classified
+        listings</a> where strings are provided to the user
+        to facilitate reuse (i.e., copy-n-paste) of the components in email,
+        instant messaging systems, forums and HTML pages.
+        We provide an example of how this could look for using an <a
+        href="discovery-examples/arxiv.html">arXiv
+        pre-print</a> as an example.
+        </p>
+
+<h2><a name="ProxyURIs" id="ProxyURIs"></a>4. Proxy URIs</h2>
+        <p>
+
+        The ORE Abstract Data Model  [<cite><a href="#ORE_Model">ORE
+        Model</a></cite>] defines the concept of Proxies and Proxy URIs.
+        The purpose of a Proxy is to unambiguously identify an Aggregated
+        Resource in the context of a specific Aggregation.  This is
+        especially useful to identify a third party Aggregation for
+        which an Aggregated Resource has zero knowledge.  This is useful
+        with regards to discovery because it links to a URI-A that the
+        agent might not have previously discovered.
+
+        </p>
+
+        <p>
+        An http Proxy URI (URI-P) consists of a "baseURL" of a resolver,
+        URI-A and URI-AR.  In the scenario below, we wish to include
+        the images and PDF in the typical manner while at the same time
+        informing ORE-aware clients of the particular Aggregation that
+        the author wishes to convey.  Instead of linking directly to
+        URI-AR, we link to URI-P (note the required encoding of
+        <code>#aggregation</code> as <code>%23aggregation</code>).
+
+        </p>
+
+
+<div class="exampleInner">
+<pre>&lt;html&gt;
+...
+Here is a helpful reference for distinguishing
+&lt;a href="http://oreproxy.org/r?what=http://example.org/pics/f-t.pdf&amp;where=http://example.org/amphibians.atom%23aggregation"&gt;
+frogs vs. toads&lt;/a&gt;.
+&lt;-- Instead of just http://example.org/pics/f-t.pdf --&gt;
+&lt;p&gt;
+Here is a frog
+&lt;img src="http://oreproxy.org/r?what=http://weluvfrogs.org/imgs/frog12.jpeg&amp;where=http://frogs.org/frogs.atom%23aggregation"&gt;
+&lt;-- Instead of just http://weluvfrogs.org/imgs/frog12.jpeg --&gt;
+and here is a toad
+&lt;img src="http://oreproxy.org/r?what=http://toadsrule.org/toad.gif&amp;where=http://toadsrule.org/toads.atom%23aggregation"&gt;.
+&lt;-- Instead of just http://weluvfrogs.org/imgs/frog12.jpeg --&gt;
+
+...
+&lt;/html&gt;
+</pre>
+</div>
+
+        <p>
+        When a URI-P is dereferenced, the resolver issues
+        an HTTP 303 Redirection ("See Other") to URI-AR and creates a
+        HTTP Link response header containing URI-A.  User agents such
+        as browsers will be redirected to URI-AR which will produce
+        the desired result (e.g., obtaining the Aggregated Resource).
+        ORE-aware applications can discover the URI of the specific
+        Aggregation by examining the HTTP response header.  Further
+        information regarding constructing and using Proxy URIs is given
+        in [<cite><a href="#ORE_HTTP">ORE HTTP</a></cite>].
+        </p>
+
+<div class="exampleInner">
+<pre>(request)       HEAD /r?what=http://weluvfrogs.org/imgs/frog12.jpeg&amp;where=http://frogs.org/frogs.atom%23aggregation HTTP/1.1
+                Host: oreproxy.org
+                Connection: close
+
+(response)      HTTP/1.1 303 See Other
+                Date: Sat, 31 May 2007 20:40:11 GMT
+                Server: Apache/2.2.0
+                Location: http://weluvfrogs.org/imgs/frog12.jpeg
+                Link: &lt;http://frogs.org/frogs.atom#aggregation&gt;; rel="aggregation"
+                Connection: close
+                Content-Type: text/html
+                Content-Length: 534
+</pre>
+</div>
+
+
+
+<h2><a name="References"></a>5. References</h2>
+<dl>
+
+<dt>[<a name="XMP" id="XMP">Adobe XMP</a>]</dt>
+<dd><cite><a href="http://en.wikipedia.org/wiki/Extensible_Metadata_Platform">Adobe Extensible Metadata Platform (XMP) </a></cite>,
+2008.
+Available at http://en.wikipedia.org/wiki/Extensible_Metadata_Platform.</dd>
+
+<dt>[<a name="AtomFeedAutodiscovery" id="AtomFeedAutodiscovery">AtomFeedAutodiscovery</a>]</dt>
+<dd><cite><a href="http://xml.coverpages.org/draft-ietf-atompub-autodiscovery-01.txt">Atom Feed Autodiscovery</a></cite>,
+M. Pilgrim, P. Ringnalda, IETF Draft, 2005.
+Available at http://xml.coverpages.org/draft-ietf-atompub-autodiscovery-01.txt.</dd>
+
+<dt>[<a name="HTML" id="HTML">HTML</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/html4/struct/links.html#h-12.3">HTML 4.01 Specification</a></cite>,
+D. Raggett, A. Le Hors, I. Jacobs (eds.),
+W3C Recommendation 24 December 1999.
+Available at http://www.w3.org/TR/html4/.</dd>
+
+<dt>[<a name="HTTPHeaderLinking" id="HTTPHeaderLinking">HTTP Header Linking</a>]</dt>
+<dd><cite><a href="http://www.mnot.net/drafts/draft-nottingham-http-link-header-01.txt">HTTP Header Linking</a></cite>,
+M. Nottingham, IETF Draft, 2008.
+Available at http://www.mnot.net/drafts/draft-nottingham-http-link-header-01.txt.</dd>
+
+<dt>[<a name="OAI-PMH" id="OAI-PMH">OAI-PMH</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The Open Archives Initiative Protocol for Metadata Harvesting</a></cite>,
+C. Lagoze, H. Van de Sompel, M. Nelson, S. Warner, 2002.
+Available at http://www.openarchives.org/OAI/openarchivesprotocol.html.</dd>
+
+<dt>[<a name="ORE_HTTP" id="ORE_HTTP">ORE HTTP</a>] </dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.9/http">ORE User Guide - HTTP Implementation and Multiple Serializations</a></cite>,C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-06-02, Available at http://www.openarchives.org/ore/0.9/http .</dd>
+
+<dt>[<a name="ORE_Model" id="ORE_Model">ORE Model</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.9/datamodel">ORE Specification -  Abstract Data Model</a></cite>,
+C. Lagoze, H. Van de Sompel, M. Nelson, R. Sanderson, S. Warner, 2008-06-02.
+Available at http://www.openarchives.org/ore/0.9/datamodel .</dd>
+
+<dt>[<a name="ORE_User_Resource_Map" id="ORE_User_Resource_Map">ORE User Guide Resource Map</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.9/atom-implementation">ORE User Guide - Resource Map Implementation in Atom</a></cite>,
+C. Lagoze, H. Van de Sompel, M. Nelson, R. Sanderson, S. Warner, 2008-06-02.
+Available at http://www.openarchives.org/ore/0.9/atom-implementation .</dd>
+
+<dt>[<a name="ReMs_Using_Atom" id="ReMs_Using_Atom">ReMs Using Atom</a>] </dt>
+<dd><cite><a href="http://www.openarchives.org/ore/0.9/atom">ORE
+Specification - Representing Resource Maps Using the Atom Syndication Format</a></cite>,
+C. Lagoze, H. Van de Sompel, P. Johnston, M. Nelson, R. Sanderson, S. Warner, 2008-06-02.
+Available at http://www.openarchives.org/ore/0.9/atom .</dd>
+
+<dt>[<a id="RFC2068" shape="rect" name="RFC2068">RFC2068</a>]</dt>
+<dd>IETF <cite><a shape="rect" href="http://www.ietf.org/rfc/rfc2068.txt">RFC 2068: Hypertext Transfer Protocol - HTTP/1.1</a></cite>,
+R. Fielding, J. Gettys, J. Mogul, H. Frystyk, T. Berners-Lee, January 1997.
+Available at http://www.ietf.org/rfc/rfc2068.txt.</dd>
+
+<dt>[<a id="RFC2119" shape="rect" name="RFC2119">RFC2119</a>]</dt>
+<dd>IETF <cite><a shape="rect" href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119: Key words for use in RFCs to Indicate RequirementLevels</a></cite>,
+S. Bradner, March 1997.
+Available at http://www.ietf.org/rfc/rfc2119.txt.</dd>
+
+<dt>[<a name="RFC4287" id="RFC4287">RFC4287</a>]</dt>
+<dd> IETF <cite><a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287: The Atom Syndication Format</a></cite>,
+M. Nottingham, R. Sayre, December 2005.
+Available at http://www.ietf.org/rfc/rfc4287.txt.</dd>
+
+<dt>[<a name="RSS" id="RSS">RSS</a>]</dt>
+<dd><cite><a href="http://en.wikipedia.org/wiki/RSS_(file_format)">RSS</a></cite>, 2007.
+Available at http://en.wikipedia.org/wiki/RSS_(file_format).</dd>
+
+<dt>[<a name="SiteMap" id="SiteMap">SiteMap</a>]</dt>
+<dd><cite><a href="http://www.sitemaps.org/protocol.php">Sitemaps XML format</a></cite>, 2007.
+Available at http://http://www.sitemaps.org/.</dd>
+
+</dl>
+</div>
+
+<div class="back">
+<!--START-INCLUDE=_acknowledgements.inc-->
+<div class="body">
+<h2><a name="acknowledgments" id="acknowledgments"></a>A. Acknowledgements</h2>
+<p>This document is the work of the
+<a href="http://openarchives.org">Open Archives Initiative</a>. Funding 
+for Open Archives Initiative Object Reuse and Exchange is provided by 
+the <a href="http://mellon.org/">Andrew W. Mellon Foundation</a>,
+<a href="http://microsoft.com/">Microsoft</a>, and the
+<a href="http://nsf.gov">National Science Foundation</a>.&nbsp; Additional 
+support is provided by the <a href="http://www.cni.org">Coalition for 
+Networked Information</a>.</p>
+<p>This document is based on meetings of the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Technical_Committee">
+OAI-ORE Technical Committee</a> (ORE-TC), with participation from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Liaison_Group">
+OAI-ORE Liaison Group</a> (ORE-LG).&nbsp; Members of the ORE-TC are: 
+Chris Bizer (Freie Universit&#228;t Berlin), Les Carr (University of Southampton), Tim DiLauro 
+(Johns Hopkins University), Leigh Dodds (Ingenta), David Fulker (UCAR), Tony Hammond 
+(Nature Publishing Group), Pete Johnston (Eduserv Foundation), Richard 
+Jones (Imperial College), Peter Murray (OhioLINK), Michael Nelson (Old 
+Dominion University), Ray Plante (NCSA and National Virtual 
+Observatory), Rob Sanderson (University of Liverpool), Simeon Warner 
+(Cornell University), and Jeff Young (OCLC).&nbsp; Members of ORE-LG are: 
+Leonardo Candela (DRIVER), Tim Cole (DLF Aquifer and UIUC Library), 
+Julie Allinson (JISC), Jane Hunter (DEST), Savas Parastatidis&nbsp; 
+(Microsoft), Sandy Payette (Fedora Commons), Thomas Place (DARE and 
+University of Tilburg), Andy Powell (DCMI), and Robert Tansley (Google, 
+Inc. and DSpace)</p>
+<p>We also acknowledge comments from the
+<a href="http://www.openarchives.org/ore/ORE_Community.php#OAI-ORE_Advisory_Committee">
+OAI-ORE Advisory Committee</a> (ORE-AC).</p>
+</div>
+<!--END-INCLUDE=_acknowledgements.inc-->
+
+<div class="changelog">
+<h2><a name="changelog" id="changelog"></a>B. Change Log</h2>
+<table class="changelog" summary="change log">
+        <tbody><tr>
+                <th>Date</th>
+                <th>Editor</th>
+                <th>Description</th>
+        </tr>
+        <tr>
+                <td>2008-06-02</td>
+                <td>mln</td>
+                <td>public beta 0.9 release</td>
+        </tr>
+        <tr>
+                <td>2008-04-01</td>
+                <td>mln</td>
+                <td>public alpha 0.3 release</td>
+        </tr>
+        <tr>
+                <td>2008-02-27</td>
+                <td>mln</td>
+                <td>public alpha 0.2 release</td>
+        </tr>
+        <tr>
+                <td>2007-12-10</td>
+                <td>mln</td>
+                <td>public alpha 0.1 release</td>
+        </tr>
+        <tr>
+                <td>2007-10-15</td>
+                <td>mln</td>
+                <td>alpha release to ORE-TC</td>
+        </tr></tbody>
+</table>
+</div>
+
+</div>
+<!--START-FOOTER-->
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"/></a><br/>This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+<div id="tracker">
+<p style="font-size: 60%">Use of this page is tracked to collect anonymous traffic data.
+See <a href="/privacy">OAI privacy policy</a>.
+</p>
+</div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-2976056-3";
+urchinTracker();
+</script>
+</body>
+</html>

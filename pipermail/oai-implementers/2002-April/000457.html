@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Server Load for ListIdentifiers, ListRecords
+ calls
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:mln%40ils.unc.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000456.html">
+   <LINK REL="Next"  HREF="000458.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Server Load for ListIdentifiers, ListRecords
+ calls
+   </H1>
+    <B>Michael L. Nelson
+    </B> 
+    <A HREF="mailto:mln%40ils.unc.edu"
+       TITLE="[OAI-implementers] Server Load for ListIdentifiers, ListRecords
+ calls">mln@ils.unc.edu
+       </A><BR>
+    <I>Fri, 12 Apr 2002 17:20:09 -0400 (EDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000456.html">[OAI-implementers] Server Load for ListIdentifiers, ListRecords calls
+</A></li>
+        <LI> Next message: <A HREF="000458.html">[OAI-implementers] Server Load for ListIdentifiers, ListRecor
+ ds calls
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#457">[ date ]</a>
+              <a href="thread.html#457">[ thread ]</a>
+              <a href="subject.html#457">[ subject ]</a>
+              <a href="author.html#457">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Fri, 12 Apr 2002, Yi-Lun Ding wrote:
+
+&gt;<i> Jeff:
+</I>&gt;<i> 
+</I>&gt;<i> Have you thought about replicating the metadata in another database, and
+</I>&gt;<i> letting the secondary database handle the crawl calls, e.g., ListRecords,
+</I>&gt;<i> ListIdentifiers?
+</I>
+though my DP is much smaller, I implemented the capability for the NACA
+OAI interface to redirect the harvester to a back-up version (on another
+network) if the load on the host machine was above a configurable
+parameter.  I did this with an http 302 status code.  In doing this,
+however, you should be careful to set requestURL element to what the
+harvester asked, not the actual URL (i.e.,
+&lt;requestURL&gt;a.foo.org&lt;/requestURL&gt;, not
+&lt;requestURL&gt;b.bar.org&lt;/requestURL&gt;).
+
+assuming you have the resources to do so, running mirrors / backups of
+your repository is the the right thing to do (tm).  
+
+&gt;<i> 
+</I>&gt;<i> Even with an elegant solution, I am still concerned about the load on my
+</I>&gt;<i> primary database.  I am tempted to just return &quot;Service Unavailable&quot; for
+</I>&gt;<i> anything that requires a big db dump.  I have not seen anything about 2.0
+</I>&gt;<i> yet, but are there considerations to limit certain calls by hostname and/or
+</I>&gt;<i> by time? 
+</I>
+2.0 does not address nor prohibit this; it is out of scope of the protocol
+itself, but can be accomplished using the standard set of http mechanisms.
+
+it is entirely possible for you to limit access to your repository based
+on hostname, time, passwords, etc.  you'd probably want to avoid shutting
+off things like &quot;ListRecords&quot; altogether (you could become non-complaint
+that way), but you could play with the number of records returned before
+a resumptionToken is issued, intervals specified in your 503 response,
+etc.
+
+
+Contextually dependent harvesting is sure to be a reality as more DPs come
+online.
+
+regards,
+
+Michael
+
+
+&gt;<i> Also, the combination of our middleware and object-oriented
+</I>&gt;<i> database schema may limit me in terms of existing solutions.
+</I>&gt;<i> 
+</I>&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Young,Jeff [mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>]
+</I>&gt;<i> Sent: Friday, April 12, 2002 2:26 PM
+</I>&gt;<i> To: '<A HREF="mailto:yding@TNC.ORG">yding@TNC.ORG</A>'; <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> Subject: RE: [OAI-implementers] Server Load for ListIdentifiers,
+</I>&gt;<i> ListRecords calls
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Yi-Lun,
+</I>&gt;<i> 
+</I>&gt;<i> Our theses and dissertations repository has over 4 million records.
+</I>&gt;<i> Performance was so bad in my OAI v1.1 implementation that it was effectively
+</I>&gt;<i> unusable for this size repository. I expect to have it resolved in my 2.0
+</I>&gt;<i> upgrade.
+</I>&gt;<i> 
+</I>&gt;<i> The way I plan to deal with it is to have our OAI server examine the from
+</I>&gt;<i> and until dates to see if they imply a harvest of the repository in its
+</I>&gt;<i> entirity. This should be a reasonable expectation the first time a client
+</I>&gt;<i> harvests a repository. If so, I will read the database directly from
+</I>&gt;<i> beginning to end without going through the indexes. I also plan to use the
+</I>&gt;<i> compression feature of OAIv2. Lastly, I'm currently going through the new
+</I>&gt;<i> server code looking for optimization opportunities, of which there are
+</I>&gt;<i> plenty.
+</I>&gt;<i> 
+</I>&gt;<i> Our OAI server and harvester software will be available as open-source. The
+</I>&gt;<i> server is written as a Java Servlet and includes an abstract database
+</I>&gt;<i> interface to allow access to any database engine that implements it. There
+</I>&gt;<i> will even be an implementation of the abstract database class included to
+</I>&gt;<i> treat a file system as a repository.
+</I>&gt;<i> 
+</I>&gt;<i> I would encourage you to use an existing open-source implementation of OAI.
+</I>&gt;<i> They are available in a variety of flavors if Java Servlets aren't to your
+</I>&gt;<i> taste. Information about existing implementations is available on
+</I>&gt;<i> <A HREF="http://www.openarchives.org/tools/tools.html.">http://www.openarchives.org/tools/tools.html.</A> Expect announcements of OAIv2
+</I>&gt;<i> upgrades in the coming weeks. The more interest there is in reusing these
+</I>&gt;<i> tools, the better we will make them.
+</I>&gt;<i> 
+</I>&gt;<i> Sincerely,
+</I>&gt;<i> 
+</I>&gt;<i> Jeff
+</I>&gt;<i> 
+</I>&gt;<i> &gt; -----Original Message-----
+</I>&gt;<i> &gt; From: Yi-Lun Ding [mailto:<A HREF="mailto:yding@TNC.ORG">yding@TNC.ORG</A>]
+</I>&gt;<i> &gt; Sent: Friday, April 12, 2002 12:09 PM
+</I>&gt;<i> &gt; To: <A HREF="mailto:oai-implementers@oaisrv.nsdl.cornell.edu">oai-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; Subject: [OAI-implementers] Server Load for ListIdentifiers,
+</I>&gt;<i> &gt; ListRecords
+</I>&gt;<i> &gt; calls
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I am thinking of implementing OAI, but am a little wary of the load
+</I>&gt;<i> &gt; requirements of ListIdentifiers and ListRecords for large document
+</I>&gt;<i> &gt; repositories.  One, there is the bandwidth requirement of
+</I>&gt;<i> &gt; transferring huge
+</I>&gt;<i> &gt; blocks of data.  Two, the process would have to go through
+</I>&gt;<i> &gt; each record in
+</I>&gt;<i> &gt; the database and check the TimeModified/Set attributes.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; How are people dealing with this issue?
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Thanks,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; yi-lun
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+---
+Michael L. Nelson
+NASA Langley Research Center		<A HREF="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>
+MS 158, Hampton, VA 23681		<A HREF="http://www.ils.unc.edu/~mln/">http://www.ils.unc.edu/~mln/</A>
++1 757 864 8511				+1 757 864 8342 (f)
+
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000456.html">[OAI-implementers] Server Load for ListIdentifiers, ListRecords calls
+</A></li>
+	<LI> Next message: <A HREF="000458.html">[OAI-implementers] Server Load for ListIdentifiers, ListRecor
+ ds calls
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#457">[ date ]</a>
+              <a href="thread.html#457">[ thread ]</a>
+              <a href="subject.html#457">[ subject ]</a>
+              <a href="author.html#457">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

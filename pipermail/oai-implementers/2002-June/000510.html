@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Error codes....
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:liu_x%40cs.odu.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000509.html">
+   <LINK REL="Next"  HREF="000512.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Error codes....
+   </H1>
+    <B>Xiaoming Liu
+    </B> 
+    <A HREF="mailto:liu_x%40cs.odu.edu"
+       TITLE="[OAI-implementers] Error codes....">liu_x@cs.odu.edu
+       </A><BR>
+    <I>Tue, 4 Jun 2002 02:05:36 -0400 (EDT)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000509.html">[OAI-implementers] Error codes....
+</A></li>
+        <LI> Next message: <A HREF="000512.html">[OAI-implementers] Library of Congress announces standard MARCXML schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#510">[ date ]</a>
+              <a href="thread.html#510">[ thread ]</a>
+              <a href="subject.html#510">[ subject ]</a>
+              <a href="author.html#510">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Mon, 3 Jun 2002, deridder wrote:
+
+&gt;<i> 
+</I>&gt;<i> Ummm...  So if a set name (or whatever) simply doesn't pass the
+</I>&gt;<i> pattern-matching test, it should get &quot;cannotDisseminateFormat&quot;?  Or could
+</I>
+&gt;<i>From the protocol, &quot;cannotDisseminateFormat&quot; will only be valid for
+</I>metadataprefix.
+
+&gt;<i> possibly have 2 error conditions, one of &quot;which is badArgument&quot;?
+</I>
+In the protocol, &quot;repositories should report all errors or exceptions that
+arise from processing the request&quot;. IMO, it's fine to respond a
+&quot;badArgument&quot;+&quot;noRecordsMatch&quot; if a set name doesn't pass the
+pattern-matching test.
+
+&gt;<i> I'm finding that in parsing through a resumption token, I could have quite
+</I>&gt;<i> a few errors for a single resumption token (of course all
+</I>&gt;<i> &quot;badResumptionToken&quot;--- and a set of dates can get hairy too).
+</I>&gt;<i> 
+</I>&gt;<i>  So are these the general rules (?) :
+</I>&gt;<i> 
+</I>&gt;<i> 1) any number of errors per verb/argument (could be several &quot;badArguments&quot;)
+</I>
+
+The protocol said  &quot;repositories should report all errors or
+exceptions that arise from processing the request&quot;
+
+&gt;<i> 
+</I>&gt;<i> 2) list all parameters in the &quot;&lt;request ... &quot; tag if no badVerb or
+</I>&gt;<i>          badArgument errors (Hussein, below)
+</I>&gt;<i> 
+</I>
+
+Yes, see 3.2 in OAI-PMH
+
+
+&gt;<i> 3) leave them out otherwise
+</I>&gt;<i> 
+</I>&gt;<i> 4) &quot;badArgument&quot; is a &quot;catch-all&quot; to use if nothing else fits;  consider
+</I>&gt;<i>         all other error codes first; if another is applicable it must be
+</I>&gt;<i>         used
+</I>
+The only scenario I can think about is an unrecognized set (as mentioned
+by Hussein). I am not sure it's a general rule that &quot;badArgument&quot; is a
+&quot;catch-all&quot; to use if nothing else fits.
+
+In another thing, I guess the re and other harvesters can be lenient
+in  some situtations;-) For example, a repository which has strict
+format requirement for set may return &quot;badArgument&quot; to a request with 
+bad sets format; another repository which doesn't have any pre-defined
+format  for sets may return &quot;noRecordsMatch&quot;. 
+
+let me know if I am wrong.
+
+liu
+
+
+&gt;<i> 
+</I>&gt;<i> Comments?  Rebuttals?  Free-for-alls?
+</I>&gt;<i> 
+</I>&gt;<i>   ;-)
+</I>&gt;<i> 
+</I>&gt;<i> Mon, 3 Jun 2002, Hussein Suleman
+</I>&gt;<i> wrote:
+</I>&gt;<i> 
+</I>&gt;<i> &gt; hi
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; regarding specificity of error, my interpretation is:
+</I>&gt;<i> &gt; if a more specific error message is available, use that instead of
+</I>&gt;<i> &gt; badArgument. thus, &quot;cannotDisseminateFormat&quot; should be used when a
+</I>&gt;<i> &gt; metadataPrefix is not recognized. however, since there is no specific
+</I>&gt;<i> &gt; error for an unrecognized set, you should use &quot;badArgument&quot;.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; regarding parameters, my interpretation is:
+</I>&gt;<i> &gt; when there are badVerb or badArgument errors, none of the parameters
+</I>&gt;<i> &gt; should be listed in the &lt;request&gt; tag. otherwise, all of the parameters
+</I>&gt;<i> &gt; should be listed.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; does this make sense ? feel free to reflect this to oai-implementors to
+</I>&gt;<i> &gt; get more comments.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; ttfn,
+</I>&gt;<i> &gt; ----hussein
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; deridder wrote:
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; &gt; Hi Hussein...
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;   I'm a bit unclear on which error codes I need to use when, I guess;  my
+</I>&gt;<i> &gt; &gt; error messages aren't succeeding in your test interface.
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; For: (identifier, illegal mdp)
+</I>&gt;<i> &gt; &gt; <A HREF="http://oai.sunsite.utk.edu/cgi-bin/oai2.cgi?verb=GetRecord&identifier=oai:sunsite.utk.edu:0000000001&metadataPrefix=really_wrong_mdp">http://oai.sunsite.utk.edu/cgi-bin/oai2.cgi?verb=GetRecord&amp;identifier=oai:sunsite.utk.edu:0000000001&amp;metadataPrefix=really_wrong_mdp</A>
+</I>&gt;<i> &gt; &gt; I used badArgument; but your tester wants &quot;cannotDisseminateFormat&quot;.  So
+</I>&gt;<i> &gt; &gt; for really bad sets and mdps, I should *not* use badArgument?
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; For the others... I think I know what it is, but need to verify:  is it
+</I>&gt;<i> &gt; &gt; correct that invalid arguments should *not* be listed inside the error
+</I>&gt;<i> &gt; &gt; &quot;&lt;request...&quot;  tag, but all valid arguments should?  So if the &quot;from&quot;
+</I>&gt;<i> &gt; &gt; value is bad, it should not be shown in the &quot;&lt;request ...&quot; tag in the
+</I>&gt;<i> &gt; &gt; error response?  But any good args should be shown there?
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; Thanks, Hussein.  Sorry if I'm a bother!!
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt;  --jody
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt; &gt; ***********************************************************
+</I>&gt;<i> &gt; &gt;    PGPKey: <A HREF="http://www.cs.utk.edu/~deridder/jd-pgp.txt">http://www.cs.utk.edu/~deridder/jd-pgp.txt</A>
+</I>&gt;<i> &gt; &gt; ***********************************************************
+</I>&gt;<i> &gt; &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt; ======================================================================
+</I>&gt;<i> &gt; hussein suleman - <A HREF="mailto:hussein@vt.edu">hussein@vt.edu</A> - vtcs - <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+</I>&gt;<i> &gt; ======================================================================
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> ***********************************************************
+</I>&gt;<i>    PGPKey: <A HREF="http://www.cs.utk.edu/~deridder/jd-pgp.txt">http://www.cs.utk.edu/~deridder/jd-pgp.txt</A>
+</I>&gt;<i> ***********************************************************
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> <A HREF="mailto:OAI-implementers@oaisrv.nsdl.cornell.edu">OAI-implementers@oaisrv.nsdl.cornell.edu</A>
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000509.html">[OAI-implementers] Error codes....
+</A></li>
+	<LI> Next message: <A HREF="000512.html">[OAI-implementers] Library of Congress announces standard MARCXML schema
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#510">[ date ]</a>
+              <a href="thread.html#510">[ thread ]</a>
+              <a href="subject.html#510">[ subject ]</a>
+              <a href="author.html#510">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

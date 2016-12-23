@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] on resource harvesting &amp; datestamps
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20on%20resource%20harvesting%20%26%20datestamps&In-Reply-To=Pine.GSO.4.58.0503051111160.22261%40tango.cs.odu.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001444.html">
+   <LINK REL="Next"  HREF="001445.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] on resource harvesting &amp; datestamps</H1>
+    <B>Fabio Simeoni</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20on%20resource%20harvesting%20%26%20datestamps&In-Reply-To=Pine.GSO.4.58.0503051111160.22261%40tango.cs.odu.edu"
+       TITLE="[OAI-implementers] on resource harvesting &amp; datestamps">Fabio.Simeoni at cis.strath.ac.uk
+       </A><BR>
+    <I>Mon Mar  7 06:25:41 EST 2005</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001444.html">[OAI-implementers] on resource harvesting &amp; datestamps
+</A></li>
+        <LI>Next message: <A HREF="001445.html">[OAI-implementers] Open Access Bibliography
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1446">[ date ]</a>
+              <a href="thread.html#1446">[ thread ]</a>
+              <a href="subject.html#1446">[ subject ]</a>
+              <a href="author.html#1446">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+thanks for the exhaustive reply.
+here are some further comments.
+
+&gt;<i> It depends on how your CO is constructed.  For example, if your CO
+</I>provides the following datastreams by-value:
+&gt;<i>        MARC + TIFFs + OCR + PDF
+</I>&gt;<i> and you change your MARC -&gt; DC mapping, then the changes will be limited
+</I>to oai_dc records and not oai_didl, saving you the penalty of downloading
+the
+&gt;<i> large CO.  
+</I>
+I am afraid I don't follow here. if DC is not in the CO example, how does
+the change to the MARC-&gt;DC mapping relate to our discussion on CO support
+for avoiding redundant harvesting? the assumption for that discussion is
+that there is some metadata-only change to the CO, right?
+
+&gt;<i> However, if you change your MARC in the above example, you will download
+</I>the entire CO again.  Also, if you edit any of TIFFs _or_ your OCR _or_ your
+&gt;<i> PDF you will download the entire CO again. The reason is that the OAI-PMH
+</I>only knows a single datastamp, and that is the datetime of creation / 
+&gt;<i> modification of the digital object as a whole.  as soon as one of the
+</I>constituent datastreams MARC, TIFF, OCR, PDF) changes, the datestamp of the
+object
+&gt;<i> changes.
+</I>
+indeed. that's exactly why I had the impression COs could well amplify the
+problem of redundancy rather than solving it: changes to the 'metadata
+parts' (MARC above) would force redundant harvesting of all 'content parts'
+which are included by-value, whether the DIDL harvester planned to harvest
+those resources or not.
+
+&gt;<i> Having said that, one can imagine optimizations that would combine OAI-PMH
+</I>semantics and semantics _outside_ of the OAI-PMH.  For example, imagine
+that:
+
+&gt;<i> (*) the CO that represents our digital object provides all its datastreams
+</I>by-reference (instead of by-value)
+&gt;<i> (*) we insert metadata into the CO that expresses the datetime of
+</I>creation/modification of each constituent datastream.
+
+&gt;<i> Both can be achieved using a decent CO format....
+</I>
+sure. but what does that imply? seems to me we have eliminated what
+distinguishes COs from 'simple' metadata records (the included content,
+perhaps dynamically generated, perhaps not Web-accessible) and we've added
+conventions/extensions to the use of CO formats at both ends of the data
+exchange. this is certainly an option, but had we not started with wanting
+to avoid conventional/extended use of formats in the first place? put
+another way, why not add datestamps to dc.format and have harvesters inspect
+those instead? wouldn't it be in fact a simpler proposition to present to
+those harvester which have an interest in resorce harvesting and are
+currently DC-based? 
+
+In any case, note that the 'redundant harvesting' issue requires a
+commitment from DPs to report resource changes, and that this commitment is
+not only outside the scope of OAI-PMH, but also outside the scope of CO
+formats as such. Multiple datestamps have to be mantained and their changes
+have to be reported, and this follows from policy not, say, DIDL.
+
+&gt;&gt;<i> 2) more importantly, is the propagation of change from resources to 
+</I>&gt;&gt;<i> metadata really dependent on the exchange format? Couldn't a provider 
+</I>&gt;&gt;<i> use DC and yet enforce a strong versioning policy which translate 
+</I>&gt;&gt;<i> changes to resource in new items (and thus records)? Even when (minor) 
+</I>&gt;&gt;<i> changes are allowed to preserve the identity of the resources, and 
+</I>&gt;&gt;<i> thus no versioning takes place, could not a provider reflect those 
+</I>&gt;&gt;<i> changes in the datestamp of the associated metadata records?
+</I>
+&gt;<i>There are three problems:
+</I>
+&gt;<i> 1.  This introduces new, potentially confusing semantics for DC (and MARC,
+</I>etc.) and OAI-PMH.  If a &quot;regular&quot; harvester downloads a DC record that says
+&gt;<i> it has changed on 2004-12-23, and it is bit equivalent with a the same
+</I>record that last had a datestamp of
+&gt;<i> 2003-02-21 -- what would that mean exactly?
+</I>&gt;<i>
+</I>&gt;<i> 2.  Related to the above, you would have to convey to harvesters that you
+</I>&quot;do&quot; or &quot;do not&quot; adhere to &quot;DC-update means resource updates&quot;
+&gt;<i> policy.  This could be done with a &lt;description&gt; container in an Identify
+</I>response, but this would likely be community-specific and hard to
+generalize.
+
+sorry, I did not make the context sufficiently clear. I was trying to point
+out that (i) there is little in the definitional 'complexity' of CO formats
+(i.e. the fact that they include content representations) which directly
+solves the datastamps problems (redundant and incomplete harvesting), and
+that (ii) a solution relies on DP policy and on a format which might expose
+that policy to interested harvesters. 
+As to the format, the comparison is thus between an ad-hoc DC extension and
+a CO format, say DIDL. Whichever you go for, questions 1) and 2) admit the
+same answers. For example, plain-DC harvesters should see 'cloned' records
+no more than they should se DIDL records and no more that plain-DIDL
+harvesters (use DIDL but don't care for resource harvesting) should see
+'cloned' DIDL objects which *refer* to an updated PDF without including it.
+They will not be asking for them and they will not be given any.
+In both cases, we have got two communities of adoption, DC and DIDL, and a
+set of conventions/extensions proposed to support a particular usage:
+resource harvesting. To the members within the community which do not
+follow/interpret those conventions, the 'clone' record cannot be explained
+(not that it would be noticed, or harmful at that); to those who do,
+however, it means what they agreed it should mean, that resources referred
+to by the data have changed and should be re-harvested. 
+If we instead assume that DIDL harvesters are by definition aware of the
+conventions specific to resource harvesting via the OAI-PMH, wouldn't we
+also deny that DIDL is a 'strong standard' and thus lose the obvious reason
+to prefer it over some newly convened-upon DC extension?
+
+&gt;<i> 3.  You still need to convey how to &quot;grab all the stuff&quot;.  In the CO
+</I>example above, the value in DC.Identifier is probably just a &quot;splash page&quot;;
+how to
+&gt;<i> grab the MARC, OCR, TIFFs, PDF etc. is not easily conveyed in a
+</I>generalizable manner.
+
+sure. my issues were with the datestamp part of the argument, i.e. the
+'locate resource change' part. again, my doubt was on the inherent virtues
+of COs to solve datastamp-related problems of resource harvesting.
+
+as to the 'locate resource' part of the argument, I agree that it would be
+good thing if DPs converged towards a potentially strong standard as they
+show will to cooperate towards the particular requirements of resource
+harvesting. In this sense, it would be interesting to gauge the cost of
+adopting a CO, say DIDL, within the infrastructure of the existing OAI
+community (both server and client sides costs of course) and then to compare
+that cost with that associated with a convened-upon DC extension or, at
+that, with the cost associated with an ad-hoc protocol extension blessed by
+the OAI for the purpose. For example, one might argue that a protocol
+extension would talk to the same interested parties a CO format or DC
+extension would. It would work smoothly with existing exchange formats,
+orthogonally addressing directly the redundant and incomplete harvesting
+problems. Further, it would not require that resources be Web-accessible to
+be harvested. 
+
+your paper, thoroughly enjoyable and insightful otherwise, does not seem to
+address these cost issues and comparisons directly. Initially, I got the
+impression COs would solve the problems of resource harvesting by virtue of
+their definitional properties. seems to me the argument is all but
+technical, for it has to do with growing a community around a strong
+standard which *may* nonetheless prove relatively cheap to adopt wrt to the
+alternatives. but does it?
+
+regards,
+
+fabio
+
+##############################################
+Fabio Simeoni 
+Research Fellow
+Department of Computer &amp; Information Sciences
+University of Strathclyde, Glasgow
+
+TEL: +44 141 548 (3590)
+FAX: +44 141 548 (4523)
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001444.html">[OAI-implementers] on resource harvesting &amp; datestamps
+</A></li>
+	<LI>Next message: <A HREF="001445.html">[OAI-implementers] Open Access Bibliography
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1446">[ date ]</a>
+              <a href="thread.html#1446">[ thread ]</a>
+              <a href="subject.html#1446">[ subject ]</a>
+              <a href="author.html#1446">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

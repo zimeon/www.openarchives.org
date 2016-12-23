@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [UPS] RE: Further issues with Dienst software and Open Archives</TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:fielding%40cs.cornell.edu">
+   <LINK REL="Previous"  HREF="000160.html">
+   <LINK REL="Next" HREF="000162.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[UPS] RE: Further issues with Dienst software and Open Archives</H1>
+    <B>David Fielding</B> 
+    <A HREF="mailto:fielding%40cs.cornell.edu"
+       TITLE="[UPS] RE: Further issues with Dienst software and Open Archives">fielding@cs.cornell.edu</A><BR>
+    <I>Tue, 23 May 2000 16:15:14 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000160.html">[UPS] RE: Further issues with Dienst software and Open Archives</A></li>
+        <LI> Next message: <A HREF="000162.html">[UPS] RE: Further issues with Dienst software and Open Archives</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#161">[ date ]</a>
+              <a href="thread.html#161">[ thread ]</a>
+              <a href="subject.html#161">[ subject ]</a>
+              <a href="author.html#161">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Robert,
+
+	I am looking into this and so far I don't like what I see.
+Seems the HTTP 4.0 standard eliminates the '&amp;' character from URLs!!
+CGI.pm is moving to implement the HTTP 4.0 spec. 
+
+	I believe if we encode ';' characters in the partitionspec and
+modify 
+Dienst to accept '&amp;' or ';' delimited URLs while decoding the encoded ';'
+characters we will be fine.
+
+	Lincoln Stein suggests using an older version of CGI.pm for now.
+The change is inevitable so we need to deal with it, might as well be now. 
+
+	I will try to spend some time on this tomorrow and write up
+a more thorough response. I will also try to address encoding issues
+which are complicated by Apache's refusal to handle encoded '/' characters.
+
+More tomorrow,
+David
+
+-----Original Message-----
+From: Carl Lagoze 
+Sent: Tuesday, May 23, 2000 5:54 AM
+To: 'Robert Tansley'; David Fielding
+Cc: OA discussion list
+Subject: RE: Further issues with Dienst software and Open Archives
+
+
+Hi Rob,  I believe David Fielding is looking into this?  Let me know if not.
+
+Looks like we'll have some interesting talks in San Antonio next week.
+
+Regards,
+
+Carl
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Robert Tansley [mailto:<A HREF="mailto:rht96r@ecs.soton.ac.uk">rht96r@ecs.soton.ac.uk</A>]
+</I>&gt;<i> Sent: Friday, May 19, 2000 11:05 AM
+</I>&gt;<i> To: <A HREF="mailto:lagoze@CS.Cornell.EDU">lagoze@CS.Cornell.EDU</A>; <A HREF="mailto:help@ncstrl.org">help@ncstrl.org</A>
+</I>&gt;<i> Cc: OA discussion list
+</I>&gt;<i> Subject: Further issues with Dienst software and Open Archives
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> Hi, an even more technical mail this time. (I hope these are 
+</I>&gt;<i> appropriate
+</I>&gt;<i> addresses to send this to; if not, please point me in the right
+</I>&gt;<i> direction.)
+</I>&gt;<i> 
+</I>&gt;<i> Working on adding Open Archives support to CogPrints, I've 
+</I>&gt;<i> discovered an
+</I>&gt;<i> issue with the latest version of CGI and the dienst code. As 
+</I>&gt;<i> of version
+</I>&gt;<i> 2.64, the CGI.pm module by default uses &quot;new style&quot; URLs, in which the
+</I>&gt;<i> keyword/value query string is passed to the application delimited by
+</I>&gt;<i> semi-colons &quot;;&quot; instead of ampersands &quot;;&quot;. E.g. if I send a request:
+</I>&gt;<i> 
+</I>&gt;<i> Dienst/Repository/4.0/List-Contents?file-after=2000-01-01&amp;meta
+</I>&gt;<i> -format=oams
+</I>&gt;<i> 
+</I>&gt;<i> The dienst software, from CGI::query_string(), receives the 
+</I>&gt;<i> arguments as:
+</I>&gt;<i> 
+</I>&gt;<i> file-after=2000-01-01;meta-format=oams
+</I>&gt;<i> 
+</I>&gt;<i> so later on parsing this string produces duff results. (IMO 
+</I>&gt;<i> it's a rather
+</I>&gt;<i> dodgy practice for the CGI.pm team to change default 
+</I>&gt;<i> behaviour like this
+</I>&gt;<i> in a .01 revision.) This particular problem can be worked round by
+</I>&gt;<i> changing the line where CGI.pm is included in 
+</I>&gt;<i> dienst_src/Main/dienst.pl
+</I>&gt;<i> from:
+</I>&gt;<i> 
+</I>&gt;<i> use CGI qw(:standard);
+</I>&gt;<i> 
+</I>&gt;<i> to:
+</I>&gt;<i> 
+</I>&gt;<i> use CGI qw(:standard -oldstyle_urls);
+</I>&gt;<i> 
+</I>&gt;<i> However, this introduces another problem when using 
+</I>&gt;<i> partitionspecs. If I
+</I>&gt;<i> send a request like:
+</I>&gt;<i> 
+</I>&gt;<i> Dienst/Repository/4.0/List-Contents
+</I>&gt;<i>      ?partitionspec=physics;hep&amp;file-after=2000-01-01
+</I>&gt;<i> 
+</I>&gt;<i> CGI.pm gives now the query string to dienst as:
+</I>&gt;<i> 
+</I>&gt;<i> partitionspec=physics&amp;hep&amp;file-after=2000-01-01
+</I>&gt;<i> 
+</I>&gt;<i> so it's changing the semicolon in the partitionspec into an &amp;. I tried
+</I>&gt;<i> URL-encoding the ; (which sounds like good practice anyway) but CGI
+</I>&gt;<i> doesn't decode the ; in this case, so dienst gets:
+</I>&gt;<i> 
+</I>&gt;<i> partitionspec=physics%3Bhep&amp;file-after=2000-01-01
+</I>&gt;<i> 
+</I>&gt;<i> I can quite easily fix it so the CogPrints code can decode the string,
+</I>&gt;<i> but with interoperability it takes two to tango; anything 
+</I>&gt;<i> making a Dienst
+</I>&gt;<i> request to CogPrints will have to know to encode the ';'. In 
+</I>&gt;<i> the Dienst
+</I>&gt;<i> protocol specification (either
+</I>&gt;<i> <A HREF="http://www.cs.cornell.edu/cdlrg/dienst/protocols/DienstProtocol.htm">http://www.cs.cornell.edu/cdlrg/dienst/protocols/DienstProtocol.htm</A> or
+</I>&gt;<i> <A HREF="http://www.cs.cornell.edu/cdlrg/dienst/protocols/OpenArchivesD">http://www.cs.cornell.edu/cdlrg/dienst/protocols/OpenArchivesD</A>
+</I>ienst.htm),
+the example List-Contents request doesn't seem to have an encoded ';',
+even though in earlier in the document ';' is listed as a character that
+requires encoding. So what is the policy on this? Should the ';' be
+encoded, in which case the specification document needs to be amended to
+reflect this, or should it be left unencoded, in which case the dienst
+code needs changing if it is to work with recent versions of CGI?
+
+I also note that in the examples of both Dienst protocol specification
+documents, the disseminate verb:
+
+Dienst/Repository/1.0/Disseminate/handlecorp/970101/%23oams/xml
+
+doesn't require the encoding of the / in the full ID &quot;handlecorp/970101&quot;,
+but does the # (&quot;%23oams&quot;). (I even came across the big kludge in the
+dienst code to handle this case!) Requiring some special characters to be
+encoded but others to be left unencoded seems to be an inconsistency in
+the protocol that needs clearing up.
+
+R
+
+-- 
+ Robert Tansley                    Tel: +44 (0) 23 80594492
+ Multimedia Research Group         Fax: +44 (0) 23 80592865
+ Electronics &amp; Computer Science    <A HREF="http://www.ecs.soton.ac.uk/~rht96r/">http://www.ecs.soton.ac.uk/~rht96r/</A>
+ University of Southampton
+ Southampton SO17 1BJ, UK
+
+
+
+</pre>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000160.html">[UPS] RE: Further issues with Dienst software and Open Archives</A></li>
+	<LI> Next message: <A HREF="000162.html">[UPS] RE: Further issues with Dienst software and Open Archives</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#161">[ date ]</a>
+              <a href="thread.html#161">[ thread ]</a>
+              <a href="subject.html#161">[ subject ]</a>
+              <a href="author.html#161">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

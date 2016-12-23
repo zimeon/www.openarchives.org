@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Question regarding initial installation of
+	OAICat
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Question%20regarding%20initial%20installation%20of%0A%09OAICat&In-Reply-To=34440.128.165.0.81.1213977876.squirrel%40webmail.lanl.gov">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   <LINK REL="Previous"  HREF="001857.html">
+   <LINK REL="Next"  HREF="001858.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Question regarding initial installation of
+	OAICat</H1>
+    <B>Young,Jeff (OR)</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20Question%20regarding%20initial%20installation%20of%0A%09OAICat&In-Reply-To=34440.128.165.0.81.1213977876.squirrel%40webmail.lanl.gov"
+       TITLE="[OAI-implementers] Question regarding initial installation of
+	OAICat">jyoung at oclc.org
+       </A><BR>
+    <I>Mon Jun 23 11:35:21 EDT 2008</I>
+    <P><UL>
+        <LI>Previous message: <A HREF="001857.html">[OAI-implementers] Question regarding initial installation of 
+	OAICat
+</A></li>
+        <LI>Next message: <A HREF="001858.html">[OAI-implementers] Rebuild the project
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1861">[ date ]</a>
+              <a href="thread.html#1861">[ thread ]</a>
+              <a href="subject.html#1861">[ subject ]</a>
+              <a href="author.html#1861">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Ming,
+
+Back in the dark ages when OAICat was first written, I didn't know how
+to access files relative to the webapp deploy location. The solutions at
+the time were either to hard-code file location in various configuration
+files or else use relative paths and ask people to start their Tomcat
+from the $TOMCAT_HOME directory.
+
+I've since learned how to reference relative directory locations without
+these incantations, but vestiges of the old patterns still remain.
+
+In you WEB-INF.xml file, change the properties context-param to look
+like this:
+
+    &lt;context-param&gt;
+      &lt;param-name&gt;properties&lt;/param-name&gt;
+      &lt;param-value&gt;oaicat.properties&lt;/param-value&gt;
+    &lt;/context-param&gt;
+
+If you have a recent copy of the oaicat.jar file
+(<A HREF="http://pubserv.oclc.org/oaicat/jars/dist/dist.html">http://pubserv.oclc.org/oaicat/jars/dist/dist.html</A>), the Servlet should
+automatically look for it here:
+
+WEB-INF/classes/oaicat.properties
+
+There may be other file references that are still problematic, but this
+is where everything starts.
+
+Jeff
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">oai-implementers-bounces at openarchives.org</A>
+</I>[mailto:oai-implementers-
+&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">bounces at openarchives.org</A>] On Behalf Of Mingqiang Yu
+</I>&gt;<i> Sent: Friday, June 20, 2008 12:05 PM
+</I>&gt;<i> To: <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">oai-implementers at openarchives.org</A>
+</I>&gt;<i> Subject: Re: [OAI-implementers] Question regarding initial
+</I>installation of
+&gt;<i> OAICat
+</I>&gt;<i> 
+</I>&gt;<i> Thanks a lot for the help! After I changed the
+</I>&gt;<i> FileSystemOAICatalog.homeDir in WEB-INF/oaicat.properties, it works
+</I>fine.
+&gt;<i> But I'm wondering why tomcat has trouble to load the
+</I>&gt;<i> WEB-INF/oaicat.properties. Is there any variable that I should set to
+</I>make
+&gt;<i> tomcat see this file?
+</I>&gt;<i> 
+</I>&gt;<i> Again, thanks a lot for the help!
+</I>&gt;<i> 
+</I>&gt;<i> Ming
+</I>&gt;<i> 
+</I>&gt;<i> &gt; Hi,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; I'm just a user of OAICAt, so if I'm wrong someone please correct
+</I>me.
+&gt;<i> &gt;
+</I>&gt;<i> &gt; Apparently Tomcat is having trouble loading
+</I>WEB-INF/oaicat.properties
+&gt;<i> from
+</I>&gt;<i> &gt; the
+</I>&gt;<i> &gt; war file. If you unzip the war to your webapps dir (if you're in
+</I>Windows
+&gt;<i> &gt; you
+</I>&gt;<i> &gt; will have to rename the file extension to .zip) it may solve the
+</I>&gt;<i> problem.
+</I>&gt;<i> &gt; If it
+</I>&gt;<i> &gt; still doesn't work, try changing the property
+</I>&gt;<i> FileSystemOAICatalog.homeDir
+</I>&gt;<i> &gt; in
+</I>&gt;<i> &gt; WEB-INF/oaicat.properties to the absolute path (it's wrong to use
+</I>the
+&gt;<i> &gt; absolute
+</I>&gt;<i> &gt; path, but it's for testing purposes).
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Diogo
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Mingqiang Yu wrote:
+</I>&gt;<i> &gt;&gt; Hi,
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; I just started to use the OAICat package. After I copied the
+</I>oaicat.war
+&gt;<i> &gt;&gt; file into my tomcat webapps area and restarted the tomcat, the
+</I>initial
+&gt;<i> &gt;&gt; oaicat/identify.html page works ok. But when I clicked on Submit
+</I>Query,
+&gt;<i> &gt;&gt; I
+</I>&gt;<i> &gt;&gt; got the following error:
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; java.lang.NullPointerException
+</I>&gt;<i> &gt;&gt;         at
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i>
+</I>ORG.oclc.oai.server.catalog.FileSystemOAICatalog.loadFileMap(FileSystemO
+AI
+&gt;<i> Catalog.java:108)
+</I>&gt;<i> &gt;&gt;         at
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i>
+</I>ORG.oclc.oai.server.catalog.FileSystemOAICatalog.&lt;init&gt;(FileSystemOAICat
+al
+&gt;<i> og.java:98)
+</I>&gt;<i> &gt;&gt;         at
+</I>&gt;<i> sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native
+</I>&gt;<i> &gt;&gt; Method)
+</I>&gt;<i> &gt;&gt;         at
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i>
+</I>sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorA
+cc
+&gt;<i> essorImpl.java:39)
+</I>&gt;<i> &gt;&gt;         at
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i>
+</I>sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingCons
+tr
+&gt;<i> uctorAccessorImpl.java:27)
+</I>&gt;<i> &gt;&gt;         at
+</I>&gt;<i> &gt;&gt; java.lang.reflect.Constructor.newInstance(Constructor.java:494)
+</I>&gt;<i> &gt;&gt; at
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i>
+</I>ORG.oclc.oai.server.catalog.AbstractCatalog.factory(AbstractCatalog.java
+:<i>3
+</I>&gt;<i> 88)
+</I>&gt;<i> &gt;&gt;         at
+</I>&gt;<i> &gt;&gt; ORG.oclc.oai.server.OAIHandler.getAttributes(OAIHandler.java:160)
+</I>&gt;<i> &gt;&gt;         at ORG.oclc.oai.server.OAIHandler.init(OAIHandler.java:121)
+</I>&gt;<i> &gt;&gt; ....
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; According to the documentation, this default war file should work
+</I>ok.
+&gt;<i> Is
+</I>&gt;<i> &gt;&gt; there something I did wrong?
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Your help is really appreciated!
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; Ming
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt; _______________________________________________
+</I>&gt;<i> &gt;&gt; OAI-implementers mailing list
+</I>&gt;<i> &gt;&gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt;&gt; <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;&gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://www.openarchives.org/mailman/listinfo/oai-implementers">http://www.openarchives.org/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+
+</PRE>
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI>Previous message: <A HREF="001857.html">[OAI-implementers] Question regarding initial installation of 
+	OAICat
+</A></li>
+	<LI>Next message: <A HREF="001858.html">[OAI-implementers] Rebuild the project
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1861">[ date ]</a>
+              <a href="thread.html#1861">[ thread ]</a>
+              <a href="subject.html#1861">[ subject ]</a>
+              <a href="author.html#1861">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

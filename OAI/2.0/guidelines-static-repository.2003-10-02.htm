@@ -1,0 +1,890 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>OAI-PMH Implementation Guidelines - Specification for an OAI Static Repository and an OAI Static Repository Gateway</title>
+  <style type="text/css">
+    body { color: black; background: white; }
+    code { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+    em { color: black; background: #FF6666; }
+  </style>
+<meta content="Open Archives Initiative - Protocol for Metadata Harvesting - Specification for an OAI Static Repository and an OAI Static Repository Gateway" name="DC.title"/>
+<meta content="Lagoze, Carl" name="DC.creator"/>
+<meta content="Van de Sompel, Herbert" name="DC.creator"/>
+<meta content="Nelson, Michael" name="DC.creator"/>
+<meta content="Warner, Simeon" name="DC.creator"/>
+<meta content="Hochstenbach, Patrick" name="DC.creator"/>
+<meta content="Jerez, Henry" name="DC.creator"/>
+<meta content="2003/10/02T20:40:00Z" name="DC.date"/>
+</head>
+<body>
+<table summary="Logo and heading" border="0" width="100%">
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%">
+<h2>Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting</h2>
+</td>
+</tr>
+<tr>
+<td align="center">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" height="70" width="100"/></a>
+</td>
+<td align="left" width="87%">
+<h1>Specification for an OAI Static Repository and an OAI Static Repository Gateway</h1>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%">
+<b>Protocol Version 2.0 of 2002-06-14<br />
+Document Version 2003/10/02T20:40:00Z<br />
+http://www.openarchives.org/OAI/2.0/guidelines-static-repository.htm</b>
+<h2>Beta release. Specification subject to change.</h2>
+</td>
+</tr>
+</table>
+
+<p><b>Editors</b></p>
+<p><u>The OAI Executive:</u> <br />
+  <a href="mailto:herbertv@lanl.gov">Herbert Van de Sompel</a> &lt;<a href="mailto:herbertv@lanl.gov">herbertv@lanl.gov</a>&gt; 
+  -- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+  Library</a><br />
+  <a href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</a> &lt;<a href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</a>&gt; 
+  -- <a href="http://www.cs.cornell.edu/">Cornell University - Computing and Information 
+  Science</a></p>
+<p><u>From the OAI Technical Committee:</u><br />
+  <a href="mailto:mln@cs.odu.edu">Michael Nelson</a> &lt;<a href="mailto:mln@cs.odu.edu">mln@cs.odu.edu</a>&gt; 
+  -- <a href="http://www.cs.odu.edu/">Old Dominion University - Dept of Computer Science</a> <br />
+  <a href="mailto:simeon@cs.cornell.edu">Simeon Warner</a> &lt;<a href="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</a>&gt; 
+  -- <a href="http://www.cs.cornell.edu/">Cornell University - Computing and Information 
+  Science</a></p>
+<p><u>Contributors:</u><br />
+  <a href="mailto:hochsten@lanl.gov">Patrick Hochstenbach</a> &lt;<a href="mailto:hochsten@lanl.gov">hochsten@lanl.gov</a>&gt; 
+  -- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+  Library</a><br />
+  <a href="mailto:hjerez@lanl.gov">Henry Jerez</a> &lt;<a href="mailto:hjerez@lanl.gov">hjerez@lanl.gov</a>&gt; 
+  -- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+  Library</a></p>
+
+<p><b>
+This document is one part of the
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h2>1. Introduction</h2>
+
+<p>Knowledge of the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">OAI-PMH</a> 
+ is a prerequisite for understanding this document.</p>
+<p>A Static Repository, introduced here, provides a simple 
+  approach for exposing relatively static and small collections of metadata records 
+  through the OAI-PMH. The Static Repository approach is targeted at organizations that:</p>
+<ul>
+  <li> Have metadata collections ranging in size between 1 and 5000 records;</li>
+  <li>Can make static content available through a network-accessible 
+  Web server;</li>
+  <li>Need a technically simpler implementation strategy compared to acting as an
+  <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Repository">OAI-PMH Repository</a>,
+    which requires processing
+  <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ProtocolMessages">OAI-PMH requests</a>;</li>
+</ul>
+<p>A Static Repository is an
+<a href="#SR_format">XML file</a> that is made accessible&nbsp;
+at a persistent HTTP-accessible network-location. The XML file contains&nbsp; metadata records and repository information.&nbsp; </p>
+<p>A Static Repository becomes accessible via OAI-PMH through the intermediation 
+  of <i>one</i> Static Repository Gateway.&nbsp; The restriction that only <i>one
+</i>Static Repository Gateway acts as an intermediary for each Static Repository
+reduces potential problems with large-scale duplication of metadata records
+among OAI-PMH repositories.&nbsp; A Static Repository Gateway uses the metadata 
+records and repository information,&nbsp; provided via XML in the Static 
+Repository, to process the six OAI-PMH requests for access to that information.&nbsp; 
+Because a Static Repository Gateway maps a unique
+<a href="#SR_baseURL">Static Repository base URL</a> to each such Static Repository, harvesters can access 
+a Static Repository in exactly the same manner as they 
+access any other <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Repository">
+OAI-PMH 
+  Repository</a>.&nbsp; </p>
+<p>The relationship between Static Repositories, a Static Repository Gateway, 
+and a harvester are illustrated in the figure below.&nbsp; The Static Repository 
+and the Static Repository Gateway are described in the remainder of this 
+document. Implementers whose sole interest is a Static Repository may skip
+<a href="#SRG_description">Section 4</a> that describes 
+the Static Repository Gateway.</p>
+<table summary="Figure and caption" width="640" border="2" bgcolor="#CCCCCC">
+  <tr>
+    <td>
+      <div align="center"><img src="static-repository.jpg" 
+      alt="Repository-gateway relationship figure" width="512" height="384" /></div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div align="center">Static Repositories, a Static Repository Gateway and 
+      an OAI-PMH Harvester</div>
+    </td>
+  </tr>
+</table>
+<h2>2. Concepts and definitions</h2>
+<p>Some concepts that are essential for an understanding of this specification 
+  are given below.</p>
+<p><b>Static Repository:</b> A Static Repository is an XML file, 
+available at a persistent HTTP-accessible network-location that conforms to the
+rules in
+<a href="#SR_format">Section 3.2</a>. A Static Repository contains 
+  metadata records and supporting information required for the purpose of harvesting 
+  via the OAI-PMH through the intermediation of a Static Repository Gateway.&nbsp; A Static Repository 
+  is not a <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Repository">
+OAI-PMH 
+  Repository</a>, because it is a file, not a server that can respond to the six 
+  <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ProtocolMessages">
+OAI-PMH 
+  requests</a>.</p>
+<p><b><a name="SR_netloc"></a>Static Repository network-location:</b> The network-location 
+  of a Static Repository is the URL where the Static Repository is
+accessible via HTTP. 
+</p>
+<p><b>Static Repository Gateway:</b> A Static Repository Gateway 
+provides intermediation for one or more Static Repositories. It assigns each such Static 
+  Repository a unique <a href="#SR_baseURL">Static Repository 
+base URL</a>, all with a common
+<a href="#SRG_netloc">Static Repository Gateway 
+network-location</a> prefix, and thereby exposes each individual Static Repository as an individual 
+  <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Repository">
+OAI-PMH 
+  Repository</a>. </p>
+
+<p><b><a name="SRG_netloc">Static Repository
+Gateway network-location</a>: </b>The URL of the Static Repository Gateway that
+provides the common prefix for all base URLs of Static Repositories for which the
+Static Repository Gateway provides intermediation. </p>
+
+<p><b><a name="Intermediation">Intermediation</a>: </b>The relationship between a 
+Static Repository Gateway and one or more Static Repositories, whereby the 
+Static Repository Gateway provides OAI-PMH access to those Static Repositories.&nbsp;
+This intermediation is opaque to harvesters, who send OAI-PMH requests to the
+<a href="#SR_baseURL">Static Repository base URL</a> associated with the target Static Repository, even though those
+requests are actually processed by the Static Repository Gateway. </p>
+
+<p><b><a name="SR_baseURL">Static Repository base URL</a>: </b>
+The
+<a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#HTTPRequestFormat">
+base URL </a>that provides access via OAI-PMH to the contents of the Static 
+Repository through intermediation by a Static Repository Gateway.&nbsp; This Static
+Repository base 
+URL is a 
+  concatenation of :</p>
+
+<ul>
+  <li>The <a href="#SRG_netloc"> Static Repository
+  Gateway network-location</a>: All base 
+  URLs of Static Repositories accessible through a given Static Repository Gateway 
+  share a common part of an HTTP address, which is the network-location of the 
+  Static Repository Gateway itself. This network-location is of the form <code>http://gateway:port/gatewaypath</code> .</li>
+  <li>A single forward slash <code>[/] </code>character.&nbsp; If 
+  the <a href="#SRG_netloc"> Static Repository
+  Gateway network-location</a> ends with a forward slash, then an additional 
+  one <b>must not</b> be added.</li>
+  <li>The persistent <a href="#SR_netloc">Static Repository network-location</a> 
+  , which <b>must</b> be of the form <code>http://host:port/path/file,</code> stripped 
+  of its prefix&nbsp; URI scheme part (<code>http://</code>).&nbsp; Hence, the resulting 
+  sub-string is of the form <code>host:port/path/file</code> .</li>
+</ul>
+<p>For example, OAI-PMH requests to a Static Repository at <code>http://an.oai.org/ma/mini.xml </code>
+using&nbsp; intermediation from a Static Repository Gateway at <code>http://gateway.institution.org/oai</code>
+will have a base URL of:</p>
+<p>&nbsp;&nbsp;&nbsp; <code>http://gateway.institution.org/oai/an.oai.org/ma/mini.xml</code></p>
+
+<h2>3. Static Repository Description</h2>
+
+<h3>3.1 Static Repository overview</h3>
+<p>Static Repositories are useful for small and relatively static metadata collections. 
+All metadata, identifiers, and datestamps are managed in a single XML file
+that <b>must </b>conform to the rules in <a href="#SR_format">Section 3.2</a>. 
+This file may be created manually with an XML editing tool, or a text processing 
+application. Alternatively, a Static Repository might be generated periodically 
+by a script that extracts information from an existing database.</p>
+<p>The Static Repository is accessible at a <a href="#SR_netloc">Static Repository 
+network-location</a>.&nbsp; This <b>must</b> 
+be an HTTP address of the form <code>http://host:port/path/file</code> . The HTTP 
+address <b>must not</b> contain a fragment or a querystring.
+The MIME type of a Static Repository <b>must</b> be text/xml.</p>
+<p>The contents of the Static Repository provide metadata records and repository 
+information necessary for <a href="#Intermediation">intermediation</a> 
+by a <a href="#SRG_description">Static Repository Gateway</a>.&nbsp;
+There are a number of restrictions on a Static Repository Gateway relative to a 
+standard OAI-PMH Repository:</p>
+    <ul>
+      <li>A Static Repository does not support <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Set">sets</a>.</li>
+      <li>A Static Repository does not support <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#DeletedRecords">deleted 
+        records</a>.</li>
+      <li>A Static Repository does not support
+      <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ResponseCompression">response compression</a>.</li>
+      <li>A Static Repository does not support a <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#SelectiveHarvestingandDatestamps">harvesting 
+        granularity</a> other than YYYY-MM-DD.</li>
+      <li>A Static Repository does not support <code><a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#FlowControl">resumptionTokens</a></code>.</li>
+    </ul>
+
+<h3>3.2 <a name="SR_format">Static Repository conformance rules</a></h3>
+<p>A Static Repository <b>must </b>comply with the following conformance rules:</p>
+  <ul>
+    <li>Encoding of the XML <b>must</b> use the UTF-8
+    representation of Unicode.</li>
+    <li>The Static Repository <b>must</b> validate against the XML 
+    Schema shown below.</li>
+    <li>The value of the <code>baseURL</code> element <b>must </b>match the
+    <a href="#SR_baseURL">Static Repository base URL</a> at which 
+    the Static Repository is available through intermediation from a Static 
+    Repository Gateway.&nbsp; <a href="#InitiatingIntermediation">Section 3.3</a> 
+    describes the construction of this base URL and the process of initiating 
+    intermediation with a Static Repository Gateway.&nbsp; </li>
+    <li>Contents &nbsp;of metadata records within the  <code>ListRecords</code>
+    elements of the Static Repository <b>must </b>conform to the
+    <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Record">
+    OAI-PMH record format</a>.&nbsp;
+    </li>
+  </ul>
+  <p>It is strongly <b>recommended</b> that the identifiers of metadata 
+  records in the Static Repository conform to the
+  <a href="http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm">
+  guidelines for OAI identifiers</a> or other forms of Uniform Resource Names (URNs)
+  in the sense of <a href="http://www.ietf.org/rfc/rfc1737.txt">RFC1737</a>. This practice will facilitate the
+  ability to recognize duplicates among harvested metadata records. </p>
+<table summary="XML schame for oai-identifier" border="2" width="79%" bgcolor="#CCCCCC" >
+  <tr> 
+    <td width="100%"> 
+      <h3>Static Repository XML Schema</h3>
+    </td>
+  </tr>
+  <tr> 
+    <td width="100%" summary="Static Repository XML Schema"> 
+      <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;xs:schema targetNamespace=&quot;http://www.openarchives.org/OAI/2.0/static-repository&quot;
+xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;
+xmlns:sr=&quot;http://www.openarchives.org/OAI/2.0/static-repository&quot;
+xmlns:oai=&quot;http://www.openarchives.org/OAI/2.0/&quot; elementFormDefault=&quot;qualified&quot;
+attributeFormDefault=&quot;unqualified&quot;&gt;
+  &lt;xs:import namespace=&quot;http://www.openarchives.org/OAI/2.0/&quot;
+  schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot; /&gt;
+  &lt;xs:annotation&gt;
+    &lt;xs:documentation&gt;This XML Schema specifies the structure of an OAI-PMH Static 
+    Repository. A Static Repository is an XML file that is valid according to this 
+    XML Schema. A Static Repository is made accessible as an XML file on a standard
+    web-server. No special software is required at the end of the organization that 
+    makes the Static Repository available. A Static Repository becomes harvestable 
+    via the OAI-PMH through the intermedation of a Static Repository Gateway. 
+    The following important restrictions apply to a Static Repository: 
+    (1) A Static Repository does not support OAI-PMH &quot;sets&quot;. 
+    (2) A Static Repository does not support the OAI-PMH notion of &quot;deleted records&quot;. 
+    (3) A Static Repository must be expressed as UTF-8 encoded Unicode. 
+    (4) A Static Repository does not support response compression. 
+    (5) The content of the &quot;baseURL&quot; element - child of the &quot;Identify&quot; element in 
+        the XML Static Repository - must be the Static Repository base URL as 
+        specified in the OAI-PMH Implementation Guideline covering the Static 
+        Repository and the Static Repository Gateway. 
+    (6) A Static Repository must not have a &quot;resumptionToken&quot; element as a child of 
+        the &quot;ListRecords&quot; element in the XML Static Repository.
+    (7) The &quot;datestamp&quot; element of records must be of the form YYYY-MM-DD. Hence, 
+        the only supported value in the &quot;granularity&quot; element - child of the 
+        &quot;Identify&quot; element in the XML Static Repository - must be YYY-MM-DD
+    &lt;/xs:documentation&gt;
+  &lt;/xs:annotation&gt;
+  &lt;xs:annotation&gt;
+    &lt;xs:documentation&gt;This Static Repository XML Schema by Herbert Van de Sompel and 
+    Henry N. Jerez. Los Alamos National Laboratory, Research Library, Digital Library 
+    Research and Prototyping Team. October 26th 2002. Annotations revised on October 
+    2nd 2003. Inspired by the Vida work by Steven Bird for OAI-PMH v.1.0 and for the 
+    Open Languages Archives Community; see 
+    http://www.language-archives.org/docs/implement.html#Vida
+    &lt;/xs:documentation&gt;
+  &lt;/xs:annotation&gt;
+&lt;xs:element name=&quot;Repository&quot; type=&quot;sr:repo&quot; /&gt;
+&lt;xs:complexType name=&quot;repo&quot;&gt;
+    &lt;xs:annotation&gt;
+      &lt;xs:documentation&gt;The &quot;Repository&quot; element has 2 child elements -- &quot;Identify&quot; 
+      and &quot;ListMetadataFormats&quot; -- that are directly derived from the XML Schema 
+      defining responses to OAI-PMH v.2.0 requests. The third repeatable element 
+      -- &quot;ListRecords&quot; -- is an extension of the ListRecords defined in the XML Schema 
+      defining responses to OAI-PMH v.2.0 requests; it has an additional attribute 
+      indicating the metadataPrefix of the included metadata records.
+      &lt;/xs:documentation&gt;
+    &lt;/xs:annotation&gt;
+    &lt;xs:sequence&gt;
+      &lt;xs:element name=&quot;Identify&quot; type=&quot;oai:IdentifyType&quot;/&gt;
+      &lt;xs:element name=&quot;ListMetadataFormats&quot; type=&quot;oai:ListMetadataFormatsType&quot; /&gt;
+      &lt;xs:element name=&quot;ListRecords&quot; type=&quot;sr:ListRecordsType&quot; maxOccurs=&quot;unbounded&quot; /&gt;
+    &lt;/xs:sequence&gt;
+&lt;/xs:complexType&gt;
+&lt;xs:complexType name=&quot;ListRecordsType&quot;&gt;
+    &lt;xs:annotation&gt;
+      &lt;xs:documentation&gt;The &quot;ListRecords&quot; element contains all records with metadata 
+      expressed to one of the metadata formats supported by the Static Repository. The 
+      &quot;metadataPrefix&quot; attribute specifies the metadataPrefix of the included metadata; 
+      it must correspond with a value of the metadataPrefix element contained in the 
+      &quot;ListMetadataFormats&quot; element&lt;/xs:documentation&gt;
+    &lt;/xs:annotation&gt;
+  &lt;xs:complexContent&gt;
+      &lt;xs:extension base=&quot;oai:ListRecordsType&quot;&gt;
+        &lt;xs:attribute name=&quot;metadataPrefix&quot; type=&quot;oai:metadataPrefixType&quot; use=&quot;required&quot; /&gt;
+      &lt;/xs:extension&gt;
+    &lt;/xs:complexContent&gt;
+  &lt;/xs:complexType&gt;
+&lt;/xs:schema&gt;
+</pre>
+    </td>
+  </tr>
+  <tr> 
+    <td width="100%">This Schema is available at <a href="http://www.openarchives.org/OAI/2.0/static-repository.xsd">http://www.openarchives.org/OAI/2.0/static-repository.xsd</a></td>
+  </tr>
+</table>
+
+<h3>3.3 <a name="InitiatingIntermediation">Initiating Intermediation with a Static Repository Gateway</a></h3>
+<p>OAI-PMH access to a Static Repository is only 
+possible through the intermediation of a Static Repository Gateway.&nbsp; To
+initiate this intermediation, the administrator of&nbsp; Static Repository <b>must
+</b>select <i>one</i> Static Repository Gateway that will act as the intermediary 
+and <b>must</b> issue an HTTP request of the form:</p>
+<p>&nbsp;&nbsp;&nbsp; <code>http://&lt;<a href="#SRG_netloc">Static 
+  Repository Gateway network-location</a>&gt;?initiate=&lt;<a href="#SR_netloc">Static 
+  Repository network-location</a>&gt;</code></p>
+<p>For example, an administrator with a <a href="#SR_netloc">Static Repository network-location</a> 
+of <code>http://an.oai.org/ma/mini.xml</code> requesting intermediation from a Static Repository Gateway
+with a <a href="#SRG_netloc">Static Repository
+Gateway network-location</a> <code>http://gateway.institution.org/oai</code> <b>must</b>
+issue the HTTP request:</p>
+<p>&nbsp;&nbsp;&nbsp; <code>http://gateway.institution.org/oai?initiate=http://an.oai.org/ma/mini.xml</code></p>
+<p>The interval between issuance of this request and the actual initiation of 
+intermediation by the Static Repository Gateway varies according to the policies 
+and implementation of the Static Repository Gateway.&nbsp; The Static Repository 
+Gateway administrator should follow the instructions concerning
+<a href="#SR_checking">ongoing access to a Static 
+Repository</a> to check whether the attempt to initiate intermediation is successful.</p>
+
+<h3>3.4 <a name="SR_checking">Ongoing access to a Static Repository</a></h3>
+<p>An administrator of a Static Repository <b>should </b>be aware that access to 
+the Static Repository is dependent on the intermediation of a <i>single</i> Static 
+Repository Gateway (The <a href="#SR_format">Static Repository conformance</a>
+rules prohibit intermediation by more than one Static Repository Gateway).</p>
+<p>It is <b>recommended</b> that the administrator 
+check the intermediation by issuing an OAI-PMH
+<a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify">
+Identify</a> request to the appropriate <a href="#SR_baseURL">
+Static Repository base URL</a>:</p>
+  <ul>
+    <li>After&nbsp; <a href="#InitiatingIntermediation">initiating intermediation</a>.</li>
+    <li>Each time a change is made to the Static Repository to check 
+    whether the change has negatively affected
+    <a href="#SR_format">Static Repository conformance</a>.</li>
+    <li>On a periodic basis to determine whether the Static Repository Gateway 
+    has unilaterally terminated access.&nbsp; Note that it is <b>recommended</b> 
+    that a Static Repository Gateway send an email message to the Static 
+    Repository administrator in the case of this termination, but this may not 
+    always happen.</li>
+  </ul>
+<p>The response to this 
+<a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify">Identify</a> 
+request will be one of the following: </p>
+<ul>
+  <li>An HTTP response with a <code>Status-Code</code> of &quot;<code>200 
+  (OK)</code>&quot; and an <code>Identify</code>
+  response in which the <code>baseURL</code> 
+  element corresponds to that in the <code>baseURL</code> element in the Static 
+  Repository.&nbsp; This indicates that intermediation is successful.</li>
+  <li>An HTTP response with a <code>Status-Code</code> of &quot;<code>502 (Bad Gateway)</code>&quot;.&nbsp;
+  This indicates a rejection or termination of the intermediation due to the failure of the Static Repository to
+  follow the <a href="#SR_format">Static Repository conformance
+  rules</a> or other reasons, such as a policy decision by the Static
+  Repository Gateway.&nbsp; The response <b>may </b>also include a <code>Reason-Phrase</code>
+  that is a human readable explanation of the rejection or termination.</li>
+  <li>An HTTP response with a <code>Status-Code</code> of <code>&quot;503 (Service
+  unavailable)</code>&quot;, with a <code>Retry-After</code>
+  period specified.&nbsp; This indicates that the Static Repository Gateway 
+  is delaying intermediation.&nbsp; The Gateway may be busy or may be delaying 
+  due to processing an earlier request from the Static Repository to
+  <a href="#InitiatingIntermediation">initiate intermediation</a>.&nbsp; The administrator 
+  of the Static Repository&nbsp; <b>should</b> wait for the <code>Retry-After</code> 
+  period&nbsp; before reissuing the OAI-PMH
+  <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#Identify">Identify</a> 
+  request to determine whether the Static
+  Repository Gateway is intermediating.</li>
+</ul>
+<h3>3.5 <a name="SR_example">Static Repository example</a></h3>
+<p>Below, an example is shown of a Static Repository. As can be seen, it contains:</p>
+<ul>
+  <li>A single <code>Identify</code> element. The content of the <code>baseURL</code> 
+  child element is the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#HTTPRequestFormat">Static
+    Respository base 
+URL</a>&nbsp; at which the selected Static Repository Gateway makes this Static Repository 
+    accessible via the OAI-PMH.</li>
+  <li>A single <code>ListMetadataFormats</code> element. In this example, the content of this 
+    element reveals support for two metadata formats, with respective <code>metadataPrefixes</code>
+     <code>oai_dc</code> and <code>oai_rfc1807</code>. </li>
+  <li>Two <code>ListRecords</code> elements. As can be seen from the <code>metadataPrefix</code> 
+    attributes provided with each of the ListRecords elements, the first <code>ListRecords</code> 
+    element contains all <code>oai_dc</code> metadata records, while the second ListRecords 
+    element contains all <code>oai_rfc1807</code> metadata records.</li>
+</ul>
+<table summary="XML schame for oai-identifier" border="2" width="74%" bgcolor="#CCCCCC" >
+  <tr> 
+    <td width="100%"> 
+      <h3>Static Repository example</h3>
+    </td>
+  </tr>
+  <tr> 
+    <td width="100%"> 
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Repository xmlns=&quot;http://www.openarchives.org/OAI/2.0/static-repository&quot; 
+            xmlns:oai=&quot;http://www.openarchives.org/OAI/2.0/&quot; 
+            xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+            xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/static-repository 
+                                http://www.openarchives.org/OAI/2.0/static-repository.xsd&quot;&gt;
+  &lt;Identify&gt;
+    &lt;oai:repositoryName&gt;Demo repository&lt;/oai:repositoryName&gt;
+    &lt;oai:baseURL&gt;http://gateway.institution.org/oai/ma/mini.xml&lt;/oai:baseURL&gt;
+    &lt;oai:protocolVersion&gt;2.0&lt;/oai:protocolVersion&gt;
+    &lt;oai:adminEmail&gt;jondoe@oai.org&lt;/oai:adminEmail&gt;
+    &lt;oai:earliestDatestamp&gt;2002-09-19&lt;/oai:earliestDatestamp&gt;
+    &lt;oai:deletedRecord&gt;no&lt;/oai:deletedRecord&gt;
+    &lt;oai:granularity&gt;YYYY-MM-DD&lt;/oai:granularity&gt;
+  &lt;/Identify&gt;
+  &lt;ListMetadataFormats&gt;
+    &lt;oai:metadataFormat&gt;
+      &lt;oai:metadataPrefix&gt;oai_dc&lt;/oai:metadataPrefix&gt;
+      &lt;oai:schema&gt;http://www.openarchives.org/OAI/2.0/oai_dc.xsd&lt;/oai:schema&gt;
+      &lt;oai:metadataNamespace&gt;http://www.openarchives.org/OAI/2.0/oai_dc/
+          &lt;/oai:metadataNamespace&gt;
+    &lt;/oai:metadataFormat&gt;
+    &lt;oai:metadataFormat&gt;
+      &lt;oai:metadataPrefix&gt;oai_rfc1807&lt;/oai:metadataPrefix&gt;
+      &lt;oai:schema&gt;http://www.openarchives.org/OAI/1.1/rfc1807.xsd&lt;/oai:schema&gt;
+      &lt;oai:metadataNamespace&gt;http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt
+           &lt;/oai:metadataNamespace&gt;
+    &lt;/oai:metadataFormat&gt;
+  &lt;/ListMetadataFormats&gt;
+  &lt;ListRecords metadataPrefix=&quot;oai_dc&quot;&gt;
+  &lt;oai:record&gt; 
+     &lt;oai:header&gt;
+       &lt;oai:identifier&gt;oai:arXiv:cs/0112017&lt;/oai:identifier&gt; 
+       &lt;oai:datestamp&gt;2001-12-14&lt;/oai:datestamp&gt;
+     &lt;/oai:header&gt;
+     &lt;oai:metadata&gt;
+       &lt;oai_dc:dc 
+          xmlns:oai_dc=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/&quot; 
+          xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; 
+          xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+          xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/ 
+          http://www.openarchives.org/OAI/2.0/oai_dc.xsd&quot;&gt;
+         &lt;dc:title&gt;Using Structural Metadata to Localize Experience of 
+                   Digital Content&lt;/dc:title&gt; 
+         &lt;dc:creator&gt;Dushay, Naomi&lt;/dc:creator&gt;
+         &lt;dc:subject&gt;Digital Libraries&lt;/dc:subject&gt; 
+         &lt;dc:description&gt;With the increasing technical sophistication of 
+             both information consumers and providers, there is 
+             increasing demand for more meaningful experiences of digital 
+             information. We present a framework that separates digital 
+             object experience, or rendering, from digital object storage 
+             and manipulation, so the rendering can be tailored to 
+             particular communities of users.
+         &lt;/dc:description&gt; 
+         &lt;dc:description&gt;Comment: 23 pages including 2 appendices, 
+             8 figures&lt;/dc:description&gt; 
+         &lt;dc:date&gt;2001-12-14&lt;/dc:date&gt;
+       &lt;/oai_dc:dc&gt;
+     &lt;/oai:metadata&gt;
+   &lt;/oai:record&gt;  
+   &lt;oai:record&gt;
+     &lt;oai:header&gt;
+       &lt;oai:identifier&gt;oai:perseus:Perseus:text:1999.02.0084&lt;/oai:identifier&gt;
+       &lt;oai:datestamp&gt;2002-05-01&lt;/oai:datestamp&gt;
+     &lt;/oai:header&gt;
+     &lt;oai:metadata&gt;
+       &lt;oai_dc:dc 
+           xmlns:oai_dc=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/&quot; 
+           xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; 
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+           xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/ 
+           http://www.openarchives.org/OAI/2.0/oai_dc.xsd&quot;&gt;
+         &lt;dc:title&gt;Opera Minora&lt;/dc:title&gt;
+         &lt;dc:creator&gt;Cornelius Tacitus&lt;/dc:creator&gt;
+         &lt;dc:type&gt;text&lt;/dc:type&gt;
+         &lt;dc:source&gt;Opera Minora. Cornelius Tacitus. Henry Furneaux. 
+          Clarendon Press. Oxford. 1900.&lt;/dc:source&gt;
+         &lt;dc:identifier&gt;http://www.perseus.tufts.edu/cgi-bin/ptext?
+           doc=Perseus:text:1999.02.0084&lt;/dc:identifier&gt;
+       &lt;/oai_dc:dc&gt;
+     &lt;/oai:metadata&gt;
+   &lt;/oai:record&gt;
+   &lt;oai:record&gt;
+     &lt;oai:header&gt;
+       &lt;oai:identifier&gt;oai:perseus:Perseus:text:1999.02.0083&lt;/oai:identifier&gt;
+       &lt;oai:datestamp&gt;2002-05-01&lt;/oai:datestamp&gt;
+     &lt;/oai:header&gt;
+     &lt;oai:metadata&gt;
+       &lt;oai_dc:dc 
+           xmlns:oai_dc=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/&quot; 
+           xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; 
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+           xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/ 
+           http://www.openarchives.org/OAI/2.0/oai_dc.xsd&quot;&gt;
+         &lt;dc:title&gt;Germany and its Tribes&lt;/dc:title&gt;
+         &lt;dc:creator&gt;Tacitus&lt;/dc:creator&gt;
+         &lt;dc:type&gt;text&lt;/dc:type&gt;
+         &lt;dc:source&gt;Complete Works of Tacitus. Tacitus. Alfred John Church. 
+          William Jackson Brodribb. Lisa Cerrato. edited for Perseus. 
+          New York: Random House, Inc. Random House, Inc. reprinted 1942.
+           &lt;/dc:source&gt;
+         &lt;dc:identifier&gt;http://www.perseus.tufts.edu/cgi-bin/ptext?
+          doc=Perseus:text:1999.02.0083&lt;/dc:identifier&gt;
+       &lt;/oai_dc:dc&gt;
+       &lt;/oai:metadata&gt;
+   &lt;/oai:record&gt;
+   &lt;/ListRecords&gt;
+  &lt;ListRecords metadataPrefix=&quot;oai_rfc1807&quot;&gt;
+    &lt;oai:record&gt;
+      &lt;oai:header&gt;
+        &lt;oai:identifier&gt;oai:arXiv:cs/0112017&lt;/oai:identifier&gt;
+        &lt;oai:datestamp&gt;2001-12-14&lt;/oai:datestamp&gt;
+      &lt;/oai:header&gt;
+      &lt;oai:metadata&gt;
+        &lt;rfc1807 xmlns=
+                   &quot;http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt&quot; 
+                   xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+                 xsi:schemaLocation=
+                  &quot;http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt
+                  http://www.openarchives.org/OAI/1.1/rfc1807.xsd&quot;&gt;
+          &lt;bib-version&gt;v2&lt;/bib-version&gt;
+          &lt;id&gt;cs/0112017&lt;/id&gt;
+          &lt;entry&gt;December 23, 2001&lt;/entry&gt;
+          &lt;title&gt;Using Structural Metadata to Localize Experience of 
+             Digital Content&lt;/title&gt;
+          &lt;author&gt;Naomi Dushay&lt;/author&gt;
+          &lt;date&gt;December 14, 2001&lt;/date&gt;
+        &lt;/rfc1807&gt;
+     &lt;oai:about&gt;
+       &lt;oai_dc:dc 
+           xmlns:oai_dc=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/&quot; 
+           xmlns:dc=&quot;http://purl.org/dc/elements/1.1/&quot; 
+           xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; 
+           xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/oai_dc/ 
+           http://www.openarchives.org/OAI/2.0/oai_dc.xsd&quot;&gt;
+         &lt;dc:publisher&gt;Los Alamos arXiv&lt;/dc:publisher&gt;
+         &lt;dc:rights&gt;Metadata may be used without restrictions as long as 
+            the oai identifier remains attached to it.&lt;/dc:rights&gt;
+       &lt;/oai_dc:dc&gt;
+     &lt;/oai:about&gt;
+   &lt;/oai:record&gt;
+&lt;/ListRecords&gt;
+&lt;/Repository&gt;
+</pre>
+    </td>
+  </tr>
+</table>
+<h2>4. <a name="SRG_description">Static Repository Gateway description</a></h2>
+NOTE: Implementers whose sole interest is a Static Repository
+may skip this section.
+<p>A Static Repository Gateway provides <a href="#Intermediation">intermediation</a>
+for one or more Static Repositories by responding to OAI-PMH requests where the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#SR_baseURL">base
+URL</a> for each Static Repository is unique, but share a common prefix, which
+is the <a href="#SRG_netloc">Static Repository
+Gateway network-location</a>.&nbsp;&nbsp;To discourage excessive duplication of metadata records, a Static Repository 
+Gateway<b> must not</b> process OAI-PMH requests for a Static Repository if
+<a href="#SR_baseURL">Static Repository base URL</a> of the 
+request does not match the value of the <code>baseURL</code> element of the 
+Static Repository.</p>
+<p>The implementation of a Static Repository Gateway has three aspects:</p>
+<ol>
+  <li>Initiating intermediation for Static Repositories.</li>
+  <li>Providing intermediation for Static Repositories</li>
+  <li>Terminating intermediation for Static Respositories</li>
+</ol>
+
+<h3>4.1 Initiating intermediation for Static Repositories.</h3>
+<p><a href="#SR_baseURL">Section 3.3</a> of this document describes how an administrator
+of a Static Repository initiates intermediation with a single Static Repository
+Gateway.&nbsp;&nbsp; This section provides information about 
+this relationship from the perspective of the Static Repository Gateway.</p>
+<p>A Static Repository Gateway <b>must </b>process HTTP requests of the form:</p>
+<p>&nbsp;&nbsp;&nbsp; <code>http://&lt;<a href="#SRG_netloc">Static 
+Repository Gateway network-location</a>&gt;?initiate=&lt;<a href="#SR_baseURL">Static 
+Repository network-location</a>&gt;</code></p>
+<p>A Static Repository Gateway <b>may </b>implement any local policies or 
+procedures subsequent to receiving this request and before actually acting as an 
+intermediary.&nbsp; These may include additional authorization or certification 
+procedures outside the scope of the OAI-PMH.</p>
+
+<h3>4.2 Providing intermediation for Static Repositories</h3>
+<p>Once a Static Repository Gateway has accepted&nbsp; intermediation for a
+Static Repository, it <b>must </b>respond to all 6 OAI-PMH requests addressed to
+the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#HTTPRequestFormat">Static
+Respository base 
+URL</a>, for the length of the intermediation relationship.</p>
+<p>In order to guarantee the accuracy of the exposed metadata, a Static Repository 
+  Gateway <b>must</b> use the most recent version of a Static Repository. A 
+Static Repository Gateway 
+  <b>may</b> accomplish this by an HTTP GET of the Static Repository 
+  from its persistent <a href="#SR_netloc">Static Repository network-location</a> 
+  for every OAI-PMH request that it receives. However, a Static Repository Gateway 
+  <b>may</b> optimize its performance by caching Static Repositories. In that 
+  case a Static Repository Gateway <b>must</b> perform a freshness-test on the 
+  cached Static Repository by comparing it with the version at the <a href="#SR_netloc">Static 
+  Repository network-location</a> before responding to every OAI-PMH request. It 
+  <b>should</b> do so by using a HTTP GET with an <code>If-Modified-Since</code> 
+  header that contains the date of the cached version of a Static Repository.</p>
+<p>The response of a Static Repository Gateway to an OAI-PMH request to the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#HTTPRequestFormat">Static
+Respository base URL</a> <b>must </b>take one of the following forms:</p>
+<ul>
+  <li>If the Static Repository Gateway is rejecting or terminating 
+  intermediation, it <b>should
+    </b>issue an HTTP response with a <code>Status-Code</code> of &quot;<code>502 (Bad Gateway)</code>&quot;.&nbsp; Rejection or 
+  termination may be due
+    to the failure of the Static Repository to follow the <a href="#SR_format">Static
+    Repository conformance rules</a> or other reasons, such as a policy decision
+    by the Static Repository Gateway.&nbsp; The response <b>may </b>also include
+    a <code>Reason-Phrase</code> that is a human readable explanation of the
+    rejection or termination.</li>
+  <li>If the Static Repository Gateway is currently unable to intermediate due 
+  to delays in initiating intermediation or server overload it <b>should </b>issue
+    an HTTP response with a <code>Status-Code</code> of &quot;<code>503 (Service
+    unavailable)</code>&quot;, with a <code>Retry-After</code>
+    period specified.&nbsp; The Static Repository Gateway <b>must</b> be
+    prepared to respond to another attempt to initiate intermediation
+    after the <code>Retry-After</code> 
+  period .</li>
+  <li>If the Static Repository Gateway performs the freshness-test as defined 
+  above and the Static Repository is not accessible at its <a href="#SR_netloc">Static 
+    Repository network-location</a>, the Static Repository Gateway <b>must</b> respond 
+    to the harvesting request with a HTTP <code>Status-Code</code> &quot;<code>504 
+    (Gateway Timeout)</code>&quot;. 
+  </li>
+  <li>If the Static Repository Gateway performs the freshness-test as defined 
+  above and the Static Repository is accessible at its <a href="#SR_netloc">Static 
+  Repository network-location</a>, the Static Repository Gateway <b>must</b> fetch 
+  the Static Repository from its <a href="#SR_netloc">Static Repository network-location</a>. 
+    <ul>
+      <li>Rather than delaying the response until this fetch from the Static 
+      Repository is complete and it is processed, the Static Repository
+      Gateway <b>may</b> respond to the harvesting request with a HTTP
+      <code>Status-Code</code> &quot;<code>503 (Service Unavailable)</code>&quot;. 
+      This specifies a <code>Retry-After</code> period covering the estimated time 
+      of fetching the Static Repository from its Static Repository 
+      network-location, and validating it.</li>
+      <li>If the fetched version of the Static Repository does not comply with 
+      the <a href="#SR_format">Static Repository conformance 
+      rules</a>, then the Static Repository Gateway <b>must</b> 
+      respond to the harvesting request with a HTTP <code>Status-Code</code> &quot;<code>502 
+      (Bad Gateway)</code>&quot;. The response <b>should</b> also
+      include a <code>Reason-Phrase</code> that is a human readable
+      explanation of the failure. It <b>must not</b> respond to the harvesting request 
+      using the cached version of the Static Repository.</li>
+      <li>If the fetched version of the Static Repository does comply with the
+      <a href="#SR_format">Static Repository conformance rules</a>, then the Static 
+      Repository Gateway <b>must</b> respond to the harvesting request using the fetched version. The Static 
+      Repository Gateway <b>must</b> then replace its cached version with the 
+      fetched version.</li>
+    </ul>
+  </li>
+  <li>If the Static Repository Gateway performs the freshness-test as defined 
+  above and the Static Repository is accessible at its <a href="#SR_netloc">Static 
+  Repository network-location</a>, 
+    and the result of the freshness-test indicates that the cached version is 
+    the same as the version at the <a href="#SR_netloc">Static Repository network-location</a>, 
+    then the Static Repository Gateway <b>may</b> respond to the harvesting request 
+    by using the cached version of the Static Repository.&nbsp; </li>
+</ul>
+<h3>4.3 Terminating Intermediation for Static Repositories</h3>
+<p>A Static Respository Gateway <b>may</b> unilaterally terminate an intermediation
+relationship at any time.&nbsp; Some of the possible reasons for this
+termination are:</p>
+<ul>
+  <li>Continued unavailability of the Static Respository at its <a href="#SR_netloc">Static 
+    Repository network-location</a>.</li>
+  <li>Continued failure to comply with 
+      the <a href="#SR_format">Static Repository conformance 
+      rules</a>. A <b>recommended </b>reason for immediate termination is when value of
+    the <code>baseURL</code> element of the 
+Static Repository.does not match <a href="#SR_baseURL">Static Repository base URL</a>
+    to which the request has been issued.&nbsp; This indicates that the Static
+    Repository has initiated intermediation with another Static Repository
+    Gateway.</li>
+  <li>A policy decision of the Static Repository Gateway administrator.</li>
+</ul>
+<p>It is <b>recommended</b> that an email
+message to the Static Repository administrator (available in the <code>adminEmail</code>
+element of the Static Repository) be sent regarding the termination.</p>
+
+<h3>4.4 Additional OAI-PMH issues for Static Repository Gateways</h3>
+<p>OAI-PMH processing by a Static Repository Gateway is mandated by the
+<a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">OAI-PMH 
+specification</a>.&nbsp; This section describes a number of special issues 
+relavant to this specification.</p>
+
+<h4>4.4.1 Contents of the OAI-PMH Identify response provided by a Static Repository Gateway</h4>
+<p>The Identify response that a Static Repository Gateway provides for each 
+Static Repository for which it provides intermediation<b> must</b> include a 
+<a href="http://www.openarchives.org/OAI/2.0/guidelines-gateway.htm">gateway</a> 
+description, which effectively reveals that the OAI-PMH response originates 
+through a Static Repository Gateway. The content of that 
+<a href="http://www.openarchives.org/OAI/2.0/guidelines-gateway.htm">gateway</a> 
+description <b>must</b> be as follows:</p>
+<ul>
+  <li><code>source</code> - 
+  the <a href="#SR_netloc">Static Repository network-location</a></li>
+  <li><code>gatewayDescription</code> - value <b>must</b> be <code>http://www.openarchives.org/OAI/2.0/guidelines-static-repository.htm</code> .</li>
+  <li><code>gatewayAdmin</code> - 
+  the e-mail address of the administrator of the Static Repository Gateway.</li>
+  <li><code>gatewayURL</code> - 
+  the network-location of the Static Repository Gateway itself; it is the part 
+  of all <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#HTTPRequestFormat">base 
+  URL</a>s assigned by the Static Repository Gateway that is common to all Static 
+  Repositories that it makes accessible.</li>
+</ul>
+<p>To support dynamic discovery of Static Repositories, the Static Repository 
+Gateway <b>may</b> include a <a href="http://www.openarchives.org/OAI/2.0/guidelines-friends.htm">friends</a> 
+description in the Identify response that it provides for each of the Static 
+Repositories for which it provides intermediation. If included, that <a href="http://www.openarchives.org/OAI/2.0/guidelines-friends.htm">friends</a> 
+  description <b>must</b> list the <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#HTTPRequestFormat">base 
+  URL</a>s of all Static Repositories that are harvestable through the Static 
+  Repository Gateway. A Static Repository Gateway <b>may</b> develop a policy 
+  to periodically refresh the <a href="http://www.openarchives.org/OAI/2.0/guidelines-friends.htm">friends</a> 
+  description, for instance based on tracking the (un)availability of listed Static 
+  Repositories over time.</p>
+<p>An example of a response to the Identify request from a Static 
+  Repository Gateway with network-location <code>http://gateway.institution.org/oai</code> 
+  issued against the Static Repository shown in <a href="#SR_example">Section 3.5</a>, is shown below:</p>
+<ul>
+  <li>The response contains a <a href="http://www.openarchives.org/OAI/2.0/guidelines-friends.htm">friends</a> 
+    description that lists all Static Repositories that are accessible through 
+    the Static Repository Gateway;</li>
+  <li>The content of each <code>baseURL</code> element shown in the response is 
+    the concatenation of the network-location of the Static Repository Gateway 
+    -- <code>http://gateway.institution.org/oai</code> -- and the sub-section of the Static 
+    Repository network-location (obtained after removal of <code>http://</code> ), respectively 
+    <code>an.oai.org/ma/mini.xml</code>, <code>site1.org/mini/file1</code>, <code>loca.org/data:8080</code>, and 
+    <code>univ.edu/lib/pubs.xml</code> .  Note that the colon in <code>loca.org:8080/data</code> must be
+    URL-encoded to create a valid <code>baseURL</code>.&nbsp; Note also that a single forward slash 
+    [<code>/</code>] character has been added between the concatenated strings.
+  </li>
+  <li>The response contains a <a href="http://www.openarchives.org/OAI/2.0/guidelines-gateway.htm">gateway</a> 
+    description that lists the Static Repository network-location, as well as 
+    some specifics about the Static Repository Gateway.</li>
+</ul>
+<table width="80%" summary="Example Identify Response" bgcolor="#cccccc" border="1">
+  <tr> 
+    <td> 
+      <h3>Response to the Identify request issued against a Static Repository</h3>
+    </td>
+  </tr>
+  <tbody> 
+  <tr> 
+    <td> 
+      <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;OAI-PMH xmlns=&quot;http://www.openarchives.org/OAI/2.0/&quot; 
+&nbsp;&nbsp;&nbsp;&nbsp;     xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+&nbsp;&nbsp;&nbsp;&nbsp;     xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd&quot;&gt;
+  &lt;responseDate&gt;2002-02-08T12:00:01Z&lt;/responseDate&gt;
+  &lt;request verb=&quot;Identify&quot;&gt;http://gateway.institution.org/oai/an.oai.org/ma/mini.xml&lt;/request&gt;
+  &lt;Identify&gt;
+    &lt;repositoryName&gt;Demo repository&lt;/repositoryName&gt;
+    &lt;baseURL&gt;http://gateway.institution.org/oai/an.oai.org/ma/mini.xml&lt;/baseURL&gt;
+    &lt;protocolVersion&gt;2.0&lt;/protocolVersion&gt;
+    &lt;adminEmail&gt;jondoe@oai.org&lt;/adminEmail&gt;
+    &lt;earliestDatestamp&gt;2002-09-19&lt;/earliestDatestamp&gt;
+    &lt;deletedRecord&gt;no&lt;/deletedRecord&gt;
+    &lt;granularity&gt;YYYY-MM-DD&lt;/granularity&gt;
+    &lt;description&gt;
+      &lt;friends 
+          xmlns=&quot;http://www.openarchives.org/OAI/2.0/friends/&quot; 
+          xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+          xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/friends/
+         http://www.openarchives.org/OAI/2.0/friends.xsd&quot;&gt;
+        &lt;baseURL&gt;http://gateway.institution.org/oai/site1.org/mini/file1&lt;/baseURL&gt;
+        &lt;baseURL&gt;http://gateway.institution.org/oai/loca.org%3A8080/data&lt;/baseURL&gt;
+        &lt;baseURL&gt;http://gateway.institution.org/oai/univ.edu/lib/pubs.xml&lt;/baseURL&gt;
+      &lt;/friends&gt;
+    &lt;/description&gt;
+    &lt;description&gt;
+      &lt;gateway 
+          xmlns=&quot;http://www.openarchives.org/OAI/2.0/gateway/&quot; 
+          xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
+          xsi:schemaLocation=&quot;http://www.openarchives.org/OAI/2.0/gateway/
+         http://www.openarchives.org/OAI/2.0/gateway.xsd&quot;&gt;
+        &lt;source&gt;http://an.oai.org/ma/mini.xml&lt;/source&gt;
+        &lt;gatewayDescription&gt;
+          &lt;URL&gt;http://www.openarchives.org/OAI/2.0/guidelines-static-repository.htm&lt;/URL&gt;
+        &lt;/gatewayDescription&gt;
+        &lt;gatewayURL&gt;http://gateway.institution.org/oai/&lt;/gatewayURL&gt;
+        &lt;gatewayAdmin&gt;pat@institution.org&lt;/gatewayAdmin&gt;
+      &lt;/gateway&gt;
+    &lt;/description&gt;
+  &lt;/Identify&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+</td>
+</tr>
+</tbody> 
+</table>
+
+<h4>4.4.2 Static Repository Gateway Flow Control</h4>
+
+<p>Like any OAI-PMH Repository, a Static Repository Gateway may use
+<code><a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#FlowControl">resumptionTokens</a></code> 
+as a means of partitioning large responses.&nbsp; 
+However, the Static Repository <b>must</b> ensure that the Static Repository has 
+not changed before responding to harvesting requests with a 
+<code>resumptionToken</code>.&nbsp; In other words the entire set of requests in a 
+<i><a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#FlowControl">list 
+request sequence</a></i> <b>must</b> be based on the same Static Repository 
+contents.&nbsp; To do this, the Static Repository Gateway <b>must</b> perform a freshness-test 
+on each request in the <i>list request sequence</i>.&nbsp; The Static Repository 
+Gateway <b>should</b> do so by using a HTTP GET with an <code>If-Modified-Since</code> 
+header that contains the date of the first request in the<i> list request 
+sequence </i>of a Static Repository.&nbsp; If the result of the freshness-test 
+is that the Static Repository has changed in the course of a <i>list request 
+sequence</i>, the Static Respository Gateway <b>must</b> issue an
+<a href="http://www.openarchives.org/OAI/openarchivesprotocol.html#ErrorConditions">
+OAI-PMH error <code>badResumptionToken</code></a>.</p>
+
+<h3>4.5. Security Considerations</h3>
+<p>The following security issues require attention when operating a Static Repository 
+Gateway:</p> 
+<ul>
+  <li>A malicious agent may use a Static Repository Gateway as a way to spoof 
+    the origin of provocative material (e.g. pornography, slander). The operator 
+    of a Static Repository Gateway may wish to restrict the use of its services 
+    to exclude certain Static Repositories.</li>
+  <li>A malicious agent may use a Static Repository Gateway as a way to launch 
+    a denial-of-service attack on a Static Repository. The operator of a Static 
+    Repository Gateway may apply mechanisms that prevent excessive access to a 
+    Static Repository.</li>
+  <li>The content of a Static Repository may be devised to be harmful to a Static 
+    Repository Gateway or to a downstream harvester. Strict validation as mandated 
+    in section 4.2 should ameliorate this danger. However, additional precautions 
+    may be necessary, for example to truncate excessively long responses which 
+    may be problematic for an XML parser/validator.</li>
+  <li>Static Repository Gateways are subject to security considerations relating 
+    to <a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">OAI-PMH</a> 
+    and <a href="http://www.ietf.org/rfc/rfc2616.txt">HTTP</a>.</li>
+</ul>
+
+<h2><a name="acknowledgements"></a>Acknowledgements</h2>
+<p>Support for the development of the OAI-PMH and for other Open Archives 
+Initiative activities comes from the National Science Foundation through Grant No. IIS-9817416.
+Individuals who have played a significant role in the development of 
+OAI-PMH version 2.0 are 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged 
+in the protocol document</a>.</p>
+<p>This Static Repository specification is inspired on the ViDa (Virtual Data 
+Provider) work by Steven Bird and Gary Simons for the <a href="http://www.language-archives.org">Open 
+Language Archives Community</a> (OLAC), a leading community of implementers 
+of the OAI-PMH. Special thanks to Steven Bird &lt;sb@cs.mu.oz.au&gt;and Gary 
+Simons &lt;Gary_Simons@sil.org&gt;.</p>
+
+<h2><a name="DocumentHistory">Document History</a></h2>
+<p><b>2003-10-10</b>: Beta Release.<br />
+<b>2003-09-16</b>: Significant rewrite.<br />
+<b>2002-11-13</b>: Alpha release.<br />
+<b>2002-09-28</b>: Initial pre-release of this document to core OAI team.</p>
+</body>
+</html>

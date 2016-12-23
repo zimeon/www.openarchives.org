@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [UPS] Further issues with Dienst software and Open Archives</TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:rht96r%40ecs.soton.ac.uk">
+   <LINK REL="Previous"  HREF="000158.html">
+   <LINK REL="Next" HREF="000160.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[UPS] Further issues with Dienst software and Open Archives</H1>
+    <B>Robert Tansley</B> 
+    <A HREF="mailto:rht96r%40ecs.soton.ac.uk"
+       TITLE="[UPS] Further issues with Dienst software and Open Archives">rht96r@ecs.soton.ac.uk</A><BR>
+    <I>Fri, 19 May 2000 16:04:47 +0100</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000158.html">[UPS] Dienst protocol: Partitions and partitionspecs</A></li>
+        <LI> Next message: <A HREF="000160.html">[UPS] RE: Further issues with Dienst software and Open Archives</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#159">[ date ]</a>
+              <a href="thread.html#159">[ thread ]</a>
+              <a href="subject.html#159">[ subject ]</a>
+              <a href="author.html#159">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi, an even more technical mail this time. (I hope these are appropriate
+addresses to send this to; if not, please point me in the right
+direction.)
+
+Working on adding Open Archives support to CogPrints, I've discovered an
+issue with the latest version of CGI and the dienst code. As of version
+2.64, the CGI.pm module by default uses &quot;new style&quot; URLs, in which the
+keyword/value query string is passed to the application delimited by
+semi-colons &quot;;&quot; instead of ampersands &quot;;&quot;. E.g. if I send a request:
+
+Dienst/Repository/4.0/List-Contents?file-after=2000-01-01&amp;meta-format=oams
+
+The dienst software, from CGI::query_string(), receives the arguments as:
+
+file-after=2000-01-01;meta-format=oams
+
+so later on parsing this string produces duff results. (IMO it's a rather
+dodgy practice for the CGI.pm team to change default behaviour like this
+in a .01 revision.) This particular problem can be worked round by
+changing the line where CGI.pm is included in dienst_src/Main/dienst.pl
+from:
+
+use CGI qw(:standard);
+
+to:
+
+use CGI qw(:standard -oldstyle_urls);
+
+However, this introduces another problem when using partitionspecs. If I
+send a request like:
+
+Dienst/Repository/4.0/List-Contents
+     ?partitionspec=physics;hep&amp;file-after=2000-01-01
+
+CGI.pm gives now the query string to dienst as:
+
+partitionspec=physics&amp;hep&amp;file-after=2000-01-01
+
+so it's changing the semicolon in the partitionspec into an &amp;. I tried
+URL-encoding the ; (which sounds like good practice anyway) but CGI
+doesn't decode the ; in this case, so dienst gets:
+
+partitionspec=physics%3Bhep&amp;file-after=2000-01-01
+
+I can quite easily fix it so the CogPrints code can decode the string,
+but with interoperability it takes two to tango; anything making a Dienst
+request to CogPrints will have to know to encode the ';'. In the Dienst
+protocol specification (either
+<A HREF="http://www.cs.cornell.edu/cdlrg/dienst/protocols/DienstProtocol.htm">http://www.cs.cornell.edu/cdlrg/dienst/protocols/DienstProtocol.htm</A> or
+<A HREF="http://www.cs.cornell.edu/cdlrg/dienst/protocols/OpenArchivesDienst.htm">http://www.cs.cornell.edu/cdlrg/dienst/protocols/OpenArchivesDienst.htm</A>),
+the example List-Contents request doesn't seem to have an encoded ';',
+even though in earlier in the document ';' is listed as a character that
+requires encoding. So what is the policy on this? Should the ';' be
+encoded, in which case the specification document needs to be amended to
+reflect this, or should it be left unencoded, in which case the dienst
+code needs changing if it is to work with recent versions of CGI?
+
+I also note that in the examples of both Dienst protocol specification
+documents, the disseminate verb:
+
+Dienst/Repository/1.0/Disseminate/handlecorp/970101/%23oams/xml
+
+doesn't require the encoding of the / in the full ID &quot;handlecorp/970101&quot;,
+but does the # (&quot;%23oams&quot;). (I even came across the big kludge in the
+dienst code to handle this case!) Requiring some special characters to be
+encoded but others to be left unencoded seems to be an inconsistency in
+the protocol that needs clearing up.
+
+R
+
+-- 
+ Robert Tansley                    Tel: +44 (0) 23 80594492
+ Multimedia Research Group         Fax: +44 (0) 23 80592865
+ Electronics &amp; Computer Science    <A HREF="http://www.ecs.soton.ac.uk/~rht96r/">http://www.ecs.soton.ac.uk/~rht96r/</A>
+ University of Southampton
+ Southampton SO17 1BJ, UK
+
+
+</pre>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000158.html">[UPS] Dienst protocol: Partitions and partitionspecs</A></li>
+	<LI> Next message: <A HREF="000160.html">[UPS] RE: Further issues with Dienst software and Open Archives</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#159">[ date ]</a>
+              <a href="thread.html#159">[ thread ]</a>
+              <a href="subject.html#159">[ subject ]</a>
+              <a href="author.html#159">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

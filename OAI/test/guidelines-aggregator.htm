@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>OAI-PMH Implementation Guidelines - Guidelines for Aggregators, Caches and Proxies</title>
+<style type="text/css" id="internalStyle">>
+  body { color: black; background: white; }
+  code,pre { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+  em { color: red; }
+  table { background: #CCCCCC; }
+  th { font-weight: bold; font-size: 120%; }
+  table.header { background: white; }
+  td.docsubtitle { font-weight: bold; font-size: 150%; }
+</style>
+<meta content="Open Archives Initiative - Protocol for Metadata Harvesting - Guidelines for Aggregators, Caches and Proxies" name="DC.title" />
+<meta content="Lagoze, Carl" name="DC.creator" />
+<meta content="Van de Sompel, Herbert" name="DC.creator" />
+<meta content="Nelson, Michael" name="DC.creator" />
+<meta content="Warner, Simeon" name="DC.creator" />
+<meta content="2005/01/19T19:27:00Z" name="DC.date" />
+</head>
+<body>
+<table class="header" summary="Logo and heading" border="0" width="100%">
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%" class="docsubtitle">
+Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting
+</td>
+</tr>
+<tr>
+<td align="center">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" height="70" width="100"/></a>
+</td>
+<td align="left" width="87%">
+  <h1>Guidelines for Aggregators, Caches and Proxies</h1>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%" height="38">
+  <b>Protocol Version 2.0 of 2002-06-14<br />
+  Document Version 2005/01/19T19:27:00Z<br />
+  http://www.openarchives.org/OAI/2.0/guidelines-aggregator.htm<!--DRAFTNOTE--></b></td>
+</tr>
+</table>
+
+<p><b>Editors</b></p>
+<p>
+<a href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</a>  
+(<a href="http://www.openarchives.org/organization/index.html">OAI Executive</a>;
+<a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a>) 
+<br />
+<a href="mailto:herbertv@lanl.gov">Herbert Van de Sompel</a>
+(<a href="http://www.openarchives.org/organization/index.html">OAI Executive</a>;
+<a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research Library</a>)
+<br />
+<a href="mailto:mln@cs.odu.edu">Michael Nelson</a>
+(<a href="http://www.cs.odu.edu/">Old Dominion University - Computer Science</a>)
+<br />
+<a href="mailto:simeon@cs.cornell.edu">Simeon Warner</a> 
+(<a href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a>)
+</p>
+
+<p><b>
+This document is one part of the 
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h4>Table of Contents</h4>
+<p>
+<a href="#Introduction">1. Introduction</a><br />
+<a href="#Identifiers">2. Identifiers</a><br />
+<a href="#Provenance">3. Provenance</a><br />
+<a href="#Datestamps">4. Datestamps</a><br />
+<a href="#acknowledgements">Acknowledgements</a><br />
+<a href="#DocumentHistory">Document History</a><br />
+</p>
+
+<h2><a name="Introduction">1. Introduction</a></h2>
+
+<p>It is expected that aggregators, caches, proxies and other third party
+repositories will emerge.  While these services allow for
+sophisticated harvesting hierarchies and strategies, they also introduce
+a level of complexity not found in the simple <i>service provider</i> and
+<i>data provider</i> relationship.  In particular, questions arise regarding
+identifier namespace and tracking the provenance of records through
+their travels.</p>
+
+<h2><a name="Identifiers">2. Identifiers</a></h2>
+
+<p><a href="openarchivesprotocol.htm#UniqueIdentifier">Unique identifiers</a> 
+in OAI-PMH identify items <i>within</i> a repository. However, they
+may conform to a recognized URI scheme with greater scope. Harvesters
+should not assume any scope beyond the originating repository unless
+an identifier conforms to a recognized URI scheme.</p>
+
+<p>There are three ways by which a repository can conclude that 
+two harvested records have a provenance from a same item:</p>
+
+<ul>
+<li>both records have the same identifier <i>and</i> that identifier 
+belongs to some recognized URI scheme;</li>
+<li>both records have the same identifier <i>and</i> the 
+<code>baseURL</code> in the <code>request</code> elements of the 
+OAI-PMH reponses which include the records are the same;</li>
+<li>the <code>provenance</code> containers of both records have 
+the same entries for both the identifier and <code>baseURL</code>;</li>
+</ul>
+
+<p>Agents which re-export harvested records should do so with different 
+identifiers unless the metadata is unaltered and the original 
+identifier corresponds to a recognized URI scheme.
+It is also recommended that all repositories re-exporting harvested
+records use the repeatable <code>provenance</code> containers to 
+provide provenance information.</p>
+
+<h2><a name="Provenance">3. Provenance</a></h2>
+
+<p>It is recommended that third party repositories track the harvesting
+and changes to records through using  
+<a href="guidelines-provenance.htm"><code>provenance</code> containers</a>.
+which may be included inside the optional <code>about</code> parts of
+metadata <a href="openarchivesprotocol.htm#Record">records</a>.</p>
+
+<h2><a name="Datestamps">4. Datestamps</a></h2>
+
+<p>Datestamps are provided to support incremental harvesting, they are specific to
+a particular repository. Therefore, any service that re-exports harvested records
+must not preserve datestamps but instead use new, local datestamps. The 
+<a href="guidelines-provenance.htm"><code>provenance</code> container</a>
+may be used to record datestamps acquired when the record was harvested.</p>
+
+<p>Different repositories may use different granularities for datestamps. 
+There is no support for multiple granularities within a single repository
+(although repositories must interpret arguments expressed in coarser
+granularities than the finest they support). An aggregator should 
+use one consistent granularity and that need not reflect the datestamp 
+granularity of repositories that records were harvested from.</p>
+
+<h2><a name="acknowledgements"></a>Acknowledgements</h2>
+
+<p>Support for the development of the OAI-PMH and for other Open Archives 
+Initiative activities comes from the 
+<a href="http://www.diglib.org/">Digital Library Federation</a>, the 
+<a href="http://www.cni.org/">Coalition for Networked Information</a>, and 
+from the National Science Foundation through Grant No. IIS-9817416. Individuals 
+who have played a significant role in the development of OAI-PMH version 2.0 are 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged 
+in the protocol document</a>.</p>
+
+
+<h2><a name="DocumentHistory">Document History</a></h2>
+<p>
+<b>2005-01-19</b>: HTML fixes and added Table of Contents.<br />
+<b>2002-05-10</b>: Revised recommendations for identifiers.<br />
+<b>2002-03-31</b>: Release of initial version of OAI-PMH v2.0 guidelines documents.
+</p>
+</body>
+</html>

@@ -1,0 +1,4479 @@
+From hussein@vt.edu  Sun Apr  1 01:24:12 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Sat, 31 Mar 2001 17:24:12 -0800
+Subject: [OAI-implementers] thoughts and warnings about schemas ...
+Message-ID: <3AC6833C.746988D0@vt.edu>
+
+hi
+
+im going to prefix whatever i say by saying that if you're not
+interested in the nuts-and-bolts of schemas and their implications for
+us, dont worry too much about this email ... its more a heads-up than
+anything else ...
+
+so, has anyone else noticed that the target is moving once again ? the
+W3C released a "proposed recommendation" approximately 2 weeks ago ...
+yes, with changes ... they changed the basic data type names for
+"number" (and changed it back already!) and "URI" and "timeInstant" ...
+(the only reason i noticed was because i was using a timeInstant and it
+wasnt listed in the online copy of the schema documentation)
+
+so, what does this mean for us ? cant we just keep our old schemas in
+the old format and write new ones in the new format ? well, maybe ... im
+still trying to figure out how thats going to work ... i've already
+picked up a few problems:
+
+- old schemas wont validate in the new checker
+- new schemas wont validate in the old checker (ok, that may be obvious
+:))
+- the new software doesnt install locally (with profound implications
+for validation through the repository explorer - i just sent off a long
+note to the schema developers mailing list asking for help)
+- the new spec has very little software support thus far
+
+personally, im sitting this out until the new software is working
+properly ... the old stuff works and im going to keep on using the old
+spec until i have the same degree of confidence in the new spec/software
+... i would recommend to anyone else writing schemas to do the same for
+now ... which means that if you try schema validation, make sure to go
+to the old "October 2000" version from the W3C online XSV validation ...
+or just trust the repository explorer's validation (which is the same
+software - i just have it installed locally on my server)
+
+there are a few more complicated problems i foresee ... but lets fix the
+simple ones first :)
+
+ttfn
+----hussein
+
+-- 
+========================================================================
+hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+========================================================================
+
+From tdb198@soton.ac.uk  Sun Apr  1 14:57:37 2001
+From: tdb198@soton.ac.uk (Tim Brody)
+Date: Sun, 1 Apr 2001 14:57:37 +0100
+Subject: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+References: <3AC6833C.746988D0@vt.edu>
+Message-ID: <001001c0bab3$b6851060$0100a8c0@planitia>
+
+Hello one and all,
+
+Some problems...
+
+Validator:
+
+I've been playing around with the validator and have found it fails with my
+output, which contains an empty ABOUT section (i.e. just <about></about>).
+From my understanding of the protocol I should be able to have an empty
+about (my logic was that if I was going to make use of this in future I
+would want any harvesters to be able to handle about correctly, so an empty
+tag was better than no tag at all).
+
+Could someone explain how the about works (or doesn't)?
+
+(http://cite-base.ecs.soton.ac.uk/cgi-bin/oai/OAI-script)
+
+Schemas:
+
+Does anybody know of a "Howto" for writing OAI schemas, I really don't want
+to spend hours trawling through the incomprehensibility of w3c just to make
+a few tweaks?
+
+(http://www.ecs.soton.ac.uk/~tdb198/oai/opcit_dc.xsd - fails on "relation"
+type, but I can't see anything wrong ...)
+
+metadataPrefix:
+
+<metadata>
+<dc/oai_dc xmlns=...>
+</dc/oai_dc>
+</metadata>
+
+Inside the metadata tag is the metadata format tag. Should the name of this
+tag be derived from the schema or as the harvester requested (i.e.
+metadataPrefix)?
+
+I wonder about this because my instinct was that this tag be the same name
+as was requested (so, if the harvester requested "oai_dc" it would be
+reasonable to expect the relevent section of XML to be called "oai_dc"), but
+the protocol examples have this as "dc" (the same as the schema, which, I
+suppose is "correct").
+
+Of my quick survey of repositories, arXiv and NACA currently use "oai_dc"
+and women writers, california international, cogprints and Humboldt
+University "dc" (I haven't checked other places, but it would look like most
+go with the schema/protocol examples).
+
+From a harvesters point of view (I don't believe there are many of us :-), I
+would prefer to have "oai_dc" because that tells me explicitly what data I
+can expect to find, rather than having to remember what I requested (as far
+as I can tell it is the one part that makes an isolated OAI response
+stateful, a real pain if one is using caching or other systems).
+
+As I am currently only harvesting from arXiv and cogprints I have explicitly
+written into my code handling of "dc" and "oai_dc" as meaning the same
+thing, but if this is ambiguous within the OAI protocol, or is schema
+dependent, I'll need to maintain the state information related to the
+metadataPrefix (n.b. all records contain a datestamp, so date state
+information is stored inside the XML).
+
+Dublin Core semantics within OAI:
+
+I am currently working in the very restricted environments of arXiv and
+cogprints. I have looked at some other repositories and noticed that some
+archives differ from the "standard" formatting for authors and dates (other
+fields aren't quite a simple), will validation check that a repository does
+something sensible with its data for Dublin Core as well as making sure it
+passes an XML validator?
+
+All the best,
+Tim.
+
+
+From hussein@vt.edu  Sun Apr  1 20:45:50 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Sun, 01 Apr 2001 12:45:50 -0700
+Subject: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+References: <3AC6833C.746988D0@vt.edu> <001001c0bab3$b6851060$0100a8c0@planitia>
+Message-ID: <3AC7856E.33A5A39C@vt.edu>
+
+hi
+
+Tim Brody wrote:
+> I've been playing around with the validator and have found it fails with my
+> output, which contains an empty ABOUT section (i.e. just <about></about>).
+> From my understanding of the protocol I should be able to have an empty
+> about (my logic was that if I was going to make use of this in future I
+> would want any harvesters to be able to handle about correctly, so an empty
+> tag was better than no tag at all).
+
+i guess your XML looks perfectly fine from a reasonableness viewpoint
+... the only reason it doesnt validate is that our schema definition
+does not currently allow it ... and thats because we didnt put in
+min/max constraints on the about tag (hence defaulting to a single
+required tag)
+
+we currently have:
+   <any namespace="##any" processContents="lax"/>
+
+and we ought to have:
+   <any namespace="##any" processContents="lax" minOccurs="0"
+maxOccurs="1"/>
+
+so i dont really know what happens now ... can this be fixed, Herbert ?
+will too much break if we do this ? or does it get added to our list of
+issues for the next iteration ?
+
+> Does anybody know of a "Howto" for writing OAI schemas, I really don't want
+> to spend hours trawling through the incomprehensibility of w3c just to make
+> a few tweaks?
+
+OAI schemas are not particularly special ... so you can just look at
+whats generally out there on schemas (which, alas, isnt much) ... ive
+found that reading and working from the "XML schema part 0: primer" is
+sufficient ... 
+
+there are one or two 3rd-party tutorials on the w3c site, but for
+quick-and-dirty tutorials, i havent seen any yet ...
+
+> Inside the metadata tag is the metadata format tag. Should the name of this
+> tag be derived from the schema or as the harvester requested (i.e.
+> metadataPrefix)?
+
+it doesnt really matter as far as the protocol goes ... 
+
+by your argument of self-containment, it makes a lot of sense to use the
+metadataPrefix for the root element ... this issue is something we've
+been debating recently in the context of NDLTD and while we didnt
+resolve it, we raised some interesting questions:
+- do we write schemata specifically for OAI or should our metadata
+schemata be generally applicable ? if the latter, and an OAI metadata
+scheme is prefixed with "oai_", we simply cannot encode this into our
+schemata ! what do we do then ?
+- is there a philsophical difference between a metadata set and the
+metadata generated when a particular set is requested ? ie, can i
+request "thesis or dissertation" records and receive some XML rooted
+with "thesis" and others rooted with "dissertation" ? or do we use
+containers ?
+
+should we tag on this "oai_dc vs dc" issue as one for future
+reconsideration ?
+
+> will validation check that a repository does
+> something sensible with its data for Dublin Core as well as making sure it
+> passes an XML validator?
+
+right now, unfortunately, no ... because the reference schema validator
+does not do regular expression processing yet ... maybe someone will do
+this some time in the near future ... but then generality does become an
+issue - who defines what is sensible ? i know there is a std date
+format, but is there a definition for a std name format ?
+
+ttfn
+----hussein
+
+-- 
+========================================================================
+hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+========================================================================
+
+From herbertv@cs.cornell.edu  Mon Apr  2 17:07:54 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Mon, 02 Apr 2001 12:07:54 -0400
+Subject: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+References: <3AC6833C.746988D0@vt.edu> <001001c0bab3$b6851060$0100a8c0@planitia>
+Message-ID: <3AC8A3DA.CE5FF89D@cs.cornell.edu>
+
+Tim Brody wrote:
+
+> 
+> >From a harvesters point of view (I don't believe there are many of us :-), I
+> would prefer to have "oai_dc" because that tells me explicitly what data I
+> can expect to find, rather than having to remember what I requested (as far
+> as I can tell it is the one part that makes an isolated OAI response
+> stateful, a real pain if one is using caching or other systems).
+> 
+
+The metadataPrefix is only signficiant within the realm of a certain
+repository.  The only exception is the metadataPrefix oai_dc, which --
+by convention -- refers to metadata expressed in unqualified Dublin Core
+in all repositories.  
+
+Regarding the metadata that flows back to the harvester in response to a
+protocol request: 
+
+* what REALLY tells you which metadata you receive is the namespace:
+xmlns="http://purl.org/dc/elements/1.1/" .  that is a global identifier
+of the format.
+
+* in addition to that, you do not have to "keep" the format you asked
+for: all response are self-contained, meaning you can tell from the
+original protocol request -- which is the content of the requestURL
+element -- what you asked for.  this has been a deliberate choice, since
+we are indeed talking about robots harvesting metadata, and some
+software processing the harvested metadata at a later stage.
+
+cheers
+
+herbert
+
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+From tdb198@ecs.soton.ac.uk  Mon Apr  2 17:28:57 2001
+From: tdb198@ecs.soton.ac.uk (Tim Brody)
+Date: Mon, 2 Apr 2001 17:28:57 +0100 (BST)
+Subject: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+In-Reply-To: <3AC8A3DA.CE5FF89D@cs.cornell.edu>
+Message-ID: <Pine.LNX.4.21.0104021722210.17051-100000@sway.ecs.soton.ac.uk>
+
+On Mon, 2 Apr 2001, herbert van de sompel wrote:
+
+> > >From a harvesters point of view (I don't believe there are many of us :-), I
+> > would prefer to have "oai_dc" because that tells me explicitly what data I
+> > can expect to find, rather than having to remember what I requested (as far
+> > as I can tell it is the one part that makes an isolated OAI response
+> > stateful, a real pain if one is using caching or other systems).
+> > 
+> 
+> The metadataPrefix is only signficiant within the realm of a certain
+> repository.  The only exception is the metadataPrefix oai_dc, which --
+> by convention -- refers to metadata expressed in unqualified Dublin Core
+> in all repositories.  
+
+> * what REALLY tells you which metadata you receive is the namespace:
+> xmlns="http://purl.org/dc/elements/1.1/" .  that is a global identifier
+> of the format.
+
+Agreed, I guess when using OAI responses I need to delve into the XML
+schema identification to be correct ...
+
+> * in addition to that, you do not have to "keep" the format you asked
+> for: all response are self-contained, meaning you can tell from the
+> original protocol request -- which is the content of the requestURL
+> element -- what you asked for.  this has been a deliberate choice, since
+> we are indeed talking about robots harvesting metadata, and some
+> software processing the harvested metadata at a later stage.
+
+I have thought of this, but the protocol specifically discards this
+information when using resumptionTokens (I, personally, don't like the
+idea of exclusive variables vs the repository doing something intelligent
+when asked something stupid - introduces state information that isn't
+naive to implement on either side).
+
+Of course, the namespace makes this immaterial.
+
+Thanks for the quick response,
+Tim.
+
+
+From Joe Futrelle <futrelle@ncsa.uiuc.edu>  Mon Apr  2 18:02:32 2001
+From: Joe Futrelle <futrelle@ncsa.uiuc.edu> (Joe Futrelle)
+Date: Mon, 2 Apr 2001 12:02:32 -0500
+Subject: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+In-Reply-To: <3AC7856E.33A5A39C@vt.edu>; from hussein@vt.edu on Sun, Apr 01, 2001 at 12:45:50PM -0700
+References: <3AC6833C.746988D0@vt.edu> <001001c0bab3$b6851060$0100a8c0@planitia> <3AC7856E.33A5A39C@vt.edu>
+Message-ID: <20010402120232.A9142@ncsa.uiuc.edu>
+
+On Sun, Apr 01, 2001 at 12:45:50PM -0700, Hussein Suleman wrote:
+> > Does anybody know of a "Howto" for writing OAI schemas, I really don't want
+> > to spend hours trawling through the incomprehensibility of w3c just to make
+> > a few tweaks?
+> 
+> OAI schemas are not particularly special ... so you can just look at
+> whats generally out there on schemas (which, alas, isnt much) ... ive
+> found that reading and working from the "XML schema part 0: primer" is
+> sufficient ... 
+
+Are there tools that will convert an existing XML DTD into an
+XML-Schema description?  That would be a good jumpstart for us.
+
+------------------------------------------------------------------------
+Joe Futrelle                  | "Lily wasn't immigrating." -- Lord
+Technical Lead                | Canvey Island 
+Emerge / SDT / DMV / NCSA     | 
+http://emerge.ncsa.uiuc.edu/  | 
+
+From lesli@aztec.lib.utk.edu  Mon Apr  2 18:36:35 2001
+From: lesli@aztec.lib.utk.edu (Lesli)
+Date: Mon, 02 Apr 2001 13:36:35 -0400
+Subject: [OAI-implementers] Harvesters
+References: <Pine.LNX.4.21.0104021722210.17051-100000@sway.ecs.soton.ac.uk>
+Message-ID: <3AC8B8A2.3D4C9B4D@aztec.lib.utk.edu>
+
+Are there any other OAI harvesters out there besides the one that Hussein has (or is
+harvester not the correct term for what Hussein has)?  We were wondering how many
+there might be and how to check them out.
+
+Thanks.
+Lesli Zimmerman
+Sr. Metadata Specialist
+University of Tennessee
+
+
+Tim Brody wrote:
+
+> On Mon, 2 Apr 2001, herbert van de sompel wrote:
+>
+> > > >From a harvesters point of view (I don't believe there are many of us :-), I
+> > > would prefer to have "oai_dc" because that tells me explicitly what data I
+> > > can expect to find, rather than having to remember what I requested (as far
+> > > as I can tell it is the one part that makes an isolated OAI response
+> > > stateful, a real pain if one is using caching or other systems).
+> > >
+> >
+> > The metadataPrefix is only signficiant within the realm of a certain
+> > repository.  The only exception is the metadataPrefix oai_dc, which --
+> > by convention -- refers to metadata expressed in unqualified Dublin Core
+> > in all repositories.
+>
+> > * what REALLY tells you which metadata you receive is the namespace:
+> > xmlns="http://purl.org/dc/elements/1.1/" .  that is a global identifier
+> > of the format.
+>
+> Agreed, I guess when using OAI responses I need to delve into the XML
+> schema identification to be correct ...
+>
+> > * in addition to that, you do not have to "keep" the format you asked
+> > for: all response are self-contained, meaning you can tell from the
+> > original protocol request -- which is the content of the requestURL
+> > element -- what you asked for.  this has been a deliberate choice, since
+> > we are indeed talking about robots harvesting metadata, and some
+> > software processing the harvested metadata at a later stage.
+>
+> I have thought of this, but the protocol specifically discards this
+> information when using resumptionTokens (I, personally, don't like the
+> idea of exclusive variables vs the repository doing something intelligent
+> when asked something stupid - introduces state information that isn't
+> naive to implement on either side).
+>
+> Of course, the namespace makes this immaterial.
+>
+> Thanks for the quick response,
+> Tim.
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+From Joe Futrelle <futrelle@ncsa.uiuc.edu>  Mon Apr  2 19:01:04 2001
+From: Joe Futrelle <futrelle@ncsa.uiuc.edu> (Joe Futrelle)
+Date: Mon, 2 Apr 2001 13:01:04 -0500
+Subject: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+In-Reply-To: <20010402120232.A9142@ncsa.uiuc.edu>; from futrelle@ncsa.uiuc.edu on Mon, Apr 02, 2001 at 12:02:32PM -0500
+References: <3AC6833C.746988D0@vt.edu> <001001c0bab3$b6851060$0100a8c0@planitia> <3AC7856E.33A5A39C@vt.edu> <20010402120232.A9142@ncsa.uiuc.edu>
+Message-ID: <20010402130104.E9217@ncsa.uiuc.edu>
+
+On Mon, Apr 02, 2001 at 12:02:32PM -0500, Joe Futrelle wrote:
+> On Sun, Apr 01, 2001 at 12:45:50PM -0700, Hussein Suleman wrote:
+> > > Does anybody know of a "Howto" for writing OAI schemas, I really don't want
+> > > to spend hours trawling through the incomprehensibility of w3c just to make
+> > > a few tweaks?
+> > 
+> > OAI schemas are not particularly special ... so you can just look at
+> > whats generally out there on schemas (which, alas, isnt much) ... ive
+> > found that reading and working from the "XML schema part 0: primer" is
+> > sufficient ... 
+> 
+> Are there tools that will convert an existing XML DTD into an
+> XML-Schema description?  That would be a good jumpstart for us.
+
+I found the one at w3 which FWIW is at
+
+http://www.w3.org/2000/04/schema_hack/
+
+------------------------------------------------------------------------
+Joe Futrelle                  | "Finally, yon trickster ennobled
+Technical Lead                | Hazel." -- Philippa Liberia Karlsruhe 
+Emerge / SDT / DMV / NCSA     | 
+http://emerge.ncsa.uiuc.edu/  | 
+
+From thabing@uiuc.edu  Mon Apr  2 20:30:08 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Mon, 02 Apr 2001 14:30:08 -0500
+Subject: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+References: <3AC6833C.746988D0@vt.edu> <001001c0bab3$b6851060$0100a8c0@planitia> <3AC7856E.33A5A39C@vt.edu> <20010402120232.A9142@ncsa.uiuc.edu> <20010402130104.E9217@ncsa.uiuc.edu>
+Message-ID: <3AC8D340.17FA75B4@uiuc.edu>
+
+Hi all,
+
+We are in the process of evaluating a commercial product called Turbo XML
+which has some support for conversion from DTDs (XML and SGML) to XML
+Schemas.  The product info can be found at http://www.extensibility.com/.
+
+Attached below is a short report from Robert Ferrer, another developer on
+our project, relating his experiences with the product:
+
+-----
+
+XML Authority is part of a suite of tools known collectively as Turbo 
+XML.  I found it most useful in using SGML DTDs to jumpstart the creation 
+of schemas.  It offers quite a few options in converting one format (DTD, 
+for example) into another format (XSD, for example).
+
+The Console component offers batch validation of XML instance and schema 
+files.  XML Authority facilitates the authoring of a schema, and XML 
+Instance facilitates the creation of an XML document using its schema as a 
+template.
+
+I found the suite of tools useful.  The jumpstart feature is very 
+useful.  However, once the initial draft of the schema is generated via 
+jumpstart, I preferred using a text editor for editing, and relying on 
+Console to validate the file.  The tools need to be better integrated into 
+a single interface.  I found changes that I made to the file from one 
+component are not easily registered by another component.  I found it 
+necessary to reload the document after I made a change.
+
+XML Turbo has good potential.  I understand that they'll be releasing a new 
+integrated version in the future.
+
+
+Joe Futrelle wrote:
+> 
+> On Mon, Apr 02, 2001 at 12:02:32PM -0500, Joe Futrelle wrote:
+> > On Sun, Apr 01, 2001 at 12:45:50PM -0700, Hussein Suleman wrote:
+> > > > Does anybody know of a "Howto" for writing OAI schemas, I really don't want
+> > > > to spend hours trawling through the incomprehensibility of w3c just to make
+> > > > a few tweaks?
+> > >
+> > > OAI schemas are not particularly special ... so you can just look at
+> > > whats generally out there on schemas (which, alas, isnt much) ... ive
+> > > found that reading and working from the "XML schema part 0: primer" is
+> > > sufficient ...
+> >
+> > Are there tools that will convert an existing XML DTD into an
+> > XML-Schema description?  That would be a good jumpstart for us.
+> 
+> I found the one at w3 which FWIW is at
+> 
+> http://www.w3.org/2000/04/schema_hack/
+> 
+> ------------------------------------------------------------------------
+> Joe Futrelle                  | "Finally, yon trickster ennobled
+> Technical Lead                | Hazel." -- Philippa Liberia Karlsruhe
+> Emerge / SDT / DMV / NCSA     |
+> http://emerge.ncsa.uiuc.edu/  |
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From lagoze@cs.cornell.edu  Tue Apr  3 11:00:54 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Tue, 3 Apr 2001 06:00:54 -0400
+Subject: FW: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA3AC@opus.cs.cornell.edu>
+
+
+-----Original Message-----
+From: Carl Lagoze 
+Sent: Tuesday, April 03, 2001 6:00 AM
+To: 'Joe Futrelle'
+Subject: RE: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+
+
+Hi Joe,
+
+There is a nice product that runs on windows called xml spy at
+http://www.xmlspy.com/.  I've used it for conversions (and lots of other
+xml stuff).
+
+Carl
+
+> -----Original Message-----
+> From: Joe Futrelle [mailto:futrelle@ncsa.uiuc.edu]
+> Sent: Monday, April 02, 2001 1:03 PM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] ABOUT & Schemas & metadataPrefix
+> 
+> 
+> On Sun, Apr 01, 2001 at 12:45:50PM -0700, Hussein Suleman wrote:
+> > > Does anybody know of a "Howto" for writing OAI schemas, I 
+> really don't want
+> > > to spend hours trawling through the incomprehensibility 
+> of w3c just to make
+> > > a few tweaks?
+> > 
+> > OAI schemas are not particularly special ... so you can just look at
+> > whats generally out there on schemas (which, alas, isnt 
+> much) ... ive
+> > found that reading and working from the "XML schema part 0: 
+> primer" is
+> > sufficient ... 
+> 
+> Are there tools that will convert an existing XML DTD into an
+> XML-Schema description?  That would be a good jumpstart for us.
+> 
+> --------------------------------------------------------------
+> ----------
+> Joe Futrelle                  | "Lily wasn't immigrating." -- Lord
+> Technical Lead                | Canvey Island 
+> Emerge / SDT / DMV / NCSA     | 
+> http://emerge.ncsa.uiuc.edu/  | 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From lagoze@cs.cornell.edu  Tue Apr  3 11:10:14 2001
+From: lagoze@cs.cornell.edu (lagoze@cs.cornell.edu)
+Date: Tue, 3 Apr 2001 06:10:14 -0400
+Subject: [OAI-implementers] Harvesters
+Message-ID: <706871B20764CD449DB0E8E3D81C4D43015AA3AE@opus.cs.cornell.edu>
+
+Hi Lesli,
+
+You might also contact Kurt Maly and Xiaoming Liu at Old Dominion about
+ARC.
+
+Carl
+
+> -----Original Message-----
+> From: Lesli [mailto:lesli@aztec.lib.utk.edu]
+> Sent: Monday, April 02, 2001 1:37 PM
+> To: Tim Brody
+> Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] Harvesters
+> 
+> 
+> Are there any other OAI harvesters out there besides the one 
+> that Hussein has (or is
+> harvester not the correct term for what Hussein has)?  We 
+> were wondering how many
+> there might be and how to check them out.
+> 
+> Thanks.
+> Lesli Zimmerman
+> Sr. Metadata Specialist
+> University of Tennessee
+> 
+> 
+> Tim Brody wrote:
+> 
+> > On Mon, 2 Apr 2001, herbert van de sompel wrote:
+> >
+> > > > >From a harvesters point of view (I don't believe there 
+> are many of us :-), I
+> > > > would prefer to have "oai_dc" because that tells me 
+> explicitly what data I
+> > > > can expect to find, rather than having to remember what 
+> I requested (as far
+> > > > as I can tell it is the one part that makes an isolated 
+> OAI response
+> > > > stateful, a real pain if one is using caching or other systems).
+> > > >
+> > >
+> > > The metadataPrefix is only signficiant within the realm 
+> of a certain
+> > > repository.  The only exception is the metadataPrefix 
+> oai_dc, which --
+> > > by convention -- refers to metadata expressed in 
+> unqualified Dublin Core
+> > > in all repositories.
+> >
+> > > * what REALLY tells you which metadata you receive is the 
+> namespace:
+> > > xmlns="http://purl.org/dc/elements/1.1/" .  that is a 
+> global identifier
+> > > of the format.
+> >
+> > Agreed, I guess when using OAI responses I need to delve 
+> into the XML
+> > schema identification to be correct ...
+> >
+> > > * in addition to that, you do not have to "keep" the 
+> format you asked
+> > > for: all response are self-contained, meaning you can 
+> tell from the
+> > > original protocol request -- which is the content of the 
+> requestURL
+> > > element -- what you asked for.  this has been a 
+> deliberate choice, since
+> > > we are indeed talking about robots harvesting metadata, and some
+> > > software processing the harvested metadata at a later stage.
+> >
+> > I have thought of this, but the protocol specifically discards this
+> > information when using resumptionTokens (I, personally, 
+> don't like the
+> > idea of exclusive variables vs the repository doing 
+> something intelligent
+> > when asked something stupid - introduces state information 
+> that isn't
+> > naive to implement on either side).
+> >
+> > Of course, the namespace makes this immaterial.
+> >
+> > Thanks for the quick response,
+> > Tim.
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From herbertv@cs.cornell.edu  Tue Apr  3 16:07:21 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Tue, 03 Apr 2001 11:07:21 -0400
+Subject: [OAI-implementers] XML Schema change
+Message-ID: <3AC9E728.6E153473@cs.cornell.edu>
+
+hi all,
+
+Just a quick note to inform you that we are evaluating the situation
+regarding the recent changes in the XML Schema specification and their
+impact on the OAI metadata harvesting protocol.  We hope to come up with
+a proposal for a strategy to handle this change in -- say -- 2 weeks
+from now.
+
+Herbert & Carl
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+From jyoung@oclc.org  Tue Apr  3 17:39:22 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Tue, 3 Apr 2001 12:39:22 -0400
+Subject: [OAI-implementers] Harvesters
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98342012@OA3-SERVER.oa.oclc.org>
+
+Lesli,
+
+I wrote an OAI harvester in Java. An overview is available at
+http://alcme.oclc.org:4342/OAIHarvester.html. I'll package it into a jar
+file and make it available from that page today or tomorrow. There's not
+much documentation on it yet, but I'd be happy to help you get it set up for
+your purposes.
+
+
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Fax:		614-764-2344
+Email:	jyoung@oclc.org
+
+
+
+
+> -----Original Message-----
+> From: Lesli [mailto:lesli@aztec.lib.utk.edu]
+> Sent: Monday, April 02, 2001 1:37 PM
+> To: Tim Brody
+> Cc: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: Re: [OAI-implementers] Harvesters
+> 
+> 
+> Are there any other OAI harvesters out there besides the one 
+> that Hussein has (or is
+> harvester not the correct term for what Hussein has)?  We 
+> were wondering how many
+> there might be and how to check them out.
+> 
+> Thanks.
+> Lesli Zimmerman
+> Sr. Metadata Specialist
+> University of Tennessee
+> 
+> 
+> Tim Brody wrote:
+> 
+> > On Mon, 2 Apr 2001, herbert van de sompel wrote:
+> >
+> > > > >From a harvesters point of view (I don't believe there 
+> are many of us :-), I
+> > > > would prefer to have "oai_dc" because that tells me 
+> explicitly what data I
+> > > > can expect to find, rather than having to remember what 
+> I requested (as far
+> > > > as I can tell it is the one part that makes an isolated 
+> OAI response
+> > > > stateful, a real pain if one is using caching or other systems).
+> > > >
+> > >
+> > > The metadataPrefix is only signficiant within the realm 
+> of a certain
+> > > repository.  The only exception is the metadataPrefix 
+> oai_dc, which --
+> > > by convention -- refers to metadata expressed in 
+> unqualified Dublin Core
+> > > in all repositories.
+> >
+> > > * what REALLY tells you which metadata you receive is the 
+> namespace:
+> > > xmlns="http://purl.org/dc/elements/1.1/" .  that is a 
+> global identifier
+> > > of the format.
+> >
+> > Agreed, I guess when using OAI responses I need to delve 
+> into the XML
+> > schema identification to be correct ...
+> >
+> > > * in addition to that, you do not have to "keep" the 
+> format you asked
+> > > for: all response are self-contained, meaning you can 
+> tell from the
+> > > original protocol request -- which is the content of the 
+> requestURL
+> > > element -- what you asked for.  this has been a 
+> deliberate choice, since
+> > > we are indeed talking about robots harvesting metadata, and some
+> > > software processing the harvested metadata at a later stage.
+> >
+> > I have thought of this, but the protocol specifically discards this
+> > information when using resumptionTokens (I, personally, 
+> don't like the
+> > idea of exclusive variables vs the repository doing 
+> something intelligent
+> > when asked something stupid - introduces state information 
+> that isn't
+> > naive to implement on either side).
+> >
+> > Of course, the namespace makes this immaterial.
+> >
+> > Thanks for the quick response,
+> > Tim.
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From herbertv@cs.cornell.edu  Tue Apr  3 23:08:49 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Tue, 03 Apr 2001 18:08:49 -0400
+Subject: [OAI-implementers] OAI site maintanance
+Message-ID: <3ACA49F1.8138E440@cs.cornell.edu>
+
+The Open Archives web site will be down for maintanance on Thursday
+April 12th 2001.  We expect it to be up again on Friday April 13th
+2001.  The maintanance will be carried out during office hours, GMT
+-07:00 .  
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+From herbertv@cs.cornell.edu  Fri Apr  6 22:07:36 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Fri, 06 Apr 2001 17:07:36 -0400
+Subject: [OAI-implementers] about container
+Message-ID: <3ACE3018.DD3ACD3F@cs.cornell.edu>
+
+hi,
+
+As a result of a recent mentioning of the lack of occurency information
+in the definition of the aboutType in ListRecords.xsd and GetRecord.xsd,
+we have added it -- minOccurs="0" maxOccurs="1" -- in:
+* both these xsd's
+* the protocol document
+
+Before making these changes, we checked whether doing so would affect
+conformance of any of the registered repositories.  It didn't.
+
+cheers
+
+herbert
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+From simeon@lanl.gov  Fri Apr  6 23:07:46 2001
+From: simeon@lanl.gov (Simeon Warner)
+Date: Fri, 6 Apr 2001 16:07:46 -0600 (MDT)
+Subject: [OAI-implementers] change to arXiv timestamps
+In-Reply-To: <3AC8D340.17FA75B4@uiuc.edu>
+Message-ID: <Pine.LNX.4.10.10104061507160.9983-100000@mmm.lanl.gov>
+
+I have changed (fixed) the way I generate timestamps for the arXiv
+OAI interface and also fixed some problems with dates in the
+metadata. Anyone who has been harvesting arXiv metadata should do
+a complete re-harvest at some stage.
+
+Cheers,
+Simeon.
+ 
+
+
+
+
+From henry@stern.ca  Fri Apr 20 18:00:56 2001
+From: henry@stern.ca (Henry Stern)
+Date: Fri, 20 Apr 2001 14:00:56 -0300
+Subject: [OAI-implementers] UTF-16 Metadata
+Message-ID: <CFEOKDCCIOCDJDOAGMIOCEMACAAA.henry@stern.ca>
+
+I've run into a little stopping place with the OAI protocol.  Only the UTF-8
+character encoding is permitted which eliminates the possibility of
+internationalization.
+
+I propose that the protocol definition be slightly altered to allow for
+different encodings to be used.  Since the processing instruction in the
+header of the XML document specifies which character encoding is being used,
+this shouldn't be any trouble.
+
+Aside from that, it's completely backwards compatible with all of the
+existing repositories and it won't be a big deal for your average harvester.
+
+Let me know what you think.
+
+Henry Stern
+
+---
+Flon's Law:
+	There is not now, and never will be, a language in
+	which it is the least bit difficult to write bad programs.
+
+
+
+From mds@notes.rlg.org  Fri Apr 20 19:48:28 2001
+From: mds@notes.rlg.org (Lennie Stovel)
+Date: Fri, 20 Apr 2001 11:48:28 -0700
+Subject: [OAI-implementers] UTF-8
+Message-ID: <OFB6944DB8.DBC975FB-ON88256A34.006727CA@rlg.org>
+
+I've run into a little stopping place with the OAI protocol.  Only the
+UTF-8
+character encoding is permitted which eliminates the possibility of
+internationalization.
+
+Henry,
+
+What is it about UTF-8 that eliminates the possibility of
+internationalization?  You can transfer any UNICODE character with a UTF-8
+encoding.
+
+-- Lennie Stovel, RLG
+
+
+From thabing@uiuc.edu  Fri Apr 20 20:02:29 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Fri, 20 Apr 2001 14:02:29 -0500
+Subject: [OAI-implementers] UTF-16 Metadata
+References: <CFEOKDCCIOCDJDOAGMIOCEMACAAA.henry@stern.ca>
+Message-ID: <3AE087C5.CF4C142D@uiuc.edu>
+
+Hi,
+
+How does UTF-8 preclude internationalization?  UTF-8 should allow the full
+repertoire of Unicode characters just like like UTF-16 does; only with
+different bit patterns for each character.
+
+Or were you referring to other encodings, such as the iso-8859-x family?  I
+would think that allowing arbitrary encodings (other than UTF-8 or UTF-16)
+would make interoperability very difficult.
+ 
+Tom
+
+Henry Stern wrote:
+> 
+> I've run into a little stopping place with the OAI protocol.  Only the UTF-8
+> character encoding is permitted which eliminates the possibility of
+> internationalization.
+> 
+> I propose that the protocol definition be slightly altered to allow for
+> different encodings to be used.  Since the processing instruction in the
+> header of the XML document specifies which character encoding is being used,
+> this shouldn't be any trouble.
+> 
+> Aside from that, it's completely backwards compatible with all of the
+> existing repositories and it won't be a big deal for your average harvester.
+> 
+> Let me know what you think.
+> 
+> Henry Stern
+> 
+> ---
+> Flon's Law:
+>         There is not now, and never will be, a language in
+>         which it is the least bit difficult to write bad programs.
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From hussein@vt.edu  Sat Apr 21 00:32:49 2001
+From: hussein@vt.edu (Hussein Suleman)
+Date: Fri, 20 Apr 2001 16:32:49 -0700
+Subject: [OAI-implementers] new version of Repository Explorer
+References: <CFEOKDCCIOCDJDOAGMIOCEMACAAA.henry@stern.ca>
+ <3AE087C5.CF4C142D@uiuc.edu>
+Message-ID: <3AE0C721.E1C7D2D4@vt.edu>
+
+hi
+
+heres a little pre-announcement of sorts ...
+
+i finally finished upgrading the repository explorer to include the
+following additional features:
+- multilingual interface support (English, French, German, Spanish,
+Portuguese)
+- support for local schema validation (so we dont need to connect to
+www.openarchives.org for every check performed)
+- color scheme customization
+- parallel display of XML and parsed output
+- ability to bypass schema validation for speed
+- improved error reporting when not using schemas
+- better code organization (so others can install it too)
+
+try the following URLs
+
+regular interface:
+  http://rocky.dlib.vt.edu/~oai/cgi-bin/Explorer/1.0-1.1/testoai
+
+German interface:
+ 
+http://rocky.dlib.vt.edu/~oai/cgi-bin/Explorer/1.0-1.1/testoai?language=gr.lan  
+
+blue color scheme:
+http://rocky.dlib.vt.edu/~oai/cgi-bin/Explorer/1.0-1.1/testoai?bgcolor=00ddff&headercolor=4488ff&blockcolor=88ffff
+
+please let me know if anything doesnt work ... i havent replaced the old
+version yet ... also, the translations are all somewhat flaky since they
+are machine generated ... i will appreciate any volunteers who can
+create translation files - send me email - i have a simple text file
+with the mappings that i can send to you and thereafter integrate back
+into the program (Susanne, i think we spoke briefly about doing this a
+few weeks ago)
+
+ttfn
+----hussein
+
+-- 
+========================================================================
+hussein suleman -- hussein@vt.edu -- vtcs -- http://purl.org/net/hussein
+========================================================================
+
+From jyoung1@columbus.rr.com  Sat Apr 21 00:10:48 2001
+From: jyoung1@columbus.rr.com (Jeffrey A. Young)
+Date: Fri, 20 Apr 2001 19:10:48 -0400
+Subject: [OAI-implementers] XML Schema problem?
+Message-ID: <CNEDJECFANMNOHKENHEAMEDDCAAA.jyoung1@columbus.rr.com>
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_000C_01C0C9CD.9BB9D620
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+
+Someone noticed that my OAIHarvester isn't working correctly lately. It
+turns out that the Xerces XML parser is convinced that all the records I
+harvest are flagged as status="deleted". Since this clearly isn't the case,
+I started stripping the program down until I had a small example program
+showing this effect. The Java source code is attached. Basically, if I do
+DocumentBuilderFactory.setValidating(true) and then convert the XML to a DOM
+Document, it silently "corrects" my records to status="deleted". If I dump
+the Document, all looks fine, but when I actually query the status
+attribute, it reports back with a value of "deleted". On the other hand, if
+I specify setValidating(false), everything works fine. I suspect the problem
+is that the XML Schema needs to make the status attribute optional. Another
+possibility is that Xerces is processing the XML Schema incorrectly. I can
+ignore the problem by always using setValidating(false), but that doesn't
+seem right. If someone has a better solution, I would appreciate it. Thanks.
+
+Jeff
+
+---
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Fax:		614-764-2344
+Email:	jyoung@oclc.org
+
+
+
+------=_NextPart_000_000C_01C0C9CD.9BB9D620
+Content-Type: application/octet-stream;
+	name="Test.java"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="Test.java"
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
+
+public class Test {
+    public static void main(String[] args) {
+	try {
+	    DocumentBuilderFactory factory =3D =
+DocumentBuilderFactory.newInstance();
+	    String arg =3D "";
+	    if (args.length =3D=3D 1)
+		arg =3D args[0];
+	    if (arg.equals("true")) {
+		factory.setValidating(true);
+	    } else if (arg.equals("false")) {
+		factory.setValidating(false);
+	    } else {
+		System.err.println("Usage: java Test [true|false]");
+		System.exit(-1);
+	    }
+	   =20
+	    factory.setNamespaceAware(true);
+	    DocumentBuilder parser =3D factory.newDocumentBuilder();
+	    String xml =3D "<?xml version=3D\"1.0\" =
+encoding=3D\"UTF-8\"?><ListRecords =
+xmlns=3D\"http://www.openarchives.org/OAI/1.0/OAI_ListRecords\" =
+xmlns:xsi=3D\"http://www.w3.org/2000/10/XMLSchema-instance\" =
+xsi:schemaLocation=3D\"http://www.openarchives.org/OAI/1.0/OAI_ListRecord=
+s =
+http://www.openarchives.org/OAI/1.0/OAI_ListRecords.xsd\"><responseDate>2=
+001-04-20T14:48:40-05:00</responseDate><requestURL>http://orc:4342/etdcat=
+/servlet/OAIHandler?metadataPrefix=3Doai_dc&amp;verb=3DListRecords</reque=
+stURL><record><header><identifier>oai:etdcat:ocm02999966</identifier><dat=
+estamp>2001-02-02</datestamp></header><metadata><dc =
+xmlns=3D\"http://purl.org/dc/elements/1.1/\" =
+xmlns:xsi=3D\"http://www.w3.org/2000/10/XMLSchema-instance\" =
+xsi:schemaLocation=3D\"http://purl.org/dc/elements/1.1/ =
+http://www.openarchives.org/OAI/dc.xsd\"></dc></metadata></record><resump=
+tionToken>987796143360:100:oai_dc</resumptionToken></ListRecords>";
+	    StringReader sr =3D new StringReader(xml);
+	    InputSource is =3D new InputSource(sr);
+	    Document doc =3D parser.parse(is);
+	    Element docEl =3D doc.getDocumentElement();
+	    NodeList list =3D docEl.getElementsByTagName("record");
+	    Element recEl =3D (Element)list.item(0);
+	    System.out.println("status =3D " + recEl.getAttribute("status"));
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+}
+
+------=_NextPart_000_000C_01C0C9CD.9BB9D620--
+
+
+From herbertv@cs.cornell.edu  Sun Apr 22 19:44:26 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Sun, 22 Apr 2001 14:44:26 -0400
+Subject: [OAI-implementers] XML Schema problem?
+References: <CNEDJECFANMNOHKENHEAMEDDCAAA.jyoung1@columbus.rr.com>
+Message-ID: <3AE3268A.50409968@cs.cornell.edu>
+
+This is a multi-part message in MIME format.
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+
+hi Jeff,
+
+Thanks for this.  Your consideration is correct, there is a problem in
+the schema that use the "status" attribute.  That is GetRecord,
+ListRecords and ListIdentifiers.
+
+This is what the September 2000 schema specs say re specifying
+occurencies of attributes.  In the excerpt that I include, reference is
+made to the following declaration in an xsd file:
+
+<xsd:attribute name="country" type="xsd:NMTOKEN" use="fixed"
+value="US"/>
+
+"
+Attributes may appear once or not at all (the default), and so the
+syntax for specifying occurrences of attributes
+is different than the syntax for elements. In particular, a use
+attribute is used in an attribute declaration to
+indicate whether the attribute is required or optional, and if optional
+whether the attribute's value is fixed or
+whether there is a default. A second attribute, value, provides any
+value that is called for. To illustrate, po.xsd
+contains a declaration for the country attribute, which is declared with
+use and value values of fixed and US
+respectively. This declaration means that the appearance of a country
+attribute is optional, although its value
+must be US if it does appear, and if it does not appear, a schema
+processor will create a country attribute with
+this value. 
+"
+
+This last line indicates that Xerces is doing the right thing, which is
+obviously not what we want to happen.
+
+With Michael Nelson, I have revised the XML Schema that involved a
+status attribute.  The solution was less straightforward than one would
+hope.  There is no simple way to express what we really would like to
+express: the status attribute may occur, and if it occurs its value must
+be "deleted".  The workaround is to list legitimate values of the status
+attribute and specify a default.  We chose the values to be "deleted"
+and "not deleted", with "not deleted" as the default.  With this in
+place, one can express in a schema that the status attribute may appear,
+and that its default value (if the attribute does not appear) is "not
+deleted".  One can also express that there is only one other legitimate
+value for status.  It is "deleted".  And this one must be specified,
+since it is not the default value.  
+
+
+Using this approach nothing really changes for data providers (nor
+service providers, really).  But I guess Xerces will do the right thing,
+now, add the default value of "not deleted" to all records that do not
+have the status attribute specified.
+
+The way to express the above approach in the schema is different for the
+Sep/Oct 2000 specs that we use and for the most recent XML specs.  but
+that is another story, to be addressed later.  
+
+I attach the edited xsd files.  I will put them in place, unless someone
+disagrees with the approach taken.
+
+many greetings
+
+herbert
+
+
+
+"Jeffrey A. Young" wrote:
+> 
+> Someone noticed that my OAIHarvester isn't working correctly lately. It
+> turns out that the Xerces XML parser is convinced that all the records I
+> harvest are flagged as status="deleted". Since this clearly isn't the case,
+> I started stripping the program down until I had a small example program
+> showing this effect. The Java source code is attached. Basically, if I do
+> DocumentBuilderFactory.setValidating(true) and then convert the XML to a DOM
+> Document, it silently "corrects" my records to status="deleted". If I dump
+> the Document, all looks fine, but when I actually query the status
+> attribute, it reports back with a value of "deleted". On the other hand, if
+> I specify setValidating(false), everything works fine. I suspect the problem
+> is that the XML Schema needs to make the status attribute optional. Another
+> possibility is that Xerces is processing the XML Schema incorrectly. I can
+> ignore the problem by always using setValidating(false), but that doesn't
+> seem right. If someone has a better solution, I would appreciate it. Thanks.
+> 
+> Jeff
+> 
+> ---
+> Jeffrey A. Young
+> Senior Consulting Systems Analyst
+> Office of Research, Mail Code 710
+> OCLC Online Computer Library Center, Inc.
+> 6565 Frantz Road
+> Dublin, OH   43017-3395
+> www.oclc.org
+> 
+> Voice:  614-764-4342
+> Fax:            614-764-2344
+> Email:  jyoung@oclc.org
+> 
+>   ------------------------------------------------------------------------
+>                 Name: Test.java
+>    Test.java    Type: unspecified type (application/octet-stream)
+>             Encoding: quoted-printable
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii;
+ name="OAI_GetRecord-status.xsd"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="OAI_GetRecord-status.xsd"
+
+<schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+         xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+         targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+         elementFormDefault="qualified"
+         attributeFormDefault="unqualified">
+
+ <annotation>
+  <documentation>
+    Schema to verify validity of responses to GetRecord OAI-protocol request.
+    This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+    with XSV 1.176/1.87 of 2001/02/16 16:38:43
+  </documentation>
+ </annotation>
+
+ <element name="GetRecord" type="oai:GetRecordType"/>
+
+ <!-- response to GetRecord-request -->
+
+ <complexType name="GetRecordType">
+  <sequence>
+    <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+    <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+    <element name="record" minOccurs="0" maxOccurs="1" type="oai:recordType"/>
+  </sequence>
+ </complexType>
+
+ <!-- define recordType -->
+ <!-- a record has a header and a metadata part -->
+
+ <complexType name="recordType">
+  <sequence>
+    <element name="header" minOccurs="1" maxOccurs="1" type="oai:headerType"/>
+    <element name="metadata" minOccurs="0" maxOccurs="1" type="oai:metadataType"/>
+    <element name="about" minOccurs="0" maxOccurs="1" type="oai:aboutType"/>
+  </sequence>
+    <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+ </complexType>
+
+ <!-- define headerType -->
+ <!-- a header has a unique identifier and a datestamp -->
+
+ <complexType name="headerType">
+  <sequence>
+    <element name="identifier" minOccurs="1" maxOccurs="1" type="uriReference"/>
+    <element name="datestamp" minOccurs="1" maxOccurs="1" type="date"/>
+  </sequence>
+ </complexType>
+
+ <!-- define metadataType -->
+ <!-- metadata must be expressed in XML that is compliant with another XML Schema -->
+ <!-- metadata must be explicitely qualified in the response -->
+
+ <complexType name="metadataType">
+  <sequence>
+   <any namespace="##any" processContents="lax"/>
+  </sequence>
+ </complexType>
+
+ <!-- define aboutType -->
+ <!-- data "about" the record must be expressed in XML -->
+ <!-- that is compliant with an XML Schema defined by a community -->
+
+ <complexType name="aboutType">
+  <sequence>
+   <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="1"/>
+  </sequence>
+ </complexType>
+
+ <!-- define statusType -->
+ <!-- a record can have a status of "deleted" or "not deleted". -->
+
+ <simpleType name="statusType">
+   <restriction base="string">
+    <enumeration value="deleted"/>
+    <enumeration value="not deleted"/>
+   </restriction>
+  </simpleType>
+
+ </schema>
+
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii;
+ name="OAI_ListRecords-status.xsd"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="OAI_ListRecords-status.xsd"
+
+<schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+          xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+          targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+          elementFormDefault="qualified"
+          attributeFormDefault="unqualified">
+
+  <annotation>
+   <documentation>
+     Schema to verify validity of responses to ListRecords OAI-protocol request.
+    This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+    with XSV 1.176/1.87 of 2001/02/16 16:38:43
+   </documentation>
+  </annotation>
+
+  <element name="ListRecords" type="oai:ListRecordsType"/>
+
+  <!-- response to ListRecords-request -->
+  <!-- this response may contain an optional resumptionToken -->
+
+  <complexType name="ListRecordsType">
+   <sequence>
+     <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+     <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+     <element name="record" minOccurs="0" maxOccurs="unbounded" type="oai:recordType"/>
+     <element name="resumptionToken" minOccurs="0" maxOccurs="1" type="string"/>
+   </sequence>
+   </complexType>
+
+  <!-- define recordType -->
+  <!-- a record has a header and a metadata part -->
+
+  <complexType name="recordType">
+   <sequence>
+     <element name="header" minOccurs="1" maxOccurs="1" type="oai:headerType"/>
+     <element name="metadata" minOccurs="0" maxOccurs="1" type="oai:metadataType"/>
+     <element name="about" minOccurs="0" maxOccurs="1" type="oai:aboutType"/>
+   </sequence>
+    <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+  </complexType>
+
+  <!-- define headerType -->
+  <!-- a header has a unique identifier and a datestamp -->
+
+  <complexType name="headerType">
+   <sequence>
+     <element name="identifier" minOccurs="1" maxOccurs="1" type="uriReference"/>
+     <element name="datestamp" minOccurs="1" maxOccurs="1" type="date"/>
+   </sequence>
+  </complexType>
+
+  <!-- define metadataType -->
+  <!-- metadata must be expressed in XML that complies with another XML Schema -->
+  <!-- metadata must be explicitely qualified in the response -->
+
+  <complexType name="metadataType">
+   <sequence>
+    <any namespace="##any" processContents="lax"/>
+   </sequence>
+  </complexType>
+
+ <!-- define aboutType -->
+ <!-- data "about" the record must be expressed in XML -->
+ <!-- that is compliant with an XML Schema defined by a community -->
+
+ <complexType name="aboutType">
+  <sequence>
+   <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="1"/>
+  </sequence>
+ </complexType>
+
+ <!-- define statusType -->
+ <!-- a record can have a status of "deleted" or "not deleted". -->
+
+ <simpleType name="statusType">
+   <restriction base="string">
+    <enumeration value="deleted"/>
+    <enumeration value="not deleted"/>
+   </restriction>
+  </simpleType>
+
+</schema>
+--------------763AD80798C4E0A8A1B247FF
+Content-Type: text/plain; charset=us-ascii;
+ name="OAI_ListIdentifiers-status.xsd"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline;
+ filename="OAI_ListIdentifiers-status.xsd"
+
+<schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+         xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+         targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+         elementFormDefault="qualified"
+         attributeFormDefault="unqualified">
+
+ <annotation>
+  <documentation>
+    Schema to verify validity of responses to ListIdentifiers OAI-protocol request.
+    This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+    with XSV 1.176/1.87 of 2001/02/16 16:38:43
+  </documentation>
+ </annotation>
+
+ <element name="ListIdentifiers" type="oai:ListIdentifiersType"/>
+
+ <!-- response to ListIdentifiers-request -->
+ <!-- records have an optional "deleted" status -->
+ <!-- this response may contain an optional resumptionToken -->
+
+ <complexType name="ListIdentifiersType">
+  <sequence>
+    <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+    <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+    <element ref="oai:identifier" minOccurs="0" maxOccurs="unbounded"/>
+    <element name="resumptionToken" minOccurs="0" maxOccurs="1" type="string"/>
+  </sequence>
+ </complexType>
+
+ <element name="identifier">
+  <complexType>
+   <simpleContent>
+    <extension base="uriReference">
+     <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+    </extension>
+   </simpleContent>
+  </complexType>
+ </element>
+
+ <!-- define statusType -->
+ <!-- a record can have a status of "deleted" or "not deleted". -->
+
+ <simpleType name="statusType">
+   <restriction base="string">
+    <enumeration value="deleted"/>
+    <enumeration value="not deleted"/>
+   </restriction>
+  </simpleType>
+
+ </schema>
+--------------763AD80798C4E0A8A1B247FF--
+
+
+
+
+From jyoung@oclc.org  Mon Apr 23 15:31:56 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Mon, 23 Apr 2001 10:31:56 -0400
+Subject: [OAI-implementers] XML Schema problem?
+Message-ID: <E5431CF93E29F9478878F623E5B9CE9834207A@OA3-SERVER.oa.oclc.org>
+
+Herbert,
+
+I tried the new schemas and Xerces seems to be happy with them. Thanks!
+
+Jeff
+
+-----Original Message-----
+From: herbert van de sompel [mailto:herbertv@cs.cornell.edu]
+Sent: Sunday, April 22, 2001 2:44 PM
+To: OAI-implementers
+Subject: Re: [OAI-implementers] XML Schema problem?
+
+
+hi Jeff,
+
+Thanks for this.  Your consideration is correct, there is a problem in
+the schema that use the "status" attribute.  That is GetRecord,
+ListRecords and ListIdentifiers.
+
+This is what the September 2000 schema specs say re specifying
+occurencies of attributes.  In the excerpt that I include, reference is
+made to the following declaration in an xsd file:
+
+<xsd:attribute name="country" type="xsd:NMTOKEN" use="fixed"
+value="US"/>
+
+"
+Attributes may appear once or not at all (the default), and so the
+syntax for specifying occurrences of attributes
+is different than the syntax for elements. In particular, a use
+attribute is used in an attribute declaration to
+indicate whether the attribute is required or optional, and if optional
+whether the attribute's value is fixed or
+whether there is a default. A second attribute, value, provides any
+value that is called for. To illustrate, po.xsd
+contains a declaration for the country attribute, which is declared with
+use and value values of fixed and US
+respectively. This declaration means that the appearance of a country
+attribute is optional, although its value
+must be US if it does appear, and if it does not appear, a schema
+processor will create a country attribute with
+this value. 
+"
+
+This last line indicates that Xerces is doing the right thing, which is
+obviously not what we want to happen.
+
+With Michael Nelson, I have revised the XML Schema that involved a
+status attribute.  The solution was less straightforward than one would
+hope.  There is no simple way to express what we really would like to
+express: the status attribute may occur, and if it occurs its value must
+be "deleted".  The workaround is to list legitimate values of the status
+attribute and specify a default.  We chose the values to be "deleted"
+and "not deleted", with "not deleted" as the default.  With this in
+place, one can express in a schema that the status attribute may appear,
+and that its default value (if the attribute does not appear) is "not
+deleted".  One can also express that there is only one other legitimate
+value for status.  It is "deleted".  And this one must be specified,
+since it is not the default value.  
+
+
+Using this approach nothing really changes for data providers (nor
+service providers, really).  But I guess Xerces will do the right thing,
+now, add the default value of "not deleted" to all records that do not
+have the status attribute specified.
+
+The way to express the above approach in the schema is different for the
+Sep/Oct 2000 specs that we use and for the most recent XML specs.  but
+that is another story, to be addressed later.  
+
+I attach the edited xsd files.  I will put them in place, unless someone
+disagrees with the approach taken.
+
+many greetings
+
+herbert
+
+
+
+"Jeffrey A. Young" wrote:
+> 
+> Someone noticed that my OAIHarvester isn't working correctly lately. It
+> turns out that the Xerces XML parser is convinced that all the records I
+> harvest are flagged as status="deleted". Since this clearly isn't the
+case,
+> I started stripping the program down until I had a small example program
+> showing this effect. The Java source code is attached. Basically, if I do
+> DocumentBuilderFactory.setValidating(true) and then convert the XML to a
+DOM
+> Document, it silently "corrects" my records to status="deleted". If I dump
+> the Document, all looks fine, but when I actually query the status
+> attribute, it reports back with a value of "deleted". On the other hand,
+if
+> I specify setValidating(false), everything works fine. I suspect the
+problem
+> is that the XML Schema needs to make the status attribute optional.
+Another
+> possibility is that Xerces is processing the XML Schema incorrectly. I can
+> ignore the problem by always using setValidating(false), but that doesn't
+> seem right. If someone has a better solution, I would appreciate it.
+Thanks.
+> 
+> Jeff
+> 
+> ---
+> Jeffrey A. Young
+> Senior Consulting Systems Analyst
+> Office of Research, Mail Code 710
+> OCLC Online Computer Library Center, Inc.
+> 6565 Frantz Road
+> Dublin, OH   43017-3395
+> www.oclc.org
+> 
+> Voice:  614-764-4342
+> Fax:            614-764-2344
+> Email:  jyoung@oclc.org
+> 
+>   ------------------------------------------------------------------------
+>                 Name: Test.java
+>    Test.java    Type: unspecified type (application/octet-stream)
+>             Encoding: quoted-printable
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+From thabing@uiuc.edu  Mon Apr 23 16:01:51 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Mon, 23 Apr 2001 10:01:51 -0500
+Subject: [OAI-implementers] XML Schema problem?
+References: <CNEDJECFANMNOHKENHEAMEDDCAAA.jyoung1@columbus.rr.com> <3AE3268A.50409968@cs.cornell.edu>
+Message-ID: <3AE443DF.69B1B959@uiuc.edu>
+
+Herbert-
+
+In the XSDs, wouldn't it be simpler to change use attribute value in the
+status attribute declaration to "optional" (delete the value attribute) and
+then tie it's type to an enumerated list that only allows the value
+"deleted".  With no value attribute and the use attribute set to optional
+(as opposed to default or fixed) in the status attribute declaration, the
+parser shouldn't assume a value.  The enumerated list still restricts the
+allowable values of the status attribute in document instances.  This seems
+to work in other parsers but we've not tried it in Xerces.  Here's the
+attribute declaration as we're suggesting:
+
+  <complexType name="recordType">
+   <sequence>
+     <element name="header" minOccurs="1" maxOccurs="1"
+type="oai:headerType"/>
+     <element name="metadata" minOccurs="0" maxOccurs="1"
+type="oai:metadataType"/>
+     <element name="about" minOccurs="0" maxOccurs="1"
+type="oai:aboutType"/>
+   </sequence>
+     <attribute name="status" use="optional" type="oai:statusType"/>
+  </complexType>
+
+ ...
+
+  <simpleType name="statusType">
+    <restriction base="string">
+     <enumeration value="deleted"/>
+    </restriction>
+   </simpleType>
+
+Tim Cole
+Tom Habing
+University of Illinois
+
+herbert van de sompel wrote:
+> 
+> hi Jeff,
+> 
+> Thanks for this.  Your consideration is correct, there is a problem in
+> the schema that use the "status" attribute.  That is GetRecord,
+> ListRecords and ListIdentifiers.
+> 
+> This is what the September 2000 schema specs say re specifying
+> occurencies of attributes.  In the excerpt that I include, reference is
+> made to the following declaration in an xsd file:
+> 
+> <xsd:attribute name="country" type="xsd:NMTOKEN" use="fixed"
+> value="US"/>
+> 
+> "
+> Attributes may appear once or not at all (the default), and so the
+> syntax for specifying occurrences of attributes
+> is different than the syntax for elements. In particular, a use
+> attribute is used in an attribute declaration to
+> indicate whether the attribute is required or optional, and if optional
+> whether the attribute's value is fixed or
+> whether there is a default. A second attribute, value, provides any
+> value that is called for. To illustrate, po.xsd
+> contains a declaration for the country attribute, which is declared with
+> use and value values of fixed and US
+> respectively. This declaration means that the appearance of a country
+> attribute is optional, although its value
+> must be US if it does appear, and if it does not appear, a schema
+> processor will create a country attribute with
+> this value.
+> "
+> 
+> This last line indicates that Xerces is doing the right thing, which is
+> obviously not what we want to happen.
+> 
+> With Michael Nelson, I have revised the XML Schema that involved a
+> status attribute.  The solution was less straightforward than one would
+> hope.  There is no simple way to express what we really would like to
+> express: the status attribute may occur, and if it occurs its value must
+> be "deleted".  The workaround is to list legitimate values of the status
+> attribute and specify a default.  We chose the values to be "deleted"
+> and "not deleted", with "not deleted" as the default.  With this in
+> place, one can express in a schema that the status attribute may appear,
+> and that its default value (if the attribute does not appear) is "not
+> deleted".  One can also express that there is only one other legitimate
+> value for status.  It is "deleted".  And this one must be specified,
+> since it is not the default value.
+> 
+> Using this approach nothing really changes for data providers (nor
+> service providers, really).  But I guess Xerces will do the right thing,
+> now, add the default value of "not deleted" to all records that do not
+> have the status attribute specified.
+> 
+> The way to express the above approach in the schema is different for the
+> Sep/Oct 2000 specs that we use and for the most recent XML specs.  but
+> that is another story, to be addressed later.
+> 
+> I attach the edited xsd files.  I will put them in place, unless someone
+> disagrees with the approach taken.
+> 
+> many greetings
+> 
+> herbert
+> 
+> "Jeffrey A. Young" wrote:
+> >
+> > Someone noticed that my OAIHarvester isn't working correctly lately. It
+> > turns out that the Xerces XML parser is convinced that all the records I
+> > harvest are flagged as status="deleted". Since this clearly isn't the case,
+> > I started stripping the program down until I had a small example program
+> > showing this effect. The Java source code is attached. Basically, if I do
+> > DocumentBuilderFactory.setValidating(true) and then convert the XML to a DOM
+> > Document, it silently "corrects" my records to status="deleted". If I dump
+> > the Document, all looks fine, but when I actually query the status
+> > attribute, it reports back with a value of "deleted". On the other hand, if
+> > I specify setValidating(false), everything works fine. I suspect the problem
+> > is that the XML Schema needs to make the status attribute optional. Another
+> > possibility is that Xerces is processing the XML Schema incorrectly. I can
+> > ignore the problem by always using setValidating(false), but that doesn't
+> > seem right. If someone has a better solution, I would appreciate it. Thanks.
+> >
+> > Jeff
+> >
+> > ---
+> > Jeffrey A. Young
+> > Senior Consulting Systems Analyst
+> > Office of Research, Mail Code 710
+> > OCLC Online Computer Library Center, Inc.
+> > 6565 Frantz Road
+> > Dublin, OH   43017-3395
+> > www.oclc.org
+> >
+> > Voice:  614-764-4342
+> > Fax:            614-764-2344
+> > Email:  jyoung@oclc.org
+> >
+> >   ------------------------------------------------------------------------
+> >                 Name: Test.java
+> >    Test.java    Type: unspecified type (application/octet-stream)
+> >             Encoding: quoted-printable
+> 
+> --
+> Herbert Van de Sompel
+> Visiting Assistant Professor
+> Cornell University -- Computer Science
+> tel + 1 - 607 - 255 - 3085
+> fax + 1 - 607 - 255 - 4428
+> http://www.cs.cornell.edu/people/herbertv/
+> digital life in libraries used to be primitive
+> 
+>   ----------------------------------------------------------------------------
+> <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+>          xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+>          targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+>          elementFormDefault="qualified"
+>          attributeFormDefault="unqualified">
+> 
+>  <annotation>
+>   <documentation>
+>     Schema to verify validity of responses to GetRecord OAI-protocol request.
+>     This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+>     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+>   </documentation>
+>  </annotation>
+> 
+>  <element name="GetRecord" type="oai:GetRecordType"/>
+> 
+>  <!-- response to GetRecord-request -->
+> 
+>  <complexType name="GetRecordType">
+>   <sequence>
+>     <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+>     <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+>     <element name="record" minOccurs="0" maxOccurs="1" type="oai:recordType"/>
+>   </sequence>
+>  </complexType>
+> 
+>  <!-- define recordType -->
+>  <!-- a record has a header and a metadata part -->
+> 
+>  <complexType name="recordType">
+>   <sequence>
+>     <element name="header" minOccurs="1" maxOccurs="1" type="oai:headerType"/>
+>     <element name="metadata" minOccurs="0" maxOccurs="1" type="oai:metadataType"/>
+>     <element name="about" minOccurs="0" maxOccurs="1" type="oai:aboutType"/>
+>   </sequence>
+>     <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+>  </complexType>
+> 
+>  <!-- define headerType -->
+>  <!-- a header has a unique identifier and a datestamp -->
+> 
+>  <complexType name="headerType">
+>   <sequence>
+>     <element name="identifier" minOccurs="1" maxOccurs="1" type="uriReference"/>
+>     <element name="datestamp" minOccurs="1" maxOccurs="1" type="date"/>
+>   </sequence>
+>  </complexType>
+> 
+>  <!-- define metadataType -->
+>  <!-- metadata must be expressed in XML that is compliant with another XML Schema -->
+>  <!-- metadata must be explicitely qualified in the response -->
+> 
+>  <complexType name="metadataType">
+>   <sequence>
+>    <any namespace="##any" processContents="lax"/>
+>   </sequence>
+>  </complexType>
+> 
+>  <!-- define aboutType -->
+>  <!-- data "about" the record must be expressed in XML -->
+>  <!-- that is compliant with an XML Schema defined by a community -->
+> 
+>  <complexType name="aboutType">
+>   <sequence>
+>    <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="1"/>
+>   </sequence>
+>  </complexType>
+> 
+>  <!-- define statusType -->
+>  <!-- a record can have a status of "deleted" or "not deleted". -->
+> 
+>  <simpleType name="statusType">
+>    <restriction base="string">
+>     <enumeration value="deleted"/>
+>     <enumeration value="not deleted"/>
+>    </restriction>
+>   </simpleType>
+> 
+>  </schema>
+> 
+>   ----------------------------------------------------------------------------
+> <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+>           xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+>           targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+>           elementFormDefault="qualified"
+>           attributeFormDefault="unqualified">
+> 
+>   <annotation>
+>    <documentation>
+>      Schema to verify validity of responses to ListRecords OAI-protocol request.
+>     This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+>     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+>    </documentation>
+>   </annotation>
+> 
+>   <element name="ListRecords" type="oai:ListRecordsType"/>
+> 
+>   <!-- response to ListRecords-request -->
+>   <!-- this response may contain an optional resumptionToken -->
+> 
+>   <complexType name="ListRecordsType">
+>    <sequence>
+>      <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+>      <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+>      <element name="record" minOccurs="0" maxOccurs="unbounded" type="oai:recordType"/>
+>      <element name="resumptionToken" minOccurs="0" maxOccurs="1" type="string"/>
+>    </sequence>
+>    </complexType>
+> 
+>   <!-- define recordType -->
+>   <!-- a record has a header and a metadata part -->
+> 
+>   <complexType name="recordType">
+>    <sequence>
+>      <element name="header" minOccurs="1" maxOccurs="1" type="oai:headerType"/>
+>      <element name="metadata" minOccurs="0" maxOccurs="1" type="oai:metadataType"/>
+>      <element name="about" minOccurs="0" maxOccurs="1" type="oai:aboutType"/>
+>    </sequence>
+>     <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+>   </complexType>
+> 
+>   <!-- define headerType -->
+>   <!-- a header has a unique identifier and a datestamp -->
+> 
+>   <complexType name="headerType">
+>    <sequence>
+>      <element name="identifier" minOccurs="1" maxOccurs="1" type="uriReference"/>
+>      <element name="datestamp" minOccurs="1" maxOccurs="1" type="date"/>
+>    </sequence>
+>   </complexType>
+> 
+>   <!-- define metadataType -->
+>   <!-- metadata must be expressed in XML that complies with another XML Schema -->
+>   <!-- metadata must be explicitely qualified in the response -->
+> 
+>   <complexType name="metadataType">
+>    <sequence>
+>     <any namespace="##any" processContents="lax"/>
+>    </sequence>
+>   </complexType>
+> 
+>  <!-- define aboutType -->
+>  <!-- data "about" the record must be expressed in XML -->
+>  <!-- that is compliant with an XML Schema defined by a community -->
+> 
+>  <complexType name="aboutType">
+>   <sequence>
+>    <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="1"/>
+>   </sequence>
+>  </complexType>
+> 
+>  <!-- define statusType -->
+>  <!-- a record can have a status of "deleted" or "not deleted". -->
+> 
+>  <simpleType name="statusType">
+>    <restriction base="string">
+>     <enumeration value="deleted"/>
+>     <enumeration value="not deleted"/>
+>    </restriction>
+>   </simpleType>
+> 
+> </schema>
+> 
+>   ----------------------------------------------------------------------------
+> <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+>          xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+>          targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+>          elementFormDefault="qualified"
+>          attributeFormDefault="unqualified">
+> 
+>  <annotation>
+>   <documentation>
+>     Schema to verify validity of responses to ListIdentifiers OAI-protocol request.
+>     This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+>     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+>   </documentation>
+>  </annotation>
+> 
+>  <element name="ListIdentifiers" type="oai:ListIdentifiersType"/>
+> 
+>  <!-- response to ListIdentifiers-request -->
+>  <!-- records have an optional "deleted" status -->
+>  <!-- this response may contain an optional resumptionToken -->
+> 
+>  <complexType name="ListIdentifiersType">
+>   <sequence>
+>     <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+>     <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+>     <element ref="oai:identifier" minOccurs="0" maxOccurs="unbounded"/>
+>     <element name="resumptionToken" minOccurs="0" maxOccurs="1" type="string"/>
+>   </sequence>
+>  </complexType>
+> 
+>  <element name="identifier">
+>   <complexType>
+>    <simpleContent>
+>     <extension base="uriReference">
+>      <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+>     </extension>
+>    </simpleContent>
+>   </complexType>
+>  </element>
+> 
+>  <!-- define statusType -->
+>  <!-- a record can have a status of "deleted" or "not deleted". -->
+> 
+>  <simpleType name="statusType">
+>    <restriction base="string">
+>     <enumeration value="deleted"/>
+>     <enumeration value="not deleted"/>
+>    </restriction>
+>   </simpleType>
+> 
+>  </schema>
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From herbertv@cs.cornell.edu  Mon Apr 23 16:21:06 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Mon, 23 Apr 2001 11:21:06 -0400
+Subject: [OAI-implementers] XML Schema problem?
+References: <CNEDJECFANMNOHKENHEAMEDDCAAA.jyoung1@columbus.rr.com> <3AE3268A.50409968@cs.cornell.edu> <3AE443DF.69B1B959@uiuc.edu>
+Message-ID: <3AE44862.D96B1884@cs.cornell.edu>
+
+hi Thomas,
+
+thanks for this. this approach sounds good to me:
+
+* it validates with XSV
+
+* it would be nice if Jeff could test this approach in Xerces
+
+* I checked this with the most recent XML Schema specs, and the nice
+thing about it is that this approach would not require any changes to be
+made when moving over at a certain point.
+
+If Jeff comes back with a positive message, I suggest to go for Thomas'
+approach.
+
+herbert
+
+
+
+"Thomas G. Habing" wrote:
+> 
+> Herbert-
+> 
+> In the XSDs, wouldn't it be simpler to change use attribute value in the
+> status attribute declaration to "optional" (delete the value attribute) and
+> then tie it's type to an enumerated list that only allows the value
+> "deleted".  With no value attribute and the use attribute set to optional
+> (as opposed to default or fixed) in the status attribute declaration, the
+> parser shouldn't assume a value.  The enumerated list still restricts the
+> allowable values of the status attribute in document instances.  This seems
+> to work in other parsers but we've not tried it in Xerces.  Here's the
+> attribute declaration as we're suggesting:
+> 
+>   <complexType name="recordType">
+>    <sequence>
+>      <element name="header" minOccurs="1" maxOccurs="1"
+> type="oai:headerType"/>
+>      <element name="metadata" minOccurs="0" maxOccurs="1"
+> type="oai:metadataType"/>
+>      <element name="about" minOccurs="0" maxOccurs="1"
+> type="oai:aboutType"/>
+>    </sequence>
+>      <attribute name="status" use="optional" type="oai:statusType"/>
+>   </complexType>
+> 
+>  ...
+> 
+>   <simpleType name="statusType">
+>     <restriction base="string">
+>      <enumeration value="deleted"/>
+>     </restriction>
+>    </simpleType>
+> 
+> Tim Cole
+> Tom Habing
+> University of Illinois
+> 
+> herbert van de sompel wrote:
+> >
+> > hi Jeff,
+> >
+> > Thanks for this.  Your consideration is correct, there is a problem in
+> > the schema that use the "status" attribute.  That is GetRecord,
+> > ListRecords and ListIdentifiers.
+> >
+> > This is what the September 2000 schema specs say re specifying
+> > occurencies of attributes.  In the excerpt that I include, reference is
+> > made to the following declaration in an xsd file:
+> >
+> > <xsd:attribute name="country" type="xsd:NMTOKEN" use="fixed"
+> > value="US"/>
+> >
+> > "
+> > Attributes may appear once or not at all (the default), and so the
+> > syntax for specifying occurrences of attributes
+> > is different than the syntax for elements. In particular, a use
+> > attribute is used in an attribute declaration to
+> > indicate whether the attribute is required or optional, and if optional
+> > whether the attribute's value is fixed or
+> > whether there is a default. A second attribute, value, provides any
+> > value that is called for. To illustrate, po.xsd
+> > contains a declaration for the country attribute, which is declared with
+> > use and value values of fixed and US
+> > respectively. This declaration means that the appearance of a country
+> > attribute is optional, although its value
+> > must be US if it does appear, and if it does not appear, a schema
+> > processor will create a country attribute with
+> > this value.
+> > "
+> >
+> > This last line indicates that Xerces is doing the right thing, which is
+> > obviously not what we want to happen.
+> >
+> > With Michael Nelson, I have revised the XML Schema that involved a
+> > status attribute.  The solution was less straightforward than one would
+> > hope.  There is no simple way to express what we really would like to
+> > express: the status attribute may occur, and if it occurs its value must
+> > be "deleted".  The workaround is to list legitimate values of the status
+> > attribute and specify a default.  We chose the values to be "deleted"
+> > and "not deleted", with "not deleted" as the default.  With this in
+> > place, one can express in a schema that the status attribute may appear,
+> > and that its default value (if the attribute does not appear) is "not
+> > deleted".  One can also express that there is only one other legitimate
+> > value for status.  It is "deleted".  And this one must be specified,
+> > since it is not the default value.
+> >
+> > Using this approach nothing really changes for data providers (nor
+> > service providers, really).  But I guess Xerces will do the right thing,
+> > now, add the default value of "not deleted" to all records that do not
+> > have the status attribute specified.
+> >
+> > The way to express the above approach in the schema is different for the
+> > Sep/Oct 2000 specs that we use and for the most recent XML specs.  but
+> > that is another story, to be addressed later.
+> >
+> > I attach the edited xsd files.  I will put them in place, unless someone
+> > disagrees with the approach taken.
+> >
+> > many greetings
+> >
+> > herbert
+> >
+> > "Jeffrey A. Young" wrote:
+> > >
+> > > Someone noticed that my OAIHarvester isn't working correctly lately. It
+> > > turns out that the Xerces XML parser is convinced that all the records I
+> > > harvest are flagged as status="deleted". Since this clearly isn't the case,
+> > > I started stripping the program down until I had a small example program
+> > > showing this effect. The Java source code is attached. Basically, if I do
+> > > DocumentBuilderFactory.setValidating(true) and then convert the XML to a DOM
+> > > Document, it silently "corrects" my records to status="deleted". If I dump
+> > > the Document, all looks fine, but when I actually query the status
+> > > attribute, it reports back with a value of "deleted". On the other hand, if
+> > > I specify setValidating(false), everything works fine. I suspect the problem
+> > > is that the XML Schema needs to make the status attribute optional. Another
+> > > possibility is that Xerces is processing the XML Schema incorrectly. I can
+> > > ignore the problem by always using setValidating(false), but that doesn't
+> > > seem right. If someone has a better solution, I would appreciate it. Thanks.
+> > >
+> > > Jeff
+> > >
+> > > ---
+> > > Jeffrey A. Young
+> > > Senior Consulting Systems Analyst
+> > > Office of Research, Mail Code 710
+> > > OCLC Online Computer Library Center, Inc.
+> > > 6565 Frantz Road
+> > > Dublin, OH   43017-3395
+> > > www.oclc.org
+> > >
+> > > Voice:  614-764-4342
+> > > Fax:            614-764-2344
+> > > Email:  jyoung@oclc.org
+> > >
+> > >   ------------------------------------------------------------------------
+> > >                 Name: Test.java
+> > >    Test.java    Type: unspecified type (application/octet-stream)
+> > >             Encoding: quoted-printable
+> >
+> > --
+> > Herbert Van de Sompel
+> > Visiting Assistant Professor
+> > Cornell University -- Computer Science
+> > tel + 1 - 607 - 255 - 3085
+> > fax + 1 - 607 - 255 - 4428
+> > http://www.cs.cornell.edu/people/herbertv/
+> > digital life in libraries used to be primitive
+> >
+> >   ----------------------------------------------------------------------------
+> > <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+> >          xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+> >          targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+> >          elementFormDefault="qualified"
+> >          attributeFormDefault="unqualified">
+> >
+> >  <annotation>
+> >   <documentation>
+> >     Schema to verify validity of responses to GetRecord OAI-protocol request.
+> >     This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+> >     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+> >   </documentation>
+> >  </annotation>
+> >
+> >  <element name="GetRecord" type="oai:GetRecordType"/>
+> >
+> >  <!-- response to GetRecord-request -->
+> >
+> >  <complexType name="GetRecordType">
+> >   <sequence>
+> >     <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+> >     <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+> >     <element name="record" minOccurs="0" maxOccurs="1" type="oai:recordType"/>
+> >   </sequence>
+> >  </complexType>
+> >
+> >  <!-- define recordType -->
+> >  <!-- a record has a header and a metadata part -->
+> >
+> >  <complexType name="recordType">
+> >   <sequence>
+> >     <element name="header" minOccurs="1" maxOccurs="1" type="oai:headerType"/>
+> >     <element name="metadata" minOccurs="0" maxOccurs="1" type="oai:metadataType"/>
+> >     <element name="about" minOccurs="0" maxOccurs="1" type="oai:aboutType"/>
+> >   </sequence>
+> >     <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+> >  </complexType>
+> >
+> >  <!-- define headerType -->
+> >  <!-- a header has a unique identifier and a datestamp -->
+> >
+> >  <complexType name="headerType">
+> >   <sequence>
+> >     <element name="identifier" minOccurs="1" maxOccurs="1" type="uriReference"/>
+> >     <element name="datestamp" minOccurs="1" maxOccurs="1" type="date"/>
+> >   </sequence>
+> >  </complexType>
+> >
+> >  <!-- define metadataType -->
+> >  <!-- metadata must be expressed in XML that is compliant with another XML Schema -->
+> >  <!-- metadata must be explicitely qualified in the response -->
+> >
+> >  <complexType name="metadataType">
+> >   <sequence>
+> >    <any namespace="##any" processContents="lax"/>
+> >   </sequence>
+> >  </complexType>
+> >
+> >  <!-- define aboutType -->
+> >  <!-- data "about" the record must be expressed in XML -->
+> >  <!-- that is compliant with an XML Schema defined by a community -->
+> >
+> >  <complexType name="aboutType">
+> >   <sequence>
+> >    <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="1"/>
+> >   </sequence>
+> >  </complexType>
+> >
+> >  <!-- define statusType -->
+> >  <!-- a record can have a status of "deleted" or "not deleted". -->
+> >
+> >  <simpleType name="statusType">
+> >    <restriction base="string">
+> >     <enumeration value="deleted"/>
+> >     <enumeration value="not deleted"/>
+> >    </restriction>
+> >   </simpleType>
+> >
+> >  </schema>
+> >
+> >   ----------------------------------------------------------------------------
+> > <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+> >           xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+> >           targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+> >           elementFormDefault="qualified"
+> >           attributeFormDefault="unqualified">
+> >
+> >   <annotation>
+> >    <documentation>
+> >      Schema to verify validity of responses to ListRecords OAI-protocol request.
+> >     This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+> >     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+> >    </documentation>
+> >   </annotation>
+> >
+> >   <element name="ListRecords" type="oai:ListRecordsType"/>
+> >
+> >   <!-- response to ListRecords-request -->
+> >   <!-- this response may contain an optional resumptionToken -->
+> >
+> >   <complexType name="ListRecordsType">
+> >    <sequence>
+> >      <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+> >      <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+> >      <element name="record" minOccurs="0" maxOccurs="unbounded" type="oai:recordType"/>
+> >      <element name="resumptionToken" minOccurs="0" maxOccurs="1" type="string"/>
+> >    </sequence>
+> >    </complexType>
+> >
+> >   <!-- define recordType -->
+> >   <!-- a record has a header and a metadata part -->
+> >
+> >   <complexType name="recordType">
+> >    <sequence>
+> >      <element name="header" minOccurs="1" maxOccurs="1" type="oai:headerType"/>
+> >      <element name="metadata" minOccurs="0" maxOccurs="1" type="oai:metadataType"/>
+> >      <element name="about" minOccurs="0" maxOccurs="1" type="oai:aboutType"/>
+> >    </sequence>
+> >     <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+> >   </complexType>
+> >
+> >   <!-- define headerType -->
+> >   <!-- a header has a unique identifier and a datestamp -->
+> >
+> >   <complexType name="headerType">
+> >    <sequence>
+> >      <element name="identifier" minOccurs="1" maxOccurs="1" type="uriReference"/>
+> >      <element name="datestamp" minOccurs="1" maxOccurs="1" type="date"/>
+> >    </sequence>
+> >   </complexType>
+> >
+> >   <!-- define metadataType -->
+> >   <!-- metadata must be expressed in XML that complies with another XML Schema -->
+> >   <!-- metadata must be explicitely qualified in the response -->
+> >
+> >   <complexType name="metadataType">
+> >    <sequence>
+> >     <any namespace="##any" processContents="lax"/>
+> >    </sequence>
+> >   </complexType>
+> >
+> >  <!-- define aboutType -->
+> >  <!-- data "about" the record must be expressed in XML -->
+> >  <!-- that is compliant with an XML Schema defined by a community -->
+> >
+> >  <complexType name="aboutType">
+> >   <sequence>
+> >    <any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="1"/>
+> >   </sequence>
+> >  </complexType>
+> >
+> >  <!-- define statusType -->
+> >  <!-- a record can have a status of "deleted" or "not deleted". -->
+> >
+> >  <simpleType name="statusType">
+> >    <restriction base="string">
+> >     <enumeration value="deleted"/>
+> >     <enumeration value="not deleted"/>
+> >    </restriction>
+> >   </simpleType>
+> >
+> > </schema>
+> >
+> >   ----------------------------------------------------------------------------
+> > <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+> >          xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+> >          targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+> >          elementFormDefault="qualified"
+> >          attributeFormDefault="unqualified">
+> >
+> >  <annotation>
+> >   <documentation>
+> >     Schema to verify validity of responses to ListIdentifiers OAI-protocol request.
+> >     This Schema validated at http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+> >     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+> >   </documentation>
+> >  </annotation>
+> >
+> >  <element name="ListIdentifiers" type="oai:ListIdentifiersType"/>
+> >
+> >  <!-- response to ListIdentifiers-request -->
+> >  <!-- records have an optional "deleted" status -->
+> >  <!-- this response may contain an optional resumptionToken -->
+> >
+> >  <complexType name="ListIdentifiersType">
+> >   <sequence>
+> >     <element name="responseDate" minOccurs="1" maxOccurs="1" type="timeInstant"/>
+> >     <element name="requestURL" minOccurs="1" maxOccurs="1" type="string"/>
+> >     <element ref="oai:identifier" minOccurs="0" maxOccurs="unbounded"/>
+> >     <element name="resumptionToken" minOccurs="0" maxOccurs="1" type="string"/>
+> >   </sequence>
+> >  </complexType>
+> >
+> >  <element name="identifier">
+> >   <complexType>
+> >    <simpleContent>
+> >     <extension base="uriReference">
+> >      <attribute name="status" use="default" value="not deleted" type="oai:statusType"/>
+> >     </extension>
+> >    </simpleContent>
+> >   </complexType>
+> >  </element>
+> >
+> >  <!-- define statusType -->
+> >  <!-- a record can have a status of "deleted" or "not deleted". -->
+> >
+> >  <simpleType name="statusType">
+> >    <restriction base="string">
+> >     <enumeration value="deleted"/>
+> >     <enumeration value="not deleted"/>
+> >    </restriction>
+> >   </simpleType>
+> >
+> >  </schema>
+> 
+> --
+> Thomas G. Habing
+> Research Programmer, Digital Library Initiative
+> University of Illinois at Urbana-Champaign
+> 052 Grainger Engineering Library, MC-274
+> thabing@uiuc.edu, (217) 244-7809
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+From jyoung@oclc.org  Mon Apr 23 16:42:05 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Mon, 23 Apr 2001 11:42:05 -0400
+Subject: [OAI-implementers] XML Schema problem?
+Message-ID: <E5431CF93E29F9478878F623E5B9CE9834207B@OA3-SERVER.oa.oclc.org>
+
+Works fine for me. I like it.
+
+Jeff
+
+> -----Original Message-----
+> From: herbert van de sompel [mailto:herbertv@cs.cornell.edu]
+> Sent: Monday, April 23, 2001 11:21 AM
+> To: thabing@uiuc.edu; OAI-implementers
+> Subject: Re: [OAI-implementers] XML Schema problem?
+> 
+> 
+> hi Thomas,
+> 
+> thanks for this. this approach sounds good to me:
+> 
+> * it validates with XSV
+> 
+> * it would be nice if Jeff could test this approach in Xerces
+> 
+> * I checked this with the most recent XML Schema specs, and the nice
+> thing about it is that this approach would not require any 
+> changes to be
+> made when moving over at a certain point.
+> 
+> If Jeff comes back with a positive message, I suggest to go 
+> for Thomas'
+> approach.
+> 
+> herbert
+> 
+> 
+> 
+> "Thomas G. Habing" wrote:
+> > 
+> > Herbert-
+> > 
+> > In the XSDs, wouldn't it be simpler to change use attribute 
+> value in the
+> > status attribute declaration to "optional" (delete the 
+> value attribute) and
+> > then tie it's type to an enumerated list that only allows the value
+> > "deleted".  With no value attribute and the use attribute 
+> set to optional
+> > (as opposed to default or fixed) in the status attribute 
+> declaration, the
+> > parser shouldn't assume a value.  The enumerated list still 
+> restricts the
+> > allowable values of the status attribute in document 
+> instances.  This seems
+> > to work in other parsers but we've not tried it in Xerces.  
+> Here's the
+> > attribute declaration as we're suggesting:
+> > 
+> >   <complexType name="recordType">
+> >    <sequence>
+> >      <element name="header" minOccurs="1" maxOccurs="1"
+> > type="oai:headerType"/>
+> >      <element name="metadata" minOccurs="0" maxOccurs="1"
+> > type="oai:metadataType"/>
+> >      <element name="about" minOccurs="0" maxOccurs="1"
+> > type="oai:aboutType"/>
+> >    </sequence>
+> >      <attribute name="status" use="optional" type="oai:statusType"/>
+> >   </complexType>
+> > 
+> >  ...
+> > 
+> >   <simpleType name="statusType">
+> >     <restriction base="string">
+> >      <enumeration value="deleted"/>
+> >     </restriction>
+> >    </simpleType>
+> > 
+> > Tim Cole
+> > Tom Habing
+> > University of Illinois
+> > 
+> > herbert van de sompel wrote:
+> > >
+> > > hi Jeff,
+> > >
+> > > Thanks for this.  Your consideration is correct, there is 
+> a problem in
+> > > the schema that use the "status" attribute.  That is GetRecord,
+> > > ListRecords and ListIdentifiers.
+> > >
+> > > This is what the September 2000 schema specs say re specifying
+> > > occurencies of attributes.  In the excerpt that I 
+> include, reference is
+> > > made to the following declaration in an xsd file:
+> > >
+> > > <xsd:attribute name="country" type="xsd:NMTOKEN" use="fixed"
+> > > value="US"/>
+> > >
+> > > "
+> > > Attributes may appear once or not at all (the default), and so the
+> > > syntax for specifying occurrences of attributes
+> > > is different than the syntax for elements. In particular, a use
+> > > attribute is used in an attribute declaration to
+> > > indicate whether the attribute is required or optional, 
+> and if optional
+> > > whether the attribute's value is fixed or
+> > > whether there is a default. A second attribute, value, 
+> provides any
+> > > value that is called for. To illustrate, po.xsd
+> > > contains a declaration for the country attribute, which 
+> is declared with
+> > > use and value values of fixed and US
+> > > respectively. This declaration means that the appearance 
+> of a country
+> > > attribute is optional, although its value
+> > > must be US if it does appear, and if it does not appear, a schema
+> > > processor will create a country attribute with
+> > > this value.
+> > > "
+> > >
+> > > This last line indicates that Xerces is doing the right 
+> thing, which is
+> > > obviously not what we want to happen.
+> > >
+> > > With Michael Nelson, I have revised the XML Schema that involved a
+> > > status attribute.  The solution was less straightforward 
+> than one would
+> > > hope.  There is no simple way to express what we really 
+> would like to
+> > > express: the status attribute may occur, and if it occurs 
+> its value must
+> > > be "deleted".  The workaround is to list legitimate 
+> values of the status
+> > > attribute and specify a default.  We chose the values to 
+> be "deleted"
+> > > and "not deleted", with "not deleted" as the default.  
+> With this in
+> > > place, one can express in a schema that the status 
+> attribute may appear,
+> > > and that its default value (if the attribute does not 
+> appear) is "not
+> > > deleted".  One can also express that there is only one 
+> other legitimate
+> > > value for status.  It is "deleted".  And this one must be 
+> specified,
+> > > since it is not the default value.
+> > >
+> > > Using this approach nothing really changes for data providers (nor
+> > > service providers, really).  But I guess Xerces will do 
+> the right thing,
+> > > now, add the default value of "not deleted" to all 
+> records that do not
+> > > have the status attribute specified.
+> > >
+> > > The way to express the above approach in the schema is 
+> different for the
+> > > Sep/Oct 2000 specs that we use and for the most recent 
+> XML specs.  but
+> > > that is another story, to be addressed later.
+> > >
+> > > I attach the edited xsd files.  I will put them in place, 
+> unless someone
+> > > disagrees with the approach taken.
+> > >
+> > > many greetings
+> > >
+> > > herbert
+> > >
+> > > "Jeffrey A. Young" wrote:
+> > > >
+> > > > Someone noticed that my OAIHarvester isn't working 
+> correctly lately. It
+> > > > turns out that the Xerces XML parser is convinced that 
+> all the records I
+> > > > harvest are flagged as status="deleted". Since this 
+> clearly isn't the case,
+> > > > I started stripping the program down until I had a 
+> small example program
+> > > > showing this effect. The Java source code is attached. 
+> Basically, if I do
+> > > > DocumentBuilderFactory.setValidating(true) and then 
+> convert the XML to a DOM
+> > > > Document, it silently "corrects" my records to 
+> status="deleted". If I dump
+> > > > the Document, all looks fine, but when I actually query 
+> the status
+> > > > attribute, it reports back with a value of "deleted". 
+> On the other hand, if
+> > > > I specify setValidating(false), everything works fine. 
+> I suspect the problem
+> > > > is that the XML Schema needs to make the status 
+> attribute optional. Another
+> > > > possibility is that Xerces is processing the XML Schema 
+> incorrectly. I can
+> > > > ignore the problem by always using 
+> setValidating(false), but that doesn't
+> > > > seem right. If someone has a better solution, I would 
+> appreciate it. Thanks.
+> > > >
+> > > > Jeff
+> > > >
+> > > > ---
+> > > > Jeffrey A. Young
+> > > > Senior Consulting Systems Analyst
+> > > > Office of Research, Mail Code 710
+> > > > OCLC Online Computer Library Center, Inc.
+> > > > 6565 Frantz Road
+> > > > Dublin, OH   43017-3395
+> > > > www.oclc.org
+> > > >
+> > > > Voice:  614-764-4342
+> > > > Fax:            614-764-2344
+> > > > Email:  jyoung@oclc.org
+> > > >
+> > > >   
+> --------------------------------------------------------------
+> ----------
+> > > >                 Name: Test.java
+> > > >    Test.java    Type: unspecified type 
+> (application/octet-stream)
+> > > >             Encoding: quoted-printable
+> > >
+> > > --
+> > > Herbert Van de Sompel
+> > > Visiting Assistant Professor
+> > > Cornell University -- Computer Science
+> > > tel + 1 - 607 - 255 - 3085
+> > > fax + 1 - 607 - 255 - 4428
+> > > http://www.cs.cornell.edu/people/herbertv/
+> > > digital life in libraries used to be primitive
+> > >
+> > >   
+> --------------------------------------------------------------
+> --------------
+> > > <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+> > >          
+> xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+> > >          
+> targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+> > >          elementFormDefault="qualified"
+> > >          attributeFormDefault="unqualified">
+> > >
+> > >  <annotation>
+> > >   <documentation>
+> > >     Schema to verify validity of responses to GetRecord 
+> OAI-protocol request.
+> > >     This Schema validated at 
+> http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+> > >     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+> > >   </documentation>
+> > >  </annotation>
+> > >
+> > >  <element name="GetRecord" type="oai:GetRecordType"/>
+> > >
+> > >  <!-- response to GetRecord-request -->
+> > >
+> > >  <complexType name="GetRecordType">
+> > >   <sequence>
+> > >     <element name="responseDate" minOccurs="1" 
+> maxOccurs="1" type="timeInstant"/>
+> > >     <element name="requestURL" minOccurs="1" 
+> maxOccurs="1" type="string"/>
+> > >     <element name="record" minOccurs="0" maxOccurs="1" 
+> type="oai:recordType"/>
+> > >   </sequence>
+> > >  </complexType>
+> > >
+> > >  <!-- define recordType -->
+> > >  <!-- a record has a header and a metadata part -->
+> > >
+> > >  <complexType name="recordType">
+> > >   <sequence>
+> > >     <element name="header" minOccurs="1" maxOccurs="1" 
+> type="oai:headerType"/>
+> > >     <element name="metadata" minOccurs="0" maxOccurs="1" 
+> type="oai:metadataType"/>
+> > >     <element name="about" minOccurs="0" maxOccurs="1" 
+> type="oai:aboutType"/>
+> > >   </sequence>
+> > >     <attribute name="status" use="default" value="not 
+> deleted" type="oai:statusType"/>
+> > >  </complexType>
+> > >
+> > >  <!-- define headerType -->
+> > >  <!-- a header has a unique identifier and a datestamp -->
+> > >
+> > >  <complexType name="headerType">
+> > >   <sequence>
+> > >     <element name="identifier" minOccurs="1" 
+> maxOccurs="1" type="uriReference"/>
+> > >     <element name="datestamp" minOccurs="1" maxOccurs="1" 
+> type="date"/>
+> > >   </sequence>
+> > >  </complexType>
+> > >
+> > >  <!-- define metadataType -->
+> > >  <!-- metadata must be expressed in XML that is compliant 
+> with another XML Schema -->
+> > >  <!-- metadata must be explicitely qualified in the response -->
+> > >
+> > >  <complexType name="metadataType">
+> > >   <sequence>
+> > >    <any namespace="##any" processContents="lax"/>
+> > >   </sequence>
+> > >  </complexType>
+> > >
+> > >  <!-- define aboutType -->
+> > >  <!-- data "about" the record must be expressed in XML -->
+> > >  <!-- that is compliant with an XML Schema defined by a 
+> community -->
+> > >
+> > >  <complexType name="aboutType">
+> > >   <sequence>
+> > >    <any namespace="##any" processContents="lax" 
+> minOccurs="0" maxOccurs="1"/>
+> > >   </sequence>
+> > >  </complexType>
+> > >
+> > >  <!-- define statusType -->
+> > >  <!-- a record can have a status of "deleted" or "not 
+> deleted". -->
+> > >
+> > >  <simpleType name="statusType">
+> > >    <restriction base="string">
+> > >     <enumeration value="deleted"/>
+> > >     <enumeration value="not deleted"/>
+> > >    </restriction>
+> > >   </simpleType>
+> > >
+> > >  </schema>
+> > >
+> > >   
+> --------------------------------------------------------------
+> --------------
+> > > <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+> > >           
+> xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+> > >           
+> targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListRecords"
+> > >           elementFormDefault="qualified"
+> > >           attributeFormDefault="unqualified">
+> > >
+> > >   <annotation>
+> > >    <documentation>
+> > >      Schema to verify validity of responses to 
+> ListRecords OAI-protocol request.
+> > >     This Schema validated at 
+> http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+> > >     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+> > >    </documentation>
+> > >   </annotation>
+> > >
+> > >   <element name="ListRecords" type="oai:ListRecordsType"/>
+> > >
+> > >   <!-- response to ListRecords-request -->
+> > >   <!-- this response may contain an optional resumptionToken -->
+> > >
+> > >   <complexType name="ListRecordsType">
+> > >    <sequence>
+> > >      <element name="responseDate" minOccurs="1" 
+> maxOccurs="1" type="timeInstant"/>
+> > >      <element name="requestURL" minOccurs="1" 
+> maxOccurs="1" type="string"/>
+> > >      <element name="record" minOccurs="0" 
+> maxOccurs="unbounded" type="oai:recordType"/>
+> > >      <element name="resumptionToken" minOccurs="0" 
+> maxOccurs="1" type="string"/>
+> > >    </sequence>
+> > >    </complexType>
+> > >
+> > >   <!-- define recordType -->
+> > >   <!-- a record has a header and a metadata part -->
+> > >
+> > >   <complexType name="recordType">
+> > >    <sequence>
+> > >      <element name="header" minOccurs="1" maxOccurs="1" 
+> type="oai:headerType"/>
+> > >      <element name="metadata" minOccurs="0" maxOccurs="1" 
+> type="oai:metadataType"/>
+> > >      <element name="about" minOccurs="0" maxOccurs="1" 
+> type="oai:aboutType"/>
+> > >    </sequence>
+> > >     <attribute name="status" use="default" value="not 
+> deleted" type="oai:statusType"/>
+> > >   </complexType>
+> > >
+> > >   <!-- define headerType -->
+> > >   <!-- a header has a unique identifier and a datestamp -->
+> > >
+> > >   <complexType name="headerType">
+> > >    <sequence>
+> > >      <element name="identifier" minOccurs="1" 
+> maxOccurs="1" type="uriReference"/>
+> > >      <element name="datestamp" minOccurs="1" 
+> maxOccurs="1" type="date"/>
+> > >    </sequence>
+> > >   </complexType>
+> > >
+> > >   <!-- define metadataType -->
+> > >   <!-- metadata must be expressed in XML that complies 
+> with another XML Schema -->
+> > >   <!-- metadata must be explicitely qualified in the response -->
+> > >
+> > >   <complexType name="metadataType">
+> > >    <sequence>
+> > >     <any namespace="##any" processContents="lax"/>
+> > >    </sequence>
+> > >   </complexType>
+> > >
+> > >  <!-- define aboutType -->
+> > >  <!-- data "about" the record must be expressed in XML -->
+> > >  <!-- that is compliant with an XML Schema defined by a 
+> community -->
+> > >
+> > >  <complexType name="aboutType">
+> > >   <sequence>
+> > >    <any namespace="##any" processContents="lax" 
+> minOccurs="0" maxOccurs="1"/>
+> > >   </sequence>
+> > >  </complexType>
+> > >
+> > >  <!-- define statusType -->
+> > >  <!-- a record can have a status of "deleted" or "not 
+> deleted". -->
+> > >
+> > >  <simpleType name="statusType">
+> > >    <restriction base="string">
+> > >     <enumeration value="deleted"/>
+> > >     <enumeration value="not deleted"/>
+> > >    </restriction>
+> > >   </simpleType>
+> > >
+> > > </schema>
+> > >
+> > >   
+> --------------------------------------------------------------
+> --------------
+> > > <schema xmlns="http://www.w3.org/2000/10/XMLSchema"
+> > >          
+> xmlns:oai="http://www.openarchives.org/OAI/1.0/OAI_ListIdentifiers"
+> > >          
+> targetNamespace="http://www.openarchives.org/OAI/1.0/OAI_ListI
+> dentifiers"
+> > >          elementFormDefault="qualified"
+> > >          attributeFormDefault="unqualified">
+> > >
+> > >  <annotation>
+> > >   <documentation>
+> > >     Schema to verify validity of responses to 
+> ListIdentifiers OAI-protocol request.
+> > >     This Schema validated at 
+> http://www.w3.org/2000/09/webdata/xsv on 2001-04-22
+> > >     with XSV 1.176/1.87 of 2001/02/16 16:38:43
+> > >   </documentation>
+> > >  </annotation>
+> > >
+> > >  <element name="ListIdentifiers" type="oai:ListIdentifiersType"/>
+> > >
+> > >  <!-- response to ListIdentifiers-request -->
+> > >  <!-- records have an optional "deleted" status -->
+> > >  <!-- this response may contain an optional resumptionToken -->
+> > >
+> > >  <complexType name="ListIdentifiersType">
+> > >   <sequence>
+> > >     <element name="responseDate" minOccurs="1" 
+> maxOccurs="1" type="timeInstant"/>
+> > >     <element name="requestURL" minOccurs="1" 
+> maxOccurs="1" type="string"/>
+> > >     <element ref="oai:identifier" minOccurs="0" 
+> maxOccurs="unbounded"/>
+> > >     <element name="resumptionToken" minOccurs="0" 
+> maxOccurs="1" type="string"/>
+> > >   </sequence>
+> > >  </complexType>
+> > >
+> > >  <element name="identifier">
+> > >   <complexType>
+> > >    <simpleContent>
+> > >     <extension base="uriReference">
+> > >      <attribute name="status" use="default" value="not 
+> deleted" type="oai:statusType"/>
+> > >     </extension>
+> > >    </simpleContent>
+> > >   </complexType>
+> > >  </element>
+> > >
+> > >  <!-- define statusType -->
+> > >  <!-- a record can have a status of "deleted" or "not 
+> deleted". -->
+> > >
+> > >  <simpleType name="statusType">
+> > >    <restriction base="string">
+> > >     <enumeration value="deleted"/>
+> > >     <enumeration value="not deleted"/>
+> > >    </restriction>
+> > >   </simpleType>
+> > >
+> > >  </schema>
+> > 
+> > --
+> > Thomas G. Habing
+> > Research Programmer, Digital Library Initiative
+> > University of Illinois at Urbana-Champaign
+> > 052 Grainger Engineering Library, MC-274
+> > thabing@uiuc.edu, (217) 244-7809
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+> -- 
+> Herbert Van de Sompel
+> Visiting Assistant Professor
+> Cornell University -- Computer Science
+> tel + 1 - 607 - 255 - 3085
+> fax + 1 - 607 - 255 - 4428
+> http://www.cs.cornell.edu/people/herbertv/
+> digital life in libraries used to be primitive
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From herbertv@cs.cornell.edu  Tue Apr 24 17:02:07 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Tue, 24 Apr 2001 12:02:07 -0400
+Subject: [OAI-implementers] new XML Schema on-line
+Message-ID: <3AE5A37F.747EB51@cs.cornell.edu>
+
+hi all,
+
+I have just put the corrected version for GetRecord.xsd, ListRecords.xsd
+and ListIdentifiers.xsd online.  Remember this correction is the result
+of Jeff Young's detection of an error in the specified OAI schema that
+made the Xerces parser use "deleted" as the default "status" for
+records.  
+
+Thanks to Thomas Habing and Michael Nelson for their contribution to the
+solution.
+
+herbert
+
+-- 
+Herbert Van de Sompel
+Visiting Assistant Professor
+Cornell University -- Computer Science
+tel + 1 - 607 - 255 - 3085
+fax + 1 - 607 - 255 - 4428
+http://www.cs.cornell.edu/people/herbertv/
+digital life in libraries used to be primitive
+
+From jyoung@oclc.org  Tue Apr 24 21:46:28 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Tue, 24 Apr 2001 16:46:28 -0400
+Subject: [OAI-implementers] XML Schemas and Xerces again
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98342085@OA3-SERVER.oa.oclc.org>
+
+This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+------_=_NextPart_000_01C0CCFF.A302A440
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+I'm happy to say that the status=deleted problem appears to be resolved.
+Unfortunately, I now seem to have a different (unrelated) problem. Someone
+reported to me that Xerces 1.3.1 is reporting an XML schema error where
+1.3.0 didn't. It seems that I had failed to call setErrorHandler() which is
+key to reporting any validation errors. Xerces 1.3.0 let this slide where
+1.3.1 complains about it. Now that I've corrected this oversight, I'm now
+seeing some parser errors related to the XML schema. I've attached another
+small demo application that shows the effects. To add to the confusion,
+1.3.0 reports a different error than does 1.3.1. 
+
+Using Xerces 1.3.0, the demo application produces:
+
+error
+org.xml.sax.SAXParseException: Datatype error: In element 'identifier' :
+Value 'oai:etdcat:ocm02999966' is a Malformed URI .
+        at
+org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1068)
+        at
+org.apache.xerces.validators.common.XMLValidator.checkContent(XMLValidator.j
+ava:3609)
+        at
+org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+.java:1133)
+        at
+org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+LDocumentScanner.java:1201)
+        at
+org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+java:381)
+        at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+        at
+org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:12
+3)
+        at Test.main(Test.java:34)
+
+Using Xerces 1.3.1, the demo produces:
+
+error
+org.xml.sax.SAXParseException: The content of element type "metadata" must
+match "##any:uri=http://www.openarchives.org/OAI/1.0/OAI_ListRecords".
+        at
+org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1067)
+        at
+org.apache.xerces.validators.common.XMLValidator.reportRecoverableXMLError(X
+MLValidator.java:1689)
+        at
+org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+.java:1353)
+        at
+org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+LDocumentScanner.java:1205)
+        at
+org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+java:381)
+        at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+        at
+org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:17
+2)
+        at Test.main(Test.java:34)
+
+
+As far as I can tell, the schema look fine. My assumption, at this point, is
+that Xerces is at fault and my only recourse is turn off validation. I must
+also admit the possibility that my program is flawed in some way. On the
+slim chance that I've found the 2nd and 3rd XML schema errors within the
+span of a week, though, I thought I'd pass along my findings.
+
+ <<Test.java>> 
+Cheers,
+
+Jeff
+
+---
+Jeffrey A. Young
+Senior Consulting Systems Analyst
+Office of Research, Mail Code 710
+OCLC Online Computer Library Center, Inc.
+6565 Frantz Road
+Dublin, OH   43017-3395
+www.oclc.org
+
+Voice:	614-764-4342
+Voice:	800-848-5878, ext. 4342
+Fax:	614-718-7477
+Email:	jyoung@oclc.org
+
+
+
+
+------_=_NextPart_000_01C0CCFF.A302A440
+Content-Type: application/octet-stream;
+	name="Test.java"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: attachment;
+	filename="Test.java"
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
+
+public class Test {
+    public static void main(String[] args) {
+	try {
+	    DocumentBuilderFactory factory =3D
+		DocumentBuilderFactory.newInstance();
+	    factory.setValidating(true);
+	    factory.setNamespaceAware(true);
+	    DocumentBuilder parser =3D factory.newDocumentBuilder();
+	    parser.setErrorHandler(new ErrorHandler() {
+		public void fatalError(SAXParseException e)
+		    throws SAXException {
+		    System.out.println("fatalError");
+		    throw e;
+		}
+		public void error(SAXParseException e)
+		    throws SAXParseException {
+		    System.out.println("error");
+		    throw e;
+		}
+		public void warning(SAXParseException e)
+		    throws SAXParseException {
+		    System.out.println("** Warning, line" + e.getLineNumber() +
+				       ", uri " + e.getSystemId());
+		    System.out.println(" " + e.getMessage());
+		    e.printStackTrace();
+		}
+	    });
+	    String xml =3D "<ListRecords =
+xmlns=3D\"http://www.openarchives.org/OAI/1.0/OAI_ListRecords\" =
+xmlns:xsi=3D\"http://www.w3.org/2000/10/XMLSchema-instance\" =
+xsi:schemaLocation=3D\"http://www.openarchives.org/OAI/1.0/OAI_ListRecor=
+ds =
+http://www.openarchives.org/OAI/1.0/OAI_ListRecords.xsd\"><responseDate>=
+2001-04-24T13:06:23-05:00</responseDate><requestURL>http://alcme.oclc.or=
+g:4342/etdcat/servlet/OAIHandler?metadataPrefix=3Doai_dc&amp;until=3D200=
+1-04-23&amp;verb=3DListRecords&amp;from=3D2000-01-01</requestURL><record=
+><header><identifier>oai:etdcat:ocm02999966</identifier><datestamp>2001-=
+02-02</datestamp></header><metadata><dc =
+xmlns=3D\"http://purl.org/dc/elements/1.1/\" =
+xmlns:xsi=3D\"http://www.w3.org/2000/10/XMLSchema-instance\" =
+xsi:schemaLocation=3D\"http://purl.org/dc/elements/1.1/ =
+http://www.openarchives.org/OAI/dc.xsd\"><language>eng</language><date>1=
+976</date><type>Text data</type><creator>Singh, Bibhuti =
+Narayan,--1945-</creator><title>Gibberellin metabolism in higher plant =
+tissues.</title><format>[4], xii, 124 leaves</format><format>29 =
+cm.</format><description>Microfilm copy of typescript. Ann Arbor, =
+University Microfilms, 1977. 1 reel. 35 =
+mm.</description><subject>Plants, Effect of gibberellins =
+on.</subject><subject>Plants, Effect of gibberellic acid =
+on</subject><subject>Gibberellic =
+acid</subject></dc></metadata></record>";
+	    StringReader sr =3D new StringReader(xml);
+	    InputSource is =3D new InputSource(sr);
+	    Document doc =3D parser.parse(is);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}   =20
+    }
+}
+
+------_=_NextPart_000_01C0CCFF.A302A440--
+
+From herbertv@cs.cornell.edu  Wed Apr 25 14:46:52 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Wed, 25 Apr 2001 09:46:52 -0400
+Subject: [OAI-implementers] XML Schemas and Xerces again
+References: <E5431CF93E29F9478878F623E5B9CE98342085@OA3-SERVER.oa.oclc.org>
+Message-ID: <3AE6D54C.EA38788A@cs.cornell.edu>
+
+hi Jeff,
+
+you are well on your way to becoming the master schema-debugger!
+
+Since I share your impression that the schema are correct for the issues
+you list (while Xerces generates an error), I think we may be witnessing
+the following:
+
+* there doesn't seem to be a validator out there that we can really
+fully trust.  for instance, there are several issues that XSV does not
+attempt to validate (the regular expression facet, for instance, as far
+as I can tell). also, other validators seem to be generating errors when
+nothing seems to be wrong, really.  it happened when we were validating
+the schema before releasing the protocol, using XML Spy.  just like
+Xerces generates an error for uriReference in relation to the
+"identifier", XML Spy generated an error for requestURL.  as a result,
+we changed the type of requestURL from uriReference to string.  clearly,
+the requestURL as we use it in the OAI protocol seems to be a valid URI!
+
+* there may be a Schema version issue at play.  remember we are using
+the specs that corresponds with the http://www.w3.org/2000/10/XMLSchema
+namespace, which corresponds with the XSV validator at
+http://www.w3.org/2000/09/webdata/xsv .  as you know there is a more
+recent XML Schema version that has reached the status of "proposed
+recommendation" (not yet "recommendation") with namespace
+http://www.w3.org/2001/XMLSchema and XSV validator at
+http://www.w3.org/2001/03/webdata/xsv .  the validator for the recent
+specs will definitely not validate schema that are written to be
+compliant with the older spec.  as I mentioned before, we will have to
+make a decission re what to do with our OAI Schema. we are currently
+still investigating the issues involved.
+
+many greetings
+
+herbert
+
+"Young,Jeff" wrote:
+> 
+> I'm happy to say that the status=deleted problem appears to be resolved.
+> Unfortunately, I now seem to have a different (unrelated) problem. Someone
+> reported to me that Xerces 1.3.1 is reporting an XML schema error where
+> 1.3.0 didn't. It seems that I had failed to call setErrorHandler() which is
+> key to reporting any validation errors. Xerces 1.3.0 let this slide where
+> 1.3.1 complains about it. Now that I've corrected this oversight, I'm now
+> seeing some parser errors related to the XML schema. I've attached another
+> small demo application that shows the effects. To add to the confusion,
+> 1.3.0 reports a different error than does 1.3.1.
+> 
+> Using Xerces 1.3.0, the demo application produces:
+> 
+> error
+> org.xml.sax.SAXParseException: Datatype error: In element 'identifier' :
+> Value 'oai:etdcat:ocm02999966' is a Malformed URI .
+>         at
+> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1068)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.checkContent(XMLValidator.j
+> ava:3609)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+> .java:1133)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+> LDocumentScanner.java:1201)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+> java:381)
+>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+>         at
+> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:12
+> 3)
+>         at Test.main(Test.java:34)
+> 
+> Using Xerces 1.3.1, the demo produces:
+> 
+> error
+> org.xml.sax.SAXParseException: The content of element type "metadata" must
+> match "##any:uri=http://www.openarchives.org/OAI/1.0/OAI_ListRecords".
+>         at
+> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1067)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.reportRecoverableXMLError(X
+> MLValidator.java:1689)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+> .java:1353)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+> LDocumentScanner.java:1205)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+> java:381)
+>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+>         at
+> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:17
+> 2)
+>         at Test.main(Test.java:34)
+> 
+> As far as I can tell, the schema look fine. My assumption, at this point, is
+> that Xerces is at fault and my only recourse is turn off validation. I must
+> also admit the possibility that my program is flawed in some way. On the
+> slim chance that I've found the 2nd and 3rd XML schema errors within the
+> span of a week, though, I thought I'd pass along my findings.
+> 
+>  <<Test.java>>
+> Cheers,
+> 
+> Jeff
+> 
+> ---
+> Jeffrey A. Young
+> Senior Consulting Systems Analyst
+> Office of Research, Mail Code 710
+> OCLC Online Computer Library Center, Inc.
+> 6565 Frantz Road
+> Dublin, OH   43017-3395
+> www.oclc.org
+> 
+> Voice:  614-764-4342
+> Voice:  800-848-5878, ext. 4342
+> Fax:    614-718-7477
+> Email:  jyoung@oclc.org
+> 
+>   ------------------------------------------------------------------------
+>                 Name: Test.java
+>    Test.java    Type: unspecified type (application/octet-stream)
+>             Encoding: quoted-printable
+
+From thabing@uiuc.edu  Wed Apr 25 19:21:28 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Wed, 25 Apr 2001 13:21:28 -0500
+Subject: [OAI-implementers] XML Schemas and Xerces again
+References: <E5431CF93E29F9478878F623E5B9CE98342085@OA3-SERVER.oa.oclc.org>
+Message-ID: <3AE715A8.6F28867B@uiuc.edu>
+
+Jeff-
+
+Regarding the 1.3.1 error, like Herbert we think Xerces is probably wrong
+here, but at the same time, we also wonder if the namespace='##any' is
+actually necessary in the XSD, since ##any is the default for the namespace
+attribute.  Does Xerces not give an error if the XSD leaves out the
+namespace='##any'?
+
+Regarding the 1.3.0 error, our guess is that Xerces is trying to do too much
+when validating uriReference string.  [Note, 'uriReference' has been changed
+to 'anyURI' in the latest version of the schema spec.]  
+
+Quoting from the latest XML schema spec (datatype):
+
+"NOTE: Each URI scheme imposes specialized syntax rules for URIs in that
+scheme, including restrictions on the syntax of allowed fragment
+identifiers. Because it is impractical for processors to check that a value
+is a context-appropriate URI reference, this specification follows the lead
+of [RFC 2396] (as amended by [RFC 2732]) in this matter: such rules and
+restrictions are not part of type validity and are not checked by minimally
+conforming processors. Thus in practice the above definition imposes only
+very modest obligations on minimally conforming processors."
+
+From looking at RFC2396 and RFC2732, we're fairly certain that OAI
+Identifiers are valid URIs.  The second colon might be considered an issue
+by some, but looking at the RFC2396:
+
+   ...An absolute URI contains the name of the scheme being used (<scheme>)
+   followed by a colon (":") and then a string (the <scheme-specific-
+   part>) whose interpretation depends on the scheme. The URI syntax does 
+   not require that the scheme-specific-part have any general structure or
+   set of semantics which is common among all URI...
+
+Colons are commonly considered reserved (i.e., needing to be escaped), but
+the RFC also says about reserved characters:
+
+   The "reserved" syntax class above refers to those characters that are
+   allowed within a URI, but which may not be allowed within a
+   particular component of the generic URI syntax; they are used as
+   delimiters of the components described in Section 3.
+   Characters in the "reserved" set are not reserved in all contexts.
+   The set of characters actually reserved within any given URI
+   component is defined by that component.  In general, a character is
+   reserved if the semantics of the URI changes if the character is
+   replaced with its escaped US-ASCII encoding.
+
+On this basis and looking at the "Collected BNF for URI" (Appendix A), OAI
+should be allowed to specify that colons used as delimiters in the
+scheme-specific part are allowed unescaped within that component (i.e., the
+"opaque" OAI scheme-specific-part) -- just as some URIs use an unescaped
+colon within the hostport component of their scheme-specific-part.  Which
+means that the only things that a generic URI parser should be able to
+discern from the OAI URIs is scheme:opaque_part.  (It might be interesting
+to see what would happen with Xerces if the second colon was escaped, such
+as oai:etdcat%3Aocm02999966 -- if Xerces no longer objected, then we would
+know that it was "over" validating the identifier element.)
+
+Of course OAI might still want to consider eventually changing the OAI
+identifier scheme (scheme-specific-part of the URI) to something more
+similar to other net URIs, such as oai://etdcat/ocm02999966
+(scheme://registration_name/opaque_part), but we would hesitate to suggest
+that at this stage simply to accommodate what appears to be an overzealous
+parser.
+
+Tim Cole
+Tom Habing
+University of Illinois at UC
+
+"Young,Jeff" wrote:
+> 
+> I'm happy to say that the status=deleted problem appears to be resolved.
+> Unfortunately, I now seem to have a different (unrelated) problem. Someone
+> reported to me that Xerces 1.3.1 is reporting an XML schema error where
+> 1.3.0 didn't. It seems that I had failed to call setErrorHandler() which is
+> key to reporting any validation errors. Xerces 1.3.0 let this slide where
+> 1.3.1 complains about it. Now that I've corrected this oversight, I'm now
+> seeing some parser errors related to the XML schema. I've attached another
+> small demo application that shows the effects. To add to the confusion,
+> 1.3.0 reports a different error than does 1.3.1.
+> 
+> Using Xerces 1.3.0, the demo application produces:
+> 
+> error
+> org.xml.sax.SAXParseException: Datatype error: In element 'identifier' :
+> Value 'oai:etdcat:ocm02999966' is a Malformed URI .
+>         at
+> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1068)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.checkContent(XMLValidator.j
+> ava:3609)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+> .java:1133)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+> LDocumentScanner.java:1201)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+> java:381)
+>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+>         at
+> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:12
+> 3)
+>         at Test.main(Test.java:34)
+> 
+> Using Xerces 1.3.1, the demo produces:
+> 
+> error
+> org.xml.sax.SAXParseException: The content of element type "metadata" must
+> match "##any:uri=http://www.openarchives.org/OAI/1.0/OAI_ListRecords".
+>         at
+> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1067)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.reportRecoverableXMLError(X
+> MLValidator.java:1689)
+>         at
+> org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+> .java:1353)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+> LDocumentScanner.java:1205)
+>         at
+> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+> java:381)
+>         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+>         at
+> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:17
+> 2)
+>         at Test.main(Test.java:34)
+> 
+> As far as I can tell, the schema look fine. My assumption, at this point, is
+> that Xerces is at fault and my only recourse is turn off validation. I must
+> also admit the possibility that my program is flawed in some way. On the
+> slim chance that I've found the 2nd and 3rd XML schema errors within the
+> span of a week, though, I thought I'd pass along my findings.
+> 
+>  <<Test.java>>
+> Cheers,
+> 
+> Jeff
+> 
+> ---
+> Jeffrey A. Young
+> Senior Consulting Systems Analyst
+> Office of Research, Mail Code 710
+> OCLC Online Computer Library Center, Inc.
+> 6565 Frantz Road
+> Dublin, OH   43017-3395
+> www.oclc.org
+> 
+> Voice:  614-764-4342
+> Voice:  800-848-5878, ext. 4342
+> Fax:    614-718-7477
+> Email:  jyoung@oclc.org
+> 
+>   ----------------------------------------------------------------------------
+>                 Name: Test.java
+>    Test.java    Type: java/*
+>             Encoding: quoted-printable
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From jyoung@oclc.org  Wed Apr 25 21:15:36 2001
+From: jyoung@oclc.org (Young,Jeff)
+Date: Wed, 25 Apr 2001 16:15:36 -0400
+Subject: [OAI-implementers] XML Schemas and Xerces again
+Message-ID: <E5431CF93E29F9478878F623E5B9CE98342093@OA3-SERVER.oa.oclc.org>
+
+Thomas,
+
+Removing namespace='##any' has no effect against 1.3.1. The complaint
+remains the same. 
+
+I am seeing some odd behavior, though, that may or may not be revealing to
+someone. The label '##any' appears to be used ambiguously. Here's the error
+message:
+
+'org.xml.sax.SAXParseException: The content of element type "metadata" must
+match "##any:uri=http://www.openarchives.org/OAI/1.0/OAI_ListRecords"'
+
+It appears that the '##any' reference in the error message is a product of
+the <any> element, not the namespace="##any" attribute. This is proven by
+the fact that the error message continues to contain the '##any' regardless
+of the presence, absence, or value of the namespace attribute. Instead, the
+namespace attribute appears to map to the uri. In other words,
+namespace='##any' or the absence of the namespace attribute produces
+'uri=http://www.openarchives.org/OAI/1.0/OAI_ListRecords' in the error
+message. If I change the namespace to something else, the uri changes
+accordingly. I suspect this is another indication of Xerces' failings as a
+schema validator.
+
+Regarding 1.3.0, escaping the second colon (or both for that matter) has no
+effect. I checked, though, and 1.3.0 is completely satisfied by your
+suggestion of oai://etdcat/ocm02999966. On top of that, 1.3.0 doesn't
+complain about the ##any problem and validated correctly with the
+hypothetical identifier. 
+
+Jeff
+
+
+> -----Original Message-----
+> From: Thomas G. Habing [mailto:thabing@uiuc.edu]
+> Sent: Wednesday, April 25, 2001 2:21 PM
+> To: OAI-implementers (E-mail)
+> Subject: Re: [OAI-implementers] XML Schemas and Xerces again
+> 
+> 
+> Jeff-
+> 
+> Regarding the 1.3.1 error, like Herbert we think Xerces is 
+> probably wrong
+> here, but at the same time, we also wonder if the namespace='##any' is
+> actually necessary in the XSD, since ##any is the default for 
+> the namespace
+> attribute.  Does Xerces not give an error if the XSD leaves out the
+> namespace='##any'?
+> 
+> Regarding the 1.3.0 error, our guess is that Xerces is trying 
+> to do too much
+> when validating uriReference string.  [Note, 'uriReference' 
+> has been changed
+> to 'anyURI' in the latest version of the schema spec.]  
+> 
+> Quoting from the latest XML schema spec (datatype):
+> 
+> "NOTE: Each URI scheme imposes specialized syntax rules for 
+> URIs in that
+> scheme, including restrictions on the syntax of allowed fragment
+> identifiers. Because it is impractical for processors to 
+> check that a value
+> is a context-appropriate URI reference, this specification 
+> follows the lead
+> of [RFC 2396] (as amended by [RFC 2732]) in this matter: such 
+> rules and
+> restrictions are not part of type validity and are not 
+> checked by minimally
+> conforming processors. Thus in practice the above definition 
+> imposes only
+> very modest obligations on minimally conforming processors."
+> 
+> From looking at RFC2396 and RFC2732, we're fairly certain that OAI
+> Identifiers are valid URIs.  The second colon might be 
+> considered an issue
+> by some, but looking at the RFC2396:
+> 
+>    ...An absolute URI contains the name of the scheme being 
+> used (<scheme>)
+>    followed by a colon (":") and then a string (the <scheme-specific-
+>    part>) whose interpretation depends on the scheme. The URI 
+> syntax does 
+>    not require that the scheme-specific-part have any general 
+> structure or
+>    set of semantics which is common among all URI...
+> 
+> Colons are commonly considered reserved (i.e., needing to be 
+> escaped), but
+> the RFC also says about reserved characters:
+> 
+>    The "reserved" syntax class above refers to those 
+> characters that are
+>    allowed within a URI, but which may not be allowed within a
+>    particular component of the generic URI syntax; they are used as
+>    delimiters of the components described in Section 3.
+>    Characters in the "reserved" set are not reserved in all contexts.
+>    The set of characters actually reserved within any given URI
+>    component is defined by that component.  In general, a character is
+>    reserved if the semantics of the URI changes if the character is
+>    replaced with its escaped US-ASCII encoding.
+> 
+> On this basis and looking at the "Collected BNF for URI" 
+> (Appendix A), OAI
+> should be allowed to specify that colons used as delimiters in the
+> scheme-specific part are allowed unescaped within that 
+> component (i.e., the
+> "opaque" OAI scheme-specific-part) -- just as some URIs use 
+> an unescaped
+> colon within the hostport component of their 
+> scheme-specific-part.  Which
+> means that the only things that a generic URI parser should be able to
+> discern from the OAI URIs is scheme:opaque_part.  (It might 
+> be interesting
+> to see what would happen with Xerces if the second colon was 
+> escaped, such
+> as oai:etdcat%3Aocm02999966 -- if Xerces no longer objected, 
+> then we would
+> know that it was "over" validating the identifier element.)
+> 
+> Of course OAI might still want to consider eventually changing the OAI
+> identifier scheme (scheme-specific-part of the URI) to something more
+> similar to other net URIs, such as oai://etdcat/ocm02999966
+> (scheme://registration_name/opaque_part), but we would 
+> hesitate to suggest
+> that at this stage simply to accommodate what appears to be 
+> an overzealous
+> parser.
+> 
+> Tim Cole
+> Tom Habing
+> University of Illinois at UC
+> 
+> "Young,Jeff" wrote:
+> > 
+> > I'm happy to say that the status=deleted problem appears to 
+> be resolved.
+> > Unfortunately, I now seem to have a different (unrelated) 
+> problem. Someone
+> > reported to me that Xerces 1.3.1 is reporting an XML schema 
+> error where
+> > 1.3.0 didn't. It seems that I had failed to call 
+> setErrorHandler() which is
+> > key to reporting any validation errors. Xerces 1.3.0 let 
+> this slide where
+> > 1.3.1 complains about it. Now that I've corrected this 
+> oversight, I'm now
+> > seeing some parser errors related to the XML schema. I've 
+> attached another
+> > small demo application that shows the effects. To add to 
+> the confusion,
+> > 1.3.0 reports a different error than does 1.3.1.
+> > 
+> > Using Xerces 1.3.0, the demo application produces:
+> > 
+> > error
+> > org.xml.sax.SAXParseException: Datatype error: In element 
+> 'identifier' :
+> > Value 'oai:etdcat:ocm02999966' is a Malformed URI .
+> >         at
+> > 
+> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1068)
+> >         at
+> > 
+> org.apache.xerces.validators.common.XMLValidator.checkContent(
+> XMLValidator.j
+> > ava:3609)
+> >         at
+> > 
+> org.apache.xerces.validators.common.XMLValidator.callEndElemen
+> t(XMLValidator
+> > .java:1133)
+> >         at
+> > 
+> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatch
+> er.dispatch(XM
+> > LDocumentScanner.java:1201)
+> >         at
+> > 
+> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDo
+> cumentScanner.
+> > java:381)
+> >         at 
+> org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+> >         at
+> > 
+> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuild
+> erImpl.java:12
+> > 3)
+> >         at Test.main(Test.java:34)
+> > 
+> > Using Xerces 1.3.1, the demo produces:
+> > 
+> > error
+> > org.xml.sax.SAXParseException: The content of element type 
+> "metadata" must
+> > match 
+> "##any:uri=http://www.openarchives.org/OAI/1.0/OAI_ListRecords".
+> >         at
+> > 
+> org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1067)
+> >         at
+> > 
+> org.apache.xerces.validators.common.XMLValidator.reportRecover
+> ableXMLError(X
+> > MLValidator.java:1689)
+> >         at
+> > 
+> org.apache.xerces.validators.common.XMLValidator.callEndElemen
+> t(XMLValidator
+> > .java:1353)
+> >         at
+> > 
+> org.apache.xerces.framework.XMLDocumentScanner$ContentDispatch
+> er.dispatch(XM
+> > LDocumentScanner.java:1205)
+> >         at
+> > 
+> org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDo
+> cumentScanner.
+> > java:381)
+> >         at 
+> org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+> >         at
+> > 
+> org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuild
+> erImpl.java:17
+> > 2)
+> >         at Test.main(Test.java:34)
+> > 
+> > As far as I can tell, the schema look fine. My assumption, 
+> at this point, is
+> > that Xerces is at fault and my only recourse is turn off 
+> validation. I must
+> > also admit the possibility that my program is flawed in 
+> some way. On the
+> > slim chance that I've found the 2nd and 3rd XML schema 
+> errors within the
+> > span of a week, though, I thought I'd pass along my findings.
+> > 
+> >  <<Test.java>>
+> > Cheers,
+> > 
+> > Jeff
+> > 
+> > ---
+> > Jeffrey A. Young
+> > Senior Consulting Systems Analyst
+> > Office of Research, Mail Code 710
+> > OCLC Online Computer Library Center, Inc.
+> > 6565 Frantz Road
+> > Dublin, OH   43017-3395
+> > www.oclc.org
+> > 
+> > Voice:  614-764-4342
+> > Voice:  800-848-5878, ext. 4342
+> > Fax:    614-718-7477
+> > Email:  jyoung@oclc.org
+> > 
+> >   
+> --------------------------------------------------------------
+> --------------
+> >                 Name: Test.java
+> >    Test.java    Type: java/*
+> >             Encoding: quoted-printable
+> 
+> -- 
+> Thomas G. Habing
+> Research Programmer, Digital Library Initiative
+> University of Illinois at Urbana-Champaign
+> 052 Grainger Engineering Library, MC-274
+> thabing@uiuc.edu, (217) 244-7809
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From herbertv@cs.cornell.edu  Thu Apr 26 17:26:19 2001
+From: herbertv@cs.cornell.edu (herbert van de sompel)
+Date: Thu, 26 Apr 2001 12:26:19 -0400
+Subject: [OAI-implementers] XML Schemas and Xerces again
+References: <E5431CF93E29F9478878F623E5B9CE98342085@OA3-SERVER.oa.oclc.org> <3AE715A8.6F28867B@uiuc.edu>
+Message-ID: <3AE84C2B.BA787429@cs.cornell.edu>
+
+hi all,
+
+"Thomas G. Habing" wrote:
+> Regarding the 1.3.1 error, like Herbert we think Xerces is probably wrong
+> here, but at the same time, we also wonder if the namespace='##any' is
+> actually necessary in the XSD, since ##any is the default for the namespace
+> attribute.  Does Xerces not give an error if the XSD leaves out the
+> namespace='##any'?
+> 
+
+the use of "##any" is again related to inconsistency in parsers.  what
+we really wanted there instead of "##any" was "##other" but XML Spy
+would not let us use the "##other": it generated errors.  XSV did allow
+the "##other".  as a result, we chose to go for the less stringent
+"##any".  eventually, I hope we can go back to "##other" , which is
+really what we want.
+
+> Regarding the 1.3.0 error, our guess is that Xerces is trying to do too much
+> when validating uriReference string.  [Note, 'uriReference' has been changed
+> to 'anyURI' in the latest version of the schema spec.]
+> 
+
+I would like to remind you that XML Spy did not validate an OAI
+requestURL (which is a HTTP URL) as a uriReference.  which is why we
+moved to the type "string".  so, again, it means that we have to be
+careful with interpreting error messages from current validators.  as
+Thomas points out extensively, it seems that OAI identifiers are valid
+URI's according to RFC2396 and RFC2732.
+
+herbert
+
+
+> Quoting from the latest XML schema spec (datatype):
+> 
+> "NOTE: Each URI scheme imposes specialized syntax rules for URIs in that
+> scheme, including restrictions on the syntax of allowed fragment
+> identifiers. Because it is impractical for processors to check that a value
+> is a context-appropriate URI reference, this specification follows the lead
+> of [RFC 2396] (as amended by [RFC 2732]) in this matter: such rules and
+> restrictions are not part of type validity and are not checked by minimally
+> conforming processors. Thus in practice the above definition imposes only
+> very modest obligations on minimally conforming processors."
+> 
+> >From looking at RFC2396 and RFC2732, we're fairly certain that OAI
+> Identifiers are valid URIs.  The second colon might be considered an issue
+> by some, but looking at the RFC2396:
+> 
+>    ...An absolute URI contains the name of the scheme being used (<scheme>)
+>    followed by a colon (":") and then a string (the <scheme-specific-
+>    part>) whose interpretation depends on the scheme. The URI syntax does
+>    not require that the scheme-specific-part have any general structure or
+>    set of semantics which is common among all URI...
+> 
+> Colons are commonly considered reserved (i.e., needing to be escaped), but
+> the RFC also says about reserved characters:
+> 
+>    The "reserved" syntax class above refers to those characters that are
+>    allowed within a URI, but which may not be allowed within a
+>    particular component of the generic URI syntax; they are used as
+>    delimiters of the components described in Section 3.
+>    Characters in the "reserved" set are not reserved in all contexts.
+>    The set of characters actually reserved within any given URI
+>    component is defined by that component.  In general, a character is
+>    reserved if the semantics of the URI changes if the character is
+>    replaced with its escaped US-ASCII encoding.
+> 
+> On this basis and looking at the "Collected BNF for URI" (Appendix A), OAI
+> should be allowed to specify that colons used as delimiters in the
+> scheme-specific part are allowed unescaped within that component (i.e., the
+> "opaque" OAI scheme-specific-part) -- just as some URIs use an unescaped
+> colon within the hostport component of their scheme-specific-part.  Which
+> means that the only things that a generic URI parser should be able to
+> discern from the OAI URIs is scheme:opaque_part.  (It might be interesting
+> to see what would happen with Xerces if the second colon was escaped, such
+> as oai:etdcat%3Aocm02999966 -- if Xerces no longer objected, then we would
+> know that it was "over" validating the identifier element.)
+> 
+> Of course OAI might still want to consider eventually changing the OAI
+> identifier scheme (scheme-specific-part of the URI) to something more
+> similar to other net URIs, such as oai://etdcat/ocm02999966
+> (scheme://registration_name/opaque_part), but we would hesitate to suggest
+> that at this stage simply to accommodate what appears to be an overzealous
+> parser.
+> 
+> Tim Cole
+> Tom Habing
+> University of Illinois at UC
+> 
+> "Young,Jeff" wrote:
+> >
+> > I'm happy to say that the status=deleted problem appears to be resolved.
+> > Unfortunately, I now seem to have a different (unrelated) problem. Someone
+> > reported to me that Xerces 1.3.1 is reporting an XML schema error where
+> > 1.3.0 didn't. It seems that I had failed to call setErrorHandler() which is
+> > key to reporting any validation errors. Xerces 1.3.0 let this slide where
+> > 1.3.1 complains about it. Now that I've corrected this oversight, I'm now
+> > seeing some parser errors related to the XML schema. I've attached another
+> > small demo application that shows the effects. To add to the confusion,
+> > 1.3.0 reports a different error than does 1.3.1.
+> >
+> > Using Xerces 1.3.0, the demo application produces:
+> >
+> > error
+> > org.xml.sax.SAXParseException: Datatype error: In element 'identifier' :
+> > Value 'oai:etdcat:ocm02999966' is a Malformed URI .
+> >         at
+> > org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1068)
+> >         at
+> > org.apache.xerces.validators.common.XMLValidator.checkContent(XMLValidator.j
+> > ava:3609)
+> >         at
+> > org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+> > .java:1133)
+> >         at
+> > org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+> > LDocumentScanner.java:1201)
+> >         at
+> > org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+> > java:381)
+> >         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+> >         at
+> > org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:12
+> > 3)
+> >         at Test.main(Test.java:34)
+> >
+> > Using Xerces 1.3.1, the demo produces:
+> >
+> > error
+> > org.xml.sax.SAXParseException: The content of element type "metadata" must
+> > match "##any:uri=http://www.openarchives.org/OAI/1.0/OAI_ListRecords".
+> >         at
+> > org.apache.xerces.framework.XMLParser.reportError(XMLParser.java:1067)
+> >         at
+> > org.apache.xerces.validators.common.XMLValidator.reportRecoverableXMLError(X
+> > MLValidator.java:1689)
+> >         at
+> > org.apache.xerces.validators.common.XMLValidator.callEndElement(XMLValidator
+> > .java:1353)
+> >         at
+> > org.apache.xerces.framework.XMLDocumentScanner$ContentDispatcher.dispatch(XM
+> > LDocumentScanner.java:1205)
+> >         at
+> > org.apache.xerces.framework.XMLDocumentScanner.parseSome(XMLDocumentScanner.
+> > java:381)
+> >         at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:952)
+> >         at
+> > org.apache.xerces.jaxp.DocumentBuilderImpl.parse(DocumentBuilderImpl.java:17
+> > 2)
+> >         at Test.main(Test.java:34)
+> >
+> > As far as I can tell, the schema look fine. My assumption, at this point, is
+> > that Xerces is at fault and my only recourse is turn off validation. I must
+> > also admit the possibility that my program is flawed in some way. On the
+> > slim chance that I've found the 2nd and 3rd XML schema errors within the
+> > span of a week, though, I thought I'd pass along my findings.
+> >
+> >  <<Test.java>>
+> > Cheers,
+> >
+> > Jeff
+> >
+> > ---
+> > Jeffrey A. Young
+> > Senior Consulting Systems Analyst
+> > Office of Research, Mail Code 710
+> > OCLC Online Computer Library Center, Inc.
+> > 6565 Frantz Road
+> > Dublin, OH   43017-3395
+> > www.oclc.org
+> >
+> > Voice:  614-764-4342
+> > Voice:  800-848-5878, ext. 4342
+> > Fax:    614-718-7477
+> > Email:  jyoung@oclc.org
+> >
+> >   ----------------------------------------------------------------------------
+> >                 Name: Test.java
+> >    Test.java    Type: java/*
+> >             Encoding: quoted-printable
+> 
+> --
+> Thomas G. Habing
+> Research Programmer, Digital Library Initiative
+> University of Illinois at Urbana-Champaign
+> 052 Grainger Engineering Library, MC-274
+> thabing@uiuc.edu, (217) 244-7809
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+From eric_morgan@ncsu.edu  Mon Apr 30 12:16:07 2001
+From: eric_morgan@ncsu.edu (Eric Lease Morgan)
+Date: Mon, 30 Apr 2001 07:16:07 -0400
+Subject: [OAI-implementers] rdf
+Message-ID: <B712C1B7.5D88%eric_morgan@ncsu.edu>
+
+In a mad flash of creativity (I get these every once in a while), I have
+implemented about 80% of the OAI against the Mark Twain records of my Alex
+Catalogue of Electronic Texts, and I am wondering whether or not (or how) I
+can use RDF in the content of my metadata GetRecords response element. See:
+
+  http://www.infomotions.com/alex/oai/
+
+My OAI implementation is still bare-bones. I don't necessarily return the
+correct error codes, etc., and I have yet to fully implement some of the
+verbs such as ListRecords and ListSets.
+
+As per the protocol, I have implemented a Dublin Core metadata scheme, but
+like everybody else, Dublin Core is not quite rich enough for me. Each item
+in the Catalogue is associated with a few functions such as a concordance,
+make ebook, make PDF document, and freeWAIS index. For you RDF fans, you can
+see what I mean by looking at a sample RDF description of a record:
+
+  http://bliss.lib.ncsu.edu/xml/rdf/twain-30-44.xml
+
+Is there some mechanism whereby I can insert RDF into the metadata element
+of a GetRecord request so I can crawl my site with an as-of-yet-created OAI
+harvester, save the RDF with something like rdfdb, RDFStore, or Redland, and
+then finally serve out my content again? A possible GetRecord response could
+look like this:
+
+<?xml version="1.0"?>
+<GetRecord xmlns="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+ xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+ xsi:schemaLocation="http://www.openarchives.org/OAI/1.0/OAI_GetRecord
+ http://www.openarchives.org/OAI/1.0/OAI_GetRecord.xsd">
+ <responseDate>2001-04-30T07:24:56-7:00</responseDate>
+ <requestURL>http://www.infomotio...30-44</requestURL>
+ <record>
+  <header>
+   <identifier>twain-30-44</identifier>
+   <datestamp>1999</datestamp>
+  </header>
+  <metadata>
+   <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:alex="http://bliss.lib.ncsu.edu/xml/rdf/alex-01-rdf-ns#">
+    <rdf:Description rdf:about="http://www....erature/am...44.txt">
+     <dc:identifier>twain-30-44</dc:identifier>
+     <dc:creator>Twain, Mark</dc:creator>
+     <dc:title>$30,000 Bequest And Other Stories, The</dc:title>
+     <dc:source rdf:resource="gopher://.../Classic/bequest.mt" />
+     <dc:format>text/plain</dc:format>
+     <dc:publisher>Project Gutenburg</dc:publisher>
+     <dc:type>text</dc:type>
+     <dc:language>en-US</dc:language>
+     <dc:rights>This document in the the Public Domain.</dc:rights>
+     <alex:hasIndex rdf:resource="http://ww...sDatabase=twain-30-44" />
+     <alex:hasConcordance rdf:resource="ht..nce&amp;bookcode=twain-30-44" />
+     <alex:makeEbook rdf:resource="http://www.info...andle=twain-30-44" />
+     <alex:makePDF rdf:resource="h...cgi-bin/pdf.pl?handle=twain-30-44" />
+     <dc:relation rdf:resource="http://www.infomotions.com/alex/" />
+    </rdf:Description>
+   </rdf:RDF>
+  </metadata>
+ </record>
+</GetRecord>
+
+Inquisitive minds would like to know.
+
+-- 
+Eric Lease Morgan
+Digital Library Initiatives, NCSU Libraries
+http://www.lib.ncsu.edu/staff/morgan/
+
+
+
+From tdb198@ecs.soton.ac.uk  Mon Apr 30 12:36:10 2001
+From: tdb198@ecs.soton.ac.uk (Tim Brody)
+Date: Mon, 30 Apr 2001 12:36:10 +0100 (BST)
+Subject: [OAI-implementers] rdf
+In-Reply-To: <B712C1B7.5D88%eric_morgan@ncsu.edu>
+Message-ID: <Pine.LNX.4.21.0104301227430.29285-100000@ugnode1.ecs.soton.ac.uk>
+
+On Mon, 30 Apr 2001, Eric Lease Morgan wrote:
+
+> <?xml version="1.0"?>
+> <GetRecord xmlns="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+>  xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+>  xsi:schemaLocation="http://www.openarchives.org/OAI/1.0/OAI_GetRecord
+>  http://www.openarchives.org/OAI/1.0/OAI_GetRecord.xsd">
+>  <responseDate>2001-04-30T07:24:56-7:00</responseDate>
+>  <requestURL>http://www.infomotio...30-44</requestURL>
+>  <record>
+>   <header>
+>    <identifier>twain-30-44</identifier>
+>    <datestamp>1999</datestamp>
+>   </header>
+>   <metadata>
+>    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>     xmlns:dc="http://purl.org/dc/elements/1.1/"
+>     xmlns:alex="http://bliss.lib.ncsu.edu/xml/rdf/alex-01-rdf-ns#">
+>     <rdf:Description rdf:about="http://www....erature/am...44.txt">
+>      <dc:identifier>twain-30-44</dc:identifier>
+>      <dc:creator>Twain, Mark</dc:creator>
+>      <dc:title>$30,000 Bequest And Other Stories, The</dc:title>
+>      <dc:source rdf:resource="gopher://.../Classic/bequest.mt" />
+>      <dc:format>text/plain</dc:format>
+>      <dc:publisher>Project Gutenburg</dc:publisher>
+>      <dc:type>text</dc:type>
+>      <dc:language>en-US</dc:language>
+>      <dc:rights>This document in the the Public Domain.</dc:rights>
+>      <alex:hasIndex rdf:resource="http://ww...sDatabase=twain-30-44" />
+>      <alex:hasConcordance rdf:resource="ht..nce&amp;bookcode=twain-30-44" />
+>      <alex:makeEbook rdf:resource="http://www.info...andle=twain-30-44" />
+>      <alex:makePDF rdf:resource="h...cgi-bin/pdf.pl?handle=twain-30-44" />
+>      <dc:relation rdf:resource="http://www.infomotions.com/alex/" />
+>     </rdf:Description>
+>    </rdf:RDF>
+>   </metadata>
+>  </record>
+> </GetRecord>
+
+Not an answer to your question but a query, I believe DC describes
+"identifier" as an unambiguous reference to the article, for example a
+URL. With service-provider hat on I would rather be provided with a
+complete URL (which I can then pass onto users), than something that must
+be derived.
+
+With that in mind couldn't rdf:resource* be put in dc:identifier, and
+those particular fields dropped?
+
+(I don't know whether "hasIndex" and other fields could be encapsulated
+within a DC attribute?)
+
+I have come to the conclusion that anything can be represented by DC
+somewhere, its just a question of how much context you're prepared to
+loose!
+
+All the best,
+Tim Brody
+
+
+From eric_morgan@ncsu.edu  Mon Apr 30 12:48:33 2001
+From: eric_morgan@ncsu.edu (Eric Lease Morgan)
+Date: Mon, 30 Apr 2001 07:48:33 -0400
+Subject: [OAI-implementers] rdf
+In-Reply-To: <Pine.LNX.4.21.0104301227430.29285-100000@ugnode1.ecs.soton.ac.uk>
+Message-ID: <B712C951.5D8D%eric_morgan@ncsu.edu>
+
+Tim Brody <tdb198@ecs.soton.ac.uk> wrote:
+
+>> <identifier>twain-30-44</identifier>
+> 
+> Not an answer to your question but a query, I believe DC describes
+> "identifier" as an unambiguous reference to the article, for example a
+> URL. With service-provider hat on I would rather be provided with a
+> complete URL (which I can then pass onto users), than something that must
+> be derived.
+> 
+> With that in mind couldn't rdf:resource* be put in dc:identifier, and
+> those particular fields dropped?
+> 
+> (I don't know whether "hasIndex" and other fields could be encapsulated
+> within a DC attribute?)
+> 
+> I have come to the conclusion that anything can be represented by DC
+> somewhere, its just a question of how much context you're prepared to
+> loose!
+
+I'm not exactly sure whether or not identifier is suppose to be a URL or a
+URI. I suppose the "I" stands for "identifier", and that is easy enough to
+fix in my code.
+
+As to the other, I am still trying to get my brain around XML and
+namespaces, so my reply to your question is, "I don't know."
+
+-- 
+Eric Lease Morgan
+
+
+From eric_morgan@ncsu.edu  Mon Apr 30 12:48:58 2001
+From: eric_morgan@ncsu.edu (Eric Lease Morgan)
+Date: Mon, 30 Apr 2001 07:48:58 -0400
+Subject: [OAI-implementers] rdf
+In-Reply-To: <B712C1B7.5D88%eric_morgan@ncsu.edu>
+Message-ID: <B712C969.5D8D%eric_morgan@ncsu.edu>
+
+Eric Lease Morgan <eric_morgan@ncsu.edu> wrote:
+
+> <?xml version="1.0"?>
+> <GetRecord xmlns="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+> xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+> xsi:schemaLocation="http://www.openarchives.org/OAI/1.0/OAI_GetRecord
+> http://www.openarchives.org/OAI/1.0/OAI_GetRecord.xsd">
+> <responseDate>2001-04-30T07:24:56-7:00</responseDate>
+> <requestURL>http://www.infomotio...30-44</requestURL>
+> <record>
+> <header>
+> <identifier>twain-30-44</identifier>
+> <datestamp>1999</datestamp>
+> </header>
+> <metadata>
+> <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+> xmlns:dc="http://purl.org/dc/elements/1.1/"
+> ...
+> </GetRecord>
+
+I have saved my proto GetRecord response as a file:
+
+  http://bliss.lib.ncsu.edu/xml/rdf/twain-30-44.oai
+
+I then fed this URL to SiRPAC:
+
+  http://www.w3.org/RDF/Implementations/SiRPAC/
+
+It parsed correctly!  :-)
+
+-- 
+Eric Lease Morgan
+Digital Library Initiatives, NCSU Libraries
+http://www.lib.ncsu.edu/staff/morgan/
+
+
+
+From thabing@uiuc.edu  Mon Apr 30 19:35:42 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Mon, 30 Apr 2001 13:35:42 -0500
+Subject: [OAI-implementers] rdf
+References: <B712C969.5D8D%eric_morgan@ncsu.edu>
+Message-ID: <3AEDB07E.6605B1E8@uiuc.edu>
+
+Eric-
+
+We've been looking at passing RDF via OAI protocols.  Much of our metadata
+is currently stored in RDF syntax with Dublin Core, Dublin Core Qualified,
+and Dublin Core Agent semantics (see for example
+http://dli.grainger.uiuc.edu/~acm/toms/25_3/lecuyer/05_lecuyer_full.met). 
+However there are a couple of key issues that we're still trying to overcome
+and that may make doing this more trouble than it's worth.
+
+1) There is no authoritative RDF XSD available (that we've know of) such as
+would be required to conform to OAI validation requirements (nor for that
+matter are there authoritative and extensible DCQ or DCA XSDs presently
+available, and the available OAI DC XSD might not be extensible enough --
+see below).  There is presently considerable debate within the RDF community
+as to whether XSD is sufficient to describe RDF -- so you might be skating
+on thin ice here.  One of the problems is that the true, allowable content
+model for a given RDF element really varies based RDF attribute values
+(e.g., RDF:parseType) -- something that's difficult to represent rigorously
+enough in XSD.
+
+An additional complication is that OAI wants only a single pointer to an XSD
+to be used for validation.  We've looked at a couple of approaches to
+dealing with this issue and the one we'd prefer to implement would be to
+create an XSD for use by OAI that in turn points to XSDs for each of the
+namespaces used.  We feel this would maintain modularity and flexibility,
+but it means a proliferation of umbrella-level (proxy?) XSDs.  The proxy XSD
+might include:
+
+<xsd:import namespace="..." schemaLocation="..."/> for each namespace
+
+
+In any event this still requires creating an XSD for RDF and any other
+namespaces used. To embed RDF attributes properly (as in your example) also
+requires that the other namespaces used (e.g., DC, Alex) have XSDs that
+allow for inclusion of attributes from an arbitrary namespace (e.g. RDF). 
+The OAI XSD for DC doesn't actually allow that kind of extensibility, so
+you'd also need to create an alternative DC XSD as well.
+
+2) There are also a number of issues about how best to use RDF.  There's a
+lot of debate as to the usefulness of RDF in general.  We find RDF useful as
+a way to identify in a semantic neutral fashion each "granule" of metadata,
+but you do get into a number of nesting and attribute reuse issues.  Thus we
+use RDF in the following manner to encapsulate DC:Date data:
+
+  <dc:Date rdf:parseType="Resource">
+    <dcq:refinement>issued</dcq:refinement>
+    <dcq:encoding>W3CDTF</dcq:encoding>
+    <rdf:value>1999-09</rdf:value>
+  </dc:Date>
+
+And we use it to encapsulate DC:Creator data as follows:
+
+  <rdf:seq>
+    <rdf:li>
+      <dc:Creator>
+        <rdf:Description ID="AUTHOR-1">
+          <dca:AgentType rdf:parseType="Resource">
+            <dcq:encoding>DCAT1</dcq:encoding>
+            <rdf:value>Person</rdf:value>
+          </dca:AgentType>
+          <dca:AgentName rdf:parseType="Resource">
+            <dcq:encoding>FNF</dcq:encoding>
+            <rdf:value>L'Ecuyer, Pierre</rdf:value>
+          </dca:AgentName>
+          <dca:AgentAffiliation>
+            Université de Montréal...
+          </dca:AgentAffiliation>						
+          <dca:AgentIdentifier rdf:parseType="Resource">
+            <dcq:encoding>URI</dcq:encoding>
+            <rdf:value>mailto:lecuyer@iro.umontreal.ca</rdf:value>
+          </dca:AgentIdentifier>
+        </rdf:Description>
+      </dc:Creator>
+    </rdf:li>
+    ...
+  </rdf:seq>
+
+
+(To go to full example see URL above -- Note we also embedded MathML
+namespace in this example.)  These parse using SiRPAC, but are not the only
+approach.  (In particular many might take issue with the way we've chosen to
+use DCQ and DCA semantics and with the degree of RDF nesting.)
+
+The bottom-line is that there's a fair amount of work to be done to create
+multi-namespace RDF files that can be validated using XSD as envisioned by
+OAI.  We'll be interested in any conclusions you reach.  We'll pass along
+what we learn as well.
+
+Regards,
+	Tom Habing
+	Tim Cole
+
+
+Eric Lease Morgan wrote:
+> 
+> Eric Lease Morgan <eric_morgan@ncsu.edu> wrote:
+> 
+> > <?xml version="1.0"?>
+> > <GetRecord xmlns="http://www.openarchives.org/OAI/1.0/OAI_GetRecord"
+> > xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"
+> > xsi:schemaLocation="http://www.openarchives.org/OAI/1.0/OAI_GetRecord
+> > http://www.openarchives.org/OAI/1.0/OAI_GetRecord.xsd">
+> > <responseDate>2001-04-30T07:24:56-7:00</responseDate>
+> > <requestURL>http://www.infomotio...30-44</requestURL>
+> > <record>
+> > <header>
+> > <identifier>twain-30-44</identifier>
+> > <datestamp>1999</datestamp>
+> > </header>
+> > <metadata>
+> > <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+> > xmlns:dc="http://purl.org/dc/elements/1.1/"
+> > ...
+> > </GetRecord>
+> 
+> I have saved my proto GetRecord response as a file:
+> 
+>   http://bliss.lib.ncsu.edu/xml/rdf/twain-30-44.oai
+> 
+> I then fed this URL to SiRPAC:
+> 
+>   http://www.w3.org/RDF/Implementations/SiRPAC/
+> 
+> It parsed correctly!  :-)
+> 
+> --
+> Eric Lease Morgan
+> Digital Library Initiatives, NCSU Libraries
+> http://www.lib.ncsu.edu/staff/morgan/
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From thabing@uiuc.edu  Mon Apr 30 20:01:27 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Mon, 30 Apr 2001 14:01:27 -0500
+Subject: [OAI-implementers] rdf
+References: <B712C969.5D8D%eric_morgan@ncsu.edu> <3AEDB07E.6605B1E8@uiuc.edu>
+Message-ID: <3AEDB687.F8CDC8FD@uiuc.edu>
+
+Whoops.  The sample URL I sent earlier is to an access-controlled web site. 
+The same sample (no userid or password required) can be found at:
+
+http://dli.grainger.uiuc.edu/publications/05_lecuyer_full.met
+
+"Thomas G. Habing" wrote:
+> 
+> Eric-
+> 
+> We've been looking at passing RDF via OAI protocols.  Much of our metadata
+> is currently stored in RDF syntax with Dublin Core, Dublin Core Qualified,
+> and Dublin Core Agent semantics (see for example
+> http://dli.grainger.uiuc.edu/~acm/toms/25_3/lecuyer/05_lecuyer_full.met).
+> However there are a couple of key issues that we're still trying to overcome
+> and that may make doing this more trouble than it's worth.
+> 
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+From eric_morgan@ncsu.edu  Mon Apr 30 20:58:13 2001
+From: eric_morgan@ncsu.edu (Eric Lease Morgan)
+Date: Mon, 30 Apr 2001 15:58:13 -0400
+Subject: [OAI-implementers] rdf
+In-Reply-To: <3AEDB07E.6605B1E8@uiuc.edu>
+Message-ID: <B7133C15.CAB%eric_morgan@ncsu.edu>
+
+Thomas G. Habing <thabing@uiuc.edu> wrote:
+
+> 1) There is no authoritative RDF XSD available (that we've know of) such as
+> would be required to conform to OAI validation requirements (nor for that
+> matter are there authoritative and extensible DCQ or DCA XSDs presently
+> available, and the available OAI DC XSD might not be extensible enough --
+> see below).  There is presently considerable debate within the RDF community
+> as to whether XSD is sufficient to describe RDF -- so you might be skating
+> on thin ice here.  One of the problems is that the true, allowable content
+> model for a given RDF element really varies based RDF attribute values
+> (e.g., RDF:parseType) -- something that's difficult to represent rigorously
+> enough in XSD.
+
+I'm a little bit out of my element here. What is XSD? A way to
+describe/initialize a namespace? ... Oh, it seems to be a schema.
+
+
+> [Cool stuff deleted.]
+> The bottom-line is that there's a fair amount of work to be done to create
+> multi-namespace RDF files that can be validated using XSD as envisioned by
+> OAI.  We'll be interested in any conclusions you reach.  We'll pass along
+> what we learn as well.
+
+It sort of sounds to me that in order to create alternative metadata formats
+to be used in OAI one must create an XSD -- a schema, and RDF does not
+cleanly fit into schemas. Correct?
+
+-- 
+Eric Lease Morgan
+NCSU Libraries
+http://www.lib.ncsu.edu/staff/morgan/
+
+
+From thabing@uiuc.edu  Mon Apr 30 22:45:09 2001
+From: thabing@uiuc.edu (Thomas G. Habing)
+Date: Mon, 30 Apr 2001 16:45:09 -0500
+Subject: [OAI-implementers] rdf
+References: <B7133C15.CAB%eric_morgan@ncsu.edu>
+Message-ID: <3AEDDCE5.EBB4C2F0@uiuc.edu>
+
+Eric Lease Morgan wrote:
+> 
+> Thomas G. Habing <thabing@uiuc.edu> wrote:
+> 
+> > 1) There is no authoritative RDF XSD available (that we've know of) such as
+> > would be required to conform to OAI validation requirements (nor for that
+> > matter are there authoritative and extensible DCQ or DCA XSDs presently
+> > available, and the available OAI DC XSD might not be extensible enough --
+> > see below).  There is presently considerable debate within the RDF community
+> > as to whether XSD is sufficient to describe RDF -- so you might be skating
+> > on thin ice here.  One of the problems is that the true, allowable content
+> > model for a given RDF element really varies based RDF attribute values
+> > (e.g., RDF:parseType) -- something that's difficult to represent rigorously
+> > enough in XSD.
+> 
+> I'm a little bit out of my element here. What is XSD? A way to
+> describe/initialize a namespace? ... Oh, it seems to be a schema.
+
+Sorry for the jargon.  XSD is indeed an XML Schema.
+
+> 
+> > [Cool stuff deleted.]
+> > The bottom-line is that there's a fair amount of work to be done to create
+> > multi-namespace RDF files that can be validated using XSD as envisioned by
+> > OAI.  We'll be interested in any conclusions you reach.  We'll pass along
+> > what we learn as well.
+> 
+> It sort of sounds to me that in order to create alternative metadata formats
+> to be used in OAI one must create an XSD -- a schema, and RDF does not
+> cleanly fit into schemas. Correct?
+
+Yes and not entirely sure yet.  OAI requires an XML Schema be available in
+order to validate (check the correctness) of any alternate metadata
+formats.  But, after sending the previous message, I was able to find an XML
+Schema for RDF (http://www.w3.org/2000/07/rdf.xsd), but I haven't had a
+chance to test it yet.  I suspect it will require some tweaking in order to
+work with the latest XML Schema spec (a moving target).  Plus, schemas for
+any other namespaces that you intend to embed in the RDF will also have to
+be developed.
+
+Anyway, this is something that we are actively pursuing, and are happy to
+share once we figure out more ourselves.
+
+Regards,
+	Tom
+
+-- 
+Thomas G. Habing
+Research Programmer, Digital Library Initiative
+University of Illinois at Urbana-Champaign
+052 Grainger Engineering Library, MC-274
+thabing@uiuc.edu, (217) 244-7809
+
+> 
+> --
+> Eric Lease Morgan
+> NCSU Libraries
+> http://www.lib.ncsu.edu/staff/morgan/
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+

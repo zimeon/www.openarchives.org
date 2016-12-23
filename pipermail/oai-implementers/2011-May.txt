@@ -1,0 +1,564 @@
+From opdecoul at ubib.eur.nl  Thu May 26 06:43:31 2011
+From: opdecoul at ubib.eur.nl (Jasper Op de Coul)
+Date: Thu May 26 06:44:33 2011
+Subject: [OAI-implementers] harvester guidelines
+Message-ID: <4DDE2ED3.6080809@ubib.eur.nl>
+
+Hi list,
+
+
+I've been doing some work with OAIPMH harvesters lately, and would like 
+to share some of my experiences on the subject.
+
+When harvesting specific sets with the `set` param, there is an issue 
+that a harvester is not notified when a record is removed from that set.
+
+I think most implementers are aware of this, and it is the biggest hole 
+in the specification.
+
+For example: A specific set is harvested, but at a later time one of the 
+records is no longer part of that set. The record then disappears from 
+the feed, but the harvester is never notified because there is no delete 
+event.
+
+There are several ways to deal with this:
+
+1. Do incremental harvests with the ?set param, then do a full harvest 
+periodically or when someone calls or mails that records are missing.
+This is a common approach but it is no solution to the problem. I think 
+we can and should do better then that.
+
+2. Always do a full harvest with the ?set param. This will put a lot of 
+load on the servers, take lots of time, and is not a very social thing 
+to do. So, not a good option.
+
+3. Use incremental harvests, but never use the ?set param. The client 
+will receive all records and can inspect the SetSpec header manually to 
+see if this record is part of the wanted set. Records that are not part 
+of the wanted set but are in the client database can be removed.
+
+The last option means a lot more housekeeping for the client, but it is 
+the only way for a client to be sure that the data is correct.
+
+Although sets are a very useful feature, the set parameter is basically 
+broken. This should be noted somewhere in the documentation, probably in 
+the harvester guidelines.
+Personally I would be in favour of deprecating the set parameter so we 
+can put a big fat warning explaining this problem.
+
+Another issue that came up recently has to do with incremental 
+harvesting. The harvester guidelines mention that for the value of the 
+from parameter, the `responseDate` should be used, and that it is 
+advisable to overlap by a small additional amount.
+I think it would be better if a harvester does not use the 
+responseDate, but instead uses the latest datestamp of all harvested 
+records.
+
+Consider the following situation:
+
+Someone modifies a document in a database at 4 o'clock.
+An external OAI service gets updated once an hour, so it will have the 
+changes at 5 o'clock. The OAI software will use the modification dates 
+from the database, so at 5 o'clock the modified record is added with a 
+datestamp of 4 o'clock.
+If a harvester comes by at 4:30, that modifed document is not in the OAI 
+feed yet. An hour later at 5:30, the harvester harvests again with a 
+`from` parameter value of 4:30. The harvester will never get the 
+modified document because it was modified earlier then 4:30.
+
+Off course this whole situation is far from ideal, but it could be that 
+there is a gap between the modification date of a resource, and when it 
+gets added to the oai server. This gap can be anything from a few 
+seconds to a few weeks.
+
+If a harvester always uses the latest datestamp of any of the harvested 
+records, you are sure that no records are missed, and you never harvest 
+too much.
+
+I hope this helps implementers build better harvesters. If there is 
+concensus about adding this to the harvester guidelines, I would be 
+willing to write some text for it.
+
+Kind regards,
+Jasper
+
+
+
+-- 
+Jasper Op de Coul -- Erasmus University Rotterdam
+t +31 10 4082922  -- http://eur.nl/ub
+Burgemeester Oudlaan 50 3062 PA Rotterdam -- The Netherlands
+
+--------------------------------Disclaimer--------------------------------
+De informatie  verzonden in dit e-mail bericht  inclusief de bijlage(n) is
+vertrouwelijk  en is  uitsluitend  bestemd  voor de geadresseerde  van dit
+bericht. Lees verder: http://www.eur.nl/email-disclaimer
+
+The information in this e-mail message  is confidential and may be legally
+privileged. Read more: http://www.eur.nl/english/email-disclaimer
+--------------------------------------------------------------------------
+
+From Samuele.Kaplun at cern.ch  Thu May 26 08:05:21 2011
+From: Samuele.Kaplun at cern.ch (Samuele Kaplun)
+Date: Thu May 26 08:05:55 2011
+Subject: [OAI-implementers] harvester guidelines
+In-Reply-To: <4DDE2ED3.6080809@ubib.eur.nl>
+References: <4DDE2ED3.6080809@ubib.eur.nl>
+Message-ID: <1306411521.3450.14.camel@pcuds35>
+
+Hi Jasper,
+
+Il giorno gio, 26/05/2011 alle 12.43 +0200, Jasper Op de Coul ha
+scritto:
+> 3. Use incremental harvests, but never use the ?set param. The client 
+> will receive all records and can inspect the SetSpec header manually to 
+> see if this record is part of the wanted set. Records that are not part 
+> of the wanted set but are in the client database can be removed.
+
+this sounds like a nice idea, but it would not fully address the case
+when, in the repository, the union of all sets, is just a subset of the
+whole record universe. If a record gets out of a set and don't get into
+any other set, then it will not be deleted, but it won't as well be
+exported, in the case where the set param is not specified. So
+unfortunately even with your solution this situation would not be
+solved :-(
+
+Moreover by harvesting without specifying a set, you are putting
+(theoretically) more load, not only on the client, but also on the
+server, since you are asking way more information that is going to be
+thrown away afterwards.
+
+I can not wait to see the outcome of the "Next Generation OAI-PMH"
+Technical Session at OAI7
+
+<http://indico.cern.ch/contributionDisplay.py?contribId=21&confId=103325>
+
+where I think this topic will be very well addressed.
+
+Cheers!
+	Samuele
+
+-- 
+Samuele Kaplun
+Invenio Developer ** <http://invenio-software.org/>
+
+
+From thb-oai-implementers at lists.gymel.com  Thu May 26 08:22:05 2011
+From: thb-oai-implementers at lists.gymel.com (Thomas Berger)
+Date: Thu May 26 08:22:40 2011
+Subject: [OAI-implementers] (no subject)
+In-Reply-To: <4DDE2ED3.6080809@ubib.eur.nl>
+References: <4DDE2ED3.6080809@ubib.eur.nl>
+Message-ID: <4DDE45ED.5050106@Gymel.com>
+
+Hi Jasper,
+
+> > Another issue that came up recently has to do with incremental harvesting. The
+> > harvester guidelines mention that for the value of the from parameter, the
+> > `responseDate` should be used, and that it is advisable to overlap by a small
+> > additional amount.
+> > I think it would be better if a harvester does not use the responseDate, but
+> > instead uses the latest datestamp of all harvested records.
+> >
+> > Consider the following situation:
+> >
+> > Someone modifies a document in a database at 4 o'clock.
+> > An external OAI service gets updated once an hour, so it will have the changes
+> > at 5 o'clock. The OAI software will use the modification dates from the
+> > database, so at 5 o'clock the modified record is added with a datestamp of 4
+> > o'clock.
+Wich in turn evoces the fatal consequences you describe.
+
+Whenever you have an intermediate service as base for the repository,
+you have two choices:
+
+- Keep copies and on update of each individual record modify its
+  datestamp to the time of update (or - if you get a copy of everything:
+  modify the datestamps of all records newer than the last update
+
+- Keep a *complete* list of all individual times an update of the
+  service has taken place and adjust all internal queries for time
+  intervals and all Datestamps in OAI-Headers to the correct (upper
+  or lower) interval boundary from this list.
+
+Personally I'm involved with repositories for which unfortunately none
+of these strategies is feasible: The OAI service does not have a
+database of its own and the database it utilizes is updated infrequently
+by prompting administrators to upload a "production version" of the
+database onto the web-exposed host. And none of the persons involved
+takes the trouble adding the timestamp of this action to a config file.
+
+But also better-kept repositories sometimes have trouble with their
+indexing and erroneously deliver no records for intervals where there
+actually had been some changes, thus arising the need to re-harvest.
+Unfortunately the protocol specification does not include measures to
+communicate such reharvesting instructions, the known harvesters then
+are alerted by a mailing list, but of course OAI-PMH is mostly
+about giving access without the need of prior "registration"...
+
+The strategy you describe fits the above scenarios very well and
+can be implemented in harvesters very cheaply: For incremental harvesting
+the timestamp of "last successful harvest" has to be stored anyway and
+noting the first (of several delivered) ResponseDates or the maximum
+of all delivered dateStamp's does not make much of a difference.
+Semantically it would constitute the "evidenced last known state"
+of the repository...
+
+
+viele Gruesse
+Thomas Berger
+
+From opdecoul at ubib.eur.nl  Thu May 26 11:26:49 2011
+From: opdecoul at ubib.eur.nl (Jasper Op de Coul)
+Date: Thu May 26 11:27:46 2011
+Subject: [OAI-implementers] harvester guidelines
+In-Reply-To: <1306411521.3450.14.camel@pcuds35>
+References: <4DDE2ED3.6080809@ubib.eur.nl> <1306411521.3450.14.camel@pcuds35>
+Message-ID: <4DDE7139.1050805@ubib.eur.nl>
+
+Hi Samuele,
+
+On 05/26/2011 02:05 PM, Samuele Kaplun wrote:
+> Hi Jasper,
+>
+> Il giorno gio, 26/05/2011 alle 12.43 +0200, Jasper Op de Coul ha
+> scritto:
+>> 3. Use incremental harvests, but never use the ?set param. The client
+>> will receive all records and can inspect the SetSpec header manually to
+>> see if this record is part of the wanted set. Records that are not part
+>> of the wanted set but are in the client database can be removed.
+>
+> this sounds like a nice idea, but it would not fully address the case
+> when, in the repository, the union of all sets, is just a subset of the
+> whole record universe. If a record gets out of a set and don't get into
+> any other set, then it will not be deleted, but it won't as well be
+> exported, in the case where the set param is not specified. So
+> unfortunately even with your solution this situation would not be
+> solved :-(
+>
+
+I'm not sure if I follow you correctly. Do you mean that records
+wouthout any setspec never show up in the feed? I don't think this is
+the case. Maybe you mean that if only the setspec changes but not the
+metadata, then it could be that the datestamp is not updated?
+
+> Moreover by harvesting without specifying a set, you are putting
+> (theoretically) more load, not only on the client, but also on the
+> server, since you are asking way more information that is going to be
+> thrown away afterwards.
+>
+
+Yes, but you can keep doing incremental harvests instead of throwing
+everything away and doing a full reharvest every month. So it is not
+that clear which scenario consumes the most bandwith.
+
+> I can not wait to see the outcome of the "Next Generation OAI-PMH"
+> Technical Session at OAI7
+>
+> <http://indico.cern.ch/contributionDisplay.py?contribId=21&confId=103325>
+>
+> where I think this topic will be very well addressed.
+>
+
+Ah that sounds very interesting indeed. I wont be attending OAI7 this
+time since I opted for the EuroPython conference in Florence, which is
+in the same week.. I'll suggest the talk to my colleague who is going.
+
+> Cheers!
+> 	Samuele
+>
+
+
+-- 
+Jasper Op de Coul -- Erasmus University Rotterdam
+t +31 10 4082922  -- http://eur.nl/ub
+Burgemeester Oudlaan 50 3062 PA Rotterdam -- The Netherlands
+
+--------------------------------Disclaimer--------------------------------
+De informatie  verzonden in dit e-mail bericht  inclusief de bijlage(n) is
+vertrouwelijk  en is  uitsluitend  bestemd  voor de geadresseerde  van dit
+bericht. Lees verder: http://www.eur.nl/email-disclaimer
+
+The information in this e-mail message  is confidential and may be legally
+privileged. Read more: http://www.eur.nl/english/email-disclaimer
+--------------------------------------------------------------------------
+
+From Samuele.Kaplun at cern.ch  Thu May 26 11:40:53 2011
+From: Samuele.Kaplun at cern.ch (Samuele Kaplun)
+Date: Thu May 26 11:41:27 2011
+Subject: [OAI-implementers] harvester guidelines
+In-Reply-To: <4DDE7139.1050805@ubib.eur.nl>
+References: <4DDE2ED3.6080809@ubib.eur.nl>
+	<1306411521.3450.14.camel@pcuds35>  <4DDE7139.1050805@ubib.eur.nl>
+Message-ID: <1306424453.3450.43.camel@pcuds35>
+
+Hi Jasper,
+
+Il giorno gio, 26/05/2011 alle 17.26 +0200, Jasper Op de Coul ha
+scritto:
+> On 05/26/2011 02:05 PM, Samuele Kaplun wrote:
+> > Il giorno gio, 26/05/2011 alle 12.43 +0200, Jasper Op de Coul ha
+> > scritto:
+> >> 3. Use incremental harvests, but never use the ?set param. The client
+> >> will receive all records and can inspect the SetSpec header manually to
+> >> see if this record is part of the wanted set. Records that are not part
+> >> of the wanted set but are in the client database can be removed.
+> >
+> > this sounds like a nice idea, but it would not fully address the case
+> > when, in the repository, the union of all sets, is just a subset of the
+> > whole record universe. If a record gets out of a set and don't get into
+> > any other set, then it will not be deleted, but it won't as well be
+> > exported, in the case where the set param is not specified. So
+> > unfortunately even with your solution this situation would not be
+> > solved :-(
+>
+> I'm not sure if I follow you correctly. Do you mean that records
+> wouthout any setspec never show up in the feed? I don't think this is
+> the case. Maybe you mean that if only the setspec changes but not the
+> metadata, then it could be that the datestamp is not updated?
+
+In my scenario, I was assuming that not all records in a repository are
+actually exported via OAI-PMH (e.g. this is the case for Invenio
+instances such as the CERN Document Server). In our implementation, only
+records that belongs to at least a set are actually exported. So if a
+record was at some point in the past available in a set, it would have
+been exported as well when the ?set= argument was missing. On the other
+hand, if the record is removed from the set, and is in general no longer
+exported (but is still in the repository), then there will be no
+advertisement about this event (in incremental harvesting).
+
+In general this problem simply show up when a record is no longer
+exported, but nevertheless it is still available in the repository (and
+hence can't really be considered as formally "deleted").
+
+> Yes, but you can keep doing incremental harvests instead of throwing
+> everything away and doing a full reharvest every month. So it is not
+> that clear which scenario consumes the most bandwith.
+
+Indeed :-)
+
+>Ah that sounds very interesting indeed. I wont be attending OAI7 this
+>time since I opted for the EuroPython conference in Florence, which is
+>in the same week.. I'll suggest the talk to my colleague who is going.
+
+Ooh... Also this one looks very interesting! 
+
+Cheers!
+	Samuele
+
+
+
+-- 
+Samuele Kaplun
+Invenio Developer ** <http://invenio-software.org/>
+
+
+From opdecoul at ubib.eur.nl  Thu May 26 11:54:30 2011
+From: opdecoul at ubib.eur.nl (Jasper Op de Coul)
+Date: Thu May 26 11:55:30 2011
+Subject: [OAI-implementers] harvester guidelines
+In-Reply-To: <E9244AACE8CE844487FF2FAB528CA7CE01704581@ENTWEXMB0000002.university.harvard.edu>
+References: <4DDE2ED3.6080809@ubib.eur.nl>
+	<E9244AACE8CE844487FF2FAB528CA7CE01704581@ENTWEXMB0000002.university.harvard.edu>
+Message-ID: <4DDE77B6.4060709@ubib.eur.nl>
+
+On 05/26/2011 03:02 PM, McGath, Gary wrote:
+>> From: oai-implementers-bounces@openarchives.org [mailto:oai-
+>> implementers-bounces@openarchives.org] On Behalf Of Jasper Op de Coul
+>> Sent: Thursday, May 26, 2011 6:44 AM
+>> To: OAI-implementers@openarchives.org
+>> Subject: [OAI-implementers] harvester guidelines
+>>
+>> Hi list,
+>>
+>>
+>> I've been doing some work with OAIPMH harvesters lately, and would like
+>> to share some of my experiences on the subject.
+>>
+>> When harvesting specific sets with the `set` param, there is an issue
+>> that a harvester is not notified when a record is removed from that
+>> set.
+>>
+>> I think most implementers are aware of this, and it is the biggest hole
+>> in the specification.
+>>
+>> For example: A specific set is harvested, but at a later time one of
+>> the
+>> records is no longer part of that set. The record then disappears from
+>> the feed, but the harvester is never notified because there is no
+>> delete
+>> event.
+>
+> Implementers of services could avoid this problem by adopting a policy of never removing a record from a set. If its placement in a set turns out to be erroneous or outdated, the service would delete and re-add the record. Of course, this only helps with the services that adopt and announce the policy, and uprooting the old record could be a problem in some scenarios, but it sounds like a reasonable policy to adopt, with the advantage outweighing the downside.
+>
+> One problem I can think of is that it could get messy if there are major changes in set organization, resulting in large numbers of bookkeeping deletions.
+>
+
+Yes, solving it with a policy is probably the best option. Especially if 
+your sets don't change that often.
+
+It is possible to solve the problem on the service side, but it is not 
+trivial, and kind of a hack:
+
+If a server recieves a request with a set parameter. It could respond by 
+not only the returning the records from that set, but returning all 
+records in the repository and marking them as deleted except the records 
+from the chosen set.
+This would be confusing for a client since the server returned records 
+that were not in the set the client asked. So the server should also add 
+the requested setspec to all other resources. The adding of the setspec 
+and deleted headers would be trivial to add in the http server, and 
+should not be stored in the database.
+However, this scenario could lead to problems if a client does multiple 
+harvests of different sets. In that case a record could be marked as 
+deleted in one set, while it is not deleted in another set. If the 
+harvested data is stored in one database (which is common), these 
+records would overwrite each other.
+
+In the MOAI server we can make many oaipmh feeds out of one oaipmh feed 
+base on the setspec headers. Every set could basically have it's own 
+oaipmh feed that contains just the records from that set, and all other 
+records marked as delete. The harvester could then harvest the feed 
+without the need to specify a set parameter. Furthermore each of these 
+oaipmh feeds could use slightly different oai:ids so that there would 
+not be any collisions when the harvested data is merged into a single 
+database.
+
+This does not completely solve the problem since you have to get 
+harvesters to use these different feeds instead of harvesting the 'main' 
+feed with set params. But for harvesters that use these feeds you have 
+eliminated the problem, without too much bookkeeping.
+
+
+
+-- 
+Jasper Op de Coul -- Erasmus University Rotterdam
+t +31 10 4082922  -- http://eur.nl/ub
+Burgemeester Oudlaan 50 3062 PA Rotterdam -- The Netherlands
+
+--------------------------------Disclaimer--------------------------------
+De informatie  verzonden in dit e-mail bericht  inclusief de bijlage(n) is
+vertrouwelijk  en is  uitsluitend  bestemd  voor de geadresseerde  van dit
+bericht. Lees verder: http://www.eur.nl/email-disclaimer
+
+The information in this e-mail message  is confidential and may be legally
+privileged. Read more: http://www.eur.nl/english/email-disclaimer
+--------------------------------------------------------------------------
+
+From hussein at cs.uct.ac.za  Fri May 27 14:04:56 2011
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Fri May 27 14:05:13 2011
+Subject: [OAI-implementers] harvester guidelines
+In-Reply-To: <4DDE2ED3.6080809@ubib.eur.nl>
+References: <4DDE2ED3.6080809@ubib.eur.nl>
+Message-ID: <4DDFE7C8.30209@cs.uct.ac.za>
+
+hi Jasper
+
+regarding the sets issue,
+
+this was acknowledged as a gap a long time ago. addressing the gap 
+creates significant additional complexity in the protocol so this was 
+not done in the interest of simplicity. the OAI-PMH was developed to be 
+a simple protocol and often that need for simplicity has overridden the 
+goal of completeness.
+
+regarding the harvesting dates,
+
+your idea seems reasonable for the specific case you mention (sequential 
+out-of-sync dates). this does of course give control of the harvesting 
+process to the data providers - a service provider that keeps track of 
+dates itself is more likely to act predictably. the general problem you 
+are referring to is where data providers add records that are 
+essentially in the past. there are numerous ways to do this and there is 
+simply no general solution - either a service provider trusts a data 
+provider not to do this or periodically reharvests from scratch.
+
+ttfn,
+----hussein
+
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+On 26/05/2011 12:43, Jasper Op de Coul wrote:
+> Hi list,
+>
+>
+> I've been doing some work with OAIPMH harvesters lately, and would like
+> to share some of my experiences on the subject.
+>
+> When harvesting specific sets with the `set` param, there is an issue
+> that a harvester is not notified when a record is removed from that set.
+>
+> I think most implementers are aware of this, and it is the biggest hole
+> in the specification.
+>
+> For example: A specific set is harvested, but at a later time one of the
+> records is no longer part of that set. The record then disappears from
+> the feed, but the harvester is never notified because there is no delete
+> event.
+>
+> There are several ways to deal with this:
+>
+> 1. Do incremental harvests with the ?set param, then do a full harvest
+> periodically or when someone calls or mails that records are missing.
+> This is a common approach but it is no solution to the problem. I think
+> we can and should do better then that.
+>
+> 2. Always do a full harvest with the ?set param. This will put a lot of
+> load on the servers, take lots of time, and is not a very social thing
+> to do. So, not a good option.
+>
+> 3. Use incremental harvests, but never use the ?set param. The client
+> will receive all records and can inspect the SetSpec header manually to
+> see if this record is part of the wanted set. Records that are not part
+> of the wanted set but are in the client database can be removed.
+>
+> The last option means a lot more housekeeping for the client, but it is
+> the only way for a client to be sure that the data is correct.
+>
+> Although sets are a very useful feature, the set parameter is basically
+> broken. This should be noted somewhere in the documentation, probably in
+> the harvester guidelines.
+> Personally I would be in favour of deprecating the set parameter so we
+> can put a big fat warning explaining this problem.
+>
+> Another issue that came up recently has to do with incremental
+> harvesting. The harvester guidelines mention that for the value of the
+> from parameter, the `responseDate` should be used, and that it is
+> advisable to overlap by a small additional amount.
+> I think it would be better if a harvester does not use the responseDate,
+> but instead uses the latest datestamp of all harvested records.
+>
+> Consider the following situation:
+>
+> Someone modifies a document in a database at 4 o'clock.
+> An external OAI service gets updated once an hour, so it will have the
+> changes at 5 o'clock. The OAI software will use the modification dates
+> from the database, so at 5 o'clock the modified record is added with a
+> datestamp of 4 o'clock.
+> If a harvester comes by at 4:30, that modifed document is not in the OAI
+> feed yet. An hour later at 5:30, the harvester harvests again with a
+> `from` parameter value of 4:30. The harvester will never get the
+> modified document because it was modified earlier then 4:30.
+>
+> Off course this whole situation is far from ideal, but it could be that
+> there is a gap between the modification date of a resource, and when it
+> gets added to the oai server. This gap can be anything from a few
+> seconds to a few weeks.
+>
+> If a harvester always uses the latest datestamp of any of the harvested
+> records, you are sure that no records are missed, and you never harvest
+> too much.
+>
+> I hope this helps implementers build better harvesters. If there is
+> concensus about adding this to the harvester guidelines, I would be
+> willing to write some text for it.
+>
+> Kind regards,
+> Jasper
+>
+>
+>
+

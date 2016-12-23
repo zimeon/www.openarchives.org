@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [UPS] OA Dienst at arXiv</TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40mmm.lanl.gov">
+   <LINK REL="Previous"  HREF="000117.html">
+   <LINK REL="Next" HREF="000119.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[UPS] OA Dienst at arXiv</H1>
+    <B>Simeon Warner</B> 
+    <A HREF="mailto:simeon%40mmm.lanl.gov"
+       TITLE="[UPS] OA Dienst at arXiv">simeon@mmm.lanl.gov</A><BR>
+    <I>Thu, 27 Jan 2000 14:31:30 -0700 (MST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000117.html">[UPS] ASIDIC Spring 2000 meeting in Orlando about OAI</A></li>
+        <LI> Next message: <A HREF="000119.html">[UPS] Re: OA Dienst at arXiv</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#118">[ date ]</a>
+              <a href="thread.html#118">[ thread ]</a>
+              <a href="subject.html#118">[ subject ]</a>
+              <a href="author.html#118">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Carl, David, Thomas, Herbert (and CC: UPS),
+
+We now have a subset implementation of Dienst5 running at arxiv.org.
+It is currently running as /dienst/ and the old (v4) server is
+running as /Dienst/. We will switch the URLs as soon as is convenient
+for the Cornell/NCSTRL team (please tell me, note that our identifiers
+now start `arXiv:', not `xxx:'). 
+
+Please check it out and tell me about the bugs!
+
+--
+Simeon.
+
+
+
+Details
+-------
+
+I have worked from the `Version 0.3 2000-01-20 06:54:24 -0500' version of 
+<A HREF="http://www.cs.cornell.edu/cdlrg/dienst/protocols/OpenArchivesDienst.htm">http://www.cs.cornell.edu/cdlrg/dienst/protocols/OpenArchivesDienst.htm</A>
+Below are comments and example URLs relating to sections of the spec., 
+and for each of the OA subset verbs.
+
+
+sec2.1 
+  &quot;For example, the unique archive identifier handlecorp can be 
+  combined with the unique record identifier 11223 and separated 
+  with the / (slash) character to form the full identifier 
+  handlecorp/11223.   The full identifier is then used and returned 
+  by Dienst requests.&quot;
+
+As noted in an earlier email, working with CGI scripts the encoded
+/ in the URL is not preserved when PATH_INFO is passed to the 
+script. Thus, in places where `fullId' (or is it `fullID'?) are passed
+as a fixed arg I treat it as two fixed args: `archive' and `papernum'
+which I recombine with /.
+
+
+sec2.2.1
+
+If I read this correctly, a partitionspec may specify only one
+partition, there is no facility for a list of partitions. It may,
+however, specify any level of sub-partition. arXiv has just two 
+levels of partitioning which gives two choices for the form of a
+partitionspec:
+
+1) top level, eg. `physics' or `math'
+2) two level, eg. `physics;hep-th' or `math;GM'
+   where List-Partitions gives:
+      physics
+        hep-th
+	...
+      math
+        GM
+	...
+      ...      	
+
+   
+sec2.3
+ 
+My current implementation returns an error if the version is not an
+exact match to that implemented.
+
+
+Disseminate
+
+I have used the reply format shown in the Dienst spec and not in the 
+oams spec. I'd like guidance as to what the current `correct' version
+is. It seems to me that avoiding all the `oams:' prefixes to the
+tags is cleaner but I am not an XML expert.
+
+I have used `oams' not `OAMS'. I don't really care which it is but
+I do think it should be consistent throughout: if the XML reply
+contains tags like &lt;oams...&gt; then the name should be `oams'.
+
+eg. 
+  <A HREF="http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:hep-th/9901001/%23oams/xml">http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:hep-th/9901001/%23oams/xml</A>
+  <A HREF="http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:math/9901001/%23oams/xml">http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:math/9901001/%23oams/xml</A>
+
+I have also copied the oams format to write XML replies for `rfc1807'
+and `arXiv' meta-formats.
+
+eg. 
+  <A HREF="http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:hep-th/9901001/%23rfc1807/xml">http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:hep-th/9901001/%23rfc1807/xml</A>
+  <A HREF="http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:hep-th/9901001/%23arXiv/xml">http://arXiv.org/dienst/Repository/1.0/Disseminate/arXiv:hep-th/9901001/%23arXiv/xml</A>
+
+There is still work to be done on better parsing of the author/affiliation data.
+
+
+List-Contents
+
+I'm not really sure what we should do about such things as a request for
+all the identifiers/metadata of the archive, eg:
+  <A HREF="http://arXiv.org/dienst/Repository/4.0/List-Contents">http://arXiv.org/dienst/Repository/4.0/List-Contents</A>
+At the moment there is a limit of 10000 hits; a malformed request error
+is returned if that is exceeded:
+  `Malformed request. Too many hits, limit is 10000.' 
+
+Following the spec, I use the following arguments:
+  Keyword args: partitionspec, file-after, meta-format
+Should it actually be `partition' not `partitionspec'? 
+
+eg.
+  <A HREF="http://arXiv.org/dienst/Repository/4.0/List-Contents?file-after=2000-01-01">http://arXiv.org/dienst/Repository/4.0/List-Contents?file-after=2000-01-01</A>
+  <A HREF="http://arXiv.org/dienst/Repository/4.0/List-Contents?partitionspec=math&file-after=2000-01-01">http://arXiv.org/dienst/Repository/4.0/List-Contents?partitionspec=math&amp;file-after=2000-01-01</A>
+  <A HREF="http://arXiv.org/dienst/Repository/4.0/List-Contents?partitionspec=math&file-after=2000-01-01&meta-format=oams">http://arXiv.org/dienst/Repository/4.0/List-Contents?partitionspec=math&amp;file-after=2000-01-01&amp;meta-format=oams</A>
+  
+I think there are some problems with subpartitions.
+
+
+List-Meta-Formats
+
+eg.
+  <A HREF="http://arXiv.org/dienst/Repository/1.0/List-Meta-Formats">http://arXiv.org/dienst/Repository/1.0/List-Meta-Formats</A>
+
+
+List-Partitions
+
+eg.
+  <A HREF="http://arXiv.org/dienst/Repository/2.0/List-Partitions">http://arXiv.org/dienst/Repository/2.0/List-Partitions</A>
+
+
+Structure
+
+All formats avaiable for all archives so I simply check that the record
+exists and return the complete list of formats.
+
+eg.
+  <A HREF="http://arXiv.org/dienst/Repository/1.0/Structure/arXiv:hep-th/9701001?view=%23">http://arXiv.org/dienst/Repository/1.0/Structure/arXiv:hep-th/9701001?view=%23</A>
+
+
+
+</pre>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000117.html">[UPS] ASIDIC Spring 2000 meeting in Orlando about OAI</A></li>
+	<LI> Next message: <A HREF="000119.html">[UPS] Re: OA Dienst at arXiv</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#118">[ date ]</a>
+              <a href="thread.html#118">[ thread ]</a>
+              <a href="subject.html#118">[ subject ]</a>
+              <a href="author.html#118">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,2407 @@
+From ldodds@ingenta.com  Thu Dec  6 17:46:09 2001
+From: ldodds@ingenta.com (Leigh Dodds)
+Date: Thu, 6 Dec 2001 17:46:09 -0000
+Subject: [OAI-implementers] XML Schema
+Message-ID: <NCBBKFMJCLIMOBIGKFMJKEHEGOAA.ldodds@ingenta.com>
+
+Hi,
+
+Is there any expectation that other schema languages will be
+supported by OAI? E.g. by extending the ListMetadataFormats
+request to allow an schema language identifier in the metadataFormat
+element?
+
+E.g.
+
+<metadataFormat>
+<metadataPrefix>oai_rfc1807</metadataPrefix>
+<schema>http://www.openarchives.org/OAI/1.1/rfc1807.xsd</schema>
+<schemaNamespace>http://www.w3.org/2001/XMLSchema-instance</schemaNamespace>
+</metadataFormat>
+<metadataFormat>
+<metadataPrefix>oai_rfc1807</metadataPrefix>
+<schema>http://www.foo.org/OAI/1.1/rfc1807.sch</schema>
+<schemaNamespace>http://www.ascc.net/xml/schematron</schemaNamespace>
+</metadataFormat>
+
+This might be used to supply schemas in multiple formats for a given
+metadataPrefix, or use alternatives to XML Schema.
+
+On the surface this doesn't seem to harm interoperability, as W3C XML Schema
+could still be maintained as the primary schema format, while supporting
+other options if necessary.
+
+(In any case the particular XML schema referenced may actually contain
+a mixture of schema languages, using the annotation mechanism.)
+
+Cheers,
+
+L.
+
+--
+Leigh Dodds, Research Group, Ingenta | "Pluralitas non est ponenda
+http://weblogs.userland.com/eclectic |    sine necessitate"
+http://www.xml.com/pub/xmldeviant    |     -- William of Ockham
+
+
+From Herbert.VandeSompel@bl.uk  Fri Dec  7 10:15:17 2001
+From: Herbert.VandeSompel@bl.uk (Van de Sompel, Herbert)
+Date: Fri, 7 Dec 2001 10:15:17 -0000
+Subject: [OAI-implementers] XML Schema
+Message-ID: <F5753B6F5335D4118DEA00508BA54F5604C2EFCE@nt-lonex1.bl.uk>
+
+hi Leigh,
+
+This issue is currently being discussed by the oai-tech group, as part of
+the ongoing revision/stabilization of the metadata harvesting protocol.  we
+hope to conclude that work with the release of a version 2.0 of the protocol
+around April/May 2002.
+
+it would be good to hear from other implementers on this list whether they
+see the need to allow for other schema languagues for metadata containers in
+the protocol.
+
+greetings
+
+herbert van de sompel
+
+-----Original Message-----
+From: Leigh Dodds
+To: oai-implementers@oaisrv.nsdl.cornell.edu
+Sent: 12/6/01 5:46 PM
+Subject: [OAI-implementers] XML Schema
+
+Hi,
+
+Is there any expectation that other schema languages will be
+supported by OAI? E.g. by extending the ListMetadataFormats
+request to allow an schema language identifier in the metadataFormat
+element?
+
+E.g.
+
+<metadataFormat>
+<metadataPrefix>oai_rfc1807</metadataPrefix>
+<schema>http://www.openarchives.org/OAI/1.1/rfc1807.xsd</schema>
+<schemaNamespace>http://www.w3.org/2001/XMLSchema-instance</schemaNamesp
+ace>
+</metadataFormat>
+<metadataFormat>
+<metadataPrefix>oai_rfc1807</metadataPrefix>
+<schema>http://www.foo.org/OAI/1.1/rfc1807.sch</schema>
+<schemaNamespace>http://www.ascc.net/xml/schematron</schemaNamespace>
+</metadataFormat>
+
+This might be used to supply schemas in multiple formats for a given
+metadataPrefix, or use alternatives to XML Schema.
+
+On the surface this doesn't seem to harm interoperability, as W3C XML
+Schema
+could still be maintained as the primary schema format, while supporting
+other options if necessary.
+
+(In any case the particular XML schema referenced may actually contain
+a mixture of schema languages, using the annotation mechanism.)
+
+Cheers,
+
+L.
+
+--
+Leigh Dodds, Research Group, Ingenta | "Pluralitas non est ponenda
+http://weblogs.userland.com/eclectic |    sine necessitate"
+http://www.xml.com/pub/xmldeviant    |     -- William of Ockham
+
+_______________________________________________
+OAI-implementers mailing list
+OAI-implementers@oaisrv.nsdl.cornell.edu
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+*********************************************************************
+The information contained in this e-mail is confidential and may be 
+legally privileged. It is intended for the addressee(s) only. If you 
+are not the intended recipient, please delete this e-mail and notify 
+the postmaster@bl.uk : The contents of this e-mail must not be 
+disclosed or copied without the sender's consent. 
+
+The statements and opinions expressed in this message are those of 
+the author and do not necessarily reflect those of the British 
+Library. The British Library does not take any responsibility for 
+the views of the author. 
+*********************************************************************
+
+From ldodds@ingenta.com  Fri Dec  7 11:01:21 2001
+From: ldodds@ingenta.com (Leigh Dodds)
+Date: Fri, 7 Dec 2001 11:01:21 -0000
+Subject: [OAI-implementers] XML Schema
+In-Reply-To: <F5753B6F5335D4118DEA00508BA54F5604C2EFCE@nt-lonex1.bl.uk>
+Message-ID: <NCBBKFMJCLIMOBIGKFMJCEHNGOAA.ldodds@ingenta.com>
+
+Hi,
+
+> This issue is currently being discussed by the oai-tech group, as part of
+> the ongoing revision/stabilization of the metadata harvesting
+> protocol.  we hope to conclude that work with the release of a version 2.0
+of
+> the protocol around April/May 2002.
+
+Thanks, it's useful to know that this is an open issue.
+
+> it would be good to hear from other implementers on this list whether they
+> see the need to allow for other schema languagues for metadata
+> containers in the protocol.
+
+Another way to ask this question is: should OA-MHP care about what
+schema might be used to validate the metadata returned in a record?
+
+I think a perfectly valid answer is, no. Some reasoning:
+
+The protocol is designed to support multiple metadata formats, with
+DC as a minimum. The metadata prefix is a handy way to request
+that a Data Provider returns responses conforming to a particular metadata
+format.
+
+As prefixes have an undefined scope (they may become standardised,
+they may not), the only identifier for the metadata format that an
+application
+can currently rely on is the metadata schema (i.e. the URI of the schema).
+
+For example,  one can envisage a form of negotiation where a Service
+Provider attempts to identify whether a Data Provider is capable of
+delivering
+metadata in one format, and if not, fall back to DC. The application will
+therefore
+need to identify that a given prefix in this repository is 'bound' to a
+format
+it understands, so that it can make this decision.
+
+An alternative, and well-defined way of identifying a particular vocabulary
+is by it's Namespace URI (NS-URI). This identifier has the advantage of
+being
+agnostic to a particular schema language. Technologies such as RDDL [1]
+provide
+other useful 'value-added' functionality with an NS-URI as a starting point.
+E.g. human-readable documentation, and a machine processable directory of
+resources (that may include multiple schema languages).
+
+To conclude, one way to resolve this issue is to alter the definition of
+ListMetadataFormats such that the metadataFormat/schema element
+contains not the URI for the schema, but the NS-URI. A 'best practice'
+recommendation to document namespaces using RDDL might also be useful.
+
+This would make OA-MHP completely agnostic to the particular schema
+language that may be used to validate a response (assuming validation
+takes place at all), while retaining the ability to uniquely define the
+format
+of metadata required.
+
+[1] http://www.rddl.org
+
+Cheers,
+
+L.
+
+
+From lagoze@cs.cornell.edu  Fri Dec  7 14:32:02 2001
+From: lagoze@cs.cornell.edu (Carl Lagoze)
+Date: Fri, 7 Dec 2001 09:32:02 -0500
+Subject: [OAI-implementers] XML Schema
+Message-ID: <706871B20764CD449DB0E8E3D81C4D4301F2C6F8@opus.cs.cornell.edu>
+
+Leigh,
+
+Thanks for your comments.  Allow me to add my two cents:
+
+As described in the protocol document at
+http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html#ListM
+etadataFormats and the xml schema for the response to
+ListMetadataFormats at
+http://www.openarchives.org/OAI/1.1/OAI_ListMetadataFormats.xsd, the
+response to ListMetadataFormats returns a list of triples:
+
+1. The single token metadata prefix, intended as the local (in the scope
+of the responding server) key for the respective metadata format.
+2. The URL of the xsd for the metadata format, intended to describe the
+data format of the metadata instances returned by this server in
+response to requests for the respective metadata format.
+3. The namespace URI, intended as the global identification for this
+metadata format.
+
+Your comment is correct about the 1st item in the trip, the metadata
+prefix, that its scope is local to the server.  However, you imply that
+we are using the xsd URL as a means of global identification and are
+ignoring the semantics of namespace URIs.  In fact, we are not, as
+indicated by my descriptions of the 2nd and 3rd items of the triple
+above.  So, for example, a client upon getting a triple such as:
+
+(foo, http://foometa.org/foo.xsd, http://foometa.org/foo#) should
+interpret this as:
+
+"This server locally uses the name foo to indicate the metadata concept
+globally known as http://foometa.org/foo# and marks up instance data for
+the metadata concept foo according to the rules defined by
+http://foometa.org/foo.xsd."
+
+Another server may return:
+
+(fooalt, http://altfoometa.org/fooall.xsd, http://foometa.org/foo#)
+indicating a different markup of the same metadata concept.
+
+As for XML schema and RDDL, we have talked about this.  A couple of
+points of note here:
+
+1. If I understand correctly, an RDDL instance document is meant to sit
+at the end of a namespace URI.  By requiring a namespace URI for each
+metadata format, OAI therefore allows extensibility to RDDL - an
+implementor employ RDDL to index multiple descriptions of their metadata
+format used in OAI.
+2. Since RDDL is at the end of a namespace URI, there is no conflict
+between requiring xml schema and the allowance for RDDL (i.e., other
+schema description types - RDFS, RELAX, schematron, etc.)
+3. The requirement for an XML schema is quite flexible in that one can
+employ it to express rather tight data format constraints for a metadata
+instance, or essentially "null it out" and express a schema that allows
+any legal xml.
+
+In summary, I think that the current means in OAI-PMH for describing
+metadata formats achieves the goals of global identification, flexible
+data formating rules, and extension to other schema tools.
+
+I may be missing something here and welcome any comments.
+
+Carl
+
+> -----Original Message-----
+> From: Leigh Dodds [mailto:ldodds@ingenta.com]
+> Sent: Friday, December 07, 2001 6:01 AM
+> To: Van de Sompel, Herbert; oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: RE: [OAI-implementers] XML Schema
+> 
+> 
+> Hi,
+> 
+> > This issue is currently being discussed by the oai-tech 
+> group, as part of
+> > the ongoing revision/stabilization of the metadata harvesting
+> > protocol.  we hope to conclude that work with the release 
+> of a version 2.0
+> of
+> > the protocol around April/May 2002.
+> 
+> Thanks, it's useful to know that this is an open issue.
+> 
+> > it would be good to hear from other implementers on this 
+> list whether they
+> > see the need to allow for other schema languagues for metadata
+> > containers in the protocol.
+> 
+> Another way to ask this question is: should OA-MHP care about what
+> schema might be used to validate the metadata returned in a record?
+> 
+> I think a perfectly valid answer is, no. Some reasoning:
+> 
+> The protocol is designed to support multiple metadata formats, with
+> DC as a minimum. The metadata prefix is a handy way to request
+> that a Data Provider returns responses conforming to a 
+> particular metadata
+> format.
+> 
+> As prefixes have an undefined scope (they may become standardised,
+> they may not), the only identifier for the metadata format that an
+> application
+> can currently rely on is the metadata schema (i.e. the URI of 
+> the schema).
+> 
+> For example,  one can envisage a form of negotiation where a Service
+> Provider attempts to identify whether a Data Provider is capable of
+> delivering
+> metadata in one format, and if not, fall back to DC. The 
+> application will
+> therefore
+> need to identify that a given prefix in this repository is 
+> 'bound' to a
+> format
+> it understands, so that it can make this decision.
+> 
+> An alternative, and well-defined way of identifying a 
+> particular vocabulary
+> is by it's Namespace URI (NS-URI). This identifier has the 
+> advantage of
+> being
+> agnostic to a particular schema language. Technologies such 
+> as RDDL [1]
+> provide
+> other useful 'value-added' functionality with an NS-URI as a 
+> starting point.
+> E.g. human-readable documentation, and a machine processable 
+> directory of
+> resources (that may include multiple schema languages).
+> 
+> To conclude, one way to resolve this issue is to alter the 
+> definition of
+> ListMetadataFormats such that the metadataFormat/schema element
+> contains not the URI for the schema, but the NS-URI. A 'best practice'
+> recommendation to document namespaces using RDDL might also be useful.
+> 
+> This would make OA-MHP completely agnostic to the particular schema
+> language that may be used to validate a response (assuming validation
+> takes place at all), while retaining the ability to uniquely 
+> define the
+> format
+> of metadata required.
+> 
+> [1] http://www.rddl.org
+> 
+> Cheers,
+> 
+> L.
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From ldodds@ingenta.com  Fri Dec  7 15:01:02 2001
+From: ldodds@ingenta.com (Leigh Dodds)
+Date: Fri, 7 Dec 2001 15:01:02 -0000
+Subject: [OAI-implementers] XML Schema
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D4301F2C6F8@opus.cs.cornell.edu>
+Message-ID: <NCBBKFMJCLIMOBIGKFMJGEIBGOAA.ldodds@ingenta.com>
+
+Hi,
+
+> I may be missing something here and welcome any comments.
+
+Apologies, it was I who was missing something, namely that the 
+NS-URI is already provided in the ListMetadataFormats verb.
+
+Please disregard my earlier comments!
+
+Cheers,
+
+L.
+
+
+
+From tim@tim.brody.btinternet.co.uk  Sat Dec  8 13:53:38 2001
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Sat, 8 Dec 2001 13:53:38 -0000
+Subject: [OAI-implementers] XML Schema
+References: <706871B20764CD449DB0E8E3D81C4D4301F2C6F8@opus.cs.cornell.edu>
+Message-ID: <007601c17fef$bccc9540$6400a8c0@Advocate>
+
+> (foo, http://foometa.org/foo.xsd, http://foometa.org/foo#) should
+> interpret this as:
+>
+> "This server locally uses the name foo to indicate the metadata concept
+> globally known as http://foometa.org/foo# and marks up instance data for
+> the metadata concept foo according to the rules defined by
+> http://foometa.org/foo.xsd."
+>
+> Another server may return:
+>
+> (fooalt, http://altfoometa.org/fooall.xsd, http://foometa.org/foo#)
+> indicating a different markup of the same metadata concept.
+
+Hi,
+
+Could someone explain this a bit further or point me at an appropriate
+resource. What does someone have to do, with XML, to be able to identify how
+metadata is marked-up? I am guessing you have to use the string
+"http://whatever/foo.xsd", but surely the metadata schema can be changed
+(which would break everything)?
+
+All the best,
+Tim.
+
+
+
+From tim@tim.brody.btinternet.co.uk  Sat Dec  8 13:53:42 2001
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Sat, 8 Dec 2001 13:53:42 -0000
+Subject: [OAI-implementers] XML Schema
+References: <706871B20764CD449DB0E8E3D81C4D4301F2C6F8@opus.cs.cornell.edu>
+Message-ID: <007701c17fef$bf268ad0$6400a8c0@Advocate>
+
+> (foo, http://foometa.org/foo.xsd, http://foometa.org/foo#) should
+> interpret this as:
+>
+> "This server locally uses the name foo to indicate the metadata concept
+> globally known as http://foometa.org/foo# and marks up instance data for
+> the metadata concept foo according to the rules defined by
+> http://foometa.org/foo.xsd."
+>
+> Another server may return:
+>
+> (fooalt, http://altfoometa.org/fooall.xsd, http://foometa.org/foo#)
+> indicating a different markup of the same metadata concept.
+
+Hi,
+
+Could someone explain this a bit further or point me at an appropriate
+resource. What does someone have to do, with XML, to be able to identify how
+metadata is marked-up? I am guessing you have to use the string
+"http://whatever/foo.xsd", but surely the metadata schema can be changed
+(which would break everything)?
+
+All the best,
+Tim.
+
+
+
+From lagoze@cs.cornell.edu  Sat Dec  8 17:39:50 2001
+From: lagoze@cs.cornell.edu (Carl Lagoze)
+Date: Sat, 8 Dec 2001 12:39:50 -0500
+Subject: [OAI-implementers] XML Schema
+Message-ID: <706871B20764CD449DB0E8E3D81C4D4301F2C6FA@opus.cs.cornell.edu>
+
+Tim,  I wish I could point you to one consise resource that explains the
+details of all of XML namespaces, schema, etc., but no one stands out
+for me.  Perhaps someone on the list has in mind something of that sort.
+
+As to a brief explanation of how to specify metadata is marked up:
+
+If you look at the OAI protocol spec you will notice the use of the
+xsi:schemaLocation tag, which as a value that is a pair.  The first
+element of the pair is a namespace URI and the second is the URL of an
+xsd (xml schema) file.  This specifies that the data (content)
+associated with the namespace is marked up according to the rules
+specified in the schema.  You are correct that there is no assurance
+that the contents of the schema will not change causing serious
+breakage.  Also, the notion that all metadata must conform to a specific
+data format (defined in a single schema) is not covered and may actually
+not be a good idea.  In bibliographic terms, think of the namespace
+notion as identifying a "work", which can have numerous schema
+expressing the form of "manifestations" that are realized in individual
+metadata "items" that match the schema.
+
+hope this helps.
+
+Carl
+
+> -----Original Message-----
+> From: Tim Brody [mailto:tim@tim.brody.btinternet.co.uk]
+> Sent: Saturday, December 08, 2001 8:53 AM
+> To: Carl Lagoze
+> Subject: Re: [OAI-implementers] XML Schema
+> 
+> 
+> > (foo, http://foometa.org/foo.xsd, http://foometa.org/foo#) should
+> > interpret this as:
+> >
+> > "This server locally uses the name foo to indicate the 
+> metadata concept
+> > globally known as http://foometa.org/foo# and marks up 
+> instance data for
+> > the metadata concept foo according to the rules defined by
+> > http://foometa.org/foo.xsd."
+> >
+> > Another server may return:
+> >
+> > (fooalt, http://altfoometa.org/fooall.xsd, http://foometa.org/foo#)
+> > indicating a different markup of the same metadata concept.
+> 
+> Hi,
+> 
+> Could someone explain this a bit further or point me at an appropriate
+> resource. What does someone have to do, with XML, to be able 
+> to identify how
+> metadata is marked-up? I am guessing you have to use the string
+> "http://whatever/foo.xsd", but surely the metadata schema can 
+> be changed
+> (which would break everything)?
+> 
+> All the best,
+> Tim.
+> 
+> 
+
+From schalk@unf.edu  Sun Dec  9 11:35:01 2001
+From: schalk@unf.edu (Stuart Chalk)
+Date: Sun, 9 Dec 2001 06:35:01 -0500 (EST)
+Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL harvesting
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D4301F2C6FA@opus.cs.cornell.edu>
+Message-ID: <Pine.OSF.4.31.0112090610050.28827-100000@osprey.unf.edu>
+
+I would like to thank all of you that were at the meeting talking
+about harvesting and OAI.  Being a novice at this I appreciate how well
+the area of OAI was described and I now have a much better perspective on
+its use and implementation.
+
+My question, I hope, is simple. From reading
+http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html
+I get that I need to generate a few files that describe the different
+schema for supplying metadata via OAI.  I also see the formatted XML that
+needs to be returned to the requester.  My question is - is there yet an
+NSDL format for the data returned via XML, and what are the minimum number
+of schema files I need to generate so that I can support NSDL harvesting
+via OAI?  If they do exist where are they and is there a help file that
+goes with them?
+
+Any help greatly appreciated.
+
+On a separate topic - is there a list like this for discussion of the
+hardware and software being used to serve the collection data?  As
+webmaster of the "Analytical Sciences Digital Library" project I want to
+use Mac OS X, Webstar V, Lasso Pro 5, and Filemaker Pro 5.5 all on the
+same Mac.  I am convinced that this will be both powerful enough and
+scalable enough my co-PIs are worried I will run into trouble using this
+for production.  Any places to go greatly appreciated also.
+
+-- 
+Stuart Chalk, Ph.D.
+Department of Natural Sciences                          Phone:904-620-2831
+University of North Florida                               Fax:904-620-3885
+4567 St. Johns Bluff Road S.                  "The Flow Analysis Database"
+Jacksonville FL 32224 USA                          http://www.fia.unf.edu/
+
+
+From lagoze@cs.cornell.edu  Sun Dec  9 18:55:57 2001
+From: lagoze@cs.cornell.edu (Carl Lagoze)
+Date: Sun, 9 Dec 2001 13:55:57 -0500
+Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL harvesting
+Message-ID: <706871B20764CD449DB0E8E3D81C4D4301F2C6FB@opus.cs.cornell.edu>
+
+Stuart,
+
+Thanks for your question.  I've taken the liberty to add the members of
+NSDL collections to this response.
+
+Regarding your first question: The OAI already defines an xml schema for
+its one required metadata format - dublin core.  This is explained at
+http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html#dubli
+ncore and the actual schema is at
+http://www.openarchives.org/OAI/1.1/dc.xsd.  As for the other metadata
+formats that NSDL participants will share, there are as far as I know no
+established schema as of yet.  Perhaps Diane Hillmann can chip in here
+and share whether this is true.  If there are indeed no schemas as of
+yet, we should certainly settle on these in the near future.
+
+Regarding your second question:  This is the right list for discussion
+of hardward and software for acting as an OAI data provider.  At this
+point I don't know of anyone who is using Mac OS X for this but that
+doesn't mean that there isn't someone else who isn't doing that. There
+is a growing list of tools at
+http://www.openarchives.org/tools/tools.html and I believe that the
+DLESE folks are working on a java based implementation that should run
+with little problem on OS X.
+
+Carl
+
+> -----Original Message-----
+> From: Stuart Chalk [mailto:schalk@unf.edu]
+> Sent: Sunday, December 09, 2001 6:35 AM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL
+> harvesting
+> 
+> 
+> I would like to thank all of you that were at the meeting talking
+> about harvesting and OAI.  Being a novice at this I 
+> appreciate how well
+> the area of OAI was described and I now have a much better 
+> perspective on
+> its use and implementation.
+> 
+> My question, I hope, is simple. From reading
+> http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html
+> I get that I need to generate a few files that describe the different
+> schema for supplying metadata via OAI.  I also see the 
+> formatted XML that
+> needs to be returned to the requester.  My question is - is 
+> there yet an
+> NSDL format for the data returned via XML, and what are the 
+> minimum number
+> of schema files I need to generate so that I can support NSDL 
+> harvesting
+> via OAI?  If they do exist where are they and is there a help 
+> file that
+> goes with them?
+> 
+> Any help greatly appreciated.
+> 
+> On a separate topic - is there a list like this for discussion of the
+> hardware and software being used to serve the collection data?  As
+> webmaster of the "Analytical Sciences Digital Library" 
+> project I want to
+> use Mac OS X, Webstar V, Lasso Pro 5, and Filemaker Pro 5.5 all on the
+> same Mac.  I am convinced that this will be both powerful enough and
+> scalable enough my co-PIs are worried I will run into trouble 
+> using this
+> for production.  Any places to go greatly appreciated also.
+> 
+> -- 
+> Stuart Chalk, Ph.D.
+> Department of Natural Sciences                          
+> Phone:904-620-2831
+> University of North Florida                               
+> Fax:904-620-3885
+> 4567 St. Johns Bluff Road S.                  "The Flow 
+> Analysis Database"
+> Jacksonville FL 32224 USA                          
+http://www.fia.unf.edu/
+
+_______________________________________________
+OAI-implementers mailing list
+OAI-implementers@oaisrv.nsdl.cornell.edu
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+From zubair@cs.odu.edu  Sun Dec  9 20:44:30 2001
+From: zubair@cs.odu.edu (zubair@cs.odu.edu)
+Date: Sun, 9 Dec 2001 15:44:30 -0500
+Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL harvesting
+Message-ID: <OF352DA508.C949F525-ON85256B1D.007078C3@cs.odu.edu>
+
+Dear Stuart,
+
+I was there in the Dec. 3-4 NSDL PIs meeting and may be able to add a
+little more to what Carl has already stated. After talking to Diane Hillman
+and browsing information on the NSDL website, this is my understanding.
+
+"The NSDL Standards Working Group has determined that the Dublin Core set
+of 15 qualified elements, plus the elements recommended by the DC Education
+Working Group, will be the standard set used by the NSDL metadata
+repository.
+(Ref:
+http://siteforscience.nsdl.cornell.edu/metadata_info/overview.html#NSDL ).
+
+Besides DC-Ed, they have also identified other formats NSDL plans to
+support. You can get information about these from the Web sites:
+
+http://siteforscience.nsdl.cornell.edu/metadata_info/outline.html
+http://www.smete.org/nsdl/workgroups/standards/standards_home.html
+http://128.253.121.110/NSDLmetaWG/IntroPage.html
+
+These metadata formats can  be supported as parallel metadata formats in
+OAI. Regarding Mac OS X, I recently bought a Powerbook G4 with OS X and
+there is full Java support on it and it comes with Apache web server. I
+have not yet tried the Tomcat servlet engine on it - there is one available
+for it. In summary,  you should be able to host an  OAI compliant
+collection using some of the Java based tools available on the tool site
+pointed out by Carl. In fact you should be able to use even Perl tools (OS
+X is based on BSD Unix).
+
+
+Zubair
+
+
+
+
+
+
+                                                                                                                                          
+                    "Carl Lagoze"                                                                                                         
+                    <lagoze@cs.cornell.edu>                     To:     "Stuart Chalk" <schalk@unf.edu>,                                  
+                    Sent by:                                    <oai-implementers@oaisrv.nsdl.cornell.edu>                                
+                    oai-implementers-admin@oaisrv.nsdl.c        cc:     <collections-group@nsdl1.comm.nsdlib.org>                         
+                    ornell.edu                                  Subject:     RE: [OAI-implementers] XML Schema for OAI compliance with    
+                                                                NSDL harvesting                                                           
+                                                                                                                                          
+                    12/09/2001 01:55 PM                                                                                                   
+                                                                                                                                          
+                                                                                                                                          
+
+
+
+
+Stuart,
+
+Thanks for your question.  I've taken the liberty to add the members of
+NSDL collections to this response.
+
+Regarding your first question: The OAI already defines an xml schema for
+its one required metadata format - dublin core.  This is explained at
+http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html#dubli
+ncore and the actual schema is at
+http://www.openarchives.org/OAI/1.1/dc.xsd.  As for the other metadata
+formats that NSDL participants will share, there are as far as I know no
+established schema as of yet.  Perhaps Diane Hillmann can chip in here
+and share whether this is true.  If there are indeed no schemas as of
+yet, we should certainly settle on these in the near future.
+
+Regarding your second question:  This is the right list for discussion
+of hardward and software for acting as an OAI data provider.  At this
+point I don't know of anyone who is using Mac OS X for this but that
+doesn't mean that there isn't someone else who isn't doing that. There
+is a growing list of tools at
+http://www.openarchives.org/tools/tools.html and I believe that the
+DLESE folks are working on a java based implementation that should run
+with little problem on OS X.
+
+Carl
+
+> -----Original Message-----
+> From: Stuart Chalk [mailto:schalk@unf.edu]
+> Sent: Sunday, December 09, 2001 6:35 AM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL
+> harvesting
+>
+>
+> I would like to thank all of you that were at the meeting talking
+> about harvesting and OAI.  Being a novice at this I
+> appreciate how well
+> the area of OAI was described and I now have a much better
+> perspective on
+> its use and implementation.
+>
+> My question, I hope, is simple. From reading
+> http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html
+> I get that I need to generate a few files that describe the different
+> schema for supplying metadata via OAI.  I also see the
+> formatted XML that
+> needs to be returned to the requester.  My question is - is
+> there yet an
+> NSDL format for the data returned via XML, and what are the
+> minimum number
+> of schema files I need to generate so that I can support NSDL
+> harvesting
+> via OAI?  If they do exist where are they and is there a help
+> file that
+> goes with them?
+>
+> Any help greatly appreciated.
+>
+> On a separate topic - is there a list like this for discussion of the
+> hardware and software being used to serve the collection data?  As
+> webmaster of the "Analytical Sciences Digital Library"
+> project I want to
+> use Mac OS X, Webstar V, Lasso Pro 5, and Filemaker Pro 5.5 all on the
+> same Mac.  I am convinced that this will be both powerful enough and
+> scalable enough my co-PIs are worried I will run into trouble
+> using this
+> for production.  Any places to go greatly appreciated also.
+>
+> --
+> Stuart Chalk, Ph.D.
+> Department of Natural Sciences
+> Phone:904-620-2831
+> University of North Florida
+> Fax:904-620-3885
+> 4567 St. Johns Bluff Road S.                  "The Flow
+> Analysis Database"
+> Jacksonville FL 32224 USA
+http://www.fia.unf.edu/
+
+_______________________________________________
+OAI-implementers mailing list
+OAI-implementers@oaisrv.nsdl.cornell.edu
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+_______________________________________________
+OAI-implementers mailing list
+OAI-implementers@oaisrv.nsdl.cornell.edu
+http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+
+
+From lagoze@cs.cornell.edu  Thu Dec 13 12:34:20 2001
+From: lagoze@cs.cornell.edu (Carl Lagoze)
+Date: Thu, 13 Dec 2001 07:34:20 -0500
+Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL harvesting
+Message-ID: <706871B20764CD449DB0E8E3D81C4D4301F2C701@opus.cs.cornell.edu>
+
+Tim,
+
+Thanks for the note.  Since I am closely involved in both OAI and NSDL,
+I was thinking of this issue also.  I hope you don't mind that I've
+reflected this issue back to the tech group and to Diane Hillmann, my
+colleague at Cornell who is the metadata specialist in NSDL.  
+
+I see us getting drawn into the implementation end of what the dc
+community calls "application profiles".  For a brief bit of background
+to the rest of the group:
+
+- DC started out with this concept of 15 elements with some fuzzy
+thinking that these elements would make up some kind of interoperable
+metadata "record", defined as a packaging of the elements e.g., as a set
+of meta tags, or xml file, etc.  As noted many times, all elements are
+optional and repeatable in instances of such records, and the data types
+of values of elements is undefined.  This allows some measure of
+interoperabilty among "dc records, albeit pretty low, essentially saying
+"in a set of many 'dc records' you will only find the specified 15
+elements, but no guarantee which ones will be there".  Essentially, this
+is what we've tried to achieve with mandatory dc and dc.xsd in OAI-PMH
+1.x.
+- DC then moved onto the notion of "qualified dc", where semantics or
+value constraints on DC could be tightenned.  In this process, there was
+still some fuzzy thinking that there might be a "dc record" but instead
+of being made up of statements like "date is Sept. 1, 2001", it would
+consist of statements like "date, created, is 2001-09-01, in ISO 8601
+format".  The previous loose interoperability assumption than existed
+with the added "dumb-down" notion specifying "you wil find something
+more constrained than a standard dc element/value pair and you will be
+able to map it back to its unqualified form".  As we all know, in
+OAI-PMH we decided 
+- The latest DC thinking now includes the notion of "application
+profiles", saying that a "metadata record" may include dc elements (all
+optional, all repeatable) that can be mixed and matched with metadata
+elements from one or more other metadata vocabularies.  The nature of
+the mixing is, I believe, unspecified by DC - i.e., the application
+profile notion may allow for a dc element to be nested within the value
+structure of an element from another vocabulary (such as the dc-ed
+vocabulary mentioned in Tim's note).  For example, imagine a metadata
+record such as:
+
+<foo.hairColor>brown</foo.hairColor>
+<foo.origin>
+	<dc.date>2000-01-01</dc.date>
+	<blatz.personality>nasty</blatz.personality>
+</foo.origin>
+
+Interoperability in this world of application profiles now becomes
+"interoperability among a set of records conforming to several
+application profiles means that somewhere in each of those records are 0
+or more dc elements".  Of course, one could restrict interoperability
+within one application profile, which is presumably defined by some
+schema, but then the presumed cross domain interoperability purpose of
+dc is seemingly lost.
+
+In the OAI world, I see we are left with the following options:
+
+1. Remain at our notion of original, albeit low-level, dc
+interoperability - demand through a schema a record of unqualifed dc
+elements.
+2. Loosen the schema to allow qualified dc
+3. Allow for full-blast dc "application profiles", dc elements may be
+mixed with otheres from other vocabularies in unconstrained ways,
+undefined by a schema.
+4. find some proper mid-points. - for example, create an xml schema that
+specifies 0 or more dc elements at the top level, perhaps qualified,
+that are mixed with other top-level elements.
+
+My, as usual subjective, view is:
+
+1. our original goal of mandatory dc for interoperability in OAI-PMH is
+looking somewhat threadbare anyway, in light of the fact that dc as a
+record format is appropriate for non-bibliographic items - people,
+events.
+2. the application profile stuff sounds fine from a conversational
+perspective, but at the level of implementation and interoperability it
+is far from clean.  I'm not certain what a schema defining the rules for
+interopreability among application profiles would look like.
+
+Perhaps Andy Powell can kick in with some thinking since he is more
+involved in DCMI than I am.  Or Diane Hillmann whose NSDL and DCMI ties
+are close.
+
+Carl
+
+> -----Original Message-----
+> From: Tim Cole [mailto:t-cole3@uiuc.edu]
+> Sent: Wednesday, December 12, 2001 6:43 PM
+> To: Carl Lagoze
+> Cc: Thomas G. Habing
+> Subject: Re: [OAI-implementers] XML Schema for OAI compliance 
+> with NSDL
+> harvesting
+> 
+> 
+> Carl-
+> 
+> I know XML Schema was one of last week's Tech Committee 
+> topics, but Zubair's
+> note suggested an additional issue the Committee might want 
+> to consider:
+> 
+> The way I read the NSDL metadata recommendation, they're endorsing the
+> addition of a dc-ed:audience element to the base 15 elements 
+> of simple DC.
+> Metadata files including this element will not validate against either
+> current or our proposed oai_dc.xsd.  If OAI decides to revise 
+> oai_dc XML
+> schema along lines suggested in XML Schema
+> (http://oaitech.comm.nsdlib.org/WhitePapers/xml_schema_whitepa
+> per.htm),
+> should we also allow for optional inclusion of dc-ed:audience element?
+> 
+> Tom Habing and I have been experimenting this week with what 
+> an XSD that
+> allows inclusion of dc-ed:audience element might look.  When we're
+> satisfied, I'll go ahead and post (on SourceForge XML Schema 
+> Forum) details
+> of how this might be done for the Committee's consideration.  
+> Might be a
+> complication we don't want to undertake, but on the other 
+> hand, it could
+> facilitate use of OAI in NSDL context, and likely in IMLS 
+> context as well.
+> If we decide to revise oai_dc.xsd, we should at least 
+> consider it as an
+> option.
+> 
+> Tim Cole
+> University of Illinois at Urbana-Champaign
+> 
+> ----- Original Message -----
+> From: <zubair@cs.odu.edu>
+> To: <schalk@unf.edu>
+> Cc: <collections-group@nsdl1.comm.nsdlib.org>;
+> <oai-implementers@oaisrv.nsdl.cornell.edu>; "Carl Lagoze"
+> <lagoze@cs.cornell.edu>
+> Sent: Sunday, December 09, 2001 2:44 PM
+> Subject: RE: [OAI-implementers] XML Schema for OAI compliance 
+> with NSDL
+> harvesting
+> 
+> 
+> >
+> > Dear Stuart,
+> >
+> > I was there in the Dec. 3-4 NSDL PIs meeting and may be 
+> able to add a
+> > little more to what Carl has already stated. After talking to Diane
+> Hillman
+> > and browsing information on the NSDL website, this is my 
+> understanding.
+> >
+> > "The NSDL Standards Working Group has determined that the 
+> Dublin Core set
+> > of 15 qualified elements, plus the elements recommended by the DC
+> Education
+> > Working Group, will be the standard set used by the NSDL metadata
+> > repository.
+> > (Ref:
+> > 
+> http://siteforscience.nsdl.cornell.edu/metadata_info/overview.
+> html#NSDL ).
+> >
+> > Besides DC-Ed, they have also identified other formats NSDL plans to
+> > support. You can get information about these from the Web sites:
+> >
+> > http://siteforscience.nsdl.cornell.edu/metadata_info/outline.html
+> > http://www.smete.org/nsdl/workgroups/standards/standards_home.html
+> > http://128.253.121.110/NSDLmetaWG/IntroPage.html
+> >
+> > These metadata formats can  be supported as parallel 
+> metadata formats in
+> > OAI. Regarding Mac OS X, I recently bought a Powerbook G4 
+> with OS X and
+> > there is full Java support on it and it comes with Apache 
+> web server. I
+> > have not yet tried the Tomcat servlet engine on it - there is one
+> available
+> > for it. In summary,  you should be able to host an  OAI compliant
+> > collection using some of the Java based tools available on 
+> the tool site
+> > pointed out by Carl. In fact you should be able to use even 
+> Perl tools (OS
+> > X is based on BSD Unix).
+> >
+> >
+> > Zubair
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> >                     "Carl Lagoze"
+> >                     <lagoze@cs.cornell.edu>                     To:
+> "Stuart Chalk" <schalk@unf.edu>,
+> >                     Sent by:
+> <oai-implementers@oaisrv.nsdl.cornell.edu>
+> >                     oai-implementers-admin@oaisrv.nsdl.c        cc:
+> <collections-group@nsdl1.comm.nsdlib.org>
+> >                     ornell.edu                              
+>     Subject:
+> RE: [OAI-implementers] XML Schema for OAI compliance with
+> >                                                                 NSDL
+> harvesting
+> >
+> >                     12/09/2001 01:55 PM
+> >
+> >
+> >
+> >
+> >
+> >
+> > Stuart,
+> >
+> > Thanks for your question.  I've taken the liberty to add 
+> the members of
+> > NSDL collections to this response.
+> >
+> > Regarding your first question: The OAI already defines an 
+> xml schema for
+> > its one required metadata format - dublin core.  This is 
+> explained at
+> > 
+> http://www.openarchives.org/OAI_protocol/openarchivesprotocol.
+> html#dubli
+> > ncore and the actual schema is at
+> > http://www.openarchives.org/OAI/1.1/dc.xsd.  As for the 
+> other metadata
+> > formats that NSDL participants will share, there are as far 
+> as I know no
+> > established schema as of yet.  Perhaps Diane Hillmann can 
+> chip in here
+> > and share whether this is true.  If there are indeed no 
+> schemas as of
+> > yet, we should certainly settle on these in the near future.
+> >
+> > Regarding your second question:  This is the right list for 
+> discussion
+> > of hardward and software for acting as an OAI data 
+> provider.  At this
+> > point I don't know of anyone who is using Mac OS X for this but that
+> > doesn't mean that there isn't someone else who isn't doing 
+> that. There
+> > is a growing list of tools at
+> > http://www.openarchives.org/tools/tools.html and I believe that the
+> > DLESE folks are working on a java based implementation that 
+> should run
+> > with little problem on OS X.
+> >
+> > Carl
+> >
+> > > -----Original Message-----
+> > > From: Stuart Chalk [mailto:schalk@unf.edu]
+> > > Sent: Sunday, December 09, 2001 6:35 AM
+> > > To: oai-implementers@oaisrv.nsdl.cornell.edu
+> > > Subject: [OAI-implementers] XML Schema for OAI compliance 
+> with NSDL
+> > > harvesting
+> > >
+> > >
+> > > I would like to thank all of you that were at the meeting talking
+> > > about harvesting and OAI.  Being a novice at this I
+> > > appreciate how well
+> > > the area of OAI was described and I now have a much better
+> > > perspective on
+> > > its use and implementation.
+> > >
+> > > My question, I hope, is simple. From reading
+> > > http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html
+> > > I get that I need to generate a few files that describe 
+> the different
+> > > schema for supplying metadata via OAI.  I also see the
+> > > formatted XML that
+> > > needs to be returned to the requester.  My question is - is
+> > > there yet an
+> > > NSDL format for the data returned via XML, and what are the
+> > > minimum number
+> > > of schema files I need to generate so that I can support NSDL
+> > > harvesting
+> > > via OAI?  If they do exist where are they and is there a help
+> > > file that
+> > > goes with them?
+> > >
+> > > Any help greatly appreciated.
+> > >
+> > > On a separate topic - is there a list like this for 
+> discussion of the
+> > > hardware and software being used to serve the collection data?  As
+> > > webmaster of the "Analytical Sciences Digital Library"
+> > > project I want to
+> > > use Mac OS X, Webstar V, Lasso Pro 5, and Filemaker Pro 
+> 5.5 all on the
+> > > same Mac.  I am convinced that this will be both powerful 
+> enough and
+> > > scalable enough my co-PIs are worried I will run into trouble
+> > > using this
+> > > for production.  Any places to go greatly appreciated also.
+> > >
+> > > --
+> > > Stuart Chalk, Ph.D.
+> > > Department of Natural Sciences
+> > > Phone:904-620-2831
+> > > University of North Florida
+> > > Fax:904-620-3885
+> > > 4567 St. Johns Bluff Road S.                  "The Flow
+> > > Analysis Database"
+> > > Jacksonville FL 32224 USA
+> > http://www.fia.unf.edu/
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> 
+> 
+
+From lagoze@cs.cornell.edu  Thu Dec 13 13:48:08 2001
+From: lagoze@cs.cornell.edu (Carl Lagoze)
+Date: Thu, 13 Dec 2001 08:48:08 -0500
+Subject: FW: [OAI-implementers] XML Schema for OAI compliance with NSDL harvesting
+Message-ID: <706871B20764CD449DB0E8E3D81C4D4302547EBF@opus.cs.cornell.edu>
+
+Apologies - this message was intended for the OAI tech committee - on
+the other hand, the issues here are of interest to the oai implementors
+community as a whole.
+
+Carl
+
+-----Original Message-----
+From: Carl Lagoze 
+Sent: Thursday, December 13, 2001 7:34 AM
+To: 'Tim Cole'
+Cc: 'oai-implementers@oaisrv.nsdl.cornell.edu'; Diane Hillmann
+Subject: RE: [OAI-implementers] XML Schema for OAI compliance with NSDL
+harvesting
+
+
+Tim,
+
+Thanks for the note.  Since I am closely involved in both OAI and NSDL,
+I was thinking of this issue also.  I hope you don't mind that I've
+reflected this issue back to the tech group and to Diane Hillmann, my
+colleague at Cornell who is the metadata specialist in NSDL.  
+
+I see us getting drawn into the implementation end of what the dc
+community calls "application profiles".  For a brief bit of background
+to the rest of the group:
+
+- DC started out with this concept of 15 elements with some fuzzy
+thinking that these elements would make up some kind of interoperable
+metadata "record", defined as a packaging of the elements e.g., as a set
+of meta tags, or xml file, etc.  As noted many times, all elements are
+optional and repeatable in instances of such records, and the data types
+of values of elements is undefined.  This allows some measure of
+interoperabilty among "dc records, albeit pretty low, essentially saying
+"in a set of many 'dc records' you will only find the specified 15
+elements, but no guarantee which ones will be there".  Essentially, this
+is what we've tried to achieve with mandatory dc and dc.xsd in OAI-PMH
+1.x.
+- DC then moved onto the notion of "qualified dc", where semantics or
+value constraints on DC could be tightenned.  In this process, there was
+still some fuzzy thinking that there might be a "dc record" but instead
+of being made up of statements like "date is Sept. 1, 2001", it would
+consist of statements like "date, created, is 2001-09-01, in ISO 8601
+format".  The previous loose interoperability assumption than existed
+with the added "dumb-down" notion specifying "you wil find something
+more constrained than a standard dc element/value pair and you will be
+able to map it back to its unqualified form".  As we all know, in
+OAI-PMH we decided 
+- The latest DC thinking now includes the notion of "application
+profiles", saying that a "metadata record" may include dc elements (all
+optional, all repeatable) that can be mixed and matched with metadata
+elements from one or more other metadata vocabularies.  The nature of
+the mixing is, I believe, unspecified by DC - i.e., the application
+profile notion may allow for a dc element to be nested within the value
+structure of an element from another vocabulary (such as the dc-ed
+vocabulary mentioned in Tim's note).  For example, imagine a metadata
+record such as:
+
+<foo.hairColor>brown</foo.hairColor>
+<foo.origin>
+	<dc.date>2000-01-01</dc.date>
+	<blatz.personality>nasty</blatz.personality>
+</foo.origin>
+
+Interoperability in this world of application profiles now becomes
+"interoperability among a set of records conforming to several
+application profiles means that somewhere in each of those records are 0
+or more dc elements".  Of course, one could restrict interoperability
+within one application profile, which is presumably defined by some
+schema, but then the presumed cross domain interoperability purpose of
+dc is seemingly lost.
+
+In the OAI world, I see we are left with the following options:
+
+1. Remain at our notion of original, albeit low-level, dc
+interoperability - demand through a schema a record of unqualifed dc
+elements.
+2. Loosen the schema to allow qualified dc
+3. Allow for full-blast dc "application profiles", dc elements may be
+mixed with otheres from other vocabularies in unconstrained ways,
+undefined by a schema.
+4. find some proper mid-points. - for example, create an xml schema that
+specifies 0 or more dc elements at the top level, perhaps qualified,
+that are mixed with other top-level elements.
+
+My, as usual subjective, view is:
+
+1. our original goal of mandatory dc for interoperability in OAI-PMH is
+looking somewhat threadbare anyway, in light of the fact that dc as a
+record format is appropriate for non-bibliographic items - people,
+events.
+2. the application profile stuff sounds fine from a conversational
+perspective, but at the level of implementation and interoperability it
+is far from clean.  I'm not certain what a schema defining the rules for
+interopreability among application profiles would look like.
+
+Perhaps Andy Powell can kick in with some thinking since he is more
+involved in DCMI than I am.  Or Diane Hillmann whose NSDL and DCMI ties
+are close.
+
+Carl
+
+> -----Original Message-----
+> From: Tim Cole [mailto:t-cole3@uiuc.edu]
+> Sent: Wednesday, December 12, 2001 6:43 PM
+> To: Carl Lagoze
+> Cc: Thomas G. Habing
+> Subject: Re: [OAI-implementers] XML Schema for OAI compliance 
+> with NSDL
+> harvesting
+> 
+> 
+> Carl-
+> 
+> I know XML Schema was one of last week's Tech Committee 
+> topics, but Zubair's
+> note suggested an additional issue the Committee might want 
+> to consider:
+> 
+> The way I read the NSDL metadata recommendation, they're endorsing the
+> addition of a dc-ed:audience element to the base 15 elements 
+> of simple DC.
+> Metadata files including this element will not validate against either
+> current or our proposed oai_dc.xsd.  If OAI decides to revise 
+> oai_dc XML
+> schema along lines suggested in XML Schema
+> (http://oaitech.comm.nsdlib.org/WhitePapers/xml_schema_whitepa
+> per.htm),
+> should we also allow for optional inclusion of dc-ed:audience element?
+> 
+> Tom Habing and I have been experimenting this week with what 
+> an XSD that
+> allows inclusion of dc-ed:audience element might look.  When we're
+> satisfied, I'll go ahead and post (on SourceForge XML Schema 
+> Forum) details
+> of how this might be done for the Committee's consideration.  
+> Might be a
+> complication we don't want to undertake, but on the other 
+> hand, it could
+> facilitate use of OAI in NSDL context, and likely in IMLS 
+> context as well.
+> If we decide to revise oai_dc.xsd, we should at least 
+> consider it as an
+> option.
+> 
+> Tim Cole
+> University of Illinois at Urbana-Champaign
+> 
+> ----- Original Message -----
+> From: <zubair@cs.odu.edu>
+> To: <schalk@unf.edu>
+> Cc: <collections-group@nsdl1.comm.nsdlib.org>;
+> <oai-implementers@oaisrv.nsdl.cornell.edu>; "Carl Lagoze"
+> <lagoze@cs.cornell.edu>
+> Sent: Sunday, December 09, 2001 2:44 PM
+> Subject: RE: [OAI-implementers] XML Schema for OAI compliance 
+> with NSDL
+> harvesting
+> 
+> 
+> >
+> > Dear Stuart,
+> >
+> > I was there in the Dec. 3-4 NSDL PIs meeting and may be 
+> able to add a
+> > little more to what Carl has already stated. After talking to Diane
+> Hillman
+> > and browsing information on the NSDL website, this is my 
+> understanding.
+> >
+> > "The NSDL Standards Working Group has determined that the 
+> Dublin Core set
+> > of 15 qualified elements, plus the elements recommended by the DC
+> Education
+> > Working Group, will be the standard set used by the NSDL metadata
+> > repository.
+> > (Ref:
+> > 
+> http://siteforscience.nsdl.cornell.edu/metadata_info/overview.
+> html#NSDL ).
+> >
+> > Besides DC-Ed, they have also identified other formats NSDL plans to
+> > support. You can get information about these from the Web sites:
+> >
+> > http://siteforscience.nsdl.cornell.edu/metadata_info/outline.html
+> > http://www.smete.org/nsdl/workgroups/standards/standards_home.html
+> > http://128.253.121.110/NSDLmetaWG/IntroPage.html
+> >
+> > These metadata formats can  be supported as parallel 
+> metadata formats in
+> > OAI. Regarding Mac OS X, I recently bought a Powerbook G4 
+> with OS X and
+> > there is full Java support on it and it comes with Apache 
+> web server. I
+> > have not yet tried the Tomcat servlet engine on it - there is one
+> available
+> > for it. In summary,  you should be able to host an  OAI compliant
+> > collection using some of the Java based tools available on 
+> the tool site
+> > pointed out by Carl. In fact you should be able to use even 
+> Perl tools (OS
+> > X is based on BSD Unix).
+> >
+> >
+> > Zubair
+> >
+> >
+> >
+> >
+> >
+> >
+> >
+> >                     "Carl Lagoze"
+> >                     <lagoze@cs.cornell.edu>                     To:
+> "Stuart Chalk" <schalk@unf.edu>,
+> >                     Sent by:
+> <oai-implementers@oaisrv.nsdl.cornell.edu>
+> >                     oai-implementers-admin@oaisrv.nsdl.c        cc:
+> <collections-group@nsdl1.comm.nsdlib.org>
+> >                     ornell.edu                              
+>     Subject:
+> RE: [OAI-implementers] XML Schema for OAI compliance with
+> >                                                                 NSDL
+> harvesting
+> >
+> >                     12/09/2001 01:55 PM
+> >
+> >
+> >
+> >
+> >
+> >
+> > Stuart,
+> >
+> > Thanks for your question.  I've taken the liberty to add 
+> the members of
+> > NSDL collections to this response.
+> >
+> > Regarding your first question: The OAI already defines an 
+> xml schema for
+> > its one required metadata format - dublin core.  This is 
+> explained at
+> > 
+> http://www.openarchives.org/OAI_protocol/openarchivesprotocol.
+> html#dubli
+> > ncore and the actual schema is at
+> > http://www.openarchives.org/OAI/1.1/dc.xsd.  As for the 
+> other metadata
+> > formats that NSDL participants will share, there are as far 
+> as I know no
+> > established schema as of yet.  Perhaps Diane Hillmann can 
+> chip in here
+> > and share whether this is true.  If there are indeed no 
+> schemas as of
+> > yet, we should certainly settle on these in the near future.
+> >
+> > Regarding your second question:  This is the right list for 
+> discussion
+> > of hardward and software for acting as an OAI data 
+> provider.  At this
+> > point I don't know of anyone who is using Mac OS X for this but that
+> > doesn't mean that there isn't someone else who isn't doing 
+> that. There
+> > is a growing list of tools at
+> > http://www.openarchives.org/tools/tools.html and I believe that the
+> > DLESE folks are working on a java based implementation that 
+> should run
+> > with little problem on OS X.
+> >
+> > Carl
+> >
+> > > -----Original Message-----
+> > > From: Stuart Chalk [mailto:schalk@unf.edu]
+> > > Sent: Sunday, December 09, 2001 6:35 AM
+> > > To: oai-implementers@oaisrv.nsdl.cornell.edu
+> > > Subject: [OAI-implementers] XML Schema for OAI compliance 
+> with NSDL
+> > > harvesting
+> > >
+> > >
+> > > I would like to thank all of you that were at the meeting talking
+> > > about harvesting and OAI.  Being a novice at this I
+> > > appreciate how well
+> > > the area of OAI was described and I now have a much better
+> > > perspective on
+> > > its use and implementation.
+> > >
+> > > My question, I hope, is simple. From reading
+> > > http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html
+> > > I get that I need to generate a few files that describe 
+> the different
+> > > schema for supplying metadata via OAI.  I also see the
+> > > formatted XML that
+> > > needs to be returned to the requester.  My question is - is
+> > > there yet an
+> > > NSDL format for the data returned via XML, and what are the
+> > > minimum number
+> > > of schema files I need to generate so that I can support NSDL
+> > > harvesting
+> > > via OAI?  If they do exist where are they and is there a help
+> > > file that
+> > > goes with them?
+> > >
+> > > Any help greatly appreciated.
+> > >
+> > > On a separate topic - is there a list like this for 
+> discussion of the
+> > > hardware and software being used to serve the collection data?  As
+> > > webmaster of the "Analytical Sciences Digital Library"
+> > > project I want to
+> > > use Mac OS X, Webstar V, Lasso Pro 5, and Filemaker Pro 
+> 5.5 all on the
+> > > same Mac.  I am convinced that this will be both powerful 
+> enough and
+> > > scalable enough my co-PIs are worried I will run into trouble
+> > > using this
+> > > for production.  Any places to go greatly appreciated also.
+> > >
+> > > --
+> > > Stuart Chalk, Ph.D.
+> > > Department of Natural Sciences
+> > > Phone:904-620-2831
+> > > University of North Florida
+> > > Fax:904-620-3885
+> > > 4567 St. Johns Bluff Road S.                  "The Flow
+> > > Analysis Database"
+> > > Jacksonville FL 32224 USA
+> > http://www.fia.unf.edu/
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > OAI-implementers@oaisrv.nsdl.cornell.edu
+> > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> >
+> 
+> 
+
+From r.heery@ukoln.ac.uk  Thu Dec 13 14:24:45 2001
+From: r.heery@ukoln.ac.uk (Rachel Heery)
+Date: Thu, 13 Dec 2001 14:24:45 +0000 (GMT)
+Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL
+ harvesting
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D4301F2C701@opus.cs.cornell.edu>
+Message-ID: <Pine.SO4.4.05.10112131406340.20725-100000@lamin.ukoln.ac.uk>
+
+On Thu, 13 Dec 2001, Carl Lagoze wrote:
+
+> - The latest DC thinking now includes the notion of "application
+> profiles", saying that a "metadata record" may include dc elements (all
+> optional, all repeatable) that can be mixed and matched with metadata
+> elements from one or more other metadata vocabularies.  The nature of
+> the mixing is, I believe, unspecified by DC - i.e., the application
+> profile notion may allow for a dc element to be nested within the value
+> structure of an element from another vocabulary (such as the dc-ed
+> vocabulary mentioned in Tim's note).  For example, imagine a metadata
+> record such as:
+
+Just for some background.... within the DCMI community, and within the
+SCHEMAS project, we have found the concept of application profiles useful
+to understand the way standard data element sets are implemented 'in
+practice'. An application profile is understood in this context as a
+schema optimised in its content for a particular application or domain
+i.e. a schema defined by a 'community of use' to specify the data elements
+(terms) used by their application.
+
+In reality we find that implementations use standard metadata element sets
+(like DC, IMS etc) in an application specific way. For example by
+specifying some data elements are mandatory, some should use values taken
+from a particular schema like Library of Congress subject headings etc,
+some might even contain data elements from different namespaces.
+
+Its significant to realise that the application profile is defined at the
+schema level.. any instance metadata is then created 'in compliance' to
+that schema. Within the context of SCHEMAS project we have experimented
+with publishing application profiles as RDF schemas, and looked at sharing
+schemas within a schema registry. [1]
+
+For more info on application profiles see:
+
+What terms does your metadata use? Application profiles as 
+machine-understandable narratives
+     T. Baker, M. Dekkers, R. Heery, M. Patel, G. Salokhe -November 2001 
+     Journal of Digitial Information, Vol 2. Issue 2. 
+     HTML: <URL:http://jodi.ecs.soton.ac.uk/Articles/v02/i02/Baker/>  
+
+Rachel
+
+1. http://www.schemas-forum.org/registry/desire/index.php3
+ 
+---------------------------------------------------------------------------
+Rachel Heery
+UKOLN 
+University of Bath                              tel: +44 (0)1225 826724
+Bath, BA2 7AY, UK                               fax: +44 (0)1225 826838
+http://www.ukoln.ac.uk/
+
+
+
+
+
+From lagoze@cs.cornell.edu  Thu Dec 13 15:54:12 2001
+From: lagoze@cs.cornell.edu (Carl Lagoze)
+Date: Thu, 13 Dec 2001 10:54:12 -0500
+Subject: [OAI-implementers] XML Schema for OAI compliance with NSDLharvesting
+Message-ID: <706871B20764CD449DB0E8E3D81C4D4301F2C704@opus.cs.cornell.edu>
+
+Rachel,
+
+Thank you for your input here.  Your knowledge of the application
+profile concept is certainly better than mine and I look forward to your
+input helping come up with a satisfactory solution.
+
+I understand that, as you say, an application profile is defined at the
+schema level and that instance data for each respective application
+profile is conformant with the schema.  
+
+That is fine for intra-profile interoperability.  Our problem in OAI is
+that, as you know, we would like to establish a modicum of cross-domain
+interoperability.  Therein lies the discomfort of loosing up our
+mandatory DC defined by a reasonably simple schema, as in
+http://www.openarchives.org/OAI/1.1/dc.xsd, to dc following application
+schema.  As far as I know, and correct me if I'm wrong, interoperability
+amongst application profiles, is uncharted territory.
+
+That said, for the OAI to continue with the concept of a "single
+required metadata format for interoperability" it appears that good old
+simple dc or some other suitable cross-domain metadata format (not
+embedded in multipel application profiles) is the only feasible choice.
+BTW, it could be argued that the whole notion of a "single required
+metadata format for interoerability" is in itself a somewhat quixotic
+comcept given the universe of things to describe, but that is another
+discussion.
+
+Carl
+
+> -----Original Message-----
+> From: Rachel Heery [mailto:r.heery@ukoln.ac.uk]
+> Sent: Thursday, December 13, 2001 9:25 AM
+> To: oai-implementers@oaisrv.nsdl.cornell.edu
+> Subject: RE: [OAI-implementers] XML Schema for OAI compliance with
+> NSDLharvesting
+> 
+> 
+> On Thu, 13 Dec 2001, Carl Lagoze wrote:
+> 
+> > - The latest DC thinking now includes the notion of "application
+> > profiles", saying that a "metadata record" may include dc 
+> elements (all
+> > optional, all repeatable) that can be mixed and matched 
+> with metadata
+> > elements from one or more other metadata vocabularies.  The 
+> nature of
+> > the mixing is, I believe, unspecified by DC - i.e., the application
+> > profile notion may allow for a dc element to be nested 
+> within the value
+> > structure of an element from another vocabulary (such as the dc-ed
+> > vocabulary mentioned in Tim's note).  For example, imagine 
+> a metadata
+> > record such as:
+> 
+> Just for some background.... within the DCMI community, and within the
+> SCHEMAS project, we have found the concept of application 
+> profiles useful
+> to understand the way standard data element sets are implemented 'in
+> practice'. An application profile is understood in this context as a
+> schema optimised in its content for a particular application or domain
+> i.e. a schema defined by a 'community of use' to specify the 
+> data elements
+> (terms) used by their application.
+> 
+> In reality we find that implementations use standard metadata 
+> element sets
+> (like DC, IMS etc) in an application specific way. For example by
+> specifying some data elements are mandatory, some should use 
+> values taken
+> from a particular schema like Library of Congress subject 
+> headings etc,
+> some might even contain data elements from different namespaces.
+> 
+> Its significant to realise that the application profile is 
+> defined at the
+> schema level.. any instance metadata is then created 'in 
+> compliance' to
+> that schema. Within the context of SCHEMAS project we have 
+> experimented
+> with publishing application profiles as RDF schemas, and 
+> looked at sharing
+> schemas within a schema registry. [1]
+> 
+> For more info on application profiles see:
+> 
+> What terms does your metadata use? Application profiles as 
+> machine-understandable narratives
+>      T. Baker, M. Dekkers, R. Heery, M. Patel, G. Salokhe 
+> -November 2001 
+>      Journal of Digitial Information, Vol 2. Issue 2. 
+>      HTML: <URL:http://jodi.ecs.soton.ac.uk/Articles/v02/i02/Baker/>  
+> 
+> Rachel
+> 
+> 1. http://www.schemas-forum.org/registry/desire/index.php3
+>  
+> --------------------------------------------------------------
+> -------------
+> Rachel Heery
+> UKOLN 
+> University of Bath                              tel: +44 
+> (0)1225 826724
+> Bath, BA2 7AY, UK                               fax: +44 
+> (0)1225 826838
+> http://www.ukoln.ac.uk/
+> 
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+> 
+
+From jperkins@fox.nstn.ca  Thu Dec 13 17:58:03 2001
+From: jperkins@fox.nstn.ca (John Perkins)
+Date: Thu, 13 Dec 2001 13:58:03 -0400
+Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL
+ harvesting
+In-Reply-To: <706871B20764CD449DB0E8E3D81C4D4301F2C701@opus.cs.cornell.edu>
+References: <706871B20764CD449DB0E8E3D81C4D4301F2C701@opus.cs.cornell.edu>
+Message-ID: <p04320405b83e7d58bd91@[10.38.144.7]>
+
+Folks,
+
+I'd like to chip in on this from perhaps our in CIMI's rather naive 
+view of how this all might work and our understanding of the 
+intentions of OAI.
+
+One of the reasons we were excited by OAI was because it gave a clean 
+way to address both the interoperability issues across communities by 
+mandating DC and it allowed communities of implementers to adopt 
+additional metadata element sets for describing things more richly or 
+other stuff for which DC simple was clearly inadequate or where some 
+hybrid of DC plus other elements was desired.
+
+In the museum community CIMI ran a 2 year testbed that resulted in 
+the publishing of a guide to best practice for the use of simple DC 
+for the purposes of discovery.  We noted that significant richness 
+was lost and it was problematic for many museum applications but for 
+the purposes of museums and other communities discovering museum 
+resources it would work fine. What we gained by many communities 
+adopting DC for discovery would far offset the lack of depth and 
+breadth at the discovery level.  We also concluded that using DC 
+qualifed was an additional level of complexity that didn't buy us any 
+more at the discovery level and so we suggested museums not use it.
+
+Instead we are developing other metadata formats for describing 
+collections and items. One of these is the SPECTRUM standard for 
+which we are deep into a schema definition. In our OAI work we intend 
+to support this as a community specific metadata format extension, 
+publishing the schema so others who want to understand it or use it 
+can do so. We also expect that some in our community will want to use 
+hybrid schemas such as DC simple plus DC:education elements such as 
+audience level.  That's fine but we feel each of those should have 
+it's own schema and be considered extension sets not replacement of 
+the OAI core set DC.
+
+We hope the OAI Tech/Implementers group will not complicate matters 
+by dropping the current DC simple schema as the core required schema. 
+I think this is what CArl is saying in a message that arrived after I 
+started writing this and snipped in here.
+
+From: "Carl Lagoze" <lagoze@cs.cornell.edu>
+To: "Rachel Heery" <r.heery@ukoln.ac.uk>,
+    <oai-implementers@oaisrv.nsdl.cornell.edu>
+Sender: oai-implementers-admin@oaisrv.nsdl.cornell.edu
+<snip>
+That is fine for intra-profile interoperability.  Our problem in OAI is
+that, as you know, we would like to establish a modicum of cross-domain
+interoperability.  Therein lies the discomfort of loosing up our
+mandatory DC defined by a reasonably simple schema, as in
+http://www.openarchives.org/OAI/1.1/dc.xsd, to dc following application
+schema.  As far as I know, and correct me if I'm wrong, interoperability
+amongst application profiles, is uncharted territory.
+
+That said, for the OAI to continue with the concept of a "single
+required metadata format for interoperability" it appears that good old
+simple dc or some other suitable cross-domain metadata format (not
+embedded in multipel application profiles) is the only feasible choice.
+
+
+John
+
+
+
+  At 7:34 AM -0500 12/13/01, Carl Lagoze wrote:
+>Tim,
+>
+>Thanks for the note.  Since I am closely involved in both OAI and NSDL,
+>I was thinking of this issue also.  I hope you don't mind that I've
+>reflected this issue back to the tech group and to Diane Hillmann, my
+>colleague at Cornell who is the metadata specialist in NSDL. 
+>
+>I see us getting drawn into the implementation end of what the dc
+>community calls "application profiles".  For a brief bit of background
+>to the rest of the group:
+>
+>- DC started out with this concept of 15 elements with some fuzzy
+>thinking that these elements would make up some kind of interoperable
+>metadata "record", defined as a packaging of the elements e.g., as a set
+>of meta tags, or xml file, etc.  As noted many times, all elements are
+>optional and repeatable in instances of such records, and the data types
+>of values of elements is undefined.  This allows some measure of
+>interoperabilty among "dc records, albeit pretty low, essentially saying
+>"in a set of many 'dc records' you will only find the specified 15
+>elements, but no guarantee which ones will be there".  Essentially, this
+>is what we've tried to achieve with mandatory dc and dc.xsd in OAI-PMH
+>1.x.
+>- DC then moved onto the notion of "qualified dc", where semantics or
+>value constraints on DC could be tightenned.  In this process, there was
+>still some fuzzy thinking that there might be a "dc record" but instead
+>of being made up of statements like "date is Sept. 1, 2001", it would
+>consist of statements like "date, created, is 2001-09-01, in ISO 8601
+>format".  The previous loose interoperability assumption than existed
+>with the added "dumb-down" notion specifying "you wil find something
+>more constrained than a standard dc element/value pair and you will be
+>able to map it back to its unqualified form".  As we all know, in
+>OAI-PMH we decided
+>- The latest DC thinking now includes the notion of "application
+>profiles", saying that a "metadata record" may include dc elements (all
+>optional, all repeatable) that can be mixed and matched with metadata
+>elements from one or more other metadata vocabularies.  The nature of
+>the mixing is, I believe, unspecified by DC - i.e., the application
+>profile notion may allow for a dc element to be nested within the value
+>structure of an element from another vocabulary (such as the dc-ed
+>vocabulary mentioned in Tim's note).  For example, imagine a metadata
+>record such as:
+>
+><foo.hairColor>brown</foo.hairColor>
+><foo.origin>
+>	<dc.date>2000-01-01</dc.date>
+>	<blatz.personality>nasty</blatz.personality>
+></foo.origin>
+>
+>Interoperability in this world of application profiles now becomes
+>"interoperability among a set of records conforming to several
+>application profiles means that somewhere in each of those records are 0
+>or more dc elements".  Of course, one could restrict interoperability
+>within one application profile, which is presumably defined by some
+>schema, but then the presumed cross domain interoperability purpose of
+>dc is seemingly lost.
+>
+>In the OAI world, I see we are left with the following options:
+>
+>1. Remain at our notion of original, albeit low-level, dc
+>interoperability - demand through a schema a record of unqualifed dc
+>elements.
+>2. Loosen the schema to allow qualified dc
+>3. Allow for full-blast dc "application profiles", dc elements may be
+>mixed with otheres from other vocabularies in unconstrained ways,
+>undefined by a schema.
+>4. find some proper mid-points. - for example, create an xml schema that
+>specifies 0 or more dc elements at the top level, perhaps qualified,
+>that are mixed with other top-level elements.
+>
+>My, as usual subjective, view is:
+>
+>1. our original goal of mandatory dc for interoperability in OAI-PMH is
+>looking somewhat threadbare anyway, in light of the fact that dc as a
+>record format is appropriate for non-bibliographic items - people,
+>events.
+>2. the application profile stuff sounds fine from a conversational
+>perspective, but at the level of implementation and interoperability it
+>is far from clean.  I'm not certain what a schema defining the rules for
+>interopreability among application profiles would look like.
+>
+>Perhaps Andy Powell can kick in with some thinking since he is more
+>involved in DCMI than I am.  Or Diane Hillmann whose NSDL and DCMI ties
+>are close.
+>
+>Carl
+>
+>>  -----Original Message-----
+>>  From: Tim Cole [mailto:t-cole3@uiuc.edu]
+>>  Sent: Wednesday, December 12, 2001 6:43 PM
+>>  To: Carl Lagoze
+>>  Cc: Thomas G. Habing
+>>  Subject: Re: [OAI-implementers] XML Schema for OAI compliance
+>>  with NSDL
+>>  harvesting
+>>
+>>
+>>  Carl-
+>>
+>>  I know XML Schema was one of last week's Tech Committee
+>>  topics, but Zubair's
+>>  note suggested an additional issue the Committee might want
+>>  to consider:
+>>
+>>  The way I read the NSDL metadata recommendation, they're endorsing the
+>>  addition of a dc-ed:audience element to the base 15 elements
+>>  of simple DC.
+>>  Metadata files including this element will not validate against either
+>  > current or our proposed oai_dc.xsd.  If OAI decides to revise
+>>  oai_dc XML
+>>  schema along lines suggested in XML Schema
+>>  (http://oaitech.comm.nsdlib.org/WhitePapers/xml_schema_whitepa
+>>  per.htm),
+>>  should we also allow for optional inclusion of dc-ed:audience element?
+>>
+>>  Tom Habing and I have been experimenting this week with what
+>>  an XSD that
+>>  allows inclusion of dc-ed:audience element might look.  When we're
+>>  satisfied, I'll go ahead and post (on SourceForge XML Schema
+>>  Forum) details
+>>  of how this might be done for the Committee's consideration. 
+>>  Might be a
+>>  complication we don't want to undertake, but on the other
+>>  hand, it could
+>>  facilitate use of OAI in NSDL context, and likely in IMLS
+>>  context as well.
+>>  If we decide to revise oai_dc.xsd, we should at least
+>>  consider it as an
+>>  option.
+>>
+>>  Tim Cole
+>>  University of Illinois at Urbana-Champaign
+>>
+>>  ----- Original Message -----
+>>  From: <zubair@cs.odu.edu>
+>>  To: <schalk@unf.edu>
+>>  Cc: <collections-group@nsdl1.comm.nsdlib.org>;
+>>  <oai-implementers@oaisrv.nsdl.cornell.edu>; "Carl Lagoze"
+>>  <lagoze@cs.cornell.edu>
+>>  Sent: Sunday, December 09, 2001 2:44 PM
+>>  Subject: RE: [OAI-implementers] XML Schema for OAI compliance
+>>  with NSDL
+>>  harvesting
+>>
+>>
+>>  >
+>>  > Dear Stuart,
+>>  >
+>>  > I was there in the Dec. 3-4 NSDL PIs meeting and may be
+>>  able to add a
+>>  > little more to what Carl has already stated. After talking to Diane
+>>  Hillman
+>>  > and browsing information on the NSDL website, this is my
+>>  understanding.
+>>  >
+>>  > "The NSDL Standards Working Group has determined that the
+>>  Dublin Core set
+>>  > of 15 qualified elements, plus the elements recommended by the DC
+>>  Education
+>>  > Working Group, will be the standard set used by the NSDL metadata
+>>  > repository.
+>>  > (Ref:
+>>  >
+>>  http://siteforscience.nsdl.cornell.edu/metadata_info/overview.
+>>  html#NSDL ).
+>>  >
+>>  > Besides DC-Ed, they have also identified other formats NSDL plans to
+>>  > support. You can get information about these from the Web sites:
+>>  >
+>>  > http://siteforscience.nsdl.cornell.edu/metadata_info/outline.html
+>>  > http://www.smete.org/nsdl/workgroups/standards/standards_home.html
+>>  > http://128.253.121.110/NSDLmetaWG/IntroPage.html
+>>  >
+>>  > These metadata formats can  be supported as parallel
+>>  metadata formats in
+>>  > OAI. Regarding Mac OS X, I recently bought a Powerbook G4
+>>  with OS X and
+>>  > there is full Java support on it and it comes with Apache
+>>  web server. I
+>>  > have not yet tried the Tomcat servlet engine on it - there is one
+>>  available
+>>  > for it. In summary,  you should be able to host an  OAI compliant
+>>  > collection using some of the Java based tools available on
+>>  the tool site
+>>  > pointed out by Carl. In fact you should be able to use even
+>>  Perl tools (OS
+>>  > X is based on BSD Unix).
+>>  >
+>>  >
+>>  > Zubair
+>>  >
+>>  >
+>>  >
+>>  >
+>>  >
+>>  >
+>>  >
+>>  >                     "Carl Lagoze"
+>>  >                     <lagoze@cs.cornell.edu>                     To:
+>>  "Stuart Chalk" <schalk@unf.edu>,
+>>  >                     Sent by:
+>>  <oai-implementers@oaisrv.nsdl.cornell.edu>
+>>  >                     oai-implementers-admin@oaisrv.nsdl.c        cc:
+>>  <collections-group@nsdl1.comm.nsdlib.org>
+>>  >                     ornell.edu                             
+>>      Subject:
+>>  RE: [OAI-implementers] XML Schema for OAI compliance with
+>>  >                                                                 NSDL
+>>  harvesting
+>>  >
+>>  >                     12/09/2001 01:55 PM
+>>  >
+>>  >
+>>  >
+>>  >
+>>  >
+>>  >
+>>  > Stuart,
+>>  >
+>>  > Thanks for your question.  I've taken the liberty to add
+>>  the members of
+>>  > NSDL collections to this response.
+>>  >
+>>  > Regarding your first question: The OAI already defines an
+>>  xml schema for
+>>  > its one required metadata format - dublin core.  This is
+>>  explained at
+>>  >
+>>  http://www.openarchives.org/OAI_protocol/openarchivesprotocol.
+>>  html#dubli
+>>  > ncore and the actual schema is at
+>>  > http://www.openarchives.org/OAI/1.1/dc.xsd.  As for the
+>>  other metadata
+>>  > formats that NSDL participants will share, there are as far
+>>  as I know no
+>>  > established schema as of yet.  Perhaps Diane Hillmann can
+>>  chip in here
+>>  > and share whether this is true.  If there are indeed no
+>  > schemas as of
+>>  > yet, we should certainly settle on these in the near future.
+>>  >
+>>  > Regarding your second question:  This is the right list for
+>>  discussion
+>>  > of hardward and software for acting as an OAI data
+>>  provider.  At this
+>>  > point I don't know of anyone who is using Mac OS X for this but that
+>>  > doesn't mean that there isn't someone else who isn't doing
+>>  that. There
+>>  > is a growing list of tools at
+>>  > http://www.openarchives.org/tools/tools.html and I believe that the
+>>  > DLESE folks are working on a java based implementation that
+>>  should run
+>>  > with little problem on OS X.
+>>  >
+>>  > Carl
+>>  >
+>>  > > -----Original Message-----
+>>  > > From: Stuart Chalk [mailto:schalk@unf.edu]
+>>  > > Sent: Sunday, December 09, 2001 6:35 AM
+>>  > > To: oai-implementers@oaisrv.nsdl.cornell.edu
+>>  > > Subject: [OAI-implementers] XML Schema for OAI compliance
+>>  with NSDL
+>>  > > harvesting
+>>  > >
+>>  > >
+>>  > > I would like to thank all of you that were at the meeting talking
+>>  > > about harvesting and OAI.  Being a novice at this I
+>>  > > appreciate how well
+>>  > > the area of OAI was described and I now have a much better
+>>  > > perspective on
+>>  > > its use and implementation.
+>>  > >
+>>  > > My question, I hope, is simple. From reading
+>>  > > http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html
+>>  > > I get that I need to generate a few files that describe
+>>  the different
+>>  > > schema for supplying metadata via OAI.  I also see the
+>>  > > formatted XML that
+>>  > > needs to be returned to the requester.  My question is - is
+>>  > > there yet an
+>>  > > NSDL format for the data returned via XML, and what are the
+>>  > > minimum number
+>>  > > of schema files I need to generate so that I can support NSDL
+>>  > > harvesting
+>>  > > via OAI?  If they do exist where are they and is there a help
+>>  > > file that
+>>  > > goes with them?
+>>  > >
+>>  > > Any help greatly appreciated.
+>>  > >
+>>  > > On a separate topic - is there a list like this for
+>>  discussion of the
+>>  > > hardware and software being used to serve the collection data?  As
+>>  > > webmaster of the "Analytical Sciences Digital Library"
+>>  > > project I want to
+>>  > > use Mac OS X, Webstar V, Lasso Pro 5, and Filemaker Pro
+>>  5.5 all on the
+>>  > > same Mac.  I am convinced that this will be both powerful
+>>  enough and
+>>  > > scalable enough my co-PIs are worried I will run into trouble
+>>  > > using this
+>>  > > for production.  Any places to go greatly appreciated also.
+>>  > >
+>>  > > --
+>>  > > Stuart Chalk, Ph.D.
+>>  > > Department of Natural Sciences
+>>  > > Phone:904-620-2831
+>>  > > University of North Florida
+>>  > > Fax:904-620-3885
+>>  > > 4567 St. Johns Bluff Road S.                  "The Flow
+>>  > > Analysis Database"
+>>  > > Jacksonville FL 32224 USA
+>>  > http://www.fia.unf.edu/
+>>  >
+>>  > _______________________________________________
+>>  > OAI-implementers mailing list
+>>  > OAI-implementers@oaisrv.nsdl.cornell.edu
+>>  > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>  > _______________________________________________
+>>  > OAI-implementers mailing list
+>>  > OAI-implementers@oaisrv.nsdl.cornell.edu
+>>  > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>  >
+>>  >
+>>  >
+>>  > _______________________________________________
+>>  > OAI-implementers mailing list
+>>  > OAI-implementers@oaisrv.nsdl.cornell.edu
+>>  > http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>>  >
+>>
+>>
+>_______________________________________________
+>OAI-implementers mailing list
+>OAI-implementers@oaisrv.nsdl.cornell.edu
+>http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+
+
+From jweather@ucar.edu  Fri Dec 14 20:55:08 2001
+From: jweather@ucar.edu (John Weatherley)
+Date: Fri, 14 Dec 2001 13:55:08 -0700 (MST)
+Subject: [Collections-group] RE: [OAI-implementers] XML Schema for OAI
+ compliance with NSDL harvesting
+Message-ID: <Pine.LNX.4.33.0112141205550.19076-100000@quake.dpc.ucar.edu>
+
+Stuart,
+
+DLESE is developing an OAI Harvester and Provider written in Java that
+runs as a Java servlet. It is currently running here on Linux and should
+run in Tomcat on OS X as well. I'm in the process of preparing the
+software for initial release in January on SourceForge (will likely be
+available via NSDL's site as well). See the DLESE SourceForge site
+http://sourceforge.net/projects/dlese/. A front-end for our Provider is
+at: http://quake.dpc.ucar.edu/oaiprovide/
+
+The idea is to make the software available to the DLESE and NSDL
+communities, as well as the general public. Those who are looking for an
+out-of-the-box solution that can be installed relatively quickly might
+consider using the software. We'll likely have several DLESE partners who
+will need this kind of solution (as well as us here at the DPC), and
+that's our main motivation for making the software available.
+
+
+ - John
+
+
+-- 
+John Weatherley
+Software Engineer, DLESE Program Center
+University Corporation for Atmospheric Research (UCAR)
+Box 3000
+Boulder, CO 80307-3000
+jweather@ucar.edu (e-mail)
+
+(303) 497-2680 (tel)
+(303) 497-8336 (fax)
+
+http://www.dlese.org
+
+
+
+----- Original Message -----
+From: "Carl Lagoze" <lagoze@cs.cornell.edu>
+To: "Stuart Chalk" <schalk@unf.edu>;
+<oai-implementers@oaisrv.nsdl.cornell.edu>
+Cc: <collections-group@nsdl1.comm.nsdlib.org>
+Sent: Sunday, December 09, 2001 11:55 AM
+Subject: [Collections-group] RE: [OAI-implementers] XML Schema for OAI
+compliance with NSDL harvesting
+
+
+> Stuart,
+>
+> Thanks for your question.  I've taken the liberty to add the members of
+> NSDL collections to this response.
+>
+> Regarding your first question: The OAI already defines an xml schema for
+> its one required metadata format - dublin core.  This is explained at
+> http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html#dubli
+> ncore and the actual schema is at
+> http://www.openarchives.org/OAI/1.1/dc.xsd.  As for the other metadata
+> formats that NSDL participants will share, there are as far as I know no
+> established schema as of yet.  Perhaps Diane Hillmann can chip in here
+> and share whether this is true.  If there are indeed no schemas as of
+> yet, we should certainly settle on these in the near future.
+>
+> Regarding your second question:  This is the right list for discussion
+> of hardward and software for acting as an OAI data provider.  At this
+> point I don't know of anyone who is using Mac OS X for this but that
+> doesn't mean that there isn't someone else who isn't doing that. There
+> is a growing list of tools at
+> http://www.openarchives.org/tools/tools.html and I believe that the
+> DLESE folks are working on a java based implementation that should run
+> with little problem on OS X.
+>
+> Carl
+>
+> > -----Original Message-----
+> > From: Stuart Chalk [mailto:schalk@unf.edu]
+> > Sent: Sunday, December 09, 2001 6:35 AM
+> > To: oai-implementers@oaisrv.nsdl.cornell.edu
+> > Subject: [OAI-implementers] XML Schema for OAI compliance with NSDL
+> > harvesting
+> >
+> >
+
+> >
+> > I would like to thank all of you that were at the meeting talking
+> > about harvesting and OAI.  Being a novice at this I
+> > appreciate how well
+> > the area of OAI was described and I now have a much better
+> > perspective on
+> > its use and implementation.
+> >
+> > My question, I hope, is simple. From reading
+> > http://www.openarchives.org/OAI_protocol/openarchivesprotocol.html
+> > I get that I need to generate a few files that describe the different
+> > schema for supplying metadata via OAI.  I also see the
+> > formatted XML that
+> > needs to be returned to the requester.  My question is - is
+> > there yet an
+> > NSDL format for the data returned via XML, and what are the
+> > minimum number
+> > of schema files I need to generate so that I can support NSDL
+> > harvesting
+> > via OAI?  If they do exist where are they and is there a help
+> > file that
+> > goes with them?
+> >
+> > Any help greatly appreciated.
+> >
+> > On a separate topic - is there a list like this for discussion of the
+> > hardware and software being used to serve the collection data?  As
+> > webmaster of the "Analytical Sciences Digital Library"
+> > project I want to
+> > use Mac OS X, Webstar V, Lasso Pro 5, and Filemaker Pro 5.5 all on the
+> > same Mac.  I am convinced that this will be both powerful enough and
+> > scalable enough my co-PIs are worried I will run into trouble
+> > using this
+> > for production.  Any places to go greatly appreciated also.
+> >
+> > --
+> > Stuart Chalk, Ph.D.
+> > Department of Natural Sciences
+> > Phone:904-620-2831
+> > University of North Florida
+> > Fax:904-620-3885
+> > 4567 St. Johns Bluff Road S.                  "The Flow
+> > Analysis Database"
+> > Jacksonville FL 32224 USA
+> http://www.fia.unf.edu/
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> OAI-implementers@oaisrv.nsdl.cornell.edu
+> http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers
+>
+> _______________________________________________
+> Collections-group mailing list
+> Collections-group@comm.nsdlib.org
+> http://lists.comm.nsdlib.org/mailman/listinfo/collections-group
+
+
+
+
+
+From kmku@hkusua.hku.hk  Mon Dec 17 00:58:24 2001
+From: kmku@hkusua.hku.hk (K.M. KU)
+Date: Mon, 17 Dec 2001 08:58:24 +0800
+Subject: [OAI-implementers] OAI -- some issues
+Message-ID: <007b01c18695$ee89c560$44110893@library.local>
+
+Dear all,
+
+
+Since OAI defines protocol for metadata harvesting, service
+provider needs to  build their own search interface for searching the
+harvested
+metadata (e.g.  Arc). I am interested in looking for
+
+ - data harvesting (the scheme of harvesting data  periodically, or by some
+ other ways ). The data harvesting mechanism is working in a  passive mode
+ (right?) It seems that if the number of data providers goes  big, the
+bandwidth
+ and time for updating metadata may be an issue to consider, correct?
+
+ - a globalized metadata repository model for service  provider. If the
+number
+ of service providers goes big, that means every service  provider keeps a
+copy
+ of all metadata of data provider and is not quite storage 'efficent'.
+ Moreover, the process of data harvesting may overload data provider.
+
+- if a record has been deleted permanently from the repository,data provider
+needs to keep a 'copy' of deleted data so it can return an attribute --
+'delete' (right?). How can a data provider knows if ALL service providers
+updated the metadata?
+
+ Please feel free to correct me, as I am new on OAI.
+
+regards,
+KM Ku
+
+
+
+From tim@tim.brody.btinternet.co.uk  Mon Dec 17 10:28:58 2001
+From: tim@tim.brody.btinternet.co.uk (Tim Brody)
+Date: Mon, 17 Dec 2001 10:28:58 -0000
+Subject: [OAI-implementers] OAI -- some issues
+References: <007b01c18695$ee89c560$44110893@library.local>
+Message-ID: <028801c186e5$a3706750$c901a8c0@Shrek>
+
+Hi,
+
+You raise some interesting questions - I hope my answers provide some help.
+
+----- Original Message -----
+From: "K.M. KU" <kmku@hkusua.hku.hk>
+To: <oai-implementers@oaisrv.nsdl.cornell.edu>
+Sent: Monday, December 17, 2001 12:58 AM
+Subject: [OAI-implementers] OAI -- some issues
+
+>  - data harvesting (the scheme of harvesting data  periodically, or by
+some
+>  other ways ). The data harvesting mechanism is working in a  passive mode
+>  (right?) It seems that if the number of data providers goes  big, the
+> bandwidth
+>  and time for updating metadata may be an issue to consider, correct?
+
+If you presume that every research article produced was placed in an OAI
+repository then it would be millions of new articles (and hence, metadata
+records) every year. Considering that Google has managed to index 3 billion
+web pages (which is considerably more text than an OAI record), I don't
+think we will hit the limits of the underlying technology any time soon.
+
+>  - a globalized metadata repository model for service  provider. If the
+> number
+>  of service providers goes big, that means every service  provider keeps a
+> copy
+>  of all metadata of data provider and is not quite storage 'efficent'.
+>  Moreover, the process of data harvesting may overload data provider.
+
+To answer your second point first, I believe there will be many aggregator
+services, providing a single point of entry to many source data providers -
+as this is a pretty simple mechanism to implement for service providers, who
+are already downloading and storing OAI responses. ARC and CiteBase are both
+current aggregators (i.e. have some kind of OAI export).
+
+The only other alternative (?) to storing a copy of all the metadata is
+distributed search, which is complex, has scaling problems, and places the
+emphasis on processing (expensive) over storage (cheap).
+
+> - if a record has been deleted permanently from the repository,data
+provider
+> needs to keep a 'copy' of deleted data so it can return an attribute --
+> 'delete' (right?). How can a data provider knows if ALL service providers
+> updated the metadata?
+
+I don't think it can (consider Google's cache, and the Internet Archive).
+When storage is cheap, and information is precious, we shouldn't delete
+anything, but just tag things as "deleted" (hopefully with a note to say
+why).
+
+All the best,
+Tim Brody
+
+
+From ldodds@ingenta.com  Mon Dec 17 10:42:53 2001
+From: ldodds@ingenta.com (Leigh Dodds)
+Date: Mon, 17 Dec 2001 10:42:53 -0000
+Subject: [OAI-implementers] OAI -- some issues
+In-Reply-To: <007b01c18695$ee89c560$44110893@library.local>
+Message-ID: <NCBBKFMJCLIMOBIGKFMJGEBFGPAA.ldodds@ingenta.com>
+
+>  - data harvesting (the scheme of harvesting data  periodically, or by some
+>  other ways ). The data harvesting mechanism is working in a  passive mode
+>  (right?) It seems that if the number of data providers goes  big, the
+> bandwidth and time for updating metadata may be an issue to consider, 
+> correct?
+
+A related question is are there any guidelines on how often a service provider 
+could/should harvest content from a particular data provider. As the number 
+of service providers increases, the load on the data provider's servers/bandwidth 
+could get quite large. Seems like there will be a large overhead on the initial 
+harvest that a servicer makes from a given data provider as well 
+(ongoing harvests can be time-delimited).
+
+A means for a data provider to be able to regulate when content should be 
+harvested, (e.g. in the early hours of the morning), or request a frequency for 
+repeated harvests (e.g. no more frequent than every 12 hours) might be 
+something to consider.
+
+Cheers,
+
+L.
+
+
+
+From tdb01r@ecs.soton.ac.uk  Tue Dec 18 00:19:35 2001
+From: tdb01r@ecs.soton.ac.uk (Tim Brody)
+Date: Tue, 18 Dec 2001 00:19:35 -0000
+Subject: [OAI-implementers] OAI-perl tools
+Message-ID: <004d01c18759$ac4581c0$6400a8c0@Advocate>
+
+Dear all,
+
+http://oai-perl.sourceforge.net/
+
+I've been recently working on a completely re-written set of PERL modules
+supporting OAI services/providers, with OAI 1.1 support.
+
+What's new:
+- Uses XML::DOM (note: isn't validating)
+- Designed to be strictly compliant to the OAI protocol
+- Completely OO
+- Much simpler to use than oai-perl v1.0 (can write a ListIdentifiers
+harvester in 10 lines of code)
+- Respects repository retry-after/redirect
+- Transparent OAI resumptionToken flow-control (when harvesting)
+- POD documentation, including examples
+
+Requires:
+- Recent PERL (mileage may vary with pre-5.6 perls)
+- XML::DOM (which requires XML::Parser)
+- XML::Writer
+- LWP::*
+- HTTP::*
+
+Included is a simple command-line OAI browser utility.
+
+Also included is the start of an OAI compliancy script, if this is useful
+I'll try to the find the time to finish it!
+
+As ever, feedback, bugs, comments, are welcome!
+
+All the best,
+Tim Brody
+Open Citation Project
+- Electronics and Computer Science, University of Southampton
+
+

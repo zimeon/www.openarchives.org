@@ -1,0 +1,3183 @@
+<HTML>
+<HEAD>
+<TITLE>Open Archives Initiative - Protocol for Metadata Harvesting - v.2.0</TITLE>
+<style type="text/css" id="internalStyle">>
+  body { color: black; background: white; }
+  code,pre { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+  em { color: red; }
+  table { background: #CCCCCC; }
+  th { font-weight: bold; font-size: 120%; }
+  table.header { background: white; }
+  td.docsubtitle { font-weight: bold; font-size: 150%; }
+</style>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<META content="Open Archives Initiative - Protocol for Metadata Harvesting - v.2.0" name="DC.title"/>
+<META content="Lagoze, Carl" name="DC.creator"/>
+<META content="Van de Sompel, Herbert" name="DC.creator"/>
+<META content="Nelson, Michael" name="DC.creator"/>
+<META content="Warner, Simeon" name="DC.creator"/>
+<META content="2002-06-14" name="DC.date"/>
+<META content="2002-09-13" name="DC.date"/>
+<META content="2002-12-19" name="DC.date"/>
+<META content="2003-02-21" name="DC.date"/>
+<META content="2008-12-02T22:37:00Z" name="DC.date"/>
+</HEAD>
+
+<BODY bgColor="#ffffff"><br />
+
+<table class="header" summary="Logo and heading" border="0" width="100%">
+<tbody>
+<tr>
+<td align="center">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" height="70" width="100"/></a>
+</td>
+<td align="left" width="87%">
+<h1>The Open Archives Initiative Protocol for Metadata Harvesting</h1>
+</td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+<td align="left" width="87%">
+  <h4>Protocol Version 2.0 of 2002-06-14<br />
+  Document Version 2008-12-02T22:37:00Z<br />
+  http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm</h4>
+  <h4>Previous protocol version: 
+  <a href="http://www.openarchives.org/OAI/1.1/openarchivesprotocol.htm">Protocol Version 1.1 of 2001-07-02</a><br />
+  <a href="http://www.openarchives.org/OAI/2.0/migration.htm">Instructions</a> 
+    for migrating from Version 1.1 to 2.0<br />
+  <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation 
+    Guidelines</a></h4>
+</td>
+</tr>
+</tbody> 
+</table>
+
+<p><b>Editors</b></p>
+
+<p><u>The OAI Executive:</u><br /><a href="mailto:lagoze@cs.cornell.edu">Carl 
+Lagoze</a> &lt;<a href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</a> 
+&gt; -- <a href="http://www.cs.cornell.edu/">Cornell University - Computer 
+Science</a> <br /><a href="mailto:herbertv@cs.cornell.edu">Herbert Van de 
+Sompel</a> &lt;<a href="mailto:herbertv@lanl.gov">herbertv@lanl.gov</a> &gt; -- 
+<a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+Library </a><br /><br /><u>From the OAI Technical Committee:</u><br /><a 
+href="mailto:m.l.nelson@larc.nasa.gov">Michael Nelson</a> &lt;<a 
+href="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</a> &gt; -- <a 
+href="http://www.larc.nasa.gov/">NASA - Langley Research Center</a> <br /><a 
+href="mailto:simeon@cs.cornell.edu">Simeon Warner</a> &lt;<a 
+href="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</a> &gt; -- <a 
+href="http://www.cs.cornell.edu/">Cornell University - Computer Science</a></p>
+
+<p><b>Table of Contents</b></p>
+
+<p>
+<a href="#Introduction">1. Introduction</a><br />
+<a href="#DefinitionsConcepts">2. Definitions and Concepts</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#harvester">2.1. Harvester</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#Repository">2.2. Repository</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#Item">2.3. Item</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#UniqueIdentifier">2.4. Unique Identifier</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#Record">2.5. Record</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#DeletedRecords">2.5.1 Deleted records</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#Set">2.6. Set</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#SelectiveHarvesting">2.7. Selective Harvesting</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#SelectiveHarvestingandDatestamps">2.7.1 Selective Harvesting and Datestamps</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#SelectiveHarvestingandSets">2.7.2 Selective Harvesting and Sets</a><br />
+<a href="#ProtocolFeatures">3. Protocol Features</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#HTTPembedding">3.1. HTTP Embedding of OAI-PMH requests</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#HTTPRequestFormat">3.1.1. HTTP Request Format</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#HTTPResponseFormat">3.1.2. HTTP Response Format</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ResponseCompression">3.1.3. Response Compression</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#XMLResponse">3.2. XML Response Format</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#OAIPMHschema">3.2.1. XML Schema for Validating Responses to OAI-PMH Requests</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#Dates">3.3. UTCdatetime</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#DatestampsRequests">3.3.1. UTCdatetime in Protocol Requests</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#DatestampsResponses">3.3.2. UTCdatetime in Protocol Responses</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#MetadataNamespaces">3.4. metadataPrefix and Metadata Schema</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#FlowControl">3.5. Flow Control</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#Idempotency">3.5.1 Idempotency of resumptionTokens</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#ErrorConditions">3.6. Error and Exception Conditions</a><br />
+<a href="#ProtocolMessages">4. Protocol Requests and Responses</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#GetRecord">4.1. GetRecord</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#Identify">4.2. Identify</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#ListIdentifiers">4.3. ListIdentifiers</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#ListMetadataFormats">4.4. ListMetadataFormats</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#ListRecords">4.5. ListRecords</a><br />
+&nbsp;&nbsp;&nbsp;<a href="#ListSets">4.6. ListSets</a><br />
+<a href="#dublincore">5. Dublin Core</a><br />
+<a href="#ImpGuid">6. Implementation Guidelines</a><br />
+<a href="#acknowledgements">Acknowledgements</a><br />
+<a href="#DocumentHistory">Document History</a>
+</p>
+
+
+<h1>1. <a name="Introduction">Introduction</a></h1>
+
+<p>The Open Archives Initiative Protocol for Metadata Harvesting (referred 
+to as the OAI-PMH in the remainder of this document) provides an 
+application-independent interoperability framework based on <i>metadata 
+harvesting</i>. There are two classes of participants in the OAI-PMH 
+framework:</p>
+
+<ul>
+  <li><i>Data Providers</i> administer systems that support the OAI-PMH as a means 
+    of exposing metadata; and</li>
+  <li><i>Service Providers</i> use metadata harvested via the OAI-PMH as a basis 
+   for building value-added services.</li>
+</ul>
+
+<p>In this document the key words "<b>must</b>", "<b>must not</b>", "<b> 
+required</b>", "<b>shall</b>", "<b>shall not</b>", "<b>should</b>", "<b> should 
+not</b>", "<b>recommended</b>", "<b>may</b>", and "<b>optional</b> " in <b>bold 
+face</b> are to be interpreted as described in <a 
+href="http://www.ietf.org/rfc/rfc2119.txt">RFC 2119</a> . An implementation is 
+not conformant if it fails to satisfy one or more of the "<b>must</b>" or 
+"<b>required</b>" level requirements for the protocols it implements.</p>
+<p>This document refers in several places to "community-specific" practices to 
+which individual protocol implementations <b>may</b> conform. These 
+practices are described in an accompanying <a 
+href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation 
+Guidelines</a> document.</p>
+
+<h1>2. <a name="DefinitionsConcepts">Definitions and Concepts</a></h1>
+
+<h2>2.1 <a name="harvester">Harvester</a></h2>
+
+<p><b>A <i>harvester</i> is a client application that issues OAI-PMH 
+requests.</b> A harvester is operated by a service provider as a means of 
+collecting metadata from <a href="#Repository">repositories</a>.</p>
+
+<h2>2.2 <a name="Repository">Repository</a></h2>
+
+<p><b>A <i>repository</i> is a network accessible server that can process the 6 
+OAI-PMH requests in the manner described in this document.</b> A 
+repository is managed by a data provider to expose metadata to 
+<a href="#harvester">harvesters</a>.
+To allow various repository configurations, the OAI-PMH distinguishes 
+between three distinct entities related to the metadata made accessible by the 
+OAI-PMH.</p>
+
+<ul>
+  <li><i><a name="Resource">resource</a></i> - 
+    A resource is the object or "stuff" that metadata is "about". 
+    The nature of a resource, whether it is physical or digital, or whether it 
+    is stored in the repository or is a constituent of another database, is outside 
+    the scope of the OAI-PMH.</li> 
+  <li><i>item</i> - 
+    An <a href="#Item">item</a> is a constituent of a repository from which metadata about 
+    a resource can be disseminated. That metadata may be disseminated on-the-fly 
+    from the associated resource, cross-walked from some canonical form, actually 
+    stored in the repository, etc.</li>
+  <li><i>record</i> - 
+    A <a href="#Record">record</a> is metadata in a specific 
+    <a href="#MetadataNamespaces">metadata format</a>. A record is returned as an 
+    XML-encoded byte stream in response to a protocol request to disseminate a 
+    specific metadata format from a constituent item.</li>
+</ul>
+
+<h2>2.3 <a name="Item">Item</a></h2>
+
+<p><b>An <i>item</i> is a constituent of a repository from which metadata about 
+a resource can be disseminated.</b> An item is conceptually a container that stores 
+or dynamically generates metadata about a single resource in multiple formats, 
+each of which can be harvested as <a href="#Record">records</a> via the OAI-PMH. 
+Each item has an <a href="#UniqueIdentifier">identifier</a> that is unique 
+within the scope of the repository of which it is a constituent.</p> 
+
+<h2>2.4 <a name="UniqueIdentifier">Unique Identifier</a></h2>
+
+<p><b>A <i>unique identifier</i> unambiguously identifies an item within 
+a repository; the unique identifier is used in OAI-PMH requests for extracting 
+metadata from the item.</b> Items <b>may</b> contain metadata in 
+<a href="#MetadataNamespaces">multiple formats</a>. The unique identifier 
+maps to the item, and all possible <a href="#Record">records</a> available 
+from a single item share the same unique identifier.</p>
+
+<p>The format of the unique identifier <b>must</b> correspond to that of the 
+<a href="http://www.ietf.org/rfc/rfc2396.txt?number=2396">URI (Uniform Resource Identifier)</a> 
+syntax. Individual communities <b>may</b> develop community-specific 
+<a href="http://www.ietf.org/rfc/rfc2396.txt?number=2396">URI</a> schemes for coordinated 
+use across repositories. The scheme component of the unique identifiers 
+<b>must not</b> correspond to that of a recognized URI scheme unless the identifiers 
+conform to that scheme. Repositories <b>may</b> implement the 
+<a href="http://www.openarchives.org/OAI/2.0/oai-identifier.xsd"><code>oai-identifier</code></a> 
+syntax described in the accompanying 
+<a href="http://www.openarchives.org/OAI/2.0/guidelines-oai-identifier.htm">Implementation Guidelines</a> 
+document.</p>
+
+<p>Unique identifiers play two roles in the protocol:</p>
+
+<ol>
+  <li><i>Response:</i> Identifiers are returned by both the 
+    <a href="#ListIdentifiers"><code>ListIdentifiers</code></a> and 
+    <a href="#ListRecords"><code>ListRecords</code></a> 
+    requests.</li>
+  <li><i>Request:</i> An identifier, in combination with a 
+    <a href="#MetadataNamespaces"><code>metadataPrefix</code></a>, 
+    is used in the <a href="#GetRecord"><code>GetRecord</code></a> 
+    request as a means of requesting a <a href="#Record">record</a> 
+    in a specific metadata format from an item.</li>
+</ol>
+
+<p>Note that the identifier described here is <i>not</i> that of a 
+<i>resource</i>. The nature of a resource identifier is outside the scope 
+of the OAI-PMH. To facilitate access to the resource associated with 
+harvested metadata, repositories <b>should</b> use an element in metadata 
+records to establish a linkage between the record (and the identifier of its 
+item) and the identifier (URL, URN, DOI, etc.) of the associated resource. The 
+mandatory Dublin Core format provides the <code>identifier</code> element 
+that <b>should</b> be used for this purpose.</p>
+
+<h2>2.5 <a name="Record">Record</a></h2>
+
+<p><b>A record is metadata expressed in a single format. A record is returned in 
+an XML-encoded byte stream in response to an OAI-PMH request for metadata from 
+an item. </b>A record is identified unambiguously by the combination of the <a 
+href="#UniqueIdentifier">unique identifier</a> of the item from which the record 
+is available, the <code>metadataPrefix</code> 
+identifying the metadata format of the record, and the <a href="#Datestamp">datestamp</a> 
+of the record. The XML-encoding of records is organized into the following parts:</p>
+
+<ul>
+  <li><i><a name="header"></a>header</i> -- contains the unique 
+    identifier of the item and properties necessary for selective harvesting. 
+    The header consists of the following parts: 
+    <ul>
+      <li>the <a href="#UniqueIdentifier">unique identifier</a> -- the unique 
+        identifier of an item in a repository;</li>
+      <li>the <a href="#Datestamp">datestamp</a> -- the date of creation, modification or deletion 
+        of the record for the purpose of <a href="#Datestamp">selective harvesting</a>.</li> 
+      <li>zero or more <a href="#Set">setSpec</a> elements -- the 
+        <a href="#Set">set</a> membership of the item for the purpose of 
+        <a href="#SelectiveHarvestingandSets">selective harvesting</a>.</li> 
+      <li>an <b>optional</b> <code>status</code> attribute with a value 
+        of <code>deleted</code> indicates the withdrawal of availability of the specified 
+        metadata format for the item, dependent on the repository support for 
+        <a href="#deletion">deletions</a>.</li>
+    </ul></li>
+  <li><i><a name="metadatapart">metadata</a></i> -- a single manifestation of 
+    the metadata from an item. The OAI-PMH supports items with multiple 
+    manifestations (formats) of metadata. At a minimum, repositories <b>must</b> 
+    be able to return records with metadata expressed in the 
+    <a href="http://purl.org/DC/documents/rec-dces-19990702.htm">Dublin Core</a> 
+    format, without any
+    <a href="http://purl.org/DC/documents/rec/dcmes-qualifiers-20000711.htm">qualification</a>. 
+    Optionally, a repository <b>may</b> also disseminate other formats of metadata. 
+    The specific metadata format of the record to be disseminated is specified 
+    by means of an argument -- the <a href="#MetadataNamespaces"><code>metadataPrefix</code></a> -- in the 
+    <a href="#GetRecord"><code>GetRecord</code></a> or <a href="#ListRecords"><code>ListRecords</code></a> request that 
+    produces the record. The <code><a href="#ListMetadataFormats">ListMetadataFormats</a></code> request returns the 
+    list of all metadata formats available from a repository, or for a specific 
+    item (which can be specified as an argument to the 
+    <code><a href="#ListMetadataFormats">ListMetadataFormats</a></code> request).</li> 
+  <li><i>about</i> -- an <b>optional</b> and repeatable container to hold data 
+    about the metadata part of the record. The contents of an about container <b>must</b> 
+    conform to an XML Schema. Individual implementation communities <b>may</b> 
+    create XML Schema that define specific uses for the contents of about containers. 
+    Two common uses of about containers are: 
+    <ul>
+      <li><i>rights statements:  </i>some repositories may find it desirable 
+        to attach terms of use to the metadata they make available through the 
+        OAI-PMH. No specific set of XML tags for rights expression is defined 
+        by OAI-PMH, but the about container is provided to allow for encapsulating 
+        community-defined rights tags.</li> 
+      <li><i>provenance statements: </i>One suggested use of the about container 
+        is to indicate the provenance of a metadata record, e.g. whether it has 
+        been harvested itself and if so from which repository, and when. An XML 
+        Schema for such a provenance container, as well as some supporting information 
+        is available from the accompanying 
+        <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation Guidelines</a> 
+        document.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>The following example shows an XML-encoding of a <a href="#Record">record</a> 
+and its components:</p>
+
+<ul>
+  <li>the <i>header</i> part with: 
+    <ul>
+      <li>a unique identifier of the item from which the record was disseminated, 
+        equal to oai:arXiv.org:cs/0112017;</li>
+      <li>the datestamp of the record equal to 2002-02-28;</li>
+      <li>two setSpecs, respectively <code>cs</code> and <code>math</code>, 
+        indicating that the item from which the record was disseminated 
+        belongs to two sets of the repository;</li>
+    </ul></li>
+
+  <li>the <i>metadata</i> part. This consists of a single root tag - in 
+    the example the tag <code>oai_dc:dc</code> - with the nested tags belonging to the corresponding 
+    metadata format - in the example, Dublin Core elements such as <code>dc:title</code>. Note that the 
+    root tag within the metadata part includes a number of attributes that are 
+    common to all XML documents that use namespaces and schema 
+    validity:
+    <ul>
+      <li><i>namespace declarations</i> -- the declarations of the 
+        namespaces used within the metadata part, each of which is prefixed with 
+        <code>xmlns</code>. Namespace declarations within the metadata part fall into two categories: 
+        <ul>
+          <li><i>metadata format specific namespace(s)</i> - every metadata part <b>must</b> 
+            include one or more <code>xmlns</code> prefixed attributes that define the correspondence between 
+            a metadata format prefix -- e.g. <code>dc</code> -- and the namespace 
+            URI (as defined by the <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+            namespace specification</a> ) of the respective metadata format. 
+            Some metadata formats employ tags from multiple namespaces, requiring 
+            multiple <code>xmlns</code> prefixed attributes -- in the example, 
+            there are declarations for both <code>oai_dc</code> 
+            and <code>dc</code>.</li> 
+          <li><i>xml schema namespace</i> - every metadata part <b>must</b> include 
+            the attribute <code>xmlns:xsi</code>, the value of which <b>must</b> always be the URI 
+            shown in the example, which is the namespace URI for XML schema.</li>
+        </ul></li>
+      <li><code>xsi:schemaLocation</code> -- the value of which is a URI, URL pair; 
+        the first is the namespace URI (as defined by the 
+        <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+        namespace specification</a>) of the metadata that follows in this part, and 
+        the second is the URL of the XML schema for validation of the metadata that 
+        follows.</li>
+    </ul></li>
+
+  <li>one <i>about</i> part of the record which uses the <code>oai</code>_<code>provenance.xsd</code> schema, 
+    described in the accompanying <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation 
+    Guidelines</a> document, as a means to provide information regarding the 
+    origins of the metadata part of the record. Note that the root element 
+    within each about part has the same structure as the root element in the 
+    metadata part.</li>
+</ul>
+
+<table summary="Record form example" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+      <pre>&lt;header&gt;
+  &lt;identifier&gt;oai:arXiv:cs/0112017&lt;/identifier&gt;
+  &lt;datestamp&gt;2002-02-28&lt;/datestamp&gt;
+  &lt;setSpec&gt;cs&lt;/setSpec&gt;
+  &lt;setSpec&gt;math&lt;/setSpec&gt;
+&lt;/header&gt;
+&lt;metadata&gt;
+ &lt;oai_dc:dc 
+     xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+     xmlns:dc="http://purl.org/dc/elements/1.1/" 
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+     xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+     http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+   &lt;dc:title&gt;Using Structural Metadata to Localize Experience of Digital 
+             Content&lt;/dc:title&gt;
+   &lt;dc:creator&gt;Dushay, Naomi&lt;/dc:creator&gt;
+   &lt;dc:subject&gt;Digital Libraries&lt;/dc:subject&gt;
+   &lt;dc:description&gt;With the increasing technical sophistication of both 
+    information consumers and providers, there is increasing demand for 
+    more meaningful experiences of digital information. We present a 
+    framework that separates digital object experience, or rendering, 
+    from digital object storage and manipulation, so the
+    rendering can be tailored to particular communities of users. 
+   &lt;/dc:description&gt;
+   &lt;dc:description&gt;Comment: 23 pages including 2 appendices, 
+                   8 figures&lt;/dc:description&gt;
+   &lt;dc:date&gt;2001-12-14&lt;/dc:date&gt;
+   &lt;dc:type&gt;e-print&lt;/dc:type&gt;
+   &lt;dc:identifier&gt;http://arXiv.org/abs/cs/0112017&lt;/dc:identifier&gt;
+ &lt;/oai_dc:dc&gt;
+&lt;/metadata&gt;
+&lt;about&gt; 
+  &lt;provenance
+      xmlns="http://www.openarchives.org/OAI/2.0/provenance" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/provenance
+      http://www.openarchives.org/OAI/2.0/provenance.xsd"&gt;
+    &lt;originDescription harvestDate="2002-02-02T14:10:02Z" altered="true"&gt;
+      &lt;baseURL&gt;http://the.oa.org&lt;/baseURL&gt;
+      &lt;identifier&gt;oai:r2:klik001&lt;/identifier&gt;
+      &lt;datestamp&gt;2002-01-01&lt;/datestamp&gt;
+      &lt;metadataNamespace&gt;http://www.openarchives.org/OAI/2.0/oai_dc/&lt;/metadataNamespace&gt;
+    &lt;/originDescription&gt;
+  &lt;/provenance&gt;
+&lt;/about&gt;
+      </pre>
+    </td>
+  </tr>
+  </tbody> 
+</table>
+
+<h3>2.5.1 <a name="DeletedRecords">Deleted records</a><a name="deletion"></a></h3>
+
+<p>If a record is no longer available then it is said to be <i>deleted</i>.
+Repositories <b>must</b> declare one of three levels of support for
+deleted records in the <code>deletedRecord</code> element of the
+<a href="#Identify">Identify</a> response:</p>
+
+<ul>
+  <li><code>no</code> - the repository does not maintain information about deletions. 
+    A repository that indicates this level of support <b>must not</b> reveal 
+    a deleted status in any response.</li>
+  <li><code>persistent</code> - the repository maintains information about deletions 
+    with no time limit. A repository that indicates this level of support 
+    <b>must</b> persistently keep track of the full history of deletions and 
+    consistently reveal the status of a deleted record over time.</li> 
+  <li><code>transient</code> - the repository does not guarantee that a list of 
+    deletions is maintained persistently or consistently. A repository that 
+    indicates this level of support <b>may</b> reveal a deleted status 
+    for records.</li>
+</ul>
+
+<p>If a repository does not keep track of deletions then such records 
+will simply vanish from responses and there will be no way for a 
+harvester to discover deletions through continued incremental harvesting. 
+If a repository does keep track of deletions then the datestamp of 
+the deleted record <b>must</b> be the date and time that it was deleted. 
+Responses to <code><a href="#GetRecord">GetRecord</a></code> request
+for a deleted record <b>must</b> then include a 
+<code><a href="#header">header</a></code> with the attribute 
+<code>status=&quot;deleted&quot;</code>, and <b>must not</b> include 
+<code>metadata</code> or <code>about</code> parts. 
+Similarly, responses to <a href="#SelectiveHarvesting">selective harvesting</a> 
+requests with set membership and date range criteria that include deleted records 
+<b>must</b> include the headers of these records. Incremental harvesting will thus 
+discover deletions from repositories that keep track of them.</p>
+
+<p>Deleted status is a property of individual records. Like a normal 
+record, a deleted record is identified by a 
+<a href="#UniqueIdentifier">unique identifier</a>, a
+<a href="#metadataPrefix">metadataPrefix</a> and a 
+<a href="#Datestamp">datestamp</a>. Other records, with different
+metadataPrefix but the same unique identifier, may remain available for
+the item.</p>
+
+<h2>2.6 <a name="Set">Set</a></h2>
+
+<p><b>A <i>set</i> is an optional construct for grouping items for the purpose 
+of <a href="#SelectiveHarvestingandSets">selective 
+harvesting</a>. </b>Repositories <b>may</b> organize items into 
+sets. Set organization <b>may</b> be flat, i.e. a simple list, or hierarchical. 
+Multiple hierarchies with distinct, independent top-level nodes are allowed. 
+Hierarchical organization of sets is expressed in the syntax of the <code>setSpec</code> parameter as described 
+below. When a repository defines a set organization it <b>must</b> include set 
+membership information in the <a 
+href="#header">headers</a> 
+of items returned in response to the <a 
+href="#ListIdentifiers"><code>ListIdentifiers</code></a> , <a 
+href="#ListRecords"><code>ListRecords</code></a> and <a 
+href="#GetRecord"><code>GetRecord</code></a> requests.</p>
+
+<p>Each node in a set organization of a repository has:</p>
+
+<ul>
+  <li>a <code>setSpec</code> -- a colon [<code>:</code>] separated list 
+    indicating the path from the root of the set hierarchy to the respective 
+    node. Each element in the list is a string consisting of any valid 
+    <a href="http://www.ietf.org/rfc/rfc2396.txt">URI <i>unreserved</i> characters</a>, 
+    which <b>must not</b> contain any colons [<code>:</code>]. Since a <code>setSpec</code> forms a unique 
+    identifier for the set within the repository, it <b>must </b>be unique for 
+    each set. Flat set organizations have only sets with <code>setSpec</code> that do not contain 
+    any colons [<code>:</code>].</li>
+
+  <li>a <code>setName</code> -- a short 
+    human-readable string naming the set.</li> 
+
+  <li>a <code>setDescription</code> -- 
+    an <b>optional</b> and repeatable container that <b>may</b> hold 
+    community-specific XML-encoded data about the set; the accompanying 
+    <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation 
+    Guidelines</a> document provides suggestions regarding the usage of this 
+    container.</li>
+</ul>
+
+<p>The <a name="setHierarchyExample"></a> following is an example of a 
+possible set hierarchy in a repository:</p>
+
+<ul>
+  <li>Institutions 
+    <ul>
+      <li>Oceanside University of Nebraska</li>
+      <li>Valley View University of Florida</li>
+    </ul></li>
+  <li>Subjects 
+    <ul>
+      <li>Existential Kenesiology</li>
+      <li>Quantum Psychology</li>
+    </ul></li>
+</ul>
+
+<p>The following table shows a possible representation of the above set hierarchy 
+by means of <code>setName</code> and respective <code>setSpec</code> values.</p>
+
+<table summary="Set structure example" width="80%" border="2">
+  <tbody>
+  <tr>
+    <td width="38%"><code>setName</code></td>
+    <td width="33%"><code>setSpec</code></td></tr>
+  <tr>
+    <td width="38%">Institutions</td>
+    <td width="33%"><code>institution</code></td></tr>
+
+  <tr>
+    <td width="38%"><p>Oceanside University of Nebraska</p></td>
+    <td width="33%"><code>institution:nebraska</code></td></tr>
+  <tr>
+    <td width="38%"><p>Valley View University of Florida</p></td>
+    <td width="33%"><code>institution:florida</code></td></tr>
+  <tr>
+    <td width="38%">Subjects</td>
+    <td width="33%"><code>subject</code></td></tr>
+  <tr>
+    <td width="38%"><p>Existential Kenesiology</p></td>
+    <td width="33%"><code>subject:kenesiology</code></td></tr>
+  <tr>
+    <td width="38%"><p>Quantum Psychology</p></td>
+    <td width="33%"><code>subject:quantum</code></td></tr>
+  </tbody>
+</table>
+
+<p>An item <b>may</b> be organized in one set, several sets, or no sets at all. 
+In the example above, it is conceivable that an individual item is organized in 
+both <code>subject</code> and <code>institution:florida</code>. A 
+harvester <b>should not</b> assume that harvesting every set in a repository 
+will retrieve metadata from all items in the repository. Items <b>may</b> also 
+be assigned to interior nodes in the set hierarchy.</p>
+
+<p>The actual meaning of a set or of the arrangement of sets in a repository is 
+not defined in the protocol. It is expected that individual communities 
+may formulate well-defined set configurations with perhaps a controlled 
+vocabulary for <code>setNames</code> 
+and <code>setSpec</code> , and may even 
+develop mechanisms for exposing these to harvesters. For example, a group 
+of cooperating e-print archives in a specific discipline may agree on sets that 
+arrange metadata in their repositories based on a controlled subject 
+classification.</p>
+
+<p>A repository's set hierarchy is represented in the protocol via 
+<code>setSpecs</code>. <code><a href="#ListSets">ListSets</a></code>
+returns a list indicating the configuration of sets in a repository. 
+Each member of this list <b>must</b> include a <code>setSpec</code> 
+and a <code>setName</code> and <b>may</b> include a 
+<code>setDescription</code>. <a href="#ListRecords"><code>ListRecords</code></a> 
+and <code><a href="#ListIdentifiers">ListIdentifiers</a></code> requests 
+<b>may</b> include an <b>optional</b> <code>set</code> argument, 
+the value of which is a <code>setSpec</code>, to specify 
+the target set for selective harvesting. In the 
+<a href="#setHierarchyExample">previous example</a> of a set hierarchy, 
+the <code>setSpec</code> <code>institution:nebraska</code> could be used 
+in a request to return only those records that are disseminated from items 
+organized in the set represented by this <code>setSpec</code>.
+Five issues should be noted here:</p>
+
+<ul>
+  <li>If a repository supports sets then it <b>must</b> include set 
+  membership information in response to 
+  <a href="#ListIdentifiers"><code>ListIdentifiers</code></a>,
+  <a href="#ListRecords"><code>ListRecords</code></a> and 
+  <a href="#GetRecord"><code>GetRecord</code></a> requests. 
+  The list of <code>setSpec</code> elements should include only the minimum number 
+  of <code>setSpec</code> elements required to specify the set membership. Using 
+  the previous example of a set hierarchy, the header for an item organized in 
+  set <code>institution:florida</code> should not include <code>setSpec</code> 
+  <code>institution</code> since that is implied by the <code>setSpec</code> 
+  <code>institution:florida</code>.</li> 
+
+  <li>An item <b>may</b> be organized in more than one set; meaning that 
+  different <code>setSpec</code> arguments <b>may</b> return the same record(s).</li> 
+
+  <li>An item need not be organized in any set; meaning that an exhaustive 
+  repetition of <code><a href="#ListRecords">ListRecords</a></code> requests 
+  with all possible <code>setSpecs</code> is not guaranteed to return all records 
+  in the repository. The only guaranteed methods of harvesting all records or headers 
+  are <code><a href="#ListRecords">ListRecords</a></code> or 
+  <code><a href="#ListIdentifiers">ListIdentifiers</a></code>
+  requests with no <code>setSpec</code> argument.</li> 
+
+  <li>When a <code>setSpec</code> is used as an argument, the response 
+  <b>must</b> include records or headers from all items in the set 
+  specified by the <code>setSpec</code> , and all records or headers 
+  from items in sets that are descendant from the specified set. Using the 
+  <a href="#setHierarchyExample">previous example</a> of a set hierarchy, 
+  a <code>setSpec</code> of <code>institution</code> to the 
+  <code><a href="#ListRecords">ListRecords</a></code> request will return 
+  all records from metadata organized within the set with a 
+  <code>setSpec</code> value equal to <code>institution</code> and 
+  within the descendent sets with setSpec values equal to 
+  <code>institution:florida</code> and <code>institution:nebraska</code>.</li>
+
+  <li>The set hierarchy of a repository may include sets that are empty.</li>
+</ul>
+
+<h2>2.7 <a name="SelectiveHarvesting">Selective Harvesting</a><a name="Datestamp"></a></h2>
+
+<p><b><i>Selective harvesting</i> allows harvesters to limit harvest requests 
+to portions of the metadata available from a repository.</b> The OAI-PMH supports 
+selective harvesting with two types of harvesting criteria that <b>may</b> be 
+combined in an OAI-PMH request: <a href="#Datestamp">datestamps</a> and 
+<a href="#SelectiveHarvestingandSets">set membership</a>.</p>
+
+<h3>2.7.1 <a name="SelectiveHarvestingandDatestamps">Selective Harvesting and Datestamps</a></h3>
+
+<p>Harvesters <b>may</b> use <i>datestamps</i> to harvest only those records that 
+were created, deleted, or modified within a specified date range. To specify 
+datestamp-based selective harvesting, datestamps are included as values of the 
+<b>optional</b> arguments, <code>from</code> and <code>until</code>, in the 
+<a href="#ListRecords"><code>ListRecords</code></a> and
+<a href="#ListIdentifiers"><code>ListIdentifiers</code></a> 
+requests. Harvesting is restricted to the range specified by the <code>from</code> 
+and <code>until</code> arguments, extending back 
+to the earliest datestamp if <code>from</code> is omitted, and forward to the most recent datestamp if <code>until</code> is omitted. Range limits 
+are <i>inclusive: </i><code>from</code> specifies a bound that <b>must</b> be interpreted as "greater 
+than or equal to", <code>until</code> specifies a bound that <b>must</b> be interpreted as "less 
+than or equal to". Therefore, the <code>from</code> 
+argument <strong>must</strong> be less than or equal to the <code>until</code> 
+argument. Otherwise, a repository must issue a <code>badArgument</code> 
+error.</p>
+
+<p>Repositories <b>must</b> support selective harvesting with the <code>from</code> 
+and <code>until</code> arguments expressed at day granularity. <b>Optional</b> support 
+for seconds granularity is indicated in the response to the 
+<a href="#Identify"><code>Identify</code></a> 
+request.   The value of datestamps in both requests and responses 
+<b>must</b> comply to the specifications for 
+<a href="#Dates">UTCdatetime</a> in this document. A repository <b>must</b> update 
+the datestamp of a record if a change occurs, the result of which would be a 
+change to the <a href="#metadatapart">metadata part</a> of the XML-encoding 
+of the record. Such changes include, but are not limited to, changes to the 
+metadata of the record, changes to the metadata format of the record, introduction 
+of a new metadata format, termination of support for a metadata format, etc.</p>
+
+<p>Datestamp ranges for selective harvesting are expressed in the <code>from</code> 
+and <code>until</code> arguments that <b>may</b> 
+be submitted in the <a href="#ListRecords"><code>ListRecords</code></a> 
+and <a href="#ListIdentifiers"><code>ListIdentifiers</code></a> requests. 
+Repositories <b>must</b> use the following rules to create a 
+<a href="#ListRecords"><code>ListRecords</code></a> 
+response matching the specified datestamp range according to the type of change 
+that occurred within the repository. The response to a 
+<code><a href="#ListIdentifiers">ListIdentifiers</a></code> request follows the same rules 
+but is abbreviated to include only headers rather than records.</p>
+
+<ul>
+  <li><i>modification</i> - the response <b>must</b> include records, corresponding 
+    to the <a href="#metadataPrefix"><code>metadataPrefix</code></a> argument, 
+    which have changed within the bounds of the <code>from</code> 
+    and <code>until</code> arguments.</li>
+  <li><i>creation</i> - the response <b>must</b> include records, corresponding 
+    to the <a href="#metadataPrefix"><code>metadataPrefix</code></a> argument, 
+    that have become available from the repository within the bounds of the 
+    <code>from</code> and <code>until</code> arguments.</li>
+  <li><i>deletion</i> - depending on the level at which a repository keeps 
+    track of <a href="#DeletedRecords">deleted records</a>, the response 
+    <b>may</b> include headers of records, corresponding to the 
+    <a href="#metadataPrefix"><code>metadataPrefix</code></a> argument, 
+    which have been withdrawn from the repository within the bounds of the 
+    <code>from</code> and <code>until</code> arguments. 
+    Deleted status is indicated via the status attribute of the 
+    <a href="#header">header</a> element and no metadata is included.</li> 
+</ul>
+
+<p>Every <a href="#header">header</a> returned by the <a 
+href="#GetRecord"><code>GetRecord</code></a>, 
+<a href="#ListRecords"><code>ListRecords</code></a> 
+or <a href="#ListIdentifiers"><code>ListIdentifiers</code></a> 
+requests contains a datestamp, which reflects the most recent date and 
+time of the creation, modification, or deletion according to the rules defined 
+above.</p>
+
+<h3>2.7.2 <a name="SelectiveHarvestingandSets">Selective Harvesting and Sets</a></h3>
+
+<p>Harvesters may specify <a href="#Set">set</a> membership 
+as a criteria for selective harvesting. To specify set-based selective 
+harvesting,  a <a href="#Set"><code>setSpec</code></a> is included as the 
+value of the <b>optional</b> <code>set</code> argument to the 
+<a href="#ListRecords"><code>ListRecords</code></a> 
+and <a href="#ListIdentifiers"><code>ListIdentifiers</code></a> 
+requests, thereby specifying selective harvesting of records from items within 
+the respective set.</p>
+
+<p>When a <code>setSpec</code> is used 
+as an argument, the response <b>must</b> include:</p>
+<ul>
+  <li> the records corresponding to the <a href="#metadataPrefix"><code>metadataPrefix</code></a> argument, 
+    or headers thereof in the case of deleted records, available from those items 
+    in the set specified by the <code>setSpec;</code></li>
+  <li>the records corresponding to the <a href="#metadataPrefix"><code>metadataPrefix</code></a> argument, 
+    or headers thereof in the case of deleted records, available from those items 
+    in sets that are descendant from the specified set.</li>
+</ul>
+
+<h1>3. <a name="ProtocolFeatures">Protocol Features</a></h1>
+
+<h2>3.1 <a name="HTTPembedding">HTTP Embedding of OAI-PMH requests</a></h2>
+
+OAI-PMH <a href="#ProtocolMessages">requests</a> 
+are expressed as <a href="http://www.ietf.org/rfc/rfc2616.txt">HTTP</a> 
+requests. A typical implementation uses a standard Web server that is configured 
+to dispatch OAI-PMH requests to the software handling these requests. The 
+remainder of this section describes the aspects of the protocol that are 
+specific to the HTTP embedding. 
+
+<h3>3.1.1 <a name="HTTPRequestFormat">HTTP Request Format</a></h3>
+
+<p>OAI-PMH requests <b>must</b> be submitted using either the HTTP <code>GET</code> or 
+<code>POST</code> methods. <code>POST</code> has the advantage of 
+imposing no limitations on the length of arguments. Repositories <b>must</b> 
+support both the <code>GET</code> and 
+<code>POST</code> methods. There is a 
+single base URL for all requests. The base URL specifies the Internet host and 
+port, and <b>optionally</b> a path, of an HTTP server acting as a 
+repository. Repositories expose their base URL as the value of the 
+<code>baseURL</code> element in the <a 
+href="#Identify"><code>Identify</code></a> response. Note that 
+the composition of any path is determined by the configuration of the 
+repository's HTTP server.</p> 
+
+<p>In addition to the base URL, all requests consist of a list of <i>keyword 
+arguments</i>, which take the form of <code>key=value</code> pairs. Arguments may appear in any order and multiple 
+arguments <b>must</b> be separated by ampersands [<code>&amp;</code>]. Each OAI-PMH 
+request <b>must</b> have at least one <code>key=value</code> pair that specifies the OAI-PMH request issued by the 
+harvester:</p>
+
+<ul>
+  <li><code>key</code> is the string <code>'verb'</code>;</li>
+  <li><code>value</code> is one of the defined 
+    <a href="#ProtocolMessages">OAI-PMH requests</a>.</li>
+</ul>
+
+<p>The number and nature of additional <code>key=value</code> pairs depends on the arguments for the individual 
+request.</p>
+
+<h4>3.1.1.1 <a name="HTTPget">Encoding an OAI-PMH request in a URL for an HTTP GET</a></h4>
+
+<p>URLs for <code>GET</code> requests have keyword arguments appended to 
+the base URL, separated from it by a question mark [<code>?</code>]. 
+For example, the URL of a <code><a href="#GetRecord">GetRecord</a></code>
+request to a repository with base URL that is <code>http://an.oa.org/OAI-script</code> 
+might be:</p> 
+
+<p><code>http://an.oa.org/OAI-script?<br />  
+verb=GetRecord&amp;identifier=oai:arXiv.org:hep-th/9901001&amp;metadataPrefix=oai_dc</code></p> 
+
+<p>However, since special characters in URIs <b>must</b> be <a href="#SpecialCharacters">encoded</a>, 
+the correct form of the above <code>GET</code> request URL is:</p>
+
+<p><code>http://an.oa.org/OAI-script?<br />  
+verb=GetRecord&amp;identifier=oai%3AarXiv.org%3Ahep-th%2F9901001&amp;metadataPrefix=oai_dc</code></p>
+
+<h4>3.1.1.2 <a name="HTTPpost">Encoding an OAI-PMH request in an HTTP POST</a></h4>
+
+<p>Keyword arguments are carried in the message body of the HTTP <code>POST</code>. The 
+<code>Content-Type</code> of the request 
+<b>must</b> be <code>application/x-www-form-urlencoded</code>. For example, submitting the 
+same request as above using the <code>POST</code> method would use just the base URL as the URL, with the 
+format of the <code>POST</code> being:</p>
+
+
+<p><code>POST http://an.oa.org/OAI-script HTTP/1.0 <br />
+Content-Length: 82<br />
+Content-Type: application/x-www-form-urlencoded<br /><br />
+verb=GetRecord&amp;identifier=oai%3AarXiv.org%3Ahep-th%2F9901001&amp;metadataPrefix=oai_dc</code></p>
+
+<h4>3.1.1.3 <a name="SpecialCharacters">Encoding of special characters in keyword arguments of OAI-PMH requests</a></h4>
+
+<p>The <a href="http://www.ietf.org/rfc/rfc2396.txt">syntax rules for URIs</a> 
+restrict a few characters to special roles in certain contexts, and require that 
+if these characters are used in any other way that they <b>must</b> be written 
+as an escape sequence, i.e. a percent sign followed by the character code in 
+hexadecimal. The reserved characters include:</p>
+
+<table summary="Special character encodings" width="80%" border="2">
+  <tbody>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><i>Character</i></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center"><i>URI Role</i></DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><i>Escape Sequence</i></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><code>/</code></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Path Component Separator</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%2F</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><code>?</code></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Query Component Separator</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%3F</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><code>#</code></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Fragment Identifier</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%23</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><code>=</code></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Name/Value Separator</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%3D</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><code>&amp;</code></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Argument Separator in Query Component</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%26</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><code>:</code></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Host Port Separator</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%3A</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center"><code>;</code></DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Authority Namespace Separator</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%3B</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center">&nbsp;</DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Space Character</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%20</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center">%</DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Escape Indicator</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%25</code></DIV></td></tr>
+  <tr>
+    <td align="center" width="14%">
+      <DIV align="center">+</DIV></td>
+    <td align="center" width="65%">
+      <DIV align="center">Escaped Space</DIV></td>
+    <td align="center" width="21%">
+      <DIV align="center"><code>%2B</code></DIV></td></tr>
+</tbody>
+</table>
+
+<p>As a result, these characters <b>must</b> be represented by their respective 
+escape sequence if their use does not correspond to their established <i>URI 
+role</i>. In case of the OAI-PMH, this means that the reserved characters 
+<b>must</b> be encoded when they appear in the <code>value</code> 
+part of the <code>key=value</code> pairs of the request. 
+This applies for both the <code>GET</code> and <code>POST</code> 
+encoding of the OAI-PMH requests.</p>
+
+<h3>3.1.2 <a name="HTTPResponseFormat">HTTP Response Format</a></h3>
+
+<p>Responses to requests are formatted as HTTP responses, with appropriate HTTP header fields.</p> 
+
+<h4>3.1.2.1 <a name="MIMETypes">Content-Type</a></h4>
+
+<p>The <code>Content-Type</code> returned for all OAI-PMH requests 
+<b>must</b> be <code>text/xml</code>.</p>
+
+<h4>3.1.2.2 <a name="StatusCodes">Status-Code</a></h4>
+
+<p><a href="#ErrorConditions">OAI-PMH errors</a> are distinguished from HTTP 
+<code>Status-Codes</code>. Since OAI-PMH uses HTTP as a transport layer, 
+servers implementing OAI-PMH <b>must</b> conform to 
+<a href="http://www.ietf.org/rfc/rfc2616.txt">HTTP status code definitions</a> 
+and report relevant HTTP transport layer status via those <code>Status-Codes</code>. 
+OAI-PMH repositories <b>may</b> employ HTTP <code>Status-Codes</code> in addition 
+to "<code>200 OK</code>". For instance, the following <code>Status-Codes</code> 
+may be useful for load balancing in OAI repositories:</p> 
+
+<ul>
+  <li><code>302</code> - Allows the repository to temporarily redirect 
+    an OAI-PMH request to another repository. The URI of the temporary repository 
+    <b>should</b> be given by the <code>Location</code> field in the HTTP 
+    response.</li> 
+  <li><code>503</code> - Service unavailable, a <code>Retry-After</code> period 
+    is specified. Harvesters <b>should</b> wait this period before attempting 
+    another OAI-PMH request.</li>
+</ul>
+
+<h3>3.1.3 <a name="ResponseCompression">Response Compression</a></h3>
+
+<p>Response compression is <b>optional</b> in OAI-PMH. Compression of 
+responses to OAI-PMH requests is handled at the level of HTTP, with the 
+following restrictions:</p>
+
+<ul>
+  <li>Harvesters <b>may</b> include an <code>Accept-Encoding</code> header in their OAI-PMH 
+    requests to specify response compression preferences.</li> 
+  <li>Harvesters that do not include an <code>Accept-Encoding</code> header in their requests 
+    will always receive uncompressed responses. </li>
+  <li>When a request includes an <code>Accept-Encoding</code> header the list of encodings <b>must</b> 
+    include the <code>identity</code> (no compression) encoding (with a non-zero <code>qvalue</code>).</li> 
+  <li>Repositories <b>must</b> support the HTTP <code>identity</code> encoding.</li>
+  <li>Repositories <b>should</b> express the encodings they support in addition 
+    to <code>identity</code> by including <code>compression</code> elements in 
+    the <code><a href="#Identify">Identify</a></code> response.</li>
+</ul>
+
+<h2>3.2 <a name="XMLResponse">XML Response Format</a></h2>
+
+<p>All responses to OAI-PMH requests <b>must</b> be well-formed XML instance 
+documents. Encoding of the XML <b>must</b> use the UTF-8 representation of 
+Unicode. Character references, rather than entity references, <b>must</b> 
+be used. Character references allow XML responses to be treated as stand-alone 
+documents that can be manipulated without dependency on entity declarations 
+external to the document.</p>
+
+<p>The XML data for all responses to OAI-PMH requests <b>must</b> validate 
+against the XML Schema shown at the <a 
+href="#OAIPMHschema">end 
+of this section</a> . As can be seen from that schema, responses to OAI-PMH 
+requests have the following common markup:</p>
+
+<ol>
+  <li>The first tag output is an XML declaration where the <TT>version</TT> is 
+    always <code>1.0</code> and the <TT>encoding</TT> 
+    is always <code>UTF-8</code>, eg: <code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</code></li>
+ 
+  <li>The remaining content is enclosed in a root element with the name OAI-PMH. 
+    This element <b>must</b> have three attributes that define the XML namespaces 
+    used in the remainder of the response and the location of the validating schema:
+    <ul>
+     <li><code>xmlns</code> -- the value of which <b>must</b> be the namespace URI 
+       of the OAI-PMH (<code>http://www.openarchives.org/OAI/2.0/</code>).</li>
+     <li><code>xmlns:xsi</code> -- the value of which <b>must</b> be the namespace 
+       URI for XML schema (<code>http://www.w3.org/2001/XMLSchema-instance</code>).</li> 
+    <li><code>xsi:schemaLocation</code> -- is a pair, the first part of which is 
+       the namespace URI (as defined by the 
+       <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+       namespace specification</a> ) of the OAI-PMH (<code>http://www.openarchives.org/OAI/2.0/</code>), 
+       and the second part is the URL of the XML schema for validation of the response 
+       (<code>http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd</code>).</li>
+    </ul></li>
+
+  <li>For all responses, the first two children of the root element are: 
+    <ul>
+      <li><code>responseDate</code> -- 
+        a <a href="#Dates">UTCdatetime</a> indicating the time and date that the response 
+        was sent. This <b>must</b> be expressed in UTC.</li> 
+      <li><code>request</code> -- 
+        indicating the protocol request that generated this response. 
+        The rules for generating the <code>request</code> element are as follows: 
+        <ul>
+          <li>The content of the <code>request</code> 
+            element <b>must</b> always be the <a href="#HTTPRequestFormat">base 
+            URL</a> of the protocol request;</li> 
+          <li>The only valid attributes for the <code>request</code> 
+            element are the <code>keys</code> of the <code>key=value</code> 
+            pairs of protocol request. The attribute values must be the corresponding 
+            <code>values</code> of those <code>key=value</code> pairs;</li>
+          <li>In cases where the request that generated this response did not 
+            result in an <a href="#ErrorConditions">error or exception condition</a>, the attributes 
+            and attribute values of the <code>request</code> 
+            element <b>must</b> match the <code>key=value</code> 
+            pairs of the protocol request;</li>
+          <li>In cases where the request that generated this response resulted 
+            in <code>a badVerb</code> or <code>badArgument</code> 
+            <a href="#ErrorConditions">error condition</a>, the repository <b>must</b> 
+            return the <a href="#HTTPRequestFormat">base URL</a> of the protocol 
+            request only. Attributes <b>must not</b> be provided in these cases.</li>
+        </ul></li>
+    </ul></li>
+  <li>The third child of the root element is either: 
+    <ul>
+      <li>an <code>error</code> element that <b>must</b> be used in case of an 
+        <a href="#ErrorConditions">error or exception condition</a>;</li> 
+      <li>an element with the same name as the verb of the respective OAI-PMH 
+        request.</li>
+    </ul></li>
+</ol>
+
+<p>An example of a successful reply to the <code>GetRecord</code> request shown 
+<a href="#HTTPget">above</a> is of the form:</p>
+
+<table summary="Example form of GetRecord request" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+      <pre>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+ &lt;responseDate&gt;2002-05-01T19:20:30Z&lt;/responseDate&gt;
+ &lt;request verb="GetRecord" identifier="oai:arXiv.org:hep-th/9901001"
+          metadataPrefix="oai_dc"&gt;http://an.oa.org/OAI-script&lt;/request&gt; 
+ &lt;GetRecord&gt;
+  &lt;record&gt;
+      ...
+  &lt;/record&gt;
+ &lt;/GetRecord&gt; 
+&lt;/OAI-PMH&gt;      </pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h3>3.2.1 <a name="OAIPMHschema">XML Schema for Validating Responses to OAI-PMH Requests</a></h3>
+
+<table summary="OAI-PMH schema" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;schema targetNamespace="http://www.openarchives.org/OAI/2.0/"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:oai="http://www.openarchives.org/OAI/2.0/"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"&gt;
+
+  &lt;annotation&gt;
+    &lt;documentation&gt;
+    XML Schema which can be used to validate replies to all OAI-PMH 
+    v2.0 requests. Herbert Van de Sompel, 2002-05-13.
+    Validated with XML Spy v.4.3 on 2002-05-13.
+    Validated with XSV 1.203.2.45/1.106.2.22 on 2002-05-13.
+    Added definition of protocolVersionType instead of using anonymous 
+    type. No change of function. Simeon Warner, 2004-03-29.
+    Tightened definition of UTCdatetimeType to enforce the restriction 
+    to UTC Z notation. Simeon Warner, 2004-09-14.
+    Corrected pattern matches for setSpecType and metedataPrefixType
+    to agree with protocol specification. Simeon Warner, 2004-10-12.
+    $Date: 2004/10/12 15:20:29 $
+    &lt;/documentation&gt;
+  &lt;/annotation&gt;
+
+  &lt;element name="OAI-PMH" type="oai:OAI-PMHtype"/&gt;
+
+  &lt;complexType name="OAI-PMHtype"&gt;
+    &lt;sequence&gt;
+      &lt;element name="responseDate" type="dateTime"/&gt;
+      &lt;element name="request" type="oai:requestType"/&gt;
+      &lt;choice&gt;
+        &lt;element name="error" type="oai:OAI-PMHerrorType" maxOccurs="unbounded"/&gt;
+        &lt;element name="Identify" type="oai:IdentifyType"/&gt;
+        &lt;element name="ListMetadataFormats" type="oai:ListMetadataFormatsType"/&gt;
+        &lt;element name="ListSets" type="oai:ListSetsType"/&gt;
+        &lt;element name="GetRecord" type="oai:GetRecordType"/&gt;
+        &lt;element name="ListIdentifiers" type="oai:ListIdentifiersType"/&gt;
+        &lt;element name="ListRecords" type="oai:ListRecordsType"/&gt;
+      &lt;/choice&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="requestType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;Define requestType, indicating the protocol request that 
+      led to the response. Element content is BASE-URL, attributes are arguments 
+      of protocol request, attribute-values are values of arguments of protocol 
+      request&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;simpleContent&gt;
+      &lt;extension base="anyURI"&gt;
+        &lt;attribute name="verb" type="oai:verbType" use="optional"/&gt;
+        &lt;attribute name="identifier" type="oai:identifierType" use="optional"/&gt;
+        &lt;attribute name="metadataPrefix" type="oai:metadataPrefixType" use="optional"/&gt;
+        &lt;attribute name="from" type="oai:UTCdatetimeType" use="optional"/&gt;
+        &lt;attribute name="until" type="oai:UTCdatetimeType" use="optional"/&gt;
+        &lt;attribute name="set" type="oai:setSpecType" use="optional"/&gt;
+        &lt;attribute name="resumptionToken" type="string" use="optional"/&gt;
+      &lt;/extension&gt;
+    &lt;/simpleContent&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="verbType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="Identify"/&gt;
+      &lt;enumeration value="ListMetadataFormats"/&gt;
+      &lt;enumeration value="ListSets"/&gt;
+      &lt;enumeration value="GetRecord"/&gt;
+      &lt;enumeration value="ListIdentifiers"/&gt;
+      &lt;enumeration value="ListRecords"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;!-- define OAI-PMH error conditions --&gt;
+  &lt;!-- =============================== --&gt;
+
+  &lt;complexType name="OAI-PMHerrorType"&gt;
+    &lt;simpleContent&gt;
+      &lt;extension base="string"&gt;
+        &lt;attribute name="code" type="oai:OAI-PMHerrorcodeType" use="required"/&gt;
+      &lt;/extension&gt;
+    &lt;/simpleContent&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="OAI-PMHerrorcodeType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="cannotDisseminateFormat"/&gt;
+      &lt;enumeration value="idDoesNotExist"/&gt;
+      &lt;enumeration value="badArgument"/&gt;
+      &lt;enumeration value="badVerb"/&gt;
+      &lt;enumeration value="noMetadataFormats"/&gt;
+      &lt;enumeration value="noRecordsMatch"/&gt;
+      &lt;enumeration value="badResumptionToken"/&gt;
+      &lt;enumeration value="noSetHierarchy"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;!-- define OAI-PMH verb containers --&gt;
+  &lt;!-- ============================== --&gt;
+
+  &lt;complexType name="IdentifyType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="repositoryName" type="string"/&gt;
+      &lt;element name="baseURL" type="anyURI"/&gt;
+      &lt;element name="protocolVersion" type="oai:protocolVersionType"/&gt;
+      &lt;element name="adminEmail" type="oai:emailType" maxOccurs="unbounded"/&gt;
+      &lt;element name="earliestDatestamp" type="oai:UTCdatetimeType"/&gt;
+      &lt;element name="deletedRecord" type="oai:deletedRecordType"/&gt;
+      &lt;element name="granularity" type="oai:granularityType"/&gt;
+      &lt;element name="compression" type="string" minOccurs="0" maxOccurs="unbounded"/&gt;
+      &lt;element name="description" type="oai:descriptionType" 
+               minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="ListMetadataFormatsType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="metadataFormat" type="oai:metadataFormatType" maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="ListSetsType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="set" type="oai:setType" maxOccurs="unbounded"/&gt;
+      &lt;element name="resumptionToken" type="oai:resumptionTokenType" minOccurs="0"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="GetRecordType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="record" type="oai:recordType"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="ListRecordsType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="record" type="oai:recordType" maxOccurs="unbounded"/&gt;
+      &lt;element name="resumptionToken" type="oai:resumptionTokenType" minOccurs="0"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="ListIdentifiersType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="header" type="oai:headerType" maxOccurs="unbounded"/&gt;
+      &lt;element name="resumptionToken" type="oai:resumptionTokenType" minOccurs="0"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;!-- define basic types used in replies to 
+       GetRecord, ListRecords, ListIdentifiers --&gt;
+  &lt;!-- ======================================= --&gt;
+
+  &lt;complexType name="recordType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;A record has a header, a metadata part, and
+        an optional about container&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;sequence&gt;
+      &lt;element name="header" type="oai:headerType"/&gt;
+      &lt;element name="metadata" type="oai:metadataType" minOccurs="0"/&gt;
+      &lt;element name="about" type="oai:aboutType" minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="headerType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;A header has a unique identifier, a datestamp,
+        and setSpec(s) in case the item from which
+        the record is disseminated belongs to set(s).
+        the header can carry a deleted status indicating
+        that the record is deleted.&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;sequence&gt;
+      &lt;element name="identifier" type="oai:identifierType"/&gt;
+      &lt;element name="datestamp" type="oai:UTCdatetimeType"/&gt;
+      &lt;element name="setSpec" type="oai:setSpecType" minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+    &lt;attribute name="status" type="oai:statusType" use="optional"/&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="identifierType"&gt;
+    &lt;restriction base="anyURI"/&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="statusType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="deleted"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;complexType name="metadataType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;Metadata must be expressed in XML that complies
+       with another XML Schema (namespace=#other). Metadata must be 
+       explicitly qualified in the response.&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;sequence&gt;
+      &lt;any namespace="##other" processContents="strict"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="aboutType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;Data "about" the record must be expressed in XML
+      that is compliant with an XML Schema defined by a community.&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;sequence&gt;
+      &lt;any namespace="##other" processContents="strict"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="resumptionTokenType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;A resumptionToken may have 3 optional attributes
+       and can be used in ListSets, ListIdentifiers, ListRecords
+       responses.&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;simpleContent&gt;
+      &lt;extension base="string"&gt;
+        &lt;attribute name="expirationDate" type="dateTime" use="optional"/&gt;
+        &lt;attribute name="completeListSize" type="positiveInteger" use="optional"/&gt;
+        &lt;attribute name="cursor" type="nonNegativeInteger" use="optional"/&gt;
+      &lt;/extension&gt;
+    &lt;/simpleContent&gt;
+  &lt;/complexType&gt;
+
+  &lt;complexType name="descriptionType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;The descriptionType is used for the description
+      element in Identify and for setDescription element in ListSets.
+      Content must be compliant with an XML Schema defined by a 
+      community.&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;sequence&gt;
+      &lt;any namespace="##other" processContents="strict"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="UTCdatetimeType"&gt;
+    &lt;annotation&gt;
+      &lt;documentation&gt;Datestamps are to either day (type date)
+      or to seconds granularity (type oai:UTCdateTimeZType)&lt;/documentation&gt;
+    &lt;/annotation&gt;
+    &lt;union memberTypes="date oai:UTCdateTimeZType"/&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="UTCdateTimeZType"&gt;
+    &lt;restriction base="dateTime"&gt;
+      &lt;pattern value=".*Z"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;!-- define types used for Identify verb only --&gt;
+  &lt;!-- ======================================== --&gt;
+
+  &lt;simpleType name="protocolVersionType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="2.0"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="emailType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;pattern value="\S+@(\S+\.)+\S+"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="deletedRecordType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="no"/&gt;
+      &lt;enumeration value="persistent"/&gt;
+      &lt;enumeration value="transient"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;simpleType name="granularityType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;enumeration value="YYYY-MM-DD"/&gt;
+      &lt;enumeration value="YYYY-MM-DDThh:mm:ssZ"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;!-- define types used for ListMetadataFormats verb only --&gt;
+  &lt;!-- =================================================== --&gt;
+
+  &lt;complexType name="metadataFormatType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="metadataPrefix" type="oai:metadataPrefixType"/&gt;
+      &lt;element name="schema" type="anyURI"/&gt;
+      &lt;element name="metadataNamespace" type="anyURI"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="metadataPrefixType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;pattern value="[A-Za-z0-9\-_\.!~\*'\(\)]+"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+  &lt;!-- define types used for ListSets verb --&gt;
+  &lt;!-- =================================== --&gt;
+
+  &lt;complexType name="setType"&gt;
+    &lt;sequence&gt;
+      &lt;element name="setSpec" type="oai:setSpecType"/&gt;
+      &lt;element name="setName" type="string"/&gt;
+      &lt;element name="setDescription" type="oai:descriptionType" 
+               minOccurs="0" maxOccurs="unbounded"/&gt;
+    &lt;/sequence&gt;
+  &lt;/complexType&gt;
+
+  &lt;simpleType name="setSpecType"&gt;
+    &lt;restriction base="string"&gt;
+      &lt;pattern value="([A-Za-z0-9\-_\.!~\*'\(\)])+(:[A-Za-z0-9\-_\.!~\*'\(\)]+)*"/&gt;
+    &lt;/restriction&gt;
+  &lt;/simpleType&gt;
+
+&lt;/schema&gt;
+</pre>
+    </td>
+  </tr>
+  <tr> 
+    <td width="100%">This Schema is available at 
+    <a href="http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd</a></td>
+  </tr>
+  </tbody> 
+</table>
+
+<h2>3.3 <a name="Dates">UTCdatetime</a></h2>
+
+<p>Dates and times are uniformly encoded using 
+<a href="http://www.w3.org/TR/NOTE-datetime">ISO8601</a> and are expressed in UTC 
+throughout the protocol. When time is included, the special UTC designator 
+("<code>Z</code>")<b> must</b> be used.  UTC 
+is implied for dates although no timezone designator is specified. For example, 
+<code>1957-03-20T20:30:00Z</code> is UTC 8:30:00 PM on March 20th 1957. UTCdatetime 
+is used in both protocol requests and protocol replies, in the way described 
+in the following sections.</p>
+
+<h3>3.3.1 <a name="DatestampsRequests">UTCdatetime in Protocol Requests</a></h3>
+
+<p><a href="#Datestamp">Datestamps</a> used as values of the <b>optional</b> arguments 
+<code>from</code> and <code>until</code> in the 
+<code><a href="#ListIdentifiers">ListIdentifiers</a></code> and 
+<code><a href="#ListRecords">ListRecords</a></code> requests are encoded using 
+<a href="http://www.w3.org/TR/NOTE-datetime">ISO8601</a> and are expressed in UTC. 
+These arguments are used to specify 
+<a href="#Datestamp">datestamp-based selective harvesting</a>. These arguments 
+support the &quot;Complete date&quot; and the &quot;Complete date plus hours, 
+minutes and seconds&quot; granularities defined in ISO8601. The legitimate formats 
+are <code>YYYY-MM-DD</code> and <code>YYYY-MM-DDThh:mm:ssZ.</code> Both arguments 
+<b>must</b> have the same granularity. All repositories <b>must</b> support 
+<code>YYYY-MM-DD</code>. A repository that supports <code>YYYY-MM-DDThh:mm:ssZ</code> 
+<b>should</b> indicate so in the <code><a href="#Identify">Identify</a></code> 
+response. A request by a harvester with finer granularity than that supported 
+by a repository <b>must</b> produce an <a href="#ErrorConditions">error</a>.</p>
+
+<h3>3.3.2 <a name="DatestampsResponses">UTCdatetime in Protocol Responses</a></h3>
+
+<p><a href="#Datestamp">Datestamps</a> appear in the headers of records that 
+are returned in response to <a href="#ListIdentifiers"><code>ListIdentifiers</code></a> , 
+<code><a href="#GetRecord">GetRecord</a></code> and 
+<code><a href="#ListRecords">ListRecords</a></code> requests. These 
+<a href="#Datestamp">datestamps</a> are encoded using 
+<a href="http://www.w3.org/TR/NOTE-datetime">ISO8601</a> 
+and are expressed in UTC; they <b>must</b> be expressed in the finest granularity 
+supported by the repository. The value of the datestamp must correspond 
+to the rules for <a href="#Datestamp">datestamp-based selective harvesting</a>.</p>
+
+<p>Each protocol response includes a <code>responseDate</code> element, which 
+<b>must</b> be the time and date of the response in UTC. This is encoded using 
+the "Complete date plus hours, minutes, and seconds" variant of 
+<a href="http://www.w3.org/TR/NOTE-datetime">ISO8601</a>. 
+This format is <code>YYYY-MM-DDThh:mm:ssZ</code>.</p>
+
+<p>A <code><a href="#FlowControl">resumptionToken</a></code> in a protocol 
+reply <b>may</b> include an <b>optional</b> argument <code>expirationDate</code>, 
+which is expressed in UTC. This is encoded using the "Complete date plus hours, minutes, and 
+seconds" variant of <a href="http://www.w3.org/TR/NOTE-datetime">ISO8601</a>. 
+This format is <code>YYYY-MM-DDThh:mm:ssZ</code>.</p>
+
+<h2>3.4 <a name="MetadataNamespaces">metadataPrefix and Metadata Schema</a></h2>
+
+<p>OAI-PMH supports the dissemination of records in multiple metadata formats 
+from a repository. The 
+<code><a href="#ListMetadataFormats">ListMetadataFormats</a></code> request 
+returns the list of all metadata formats available from a repository, each of 
+which has the following properties:</p>
+<ul>
+  <li>The <i><a name="metadataPrefix"></a></i><code>metadataPrefix</code> - a string 
+    to specify the metadata format in OAI-PMH requests issued to the repository. 
+    <code>metadataPrefix</code> consists of any valid 
+    <a href="http://www.ietf.org/rfc/rfc2396.txt">URI <i>unreserved</i> characters</a>.
+    <code>metadataPrefix</code> arguments are used 
+    in <a href="#ListRecords"><code>ListRecords</code></a>, 
+    <a href="#ListIdentifiers"><code>ListIdentifiers</code></a>, and 
+    <code><a href="#GetRecord">GetRecord</a></code> requests to retrieve records, or the headers 
+    of records that include metadata in the format specified by the <code>metadataPrefix</code>;</li>
+  
+  <li>The <i><a name="metadataSchema"></a>metadata schema</i> URL - the URL of an 
+    <a href="http://www.w3.org/XML/Schema">XML schema</a> to test validity of metadata 
+    expressed according to the format;</li>
+  <li>The <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML namespace</a> 
+    URI that is a global identifier of the metadata format. </li>
+</ul>
+
+<p>The metadata in each <a href="#Record">record</a> returned by 
+<code><a href="#ListRecords">ListRecords</a></code> and 
+<code><a href="#GetRecord">GetRecord</a></code> <b>must</b> comply 
+with the conventions of the 
+<a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML namespace 
+specification</a>. This means that the root element of the metadata part <b>must</b> 
+contain an <code>xmlns</code> attribute, the value of which is the XML namespace URI of 
+the metadata format. The root element <b>must</b> also contain an 
+<code>xsi:schemaLocation</code> attribute that has a value that includes the URL 
+of the XML schema for validation of the metadata. This URL <b>must</b> match the 
+URL of the metadata schema for the <code>metadataPrefix</code> included as an 
+argument to the <code><a href="#ListRecords">ListRecords</a></code> or 
+<code><a href="#GetRecord">GetRecord</a></code> request (the mapping from 
+<code>metadataPrefix</code> to metadata schema is defined by the repository's 
+response to the <code><a href="#ListMetadataFormats">ListMetadataFormats</a></code> 
+request).</p>
+
+<p>For purposes of interoperability, repositories <b>must</b> disseminate 
+<a href="http://purl.org/DC/documents/rec-dces-19990702.htm">Dublin Core</a>, 
+without any <a href="http://purl.org/DC/documents/rec/dcmes-qualifiers-20000711.htm">qualification</a>. 
+Therefore, the protocol reserves the <code>metadataPrefix</code> `<code>oai_dc</code>', 
+and the URL of a metadata schema for unqualified Dublin Core, which is 
+<a href="http://www.openarchives.org/OAI/2.0/oai_dc.xsd">http://www.openarchives.org/OAI/2.0/oai_dc.xsd</a>. 
+The corresponding <a href="http://www.w3.org/TR/1999/REC-xml-names-19990114/Overview.html">XML 
+namespace</a> URI is http://www.openarchives.org/OAI/2.0/oai_dc/.</p>
+
+<p>The <code>metadataPrefix</code> `<code>all</code>' is reserved for future 
+use. Implementations <b>should not</b> use this <code>metadataPrefix</code>.</p>
+
+<p>Communities <b>should</b> adopt guidelines for sharing of <code>metadataPrefixes,</code> 
+metadata schema and XML namespace URI's of metadata formats. Such guidelines are outside 
+of the scope of the OAI-PMH. The accompanying 
+<a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation Guidelines</a> 
+document provides some sample XML Schema and instance documents for common metadata 
+formats such as <a href="http://www.loc.gov/standards/marcxml/">MARC</a> and 
+<a href="http://www.ietf.org/rfc/rfc1807.txt?number=1807">RFC 1807</a>.</p>
+
+<h2>3.5 <a name="FlowControl">Flow Control</a></h2>
+
+<p>A number of OAI-PMH requests return a <i>list </i>of discrete entities: 
+<code><a href="#ListRecords">ListRecords</a></code> returns a list of 
+<a href="#Record">records</a>, 
+<code><a href="#ListIdentifiers">ListIdentifiers</a></code> returns a list of 
+<a href="#header">headers</a>, and <code><a href="#ListSets">ListSets</a></code>
+returns a list of <a href="#Set">sets</a>. 
+Collectively these requests are called <i>list requests</i>. In some 
+cases, these lists may be large and it may be practical to partition them among 
+a series of requests and responses. This partitioning is accomplished as 
+follows:</p>
+
+<ul>
+  <li>A repository replies to a request with an <i>incomplete list</i> and a 
+  <code>resumptionToken;</code></li> 
+  <li>In order to make the response a <i>complete list</i>, the harvester will 
+  need to issue one or more requests with <code>resumptionTokens</code> as 
+  arguments. The complete list then consists of the concatenation of the 
+  <i>incomplete lists</i> from the sequence of requests, known as a <i>list 
+  request sequence</i>.</li>
+</ul>
+
+<p>Details of flow control and the <code>resumptionToken</code> are as follows:</p>
+
+<ul>
+  <li>The only defined use of <code>resumptionToken</code> is as follows: 
+  <ul>
+    <li>a repository <b>must</b> include a <code>resumptionToken</code> element as part of each response that includes 
+      an incomplete list;</li> 
+    <li>in order to retrieve the next portion of the complete list,  the 
+      next request <b>must</b> use the value of that <code>resumptionToken</code> 
+      element as the value of the <code>resumptionToken</code> argument of the request;</li> 
+    <li>the response containing the incomplete list that completes the list <b>must</b> 
+      include an empty <code>resumptionToken</code> element;</li>
+  </ul>
+  All other uses of <code>resumptionToken</code> by a harvester 
+  are illegal and <b>must</b> return an <a href="#ErrorConditions">error</a>.</li> 
+
+  <li>In all cases when a <code>resumptionToken</code> is issued, the incomplete list <b>must</b> 
+  consist of complete entities; e.g., all individual records returned in an 
+  incomplete record list from a <code>ListRecords</code> request <b>must</b> be intact.</li>
+
+  <li>The format of the <code>resumptionToken</code> is not defined by the OAI-PMH and <b>should</b> 
+  be considered opaque by the harvester.</li>
+
+  <li>The protocol does not define the semantics of incompleteness. 
+  Therefore, a harvester <b>should not</b> assume that the members in an 
+  <i>incomplete list </i>conform to some selection criteria (e.g., date 
+  ordering).</li>
+
+  <li>Before including a <code>resumptionToken</code> in the URL of a subsequent request, a harvester 
+  <b>must</b> encode any <a href="#SpecialCharacters">special characters</a> in it.</li>
+</ul>
+
+<p>The following <b>optional</b> attributes <b>may</b> be included as part of 
+the <code>resumptionToken</code> 
+element along with the <code>resumptionToken</code> itself:</p>
+
+<ul>
+  <li><code>expirationDate</code> -- a 
+    <a href="#Dates">UTCdatetime</a> 
+    indicating when the <code>resumptionToken</code> ceases to be valid.</li> 
+  <li><code>completeListSize</code> -- 
+    an integer indicating the cardinality of the complete list (i.e., the sum of 
+    the cardinalities of the incomplete lists).  Because there may be 
+    changes in a repository during a list request sequence, as described under 
+    <a href="#Idempotency">Idempotency of resumptionTokens</a>, the value of 
+    <code>completeListSize</code> may be only an estimate of the actual 
+    cardinality of the complete list and may be revised during the list request 
+    sequence.</li>
+  <li><code>cursor</code> -- a count of the number of elements of the 
+    complete list thus far returned (i.e. <code>cursor</code> starts at 0).</li>
+</ul>
+
+<p>The following example is a series of ListRecords requests where the complete 
+list consists of 175 records and the repository only returns 100 records per 
+response.</p>
+
+<ul>
+  <li>The harvester issues a <code>ListRecords</code> request.</li> 
+
+  <li>The repository responds with an incomplete list of 100 records. The 
+  repository marks this list as incomplete by including in the response a 
+  non-empty<code> resumptionToken 
+  </code>element, with two attributes: a <code>completeListSize</code> 
+  of 175, and a <code>cursor</code> of 0.</li>
+
+  <li>The harvester issues a subsequent <code>ListRecords</code> request 
+  that includes the <code>resumptionToken</code> that it 
+  received in the previous response.</li> 
+
+  <li>The repository responds with an incomplete list of 75 records. The 
+  repository marks this list as the final incomplete list by including in the 
+  response  an empty <code>resumptionToken</code> element with two 
+  attributes: a <code>completeListSize</code> of 175, and a 
+  <code>cursor</code> of 100.</li>
+</ul>
+
+<p>This flow control mechanism, in combination with HTTP transport layer 
+facilities, provides some basic tools with which a repository can enforce an 
+<i>acceptable use policy</i> for its harvesting interface. Communities 
+implementing the OAI-PMH may need more extensive tools to enforce acceptable use 
+policies for either the harvesting interface of their repositories or for the 
+metadata harvested from those repositories. The enforcement of such additional 
+policies is outside of the scope of the OAI-PMH.</p>
+
+<h3>3.5.1 <a name="Idempotency">Idempotency of resumptionTokens</a></h3>
+
+<p>Repositories that implement <code>resumptionTokens</code> <b>must</b> do so in a manner that allows 
+harvesters to resume a sequence of requests for incomplete lists by re-issuing a 
+list request with the most recent <code>resumptionToken</code>. The purpose of this is to allow harvesters to 
+recover from network or other errors that would otherwise mean that the list 
+request sequence would have to be started again. A re-issue of a list 
+request with a <code>resumptionToken</code> occurs in two contexts:</p>
+
+<OL>
+  <li><i>When there are no changes in the repository.</i> There are no changes 
+    to the complete list returned by the list request sequence. In this 
+    case, the repository <b>must</b> return the same incomplete list when the 
+    most recent list request, i.e. the one with the most recent non-expired 
+    <code>resumptionToken</code>, is re-issued.</li> 
+  <li><i>When there are changes in the repository.</i> There may be changes 
+    to the complete list returned by the list request sequence. These changes 
+    occur when the records disseminated in the list move in or out of the 
+    <a href="#Datestamp">datestamp </a>range of the request because of changes, modifications, 
+    or deletions in the repository. In this case, strict idempotency of 
+    the incomplete-list requests using <code>resumptionToken</code> values is not required. Instead, the incomplete 
+    list returned in response to a re-issued request <b>must</b> include all records 
+    with unchanged <code>datestamps</code> within the range 
+    of the initial list request. The incomplete list returned in response 
+    to a re-issued request <b>may</b> contain records with datestamps that either 
+    moved into or out of the range of the initial request. In cases where there 
+    are substantial changes to the repository, it <b>may</b> be appropriate for 
+    a repository to return a <code>badResumptionToken</code> error, 
+    signaling that the harvester should restart the list request 
+    sequence.</li>
+</OL>
+
+<h2>3.6 <a name="ErrorConditions">Error and Exception Conditions</a></h2>
+
+<p>In event of an error or exception condition, repositories <b>must</b> 
+indicate OAI-PMH errors, distinguished from 
+<a href="#StatusCodes">HTTP <code>Status-Codes</code></a>, by 
+including one or more <code>error</code> elements in the response. 
+While one <code>error</code> element is sufficient to 
+indicate the presence of the error or exception condition, repositories 
+<b>should</b> report all errors or exceptions that arise from processing the 
+request. Each <code>error</code> element <b>must</b> have a <code>code</code> 
+attribute that <b>must</b> be from the following table; each 
+<code>error</code> element <b>may</b> 
+also have a free text string value to provide information about the error that 
+is useful to a human reader. These strings are not defined by the OAI-PMH.</p>
+
+<table summary="Error code summary" width="80%" border="2">
+  <tbody>
+    <tr> 
+      <td align="center"><i>Error Codes</i></td>
+      <td align="center"><i>Description</i></td>
+      <td align="center"><i>Applicable Verbs</i></td>
+    </tr>
+    <tr> 
+      <td><code>badArgument</code></td>
+      <td>The request includes illegal arguments, is missing required 
+        arguments, includes a repeated argument, or values for arguments have 
+        an illegal syntax.</td>
+      <td align="center"><i>all verbs</i></td>
+    </tr>
+    <tr> 
+      <td><code>badResumptionToken</code></td>
+      <td>The value of the <code>resumptionToken</code> argument is invalid or expired.</td>
+      <td align="center"><code>ListIdentifiers<br />
+        ListRecords<br />
+        ListSets</code></td>
+    </tr>
+    <tr> 
+      <td><code>badVerb</code></td>
+      <td>Value of the <code>verb</code> argument is not a legal 
+        OAI-PMH verb, the verb argument is missing, or the <code>verb</code> argument is repeated. 
+      </td>
+      <td align="center"><i>N/A</i></td>
+    </tr>
+    <tr> 
+      <td><code>cannotDisseminateFormat</code></td>
+      <td>The metadata format identified by the value given for the 
+        <code>metadataPrefix</code> argument 
+        is not supported by the item or by the repository.</td>
+      <td align="center"><code>GetRecord<br />
+        ListIdentifiers</code><br />
+        <code>ListRecords</code></td>
+    </tr>
+    <tr> 
+      <td><code>idDoesNotExist</code></td>
+      <td>The value of the <code>identifier</code> argument is unknown or illegal in this repository.</td>
+      <td align="center"><code>GetRecord</code><br />
+        <code>ListMetadataFormats</code></td>
+    </tr>
+    <tr> 
+      <td><code>noRecordsMatch</code></td>
+      <td>The combination of the values of the <code>from</code>, 
+      <code>until</code>, 
+      <code>set</code> and 
+      <code>metadataPrefix</code> arguments 
+        results in an empty list.</td>
+      <td align="center"><code>ListIdentifiers</code><br />
+        <code>ListRecords</code></td>
+    </tr>
+    <tr> 
+      <td><code>noMetadataFormats</code></td>
+      <td>There are no metadata formats available for the 
+        specified item.</td>
+      <td align="center"><code>ListMetadataFormats</code></td>
+    </tr>
+    <tr> 
+      <td><code>noSetHierarchy</code></td>
+      <td>The repository does not support sets.</td>
+      <td align="center"><code>ListSets<br />
+          ListIdentifiers<br />
+          ListRecords</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The following example demonstrates error handling in the case of an illegal 
+verb argument. All request URLs shown from now on will be wrapped to make 
+them more readable.</p>
+
+<h4><i>Request</i></h4>
+
+<pre>http://arXiv.org/oai2?
+       verb=nastyVerb</pre>
+
+<p><b><i>Response</i></b></p>
+
+<table summary="Example error response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-05-01T09:18:29Z&lt;/responseDate&gt;
+  &lt;request&gt;http://arXiv.org/oai2&lt;/request&gt;
+  &lt;error code="badVerb"&gt;Illegal OAI verb&lt;/error&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<p>The following example demonstrates error handling in the case of a <code>ListSets</code> request to a repository 
+  that does not handle sets.</p>
+
+<h4><i>Request</i></h4>
+
+<pre>http://arXiv.org/oai2?
+       verb=ListSets</pre>
+
+<DL>
+  <DT><b><i>Response</i></b> </DT></DL>
+
+<table summary="Example error response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-05-01T09:18:29Z&lt;/responseDate&gt;
+  &lt;request verb="ListSets"&gt;http://arXiv.org/oai2&lt;/request&gt;
+  &lt;error code="noSetHierarchy"&gt;This repository does not 
+    support sets&lt;/error&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody> 
+</table>
+
+
+<h1>4. <a name="ProtocolMessages">Protocol Requests and Responses</a></h1>
+
+<p>This section lists the requests, or <code>verbs, </code>defined in the OAI-PMH. 
+The documentation for each request is organized as follows:</p>
+
+<ul>
+  <li>A section title corresponding to the token used to specify the 
+    request as the required <code>verb</code> 
+    argument to an <a href="#HTTPRequestFormat">HTTP request</a>.</li> 
+
+  <li>A brief summary of the meaning of the verb and notes on its usage.</li> 
+
+  <li>The list of additional arguments for the request. Arguments are of 
+    three types: 
+    <ul>
+      <li><i>required,</i> the argument <b>must</b> be included with the 
+        request (the <code>verb</code> argument is always <i>required</i>, 
+        as described in <a href="#HTTPRequestFormat">HTTP Request Format</a>).</li> 
+      <li><i>optional,</i> the argument <b>may</b> be included with the request.</li> 
+      <li><i>exclusive, </i>the argument <b>may</b> be included with request, but 
+        <b>must</b> be the only argument (in addition to the <code>verb</code> argument).</li>
+    </ul></li>
+
+  <li><a href="#ErrorConditions">Error and exception conditions</a> 
+    specific to the protocol request.</li>
+
+  <li>One or more example requests and corresponding responses, with explanatory 
+    notes if appropriate.</li>
+</ul>
+
+<p>An <a href="#OAIPMHschema">XML Schema</a> defines the format 
+of valid replies to all OAI-PMH requests.</p>
+
+<h2>4.1 <a name="GetRecord">GetRecord</a></h2>
+
+<h3>Summary and Usage Notes</h3>
+
+<p>This verb is used to retrieve an individual metadata record from a repository. 
+Required arguments specify the identifier of the item from which the record 
+is requested and the format of the metadata that should be included in the record. 
+Depending on the level at which a repository tracks <a href="#deletion">deletions</a>, 
+a header with a "deleted" value for the <code>status</code> 
+attribute <b>may</b> be returned, in case the metadata format specified by the 
+<code>metadataPrefix</code> is no longer 
+available from the repository or from the specified item.</p>
+
+<h3>Arguments</h3>
+
+<ul>
+  <li><code><b>identifier</b></code> a <i>required</i> argument that specifies 
+    the <a href="#UniqueIdentifier">unique identifier</a>  of the item in the 
+    <a href="#Repository">repository</a> from which the 
+    <a href="#Record">record</a> must be disseminated.</li> 
+  <li><code><b>metadataPrefix</b></code> a <i>required</i> argument that 
+    specifies the <a href="#metadataPrefix"><code>metadataPrefix</code></a> of the 
+    format that should be included in the <a href="#Record">metadata part of 
+    the returned record</a> . A record should only be returned if the format 
+    specified by the <a href="#metadataPrefix"><code>metadataPrefix</code></a> can be 
+    disseminated from the item identified by the value of the identifier argument. 
+    The metadata formats supported by a repository and for a particular record can 
+    be retrieved using the 
+    <code><a href="#ListMetadataFormats">ListMetadataFormats</a></code> request.</li>
+</ul>
+
+<h3>Error and Exception Conditions</h3>
+
+<ul>
+  <li><code><b>badArgument</b></code> - 
+    The request includes illegal arguments or is missing required arguments.</li> 
+  <li><code><b>cannotDisseminateFormat</b></code> - The value of the <code>metadataPrefix</code> argument is not 
+    supported by the item identified by the value of the <code>identifier</code> argument.</li>
+  <li><code><b>idDoesNotExist</b></code> - The value of the <code>identifier</code> argument is unknown 
+    or illegal in this repository.</li>
+</ul>
+
+<h3>Examples</h3>
+
+<h4><i>Request</i></h4>
+
+<p>Request a record in the Dublin Core metadata format [URL shown without 
+<a href="#SpecialCharacters">encoding</a> to be more readable].</p>
+
+<pre>http://arXiv.org/oai2?
+       verb=GetRecord&amp;identifier=oai:arXiv.org:cs/0112017&amp;metadataPrefix=oai_dc</pre>
+
+<h4><i>Response</i></h4>
+
+<table summary="Example GetRecord response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-02-08T08:55:46Z&lt;/responseDate&gt;
+  &lt;request verb="GetRecord" identifier="oai:arXiv.org:cs/0112017"
+           metadataPrefix="oai_dc"&gt;http://arXiv.org/oai2&lt;/request&gt;
+  &lt;GetRecord&gt;
+   &lt;record&gt; 
+    &lt;header&gt;
+      &lt;identifier&gt;oai:arXiv.org:cs/0112017&lt;/identifier&gt; 
+      &lt;datestamp&gt;2001-12-14&lt;/datestamp&gt;
+      &lt;setSpec&gt;cs&lt;/setSpec&gt; 
+      &lt;setSpec&gt;math&lt;/setSpec&gt;
+    &lt;/header&gt;
+    &lt;metadata&gt;
+      &lt;oai_dc:dc 
+         xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+         xmlns:dc="http://purl.org/dc/elements/1.1/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+         http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+        &lt;dc:title&gt;Using Structural Metadata to Localize Experience of 
+                  Digital Content&lt;/dc:title&gt; 
+        &lt;dc:creator&gt;Dushay, Naomi&lt;/dc:creator&gt;
+        &lt;dc:subject&gt;Digital Libraries&lt;/dc:subject&gt; 
+        &lt;dc:description&gt;With the increasing technical sophistication of 
+            both information consumers and providers, there is 
+            increasing demand for more meaningful experiences of digital 
+            information. We present a framework that separates digital 
+            object experience, or rendering, from digital object storage 
+            and manipulation, so the rendering can be tailored to 
+            particular communities of users.
+        &lt;/dc:description&gt; 
+        &lt;dc:description&gt;Comment: 23 pages including 2 appendices, 
+            8 figures&lt;/dc:description&gt; 
+        &lt;dc:date&gt;2001-12-14&lt;/dc:date&gt;
+      &lt;/oai_dc:dc&gt;
+    &lt;/metadata&gt;
+  &lt;/record&gt;
+ &lt;/GetRecord&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Request</i></h4>
+
+<p>Request a record in the Dublin Core metadata format. The requested 
+record, however, can not be returned because the identifier does not 
+exist. Therefore, the response does not contain a <code>record</code> 
+container. It does have an <code>error</code> element with a 
+<code>code</code> attribute that has the value <code>idDoesNotExist</code>.
+[URL shown without <a href="#SpecialCharacters">encoding</a> 
+for better readability].</p>
+
+<pre>http://arXiv.org/oai2?
+       verb=GetRecord&amp;identifier=oai:arXiv.org:quant-ph/02131001&amp;metadataPrefix=oai_dc</pre>
+
+<h4><i>Response</i></h4>
+
+<table summary="Example GetRecord response for id the doesn't exist" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-02-08T08:55:46Z&lt;/responseDate&gt;
+  &lt;request verb="GetRecord" identifier="oai:arXiv.org:quant-ph/0213001"
+           metadataPrefix="oai_dc"&gt;http://arXiv.org/oai2&lt;/request&gt; 
+  &lt;error code="idDoesNotExist"&gt;No matching identifier in arXiv&lt;/error&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Request</i></h4>
+
+<p>Request a record in the oai_marc metadata format. However, the 
+requested metadata format can not be disseminated for this 
+identifier. Therefore, the response contains no record. It does 
+contain an <code>error</code> element with a <code>code</code> 
+attribute that has the value <code>cannotDisseminateFormat</code>. 
+[URL shown without <a href="#SpecialCharacters">encoding</a> 
+for better readability].</p> 
+
+<pre>http://arXiv.org/oai2?
+       verb=GetRecord&amp;identifier=oai:arXiv.org:quant-ph/9901001&amp;metadataPrefix=oai_marc</pre>
+
+<h4><i>Response</i></h4>
+
+<table summary="Example GetRecord response for cannotDisseminateFormat" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt; 
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-02-08T08:55:46Z&lt;/responseDate&gt;
+  &lt;request verb="GetRecord" identifier="oai:arXiv.org:quant-ph/9901001"
+           metadataPrefix="oai_marc"&gt;http://arXiv.org/oai1&lt;/request&gt; 
+  &lt;error code="cannotDisseminateFormat"/&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h2>4.2 <a name="Identify">Identify</a></h2>
+
+<h3>Summary and Usage Notes</h3>
+
+<p>This verb is used to retrieve information about a repository. Some of 
+the information returned is required as part of the OAI-PMH. Repositories 
+<b>may</b> also employ the Identify verb to return additional descriptive 
+information.</p>
+
+<h3>Arguments</h3>
+
+<p>None</p>
+
+<h3>Error and Exception Conditions</h3>
+
+<ul>
+  <li><code><b>badArgument</b></code> - 
+    The request includes illegal arguments.</li>
+</ul>
+
+<h3>Response Format</h3>
+
+<p>The response <b>must</b> include one instance of the following elements:</p>
+
+<ul>
+  <li><code>repositoryName</code> : 
+    a human readable name for the repository;</li>
+  <li><code>baseURL</code> : 
+    the <a href="#HTTPRequestFormat">base URL</a> of the repository;</li>
+  <li><code>protocolVersion</code> : 
+    the version of the OAI-PMH supported by the repository;</li> 
+  <li><code>earliestDatestamp</code> : 
+    a <a href="#Dates">UTCdatetime</a> that is the guaranteed lower limit of all datestamps 
+    recording changes, modifications, or deletions in the repository. A repository 
+    <b>must not</b> use <a href="#Datestamp">datestamps</a> lower than the one specified 
+    by the content of the <code>earliestDatestamp</code> element.
+    <code>earliestDatestamp</code> must be expressed at the finest 
+    <a href="#Datestamp">granularity</a> supported by the repository.</li>
+  <li><code>deletedRecord</code> : 
+    the manner in which the repository supports the notion of 
+    <a href="#DeletedRecords">deleted records</a>. Legitimate values are <code>no</code> ; 
+    <code>transient</code> ; <code>persistent</code> with meanings defined in the section on 
+    <a href="#DeletedRecords">deletion</a>.</li> 
+  <li><code>granularity:</code> 
+    the finest <a href="#Datestamp">harvesting granularity</a> supported by the repository. 
+    The legitimate values are <code>YYYY-MM-DD</code> and <code>YYYY-MM-DDThh:mm:ssZ</code> 
+    with meanings as defined in <a href="http://www.w3.org/TR/NOTE-datetime">ISO8601</a>.</li>
+</ul>
+
+<p>The response <b>must</b> include one or more instances of the following 
+element:</p>
+
+<ul>
+  <li><code>adminEmail</code> : 
+    the e-mail address of an administrator of the repository.</li>
+</ul>
+
+<p>The response <b>may</b> include multiple instances of the following 
+<b>optional</b> elements:</p>
+
+<ul>
+  <li><code>compression</code> : a compression encoding supported by the 
+    repository. The <b>recommended</b> values are those defined for the 
+    <code>Content-Encoding</code> header in Section 14.11 of 
+    <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a> describing 
+    HTTP 1.1. A <code>compression</code> element <b>should not</b> be 
+    included for the <code>identity</code> encoding, which is implied.</li> 
+
+  <li><code>description</code> : an extensible mechanism for communities 
+    to describe their repositories. For example, the <code>description</code> 
+    container could be used to include collection-level metadata in the response 
+    to the Identify request. 
+    <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation 
+    Guidelines</a> are available to give directions with this respect. Each <code>description</code> container 
+    <b>must</b> be accompanied by the URL of an XML schema describing the 
+    structure of the description container.</li>
+</ul>
+
+<h3>Examples</h3>
+
+<h4><i>Request</i></h4>
+
+<pre>http://memory.loc.gov/cgi-bin/oai?
+       verb=Identify</pre>
+
+<h4><i>Response</i></h4>
+
+<p>The below example of a response to the <code>Identify</code> request contains three 
+<code>description</code> containers:</p> 
+
+<ul>
+  <li>The <code>oai-identifier</code> container complies to an XML Schema, which is available at 
+    <a href="http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">http://www.openarchives.org/OAI/2.0/oai-identifier.xsd</a>. 
+    This schema, provided in the accompanying 
+    <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation Guidelines</a> 
+    document, is used by repositories that choose to comply with a specific format 
+    of unique identifiers for items. The format of that identifier is explained 
+    by means of comments in the 
+    <a href="http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">oai-identifier.xsd</a> 
+    XML Schema.</li> 
+  <li>The <code>eprints</code> container complies to an XML Schema, which is available at 
+    <a href="http://www.openarchives.org/OAI/1.1/eprints.xsd">http://www.openarchives.org/OAI/1.1/eprints.xsd</a>. 
+    This schema, provided in the accompanying 
+    <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation Guidelines</a> document, 
+    has been agreed upon by the OAI e-print community, 
+    and contains information specific to repositories in that community.</li> 
+  <li>The <code>friends</code> container complies to an XML Schema, which is available at 
+    <a href="http://www.openarchives.org/OAI/2.0/friends.xsd">http://www.openarchives.org/OAI/2.0/friends.xsd</a>. 
+    This schema, provided in the accompanying 
+    <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation Guidelines</a> 
+    document, is used by repositories that want to point harvesters 
+    to other repositories, by listing their base URLs. Usage of the <code>friends</code> container is 
+    <b>recommended</b>; it may support harvesters in discovering the 
+    network-location of repositories.</li>
+</ul>
+
+<table summary="Example Idenftify response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-02-08T12:00:01Z&lt;/responseDate&gt;
+  &lt;request verb="Identify"&gt;http://memory.loc.gov/cgi-bin/oai&lt;/request&gt;
+  &lt;Identify&gt;
+    &lt;repositoryName&gt;Library of Congress Open Archive Initiative 
+                    Repository 1&lt;/repositoryName&gt;
+    &lt;baseURL&gt;http://memory.loc.gov/cgi-bin/oai&lt;/baseURL&gt;
+    &lt;protocolVersion&gt;2.0&lt;/protocolVersion&gt;
+    &lt;adminEmail&gt;somebody@loc.gov&lt;/adminEmail&gt;
+    &lt;adminEmail&gt;anybody@loc.gov&lt;/adminEmail&gt;
+    &lt;earliestDatestamp&gt;1990-02-01T12:00:00Z&lt;/earliestDatestamp&gt;
+    &lt;deletedRecord&gt;transient&lt;/deletedRecord&gt;
+    &lt;granularity&gt;YYYY-MM-DDThh:mm:ssZ&lt;/granularity&gt;
+    &lt;compression&gt;deflate&lt;/compression&gt;
+    &lt;description&gt;
+      &lt;oai-identifier 
+        xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation=
+            "http://www.openarchives.org/OAI/2.0/oai-identifier
+        http://www.openarchives.org/OAI/2.0/oai-identifier.xsd"&gt;
+        &lt;scheme&gt;oai&lt;/scheme&gt;
+        &lt;repositoryIdentifier&gt;lcoa1.loc.gov&lt;/repositoryIdentifier&gt;
+        &lt;delimiter&gt;:&lt;/delimiter&gt;
+        &lt;sampleIdentifier&gt;oai:lcoa1.loc.gov:loc.music/musdi.002&lt;/sampleIdentifier&gt;
+      &lt;/oai-identifier&gt;
+    &lt;/description&gt;
+    &lt;description&gt;
+      &lt;eprints 
+         xmlns="http://www.openarchives.org/OAI/1.1/eprints"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/1.1/eprints 
+         http://www.openarchives.org/OAI/1.1/eprints.xsd"&gt;
+        &lt;content&gt;
+          &lt;URL&gt;http://memory.loc.gov/ammem/oamh/lcoa1_content.html&lt;/URL&gt;
+          &lt;text&gt;Selected collections from American Memory at the Library 
+                of Congress&lt;/text&gt;
+        &lt;/content&gt;
+        &lt;metadataPolicy/&gt;
+        &lt;dataPolicy/&gt;
+      &lt;/eprints&gt;
+    &lt;/description&gt;
+    &lt;description&gt;
+      &lt;friends 
+          xmlns="http://www.openarchives.org/OAI/2.0/friends/" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/friends/
+         http://www.openarchives.org/OAI/2.0/friends.xsd"&gt;
+       &lt;baseURL&gt;http://oai.east.org/foo/&lt;/baseURL&gt;
+       &lt;baseURL&gt;http://oai.hq.org/bar/&lt;/baseURL&gt;
+       &lt;baseURL&gt;http://oai.south.org/repo.cgi&lt;/baseURL&gt;
+     &lt;/friends&gt;
+   &lt;/description&gt;
+ &lt;/Identify&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+
+<h2>4.3 <a name="ListIdentifiers">ListIdentifiers</a></h2>
+
+<h3>Summary and Usage Notes</h3>
+
+<p>This verb is an abbreviated form of 
+<a href="#ListRecords"><code>ListRecords</code></a>, retrieving only 
+<a href="#header">headers</a> rather than <a href="#Record">records</a>. 
+Optional arguments permit selective harvesting of 
+<a href="#header">headers</a> based on <a href="#Set">set</a> membership 
+and/or datestamp. Depending on the repository's support for 
+<a href="#deletion">deletions</a>, a returned <a href="#header">header</a> 
+<b>may</b> have a <code>status</code> attribute of "deleted" if a record 
+matching the arguments specified in the request has been deleted.</p>
+
+<h3>Arguments</h3>
+
+<ul>
+  <li><code><b>from</b></code> an <i>optional</i> 
+    argument with a <a href="#Dates">UTCdatetime value</a>, 
+    which specifies a lower bound for datestamp-based 
+    <a href="#Datestamp">selective harvesting</a>.</li>
+  <li><code><b>until</b></code> an <i>optional</i> 
+    argument with a <a href="#Dates">UTCdatetime value</a>, 
+    which specifies a upper bound for datestamp-based 
+    <a href="#Datestamp">selective harvesting</a>.</li>
+  <li><code><b>metadataPrefix</b> </code>a <i>required</i> argument, which specifies 
+    that <a href="#header">headers</a> should be returned only if the metadata format matching 
+    the supplied <a href="#metadataPrefix"><code>metadataPrefix</code></a> 
+    is available or, depending on the repository's support for 
+    <a href="#deletion">deletions</a>, has been deleted. The metadata formats supported 
+    by a repository and for a particular item can be retrieved using the 
+    <a href="#ListMetadataFormats"><code>ListMetadataFormats</code></a> 
+    request.</li> 
+  <li><code><b>set</b></code> an <i>optional</i> argument with a 
+    <a href="#Set"><code>setSpec</code> value</a> , which specifies 
+    <a href="#Set">set</a> criteria for 
+    <a href="#SelectiveHarvestingandSets">selective harvesting</a>.</li>
+  <li><code><b>resumptionToken</b></code> an <i>exclusive </i>argument with a value 
+    that is the <a href="#FlowControl">flow control</a> token returned by a 
+    previous <code><a href="#ListIdentifiers">ListIdentifiers</a></code> 
+    request that issued an incomplete list.</li>
+</ul>
+
+<h3>Error and Exception Conditions</h3>
+
+<ul>
+  <li><code><b>badArgument</b></code> - 
+    The request includes illegal arguments or is missing required arguments.</li> 
+  <li><code><b>badResumptionToken</b></code> - 
+    The value of the <code>resumptionToken</code> 
+    argument is invalid or expired.</li> 
+  <li><code><b>cannotDisseminateFormat</b></code> - 
+    The value of the <code>metadataPrefix</code> argument is not supported 
+    by the repository.</li> 
+  <li><code><b>noRecordsMatch</b></code>- 
+    The combination of the values of the <code>from</code>, <code>until</code>, 
+    and <code>set</code> arguments results in an empty list.</li>
+  <li><code><b>noSetHierarchy</b></code> - The repository does not support sets.</li>
+</ul>
+
+<h3>Examples</h3>
+
+<h4><i>Request</i></h4>
+
+<p>List the <a href="#headers">headers</a> of records in the oldArXiv metadata format that are 
+added, modified or deleted since January 15, 1998 in the set physics:hep. [URL 
+shown without <a href="#SpecialCharacters">encoding</a> for better readability].</p>
+
+<pre>http://an.oa.org/OAI-script?
+       verb=ListIdentifiers&amp;from=1998-01-15&amp;metadataPrefix=oldArXiv&amp;set=physics:hep</pre>
+
+<h4><i>Response</i></h4>
+
+<p>A list of four headers is returned. One header has a <code>deleted</code> 
+status, indicating that a record in the metadata format specified by the 
+<code>metadataPrefix</code> is no longer available. 
+In addition, a <code>resumptionToken</code> (non-empty, value 
+<code>xxx45abttyz) </code>has been 
+returned, indicating that the list of headers is <i>incomplete</i> and that 
+one or more subsequent requests will need to be issued to retrieve a <i>complete</i> 
+list. In the example, the <code>resumptionToken</code> comes with all 
+of the 3 optional attributes: <code>expirationDate</code> indicates that 
+the <code>resumptionToken</code> will become unusable 
+after 11:20 PM UTC on June 1st 2002; <code>completeListSize</code> indicates that 
+the <i>complete</i> list consists of 6 identifiers; the zero-value for 
+<code>cursor</code> indicates that no headers 
+have been returned previous to this reply.</p>
+
+<table summary="Example ListIdentifiers response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-06-01T19:20:30Z&lt;/responseDate&gt;
+  &lt;request verb="ListIdentifiers" from="1998-01-15" 
+           metadataPrefix="oldarXiv"
+           set="physics:hep"&gt;http://an.oa.org/OAI-script&lt;/request&gt;
+  &lt;ListIdentifiers&gt;
+   &lt;header&gt;  
+    &lt;identifier&gt;oai:arXiv.org:hep-th/9801001&lt;/identifier&gt;
+    &lt;datestamp&gt;1999-02-23&lt;/datestamp&gt;
+    &lt;setSpec&gt;physic:hep&lt;/setSpec&gt;
+   &lt;/header&gt;
+   &lt;header&gt;    
+    &lt;identifier&gt;oai:arXiv.org:hep-th/9801002&lt;/identifier&gt;
+    &lt;datestamp&gt;1999-03-20&lt;/datestamp&gt;
+    &lt;setSpec&gt;physic:hep&lt;/setSpec&gt;
+    &lt;setSpec&gt;physic:exp&lt;/setSpec&gt;
+   &lt;/header&gt;
+   &lt;header&gt;  
+    &lt;identifier&gt;oai:arXiv.org:hep-th/9801005&lt;/identifier&gt;
+    &lt;datestamp&gt;2000-01-18&lt;/datestamp&gt;
+    &lt;setSpec&gt;physic:hep&lt;/setSpec&gt;
+   &lt;/header&gt; 
+   &lt;header status="deleted"&gt;  
+    &lt;identifier&gt;oai:arXiv.org:hep-th/9801010&lt;/identifier&gt;
+    &lt;datestamp&gt;1999-02-23&lt;/datestamp&gt;
+    &lt;setSpec&gt;physic:hep&lt;/setSpec&gt;
+    &lt;setSpec&gt;math&lt;/setSpec&gt;
+   &lt;/header&gt;  
+   &lt;resumptionToken expirationDate="2002-06-01T23:20:00Z" 
+      completeListSize="6" 
+      cursor="0"&gt;xxx45abttyz&lt;/resumptionToken&gt;
+ &lt;/ListIdentifiers&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Request</i></h4>
+
+<p>Issue a subsequent request to the one issued above. The single 
+<code>resumptionToken</code> argument has the 
+value returned in the previous response. [URL shown without <a 
+href="#SpecialCharacters">encoding</a> 
+for better readability].</p>
+
+<pre>http://an.oa.org/OAI-script?
+       verb=ListIdentifiers&amp;resumptionToken=xxx45abttyz</pre>
+
+<h4><i>Response</i></h4>
+
+<p>Two more headers are returned. The <code>resumptionToken</code> element at the end of the list has no value, 
+indicating that the list is now complete. The value of the <code>completeListSize</code> attribute 
+remains 6, while the value of the <code>cursor</code> attribute has changed to 4, indicating that a previous 
+reply has (or previous replies have) already delivered 4 identifiers.</p>
+
+<table summary="Example ListIdentifiers response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-06-01T19:30:00Z&lt;/responseDate&gt;
+  &lt;request verb="ListIdentifiers"
+           resumptionToken="xxx45abttyz"&gt;http://an.oa.org/OAI-script&lt;/request&gt;
+  &lt;ListIdentifiers&gt;
+    &lt;header&gt;  
+      &lt;identifier&gt;oai:arXiv.org:hep-th/9801020&lt;/identifier&gt;
+      &lt;datestamp&gt;1999-02-23&lt;/datestamp&gt;
+      &lt;setSpec&gt;physic:hep&lt;/setSpec&gt;
+    &lt;/header&gt; 
+    &lt;header&gt;   
+    &lt;identifier&gt;oai:arXiv.org:hep-th/9801060&lt;/identifier&gt;
+      &lt;datestamp&gt;1999-02-23&lt;/datestamp&gt;
+      &lt;setSpec&gt;physic:hep&lt;/setSpec&gt;
+    &lt;/header&gt;  
+    &lt;resumptionToken completeListSize="6" cursor="4"/&gt;
+  &lt;/ListIdentifiers&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Request</i></h4>
+
+<p>List the headers of olac-formatted records, added or modified on January 1, 2001 
+in the set Perseus:collection:PersInfo. There are no matches for this request, 
+hence, the response contains an error tag and does not contain any header elements 
+[URL shown without <a href="#SpecialCharacters">encoding</a> for better readability].</p> 
+
+<pre>http://www.perseus.tufts.edu/cgi-bin/pdataprov?
+       verb=ListIdentifiers&amp;metadataPrefix=olac&amp;from=2001-01-01&amp;until=2001-01-01
+       &amp;set=Perseus:collection:PersInfo</pre>
+
+<h4><i>Response</i></h4>
+
+<table summary="Example ListIdentifier response with noRecordsMatch" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-02-08T14:27:19Z&lt;/responseDate&gt;
+  &lt;request verb="ListIdentifiers" metadataPrefix="olac"
+    from="2001-01-01" until="2001-01-01"
+    set="Perseus:collection:PersInfo"&gt;
+    http://www.perseus.tufts.edu/cgi-bin/pdataprov&lt;/request&gt;
+  &lt;error code="noRecordsMatch"/&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h2>4.4 <a name="ListMetadataFormats">ListMetadataFormats</a></h2>
+
+<h3>Summary and Usage Notes</h3>
+
+<p>This verb is used to retrieve the metadata formats available from a 
+repository. An optional argument restricts the request to the formats 
+available for a specific item.</p>
+
+<h3>Arguments</h3>
+
+<ul>
+  <li><code><b>identifier</b></code> an 
+  <i>optional</i> argument that specifies the unique identifier of the item for 
+  which available metadata formats are being requested. If this argument 
+  is omitted, then the response includes all metadata formats supported by this 
+  repository. Note that the fact that a metadata format is supported by a 
+  repository does <i>not</i> mean that it can be disseminated from all items in 
+  the repository.</li>
+</ul>
+
+<h3>Error and Exception Conditions</h3>
+
+<ul>
+  <li><code><b>badArgument</b></code> - 
+    The request includes illegal arguments or is missing required arguments.</li>
+  <li><code><b>idDoesNotExist</b></code> - The value of the 
+    <code>identifier</code> argument is unknown 
+    or illegal in this repository.</li> 
+  <li><code><b>noMetadataFormats</b></code> - There are no metadata formats 
+    available for the specified item. </li>
+</ul>
+
+<h3>Examples</h3>
+
+<h4><i>Request</i></h4>
+
+<p>List the metadata formats that can be disseminated from the repository 
+<code>http://www.perseus.tufts.edu/cgi-bin/pdataprov</code> for the item with 
+unique identifier <code>oai:perseus.tufts.edu:Perseus:text:1999.02.0119</code> [URL shown without <a 
+href="#SpecialCharacters">encoding</a> 
+for better readability].</p>
+
+<pre>http://www.perseus.tufts.edu/cgi-bin/pdataprov?
+       verb=ListMetadataFormats&amp;identifier=oai:perseus.tufts.edu:Perseus:text:1999.02.0119</pre>
+
+<h4><i>Response</i></h4>
+
+<p>The response shows that 3 metadata formats are supported for the given identifier: 
+oai_dc, olac and perseus. For each of the formats, the location of an XML Schema 
+describing the format, as well as the XML Namespace URI is given.</p>
+
+<table summary="Example ListMetadataFormats response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-02-08T14:27:19Z&lt;/responseDate&gt;
+  &lt;request verb="ListMetadataFormats"
+    identifier="oai:perseus.tufts.edu:Perseus:text:1999.02.0119"&gt;
+    http://www.perseus.tufts.edu/cgi-bin/pdataprov&lt;/request&gt;
+  &lt;ListMetadataFormats&gt;
+   &lt;metadataFormat&gt;
+     &lt;metadataPrefix&gt;oai_dc&lt;/metadataPrefix&gt;
+     &lt;schema&gt;http://www.openarchives.org/OAI/2.0/oai_dc.xsd
+       &lt;/schema&gt;
+     &lt;metadataNamespace&gt;http://www.openarchives.org/OAI/2.0/oai_dc/
+       &lt;/metadataNamespace&gt;
+   &lt;/metadataFormat&gt;
+   &lt;metadataFormat&gt;
+     &lt;metadataPrefix&gt;olac&lt;/metadataPrefix&gt;
+     &lt;schema&gt;http://www.language-archives.org/OLAC/olac-0.2.xsd&lt;/schema&gt;
+     &lt;metadataNamespace&gt;http://www.language-archives.org/OLAC/0.2/
+      &lt;/metadataNamespace&gt;
+   &lt;/metadataFormat&gt;
+   &lt;metadataFormat&gt;
+     &lt;metadataPrefix&gt;perseus&lt;/metadataPrefix&gt;
+     &lt;schema&gt;http://www.perseus.tufts.edu/persmeta.xsd&lt;/schema&gt;
+     &lt;metadataNamespace&gt;http://www.perseus.tufts.edu/persmeta.dtd
+       &lt;/metadataNamespace&gt;
+   &lt;/metadataFormat&gt;
+ &lt;/ListMetadataFormats&gt;
+&lt;/OAI-PMH&gt;
+
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<h4><i>Request</i></h4>
+
+<p>List the metadata formats that can be disseminated from the repository <code>http://memory.loc.gov/cgi-bin/oai</code>.</p>
+
+<pre>http://memory.loc.gov/cgi-bin/oai?
+       verb=ListMetadataFormats</pre>
+
+<h4><i>Response</i></h4>
+
+<p>The response shows that the repository supports two metadata formats: 
+<code>oai_dc</code>, and <code>oai_marc</code>. For each of the 
+formats, the location of an XML Schema describing the format is given. The 
+support of these formats at the repository-level does not imply support of each 
+format for each item of the repository.</p>
+
+<table summary="Example ListMetadataFormats response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-06-08T15:19:13Z&lt;/responseDate&gt;
+  &lt;request verb="ListMetadataFormats"&gt;
+           http://memory.loc.gov/cgi-bin/oai&lt;/request&gt;
+  &lt;ListMetadataFormats&gt;
+   &lt;metadataFormat&gt;
+    &lt;metadataPrefix&gt;oai_dc&lt;/metadataPrefix&gt;
+    &lt;schema&gt;http://www.openarchives.org/OAI/2.0/oai_dc.xsd&lt;/schema&gt;
+    &lt;metadataNamespace&gt;http://www.openarchives.org/OAI/2.0/oai_dc/
+      &lt;/metadataNamespace&gt;
+   &lt;/metadataFormat&gt;
+   &lt;metadataFormat&gt;
+    &lt;metadataPrefix&gt;oai_marc&lt;/metadataPrefix&gt;
+    &lt;schema&gt;http://www.openarchives.org/OAI/1.1/oai_marc.xsd&lt;/schema&gt;
+    &lt;metadataNamespace&gt;http://www.openarchives.org/OAI/1.1/oai_marc
+      &lt;/metadataNamespace&gt;
+   &lt;/metadataFormat&gt;
+  &lt;/ListMetadataFormats&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<h4><i>Request</i></h4>
+
+<p>List the metadata formats that can be disseminated for the unique identifier 
+<code>oai:lcoa1.loc.gov:loc.rbc/rbpe.00000111</code> in the repository <code>http://memory.loc.gov/cgi-bin/oai</code>. The identifier, however, does 
+not exist and therefore, the response contains an <code>error</code> element and no 
+metadataFormat container. [URL shown without <a 
+href="#SpecialCharacters">encoding</a> 
+for better readability].</p>
+
+<pre>http://memory.loc.gov/cgi-bin/oai?
+       verb=ListMetadataFormats&amp;identifier=oai:lcoa1.loc.gov:loc.rbc/rbpe.00000111</pre>
+
+<h4><i>Response</i></h4>
+
+<table summary="Exmple ListMetadataFormats response with idDoesNotExist" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-06-08T15:19:13Z&lt;/responseDate&gt;
+  &lt;request verb="ListMetadataFormats"
+           identifier="oai:lcoa1.loc.gov:loc.rbc/rbpe.00000111"&gt;
+           http://memory.loc.gov/cgi-bin/oai&lt;/request&gt;
+  &lt;error code="idDoesNotExist"&gt;oai:lcoa1.loc.gov:loc.rbc/rbpe.00000111 has the 
+       structure of a valid LOC identifier, but it maps to no known 
+       item&lt;/error&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h2>4.5 <a name="ListRecords">ListRecords</a></h2>
+
+<h3>Summary and Usage Notes</h3>
+
+<p>This verb is used to harvest records from a repository. Optional arguments 
+permit <a href="#Datestamp">selective harvesting</a> of 
+<a href="#header">records</a> based on 
+<a href="#Set">set</a> membership 
+and/or datestamp. Depending on the repository's support for 
+<a href="#deletion">deletions</a>, a returned 
+<a href="#header">header</a> <b>may</b> have a <code>status</code> attribute of "deleted" 
+if a record matching the arguments specified in the request has been deleted. 
+No metadata will be present for records with deleted status.</p>
+
+<h3>Arguments</h3>
+
+<ul>
+  <li><code><b>from</b></code> an <i>optional</i> 
+    argument with a <a href="#Dates">UTCdatetime value</a>, which 
+    specifies a lower bound for datestamp-based 
+    <a href="#Datestamp">selective harvesting</a>.</li>
+  <li><code><b>until</b></code> an <i>optional</i> argument with a 
+    <a href="#Dates">UTCdatetime value</a>, which specifies a upper bound for datestamp-based 
+    <a href="#Datestamp">selective harvesting</a>.</li>
+  <li><code><b>set</b></code> an <i>optional</i> argument with a 
+    <a href="#Set"><code>setSpec</code> value</a> , which specifies 
+    <a href="#Set">set</a> criteria for <a href="#SelectiveHarvestingandSets">selective harvesting</a>.</li>
+  <li><code><b>resumptionToken</b></code> an <i>exclusive</i> argument with 
+    a value that is the <a href="#FlowControl">flow control</a> token returned by 
+    a previous <code>ListRecords</code> request that 
+    issued an incomplete list.</li> 
+  <li><code><b>metadataPrefix</b></code> a 
+    <i>required</i> argument (unless the exclusive argument <code>resumptionToken</code> is used) that 
+    specifies the <a href="#metadataPrefix"><code>metadataPrefix</code></a> of the format 
+    that should be included in the <a href="#Record">metadata part of the returned records</a>.   Records 
+    should be included only for items from which the metadata format<br />
+    matching the <a href="#metadataPrefix"><code>metadataPrefix</code></a> can be 
+    disseminated. The metadata formats supported by a repository and for a 
+    particular item can be retrieved using the 
+    <code><a href="#ListMetadataFormats">ListMetadataFormats</a></code> request.</li>
+</ul>
+
+<h3>Error and Exception Conditions</h3>
+
+<ul>
+  <li><code><b>badArgument</b></code> - 
+    The request includes illegal arguments or is missing required arguments.</li> 
+  <li><code><b>badResumptionToken</b></code> - 
+    The value of the <code>resumptionToken</code> argument is 
+    invalid or expired.</li> 
+  <li><code><b>cannotDisseminateFormat</b></code> - 
+    The value of the <code>metadataPrefix</code> argument is not 
+    supported by the repository.</li>
+  <li><code><b>noRecordsMatch</b></code> - 
+    The combination of the values of the <code>from</code>, <code>until</code>, 
+    <code>set</code> and <code>metadataPrefix</code> arguments results in an empty list.</li>
+  <li><code><b>noSetHierarchy</b></code> - 
+    The repository does not support sets.</li>
+</ul>
+
+<h3>Examples</h3>
+
+<h4><i>Request</i></h4>
+
+<p>List the records expressed in <code>oai_rfc1807</code> metadata format, that 
+have been added or modified since January 15, 1998 in the <code>hep</code> 
+subset of the <code>physics</code> set [URL shown without 
+<a href="#SpecialCharacters">encoding</a> for better readability].</p>
+
+<pre>http://an.oa.org/OAI-script?
+       verb=ListRecords&amp;from=1998-01-15&amp;set=physics:hep&amp;metadataPrefix=oai_rfc1807</pre>
+
+<h4><i>Response</i></h4>Two records are returned: 
+
+<ul>
+  <li>The first record is expressed in the <code>oai_rfc1807</code> metadata. 
+    This record also has an <code>about</code> part, and the item from 
+    which it was disseminated belongs to two sets (<code>physics:hep</code> and <code>math</code>).</li> 
+  <li>The second has a <a href="#header">header</a> 
+    with a <code>status="deleted"</code> 
+    attribute (and therefore no metadata part). </li>
+</ul>
+
+<p>Note: The reply only includes records for those items from which metadata in 
+<code>oai_rfc1807</code> can be disseminated. 
+No records are returned for those items that fit the <code>from</code>, <code>until</code>, 
+and <code>set</code> arguments but from which the 
+specified format can not be disseminated.</p>
+
+<table summary="Example ListRecords response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+ &lt;responseDate&gt;2002-06-01T19:20:30Z&lt;/responseDate&gt; 
+ &lt;request verb="ListRecords" from="1998-01-15"
+          set="physics:hep"
+          metadataPrefix="oai_rfc1807"&gt;
+          http://an.oa.org/OAI-script&lt;/request&gt;
+ &lt;ListRecords&gt;
+  &lt;record&gt;
+    &lt;header&gt;
+      &lt;identifier&gt;oai:arXiv.org:hep-th/9901001&lt;/identifier&gt;
+      &lt;datestamp&gt;1999-12-25&lt;/datestamp&gt;
+      &lt;setSpec&gt;physics:hep&lt;/setSpec&gt;
+      &lt;setSpec&gt;math&lt;/setSpec&gt;
+    &lt;/header&gt;
+    &lt;metadata&gt;
+     &lt;rfc1807 xmlns=
+        "http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xsi:schemaLocation=
+       "http://info.internet.isi.edu:80/in-notes/rfc/files/rfc1807.txt
+        http://www.openarchives.org/OAI/1.1/rfc1807.xsd"&gt;
+        &lt;bib-version&gt;v2&lt;/bib-version&gt;
+        &lt;id&gt;hep-th/9901001&lt;/id&gt;
+        &lt;entry&gt;January 1, 1999&lt;/entry&gt;
+        &lt;title&gt;Investigations of Radioactivity&lt;/title&gt;
+        &lt;author&gt;Ernest Rutherford&lt;/author&gt;
+        &lt;date&gt;March 30, 1999&lt;/date&gt;
+     &lt;/rfc1807&gt;
+    &lt;/metadata&gt;
+    &lt;about&gt;
+      &lt;oai_dc:dc 
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+          xmlns:dc="http://purl.org/dc/elements/1.1/" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+        &lt;dc:publisher&gt;Los Alamos arXiv&lt;/dc:publisher&gt;
+        &lt;dc:rights&gt;Metadata may be used without restrictions as long as 
+           the oai identifier remains attached to it.&lt;/dc:rights&gt;
+      &lt;/oai_dc:dc&gt;
+    &lt;/about&gt;
+  &lt;/record&gt;
+  &lt;record&gt;
+    &lt;header status="deleted"&gt;
+      &lt;identifier&gt;oai:arXiv.org:hep-th/9901007&lt;/identifier&gt;
+      &lt;datestamp&gt;1999-12-21&lt;/datestamp&gt;
+    &lt;/header&gt;
+  &lt;/record&gt;
+ &lt;/ListRecords&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Request</i></h4>
+
+<p>Request records in the <code>oai_dc </code>metadata format, modified or added between 
+2:15pm and 2:20pm UTC on May 1st 2002. [URL shown without 
+<a href="#SpecialCharacters">encoding</a> for better readability].</p> 
+
+<pre>http://www.perseus.tufts.edu/cgi-b:in/pdataprov?
+       verb=ListRecords&amp;from=2002-05-01T14:15:00Z&amp;until=2002-05-01T14:20:00Z&amp;
+       metadataPrefix=oai_dc</pre>
+
+<h4><i>Response</i></h4>
+
+<p>Two records are returned. The second one has a <code>provenance</code> 
+container in its <code>about</code> element, 
+giving an insight in its chain of provenance.</p>
+
+<table summary="Example ListRecords response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+ &lt;responseDate&gt;2002-06-01T19:20:30Z&lt;/responseDate&gt; 
+ &lt;request verb="ListRecords" from="2002-05-01T14:15:00Z"
+          until="2002-05-01T14:20:00Z" metadataPrefix="oai_dc"&gt;
+          http://www.perseus.tufts.edu/cgi-bin/pdataprov&lt;/request&gt;
+ &lt;ListRecords&gt;
+  &lt;record&gt;
+    &lt;header&gt;
+      &lt;identifier&gt;oai:perseus:Perseus:text:1999.02.0084&lt;/identifier&gt;
+      &lt;datestamp&gt;2002-05-01T14:16:12Z&lt;/datestamp&gt;
+    &lt;/header&gt;
+    &lt;metadata&gt;
+      &lt;oai_dc:dc 
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+          xmlns:dc="http://purl.org/dc/elements/1.1/" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+        &lt;dc:title&gt;Opera Minora&lt;/dc:title&gt;
+        &lt;dc:creator&gt;Cornelius Tacitus&lt;/dc:creator&gt;
+        &lt;dc:type&gt;text&lt;/dc:type&gt;
+        &lt;dc:source&gt;Opera Minora. Cornelius Tacitus. Henry Furneaux. 
+         Clarendon Press. Oxford. 1900.&lt;/dc:source&gt;
+        &lt;dc:language&gt;latin&lt;/dc:language&gt;
+        &lt;dc:identifier&gt;http://www.perseus.tufts.edu/cgi-bin/ptext?
+          doc=Perseus:text:1999.02.0084&lt;/dc:identifier&gt;
+      &lt;/oai_dc:dc&gt;
+    &lt;/metadata&gt;
+  &lt;/record&gt;
+  &lt;record&gt;
+    &lt;header&gt;
+      &lt;identifier&gt;oai:perseus:Perseus:text:1999.02.0083&lt;/identifier&gt;
+      &lt;datestamp&gt;2002-05-01T14:20:55Z&lt;/datestamp&gt;
+    &lt;/header&gt;
+    &lt;metadata&gt;
+      &lt;oai_dc:dc 
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+          xmlns:dc="http://purl.org/dc/elements/1.1/" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+        &lt;dc:title&gt;Germany and its Tribes&lt;/dc:title&gt;
+        &lt;dc:creator&gt;Tacitus&lt;/dc:creator&gt;
+        &lt;dc:type&gt;text&lt;/dc:type&gt;
+        &lt;dc:source&gt;Complete Works of Tacitus. Tacitus. Alfred John Church. 
+         William Jackson Brodribb. Lisa Cerrato. edited for Perseus. 
+         New York: Random House, Inc. Random House, Inc. reprinted 1942.
+          &lt;/dc:source&gt;
+        &lt;dc:language&gt;english&lt;/dc:language&gt;
+        &lt;dc:identifier&gt;http://www.perseus.tufts.edu/cgi-bin/ptext?
+         doc=Perseus:text:1999.02.0083&lt;/dc:identifier&gt;
+      &lt;/oai_dc:dc&gt;
+      &lt;/metadata&gt;
+    &lt;about&gt;
+      &lt;provenance
+       xmlns="http://www.openarchives.org/OAI/2.0/provenance"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/provenance  
+       http://www.openarchives.org/OAI/2.0/provenance.xsd"&gt;
+       &lt;originDescription harvestDate="2002-01-01T11:10:01Z" altered="true"&gt;
+        &lt;baseURL&gt;http://some.oa.org&lt;/baseURL&gt;
+        &lt;identifier&gt;oai:r2.org:klik001&lt;/identifier&gt;
+        &lt;datestamp&gt;2001-01-01&lt;/datestamp&gt;
+        &lt;metadataNamespace&gt;http://www.openarchives.org/OAI/2.0/oai_dc/&lt;/metadataNamespace&gt;
+        &lt;/originDescription&gt;
+      &lt;/provenance&gt;
+    &lt;/about&gt;
+  &lt;/record&gt;
+ &lt;/ListRecords&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Request</i></h4>
+
+<p>Request records in the the <code>oai_marc</code> metadata format, modified or added between 
+2:00am and 3:00am UTC on June 1st 2002. The specified granularity is not supported by the repository 
+and therefore, an <code>error</code> with <code>code</code> attribute of <code>badArgument</code> 
+is returned. [URL shown without <a href="#SpecialCharacters">encoding</a> for better readability].</p> 
+
+<pre>http://memory.loc.gov/cgi-bin/oai?
+       verb=ListRecords&amp;from=2002-06-01T02:00:00Z&amp;until=2002-06-01T03:00:00Z&amp;metadataPrefix=oai_marc</pre>
+
+<h4><i>Response</i></h4>
+
+<table summary="Example ListRecords response with badArgument" width="80" border="2">
+  <tbody>
+  <tr>
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2002-06-01T19:20:30Z&lt;/responseDate&gt; 
+  &lt;request verb="ListRecords" from="2002-06-01T02:00:00Z"
+           until="2002-06-01T03:020:00Z"
+           metadataPrefix="oai_marc"&gt;
+           http://memory.loc.gov/cgi-bin/oai&lt;/request&gt;
+  &lt;error code="badArgument"/&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h2>4.6 <a name="ListSets">ListSets</a></h2>
+
+<h3>Summary and Usage Notes</h3>
+
+<p>This verb is used to retrieve the set structure of a repository, useful for 
+<a href="#SelectiveHarvestingandSets">selective harvesting</a>.</p>
+
+<h3>Arguments</h3>
+
+<ul>
+  <li><b><code>resumptionToken</code></b> 
+    an <i>exclusive</i> argument with a value that is the 
+    <a href="#FlowControl">flow control</a> token returned by a 
+    previous <code>ListSets</code> request that issued 
+    an incomplete list.</li>
+</ul>
+
+<h3>Error and Exception Conditions</h3>
+
+<ul>
+  <li><code><b>badArgument</b></code> - 
+    The request includes illegal arguments or is missing required arguments.</li> 
+  <li><code><b>badResumptionToken</b></code> - 
+    The value of the <code>resumptionToken</code> argument is 
+    invalid or expired.</li> 
+  <li><code><b>noSetHierarchy</b></code> - 
+    The repository does not support sets.</li>
+</ul>
+
+<h3>Examples</h3>
+
+<h4><i>Request</i></h4>
+
+<pre>http://an.oa.org/OAI-script?
+       verb=ListSets</pre>
+
+<h4><i>Response</i></h4>
+
+<p>The following response indicates a set hierarchy with two top 
+level sets with respective setSpec <code>music</code> and <code>video</code>. 
+The <code>music</code> set has two subsets, with setSpec 
+<code>music:(muzak</code>) and <code>music:(elec)</code>. The subsets 
+identified by setSpec<code> music:(elec)</code>, has a 
+<code>setDescription</code> element which holds a Dublin Core container, 
+used to describe its contents.</p>
+
+<table summary="Example ListSets response" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+ &lt;responseDate&gt;2002-08-11T07:21:33Z&lt;/responseDate&gt;
+ &lt;request verb="ListSets"&gt;http://an.oa.org/OAI-script&lt;/request&gt;
+ &lt;ListSets&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;music&lt;/setSpec&gt;
+    &lt;setName&gt;Music collection&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;music:(muzak)&lt;/setSpec&gt;
+    &lt;setName&gt;Muzak collection&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;music:(elec)&lt;/setSpec&gt;
+    &lt;setName&gt;Electronic Music Collection&lt;/setName&gt;
+    &lt;setDescription&gt;
+      &lt;oai_dc:dc 
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+          xmlns:dc="http://purl.org/dc/elements/1.1/" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+          http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+          &lt;dc:description&gt;This set contains metadata describing 
+             electronic music recordings made during the 1950ies
+             &lt;/dc:description&gt;
+       &lt;/oai_dc:dc&gt;
+    &lt;/setDescription&gt;
+   &lt;/set&gt;
+   &lt;set&gt;
+    &lt;setSpec&gt;video&lt;/setSpec&gt;
+    &lt;setName&gt;Video Collection&lt;/setName&gt;
+   &lt;/set&gt;
+ &lt;/ListSets&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Request</i></h4>
+
+<pre>http://purl.org/alcme/etdcat/servlet/OAIHandler?
+       verb=ListSets</pre>
+
+<h4><i>Response</i></h4>
+
+<p>The response shows that the repository does not have a set hierarchy.</p>
+
+<table summary="Example ListSets response with noSetHierarchy" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"&gt;
+  &lt;responseDate&gt;2001-06-01T19:20:30Z&lt;/responseDate&gt; 
+  &lt;request verb="ListSets"&gt;
+           http://purl.org/alcme/etdcat/servlet/OAIHandler&lt;/request&gt;
+  &lt;error code="noSetHierarchy"&gt;This repository does not 
+         support sets&lt;/error&gt;
+&lt;/OAI-PMH&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h1>5. <a name="dublincore">Dublin Core</a></h1>
+
+<p>The following table shows the XML Schema for Dublin Core without 
+qualification, which is associated with the reserved <code>metadataPrefix oai_dc</code> in the 
+OAI-PMH. All examples in this document that include Dublin Core metadata, 
+validate against this XML schema. Schema for other metadata formats are provided 
+in the accompanying <a 
+href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation Guidelines</a> document.</p>
+
+<table summary="oai_dc schema" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+      <p>A XML schema for validating Unqualified Dublin Core metadata associated 
+        <br />
+        with the reserved <code>oai_dc</code> <code>metadataPrefix</code></p>
+    </td>
+  </tr>
+  <tr> 
+    <td> 
+<pre>&lt;schema targetNamespace="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+        xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+        xmlns:dc="http://purl.org/dc/elements/1.1/" 
+        xmlns="http://www.w3.org/2001/XMLSchema" 
+        elementFormDefault="qualified" attributeFormDefault="unqualified"&gt;
+	
+&lt;annotation&gt;
+  &lt;documentation&gt; 
+      XML Schema 2002-03-18 by Pete Johnston.
+      Adjusted for usage in the OAI-PMH.
+      Schema imports the Dublin Core elements from the DCMI schema for unqualified Dublin Core.
+      2002-12-19 updated to use simpledc20021212.xsd (instead of simpledc20020312.xsd)
+  &lt;/documentation&gt;
+&lt;/annotation&gt;
+
+&lt;import namespace="http://purl.org/dc/elements/1.1/" 
+        schemaLocation="http://dublincore.org/schemas/xmls/simpledc20021212.xsd"/&gt;
+	
+&lt;element name="dc" type="oai_dc:oai_dcType"/&gt;
+
+&lt;complexType name="oai_dcType"&gt;
+  &lt;choice minOccurs="0" maxOccurs="unbounded"&gt;
+    &lt;element ref="dc:title"/&gt;
+    &lt;element ref="dc:creator"/&gt;
+    &lt;element ref="dc:subject"/&gt;
+    &lt;element ref="dc:description"/&gt;
+    &lt;element ref="dc:publisher"/&gt;
+    &lt;element ref="dc:contributor"/&gt;
+    &lt;element ref="dc:date"/&gt;
+    &lt;element ref="dc:type"/&gt;
+    &lt;element ref="dc:format"/&gt;
+    &lt;element ref="dc:identifier"/&gt;
+    &lt;element ref="dc:source"/&gt;
+    &lt;element ref="dc:language"/&gt;
+    &lt;element ref="dc:relation"/&gt;
+    &lt;element ref="dc:coverage"/&gt;
+    &lt;element ref="dc:rights"/&gt;
+  &lt;/choice&gt;
+&lt;/complexType&gt;
+
+&lt;/schema&gt;
+
+</pre>
+    </td>
+  </tr>
+  <tr> 
+    <td>This Schema is available at <a 
+      href="http://www.openarchives.org/OAI/2.0/oai_dc.xsd">http://www.openarchives.org/OAI/2.0/oai_dc.xsd</a></td>
+  </tr>
+  </tbody>
+</table>
+
+<h4><i>Examples</i></h4>
+
+<table summary="Example oai_dc record (1)" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;oai_dc:dc 
+    xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+    xmlns:dc="http://purl.org/dc/elements/1.1/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ 
+    http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+  &lt;dc:title xml:lang="en"&gt;The Cornell Law Quarterly&lt;/dc:title&gt;
+  &lt;dc:date&gt;1915-1916&lt;/dc:date&gt;
+  &lt;dc:identifier&gt;http://heinonline.org/HeinOnline/show.pl?
+      handle=hein.journals/clqv1%26id=1%26size=4&lt;/dc:identifier&gt;
+  &lt;dc:rights&gt;Available by Subscription. 
+             See http://www.wshein.com&lt;/dc:rights&gt;
+&lt;/oai_dc:dc&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<p>&nbsp;</p>
+
+<table summary="Example oai_dc record (2)" width="80%" border="2">
+  <tbody> 
+  <tr> 
+    <td> 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;oai_dc:dc 
+    xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" 
+    xmlns:dc="http://purl.org/dc/elements/1.1/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/
+    http://www.openarchives.org/OAI/2.0/oai_dc.xsd"&gt;
+  &lt;dc:title xml:lang="en"&gt;Grassmann's space analysis&lt;/dc:title&gt;
+  &lt;dc:creator&gt;Hyde, E. W. (Edward Wyllys)&lt;/dc:creator&gt;
+  &lt;dc:subject&gt;LCSH:Ausdehnungslehre; LCCN QA205.H99&lt;/dc:subject&gt;
+  &lt;dc:publisher&gt;J. Wiley &amp;amp; Sons&lt;/dc:publisher&gt;
+  &lt;dc:date&gt;Created: 1906; Available: 1991&lt;/dc:date&gt;
+  &lt;dc:type&gt;text&lt;/dc:type&gt;
+  &lt;dc:identifier&gt;http://resolver.library.cornell.edu/math/1796949
+     &lt;/dc:identifier&gt;
+  &lt;dc:language&gt;english&lt;/dc:language&gt;
+  &lt;dc:rights xml:lang="en"&gt;Public Domain&lt;/dc:rights&gt;
+&lt;/oai_dc:dc&gt;
+</pre>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<h1>6. <a name="ImpGuid">Implementation Guidelines</a></h1>
+
+<p>Some passages in this document refer to the existence and goals of the 
+accompanying <a href="http://www.openarchives.org/OAI/2.0/guidelines.htm">Implementation 
+Guidelines</a> document.</p>
+
+<h2><a name="acknowledgements"></a>Acknowledgements</h2>
+
+<p>Support for the development of the OAI-PMH and for other Open Archives Initiative 
+activities comes from the <a href="http://www.diglib.org">Digital Library Federation</a>, 
+the <a href="http://www.cni.org/">Coalition for Networked Information</a>, 
+and from the National Science Foundation through Grant No. IIS-9817416.</p>
+
+<p>This document is based on the deliberations of the OAI Technical Committee:
+Caroline Arms (Library of Congress),
+Thomas Baron (CERN),
+Steven Bird (University of Pennsylvania),
+Les Carr (University of Southampton),
+Tim Cole (University of Illinois at Urbana Champaign),
+Thomas Krichel (Long Island University),
+Carl Lagoze (Cornell University),
+Michael Nelson (NASA),
+Andy Powell (UKOLN &amp; University of Bath),
+Mogens Sandfaer (Danmarks Tekniske Videncenter),
+Hussein Suleman (Virginia Tech),
+Robert Tansley (HP),
+Herbert Van de Sompel (Los Alamos National Laboratory),
+Simeon Warner (Cornell University),
+Muhammad Zubair (Old Dominion University) and
+Jeff Young (OCLC).</p>
+
+<p>Many thanks to all involved in alpha-testing of version 2.0 of the OAI-PMH. 
+In addition to the above:
+Tim Brody (University of Southampton),
+Irena Dijour (Ex Libris),
+Naomi Dushay (Cornell University),
+Susanne Dobratz (Humboldt Universit&auml;t zu Berlin),
+Curtis Fornadley (UCLA),
+Christopher Gutteridge (University of Southampton),
+Alan Kent (InQuirion Pty Ltd &amp; RMIT University),
+David Letts (The British Library),
+Xiaoming Liu (Old Dominion University),
+Jon Phipps (Cornell University) and
+Francois Schiettecatte (FS Consulting Inc).</p>
+
+<p>Special thanks to Pete Johnston (UKOLN &amp; University of Bath) and Andy Powell 
+(UKOLN &amp; University of Bath) for work on the Dublin Core schema, and to Donna Bergmark 
+(Cornell University) for work on the OAI validation and registration service.</p>
+
+<p>Many thanks to 
+<a href="http://www.openarchives.org/OAI/1.1/openarchivesprotocol.htm#acknowledgements">everyone</a> 
+involved in the compilation and alpha-testing of version 1.0 and 1.1 of the 
+OAI-PMH, and to all of you using this protocol.</p>
+
+<h2><a name="DocumentHistory">Document History</a></h2>
+<p>
+<b><a href="openarchivesprotocol.2008-12-02.htm">2008-12-02</a></b>: 
+  Spell checked after all these years and several errors 
+  corrected. No change of meaning. Added links to previous versions.<br />
+<b><a href="openarchivesprotocol.2004-10-12.htm">2004-10-12</a></b>: 
+  Changed wording and schema definition for characters 
+  allowed in <code>setSpec</code> and <code>metadataPrefix</code> to agree.<br />
+<b><a href="openarchivesprotocol.2004-09-15.htm">2004-09-15</a></b>:
+  Added section <a href="#DeletedRecords">2.5.1</a>. 
+  Corrected section <a href="#Set">2.6</a>. 
+  Corrected second example in section <a href="#dublincore">5</a>.
+  Changed <a href="#OAIPMHschema">schema</a> to defined a type for <code>protocolVersion</code>
+  and to enforce use of <code>Z</code> notation for <a href="#Dates">UTC datetime</a>.<br />
+<b><a href="openarchivesprotocol.2003-02-21.htm">2003-02-21</a></b>: 
+  Changed identifiers in the examples 
+  so that they conform to version 2.0 of the 
+  <code>oai-identifier</code> specification.<br />
+<b><a href="openarchivesprotocol.2002-12-19.htm">2002-12-19</a></b>: Updated 
+  <a href="#dublincore"><code>oai_dc</code> schema</a> to use revised Dublin Core schema 
+  <code>simpledc20021212.xsd</code>.
+  Corrected <code>provenance</code> blocks in examples 
+  (sections <a href="#Record">2.5</a> and <a href="#ListRecords">4.5</a>).<br />
+<b>2002-06-14</b>: Release of OAI-PMH version 2.0.<br />
+<b>2002-05-02</b>: Release of beta version of OAI-PMH version 2.0.<br />
+<b>2002-05-06</b>: Release of alpha-4 version of OAI-PMH version 2.0. Changed 
+  document to reflect association of datestamps and deleted status with records 
+  as opposed to items. Changed 
+  <code>requestURL</code> to 
+  <code>request</code>. Changed schema location of 
+  <code>oai-identifier</code> and 
+  <code>oai_dc</code> 
+  schema. Changed validation of 
+  <code>about</code>, 
+  <code>metadata</code>, 
+  <code>description</code> and 
+  <code>setDescription</code> 
+  to strict.<br />
+<b>2002-04-07</b>: Changed document to reflect the usage of a single schema 
+  to validate all OAI-PMH responses.<br />
+<b>2002-03-30</b>: Release of alpha two version of OAI-PMH version 2.0.<br />
+<b>2002-03-01</b>: Release of alpha version of OAI-PMH version 2.0</p>
+
+</BODY>
+</HTML>

@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] OAI validation problem
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:jyoung%40oclc.org">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000912.html">
+   <LINK REL="Next"  HREF="000914.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] OAI validation problem
+   </H1>
+    <B>Young,Jeff
+    </B> 
+    <A HREF="mailto:jyoung%40oclc.org"
+       TITLE="[OAI-implementers] OAI validation problem">jyoung@oclc.org
+       </A><BR>
+    <I>Thu, 22 May 2003 11:52:37 -0400</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000912.html">[OAI-implementers] OAI validation problem
+</A></li>
+        <LI> Next message: <A HREF="000914.html">[OAI-implementers] OAI validation problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#913">[ date ]</a>
+              <a href="thread.html#913">[ thread ]</a>
+              <a href="subject.html#913">[ subject ]</a>
+              <a href="author.html#913">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Here's another example of where I'm having trouble processing OAI responses
+with XSLT. Below is a deleted record:
+
+  &lt;record&gt;
+    &lt;header status=&quot;deleted&quot;&gt;
+      &lt;identifier&gt;oai:arXiv.org:hep-th/9901007&lt;/identifier&gt;
+      &lt;datestamp&gt;1999-12-21&lt;/datestamp&gt;
+    &lt;/header&gt;
+  &lt;/record&gt;
+
+This response indicates the deletion of a record in a particular
+metadataFormat, not the deletion of the item. The problem is that there is
+nothing in the response to indicate which metadataFormat is being deleted
+except by looking at /OAI-PMH/request/@metadataPrefix. Unfortunately, this
+isn't deterministic because different repositories may use different labels
+to refer to the same schemaLocation, so again I'm forced to look up the
+metadataPrefix using a separate ListMetadataFormats response. It would be
+nice if the xsi:schemaLocation was immediately present.
+
+Perhaps something like this would be ideal.
+
+  &lt;record&gt;
+    &lt;header status=&quot;deleted&quot;&gt;
+      &lt;identifier&gt;oai:arXiv.org:hep-th/9901007&lt;/identifier&gt;
+      &lt;datestamp&gt;1999-12-21&lt;/datestamp&gt;
+    &lt;/header&gt;
+    &lt;metadata xsi:schemaLocation=&quot;...&quot; /&gt;
+  &lt;/record&gt;
+
+It's a shame, but it's probably too late to fix this problem.
+
+Jeff
+
+&gt;<i> -----Original Message-----
+</I>&gt;<i> From: Young,Jeff [mailto:<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>]
+</I>&gt;<i> Sent: Thursday, May 22, 2003 9:16 AM
+</I>&gt;<i> To: 'Hussein Suleman'; OAI-implementers (E-mail)
+</I>&gt;<i> Subject: RE: [OAI-implementers] OAI validation problem
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> I've always made a point of being willfully ignorant about 
+</I>&gt;<i> XML Schemas, but
+</I>&gt;<i> it's time I gave it a try. The trick seems to be to define an 
+</I>&gt;<i> abstract type
+</I>&gt;<i> to use in place of &lt;any namespace=&quot;##other&quot;.../&gt; This 
+</I>&gt;<i> abstract type would
+</I>&gt;<i> then require the xsi:schemaLocation.
+</I>&gt;<i> 
+</I>&gt;<i> So, in place of this:
+</I>&gt;<i> 
+</I>&gt;<i> &lt;complexType name=&quot;metadataType&quot;&gt;
+</I>&gt;<i> 	&lt;sequence&gt;
+</I>&gt;<i> 		&lt;any namespace=&quot;##other&quot; processContents=&quot;strict&quot;/&gt;
+</I>&gt;<i> 	&lt;/sequence&gt;
+</I>&gt;<i> &lt;/complexType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> do something like:
+</I>&gt;<i> 
+</I>&gt;<i> &lt;xsd:complexType name=&quot;abstractContent&quot; abstract=&quot;true&quot;&gt;
+</I>&gt;<i> 	&lt;xsd:sequence min-Occurs=&quot;1&quot; maxOccurs=&quot;1&quot;&gt;
+</I>&gt;<i> 		&lt;any namespace=&quot;##other&quot; processContents=&quot;strict&quot; /&gt;
+</I>&gt;<i> 	&lt;/xsd:sequence&gt;
+</I>&gt;<i> &lt;/xsd:complexType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> &lt;complexType name=&quot;metadataType&quot;&gt;
+</I>&gt;<i> 	&lt;xsd:complexContent&gt;
+</I>&gt;<i> 		&lt;xsd:extension base=&quot;abstractContent&quot;&gt;
+</I>&gt;<i> 			&lt;xsd:attribute name=&quot;xsi:schemaLocation&quot;
+</I>&gt;<i> type=&quot;xsd:string&quot; use=&quot;required&quot; /&gt;
+</I>&gt;<i> 		&lt;/xsd:extension&gt;
+</I>&gt;<i> 	&lt;/xsd:complexContent&gt;
+</I>&gt;<i> &lt;/complexType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> If that isn't right, then maybe it's something like this:
+</I>&gt;<i> 
+</I>&gt;<i> &lt;xsd:element name=&quot;Content&quot; abstract=&quot;true&quot; type=&quot;abstractContent&quot; /&gt;
+</I>&gt;<i> 
+</I>&gt;<i> &lt;xsd:complexType name=&quot;abstractContent&quot;&gt;
+</I>&gt;<i>     &lt;sequence&gt;
+</I>&gt;<i>         &lt;any namespace=&quot;##other&quot; processContents=&quot;strict&quot; /&gt;
+</I>&gt;<i>     &lt;/sequence&gt;
+</I>&gt;<i>     &lt;xsd:attribute name=&quot;xsi:schemaLocation&quot; type=&quot;xsd:string&quot;
+</I>&gt;<i> use=&quot;required&quot; /&gt;
+</I>&gt;<i> &lt;/xsd:complexType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> &lt;complexType name=&quot;metadataType&quot;&gt;
+</I>&gt;<i>     &lt;xsd:sequence&gt;
+</I>&gt;<i>         &lt;xsd:element ref=&quot;Content&quot; minOccurs=&quot;1&quot; maxOccurs=&quot;1&quot; /&gt;
+</I>&gt;<i>     &lt;/xsd:sequence&gt;
+</I>&gt;<i> &lt;/complexType&gt;
+</I>&gt;<i> 
+</I>&gt;<i> No promises, though..
+</I>&gt;<i> 
+</I>&gt;<i> Jeff
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> &gt; -----Original Message-----
+</I>&gt;<i> &gt; From: Hussein Suleman [mailto:<A HREF="mailto:hussein@cs.uct.ac.za">hussein@cs.uct.ac.za</A>]
+</I>&gt;<i> &gt; Sent: Wednesday, May 21, 2003 5:55 PM
+</I>&gt;<i> &gt; To: OAI-implementers (E-mail)
+</I>&gt;<i> &gt; Subject: Re: [OAI-implementers] OAI validation problem
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; hi Jeff
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; some random thoughts ...
+</I>&gt;<i> &gt; - could the schema be modified to reflect a required 
+</I>&gt;<i> &gt; xsi:schemaLocation 
+</I>&gt;<i> &gt; attribute? that might be the easiest fix.
+</I>&gt;<i> &gt; - alternatively, does DOM3 propagate schema information like DOM2 
+</I>&gt;<i> &gt; propagates namespaces? if so, then there might be a method to 
+</I>&gt;<i> &gt; directly 
+</I>&gt;<i> &gt; retrieve the schema for a given node/element.
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; ttfn,
+</I>&gt;<i> &gt; ----hussein
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; Young,Jeff wrote:
+</I>&gt;<i> &gt; &gt; I think I found a hole in the OAI validation mechanisms. I 
+</I>&gt;<i> &gt; believe the
+</I>&gt;<i> &gt; &gt; contents of the &lt;metadata&gt; element should be required to have an
+</I>&gt;<i> &gt; &gt; xsi:schemaLocation attribute to make it easier to identify 
+</I>&gt;<i> &gt; the schema for
+</I>&gt;<i> &gt; &gt; the data. Without it, harvesters are forced to use the
+</I>&gt;<i> &gt; &gt; /oai2:OAI-PMH/oai2:request/@metadataPrefix value and look 
+</I>&gt;<i> &gt; it up in the
+</I>&gt;<i> &gt; &gt; ListMetadataFormats response, which is more trouble than having it
+</I>&gt;<i> &gt; &gt; immediately available as an attribute.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; The examples in the OAI protocol document do show it as an 
+</I>&gt;<i> &gt; attribute, but
+</I>&gt;<i> &gt; &gt; apparently the Repository Explorer and the Registration 
+</I>&gt;<i> &gt; validation available
+</I>&gt;<i> &gt; &gt; on the OAI site don't check for it.
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Jeff
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; ---
+</I>&gt;<i> &gt; &gt; Jeffrey A. Young
+</I>&gt;<i> &gt; &gt; Consulting Software Engineer
+</I>&gt;<i> &gt; &gt; Office of Research, Mail Code 710
+</I>&gt;<i> &gt; &gt; OCLC Online Computer Library Center, Inc.
+</I>&gt;<i> &gt; &gt; 6565 Frantz Road
+</I>&gt;<i> &gt; &gt; Dublin, OH   43017-3395
+</I>&gt;<i> &gt; &gt; www.oclc.org
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; Voice:	614-764-4342
+</I>&gt;<i> &gt; &gt; Voice:	800-848-5878, ext. 4342
+</I>&gt;<i> &gt; &gt; Fax:	614-718-7477
+</I>&gt;<i> &gt; &gt; Email:	<A HREF="mailto:jyoung@oclc.org">jyoung@oclc.org</A>
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; &gt; _______________________________________________
+</I>&gt;<i> &gt; &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt; &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> &gt; -- 
+</I>&gt;<i> &gt; 
+</I>&gt;<i> =====================================================================
+</I>&gt;<i> &gt; hussein suleman ~ <A HREF="mailto:hussein@cs.uct.ac.za">hussein@cs.uct.ac.za</A> ~ 
+</I><A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+&gt;<i> =====================================================================
+</I>&gt;<i> 
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>_______________________________________________
+OAI-implementers mailing list
+List information, archives, preferences and to unsubscribe:
+<A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000912.html">[OAI-implementers] OAI validation problem
+</A></li>
+	<LI> Next message: <A HREF="000914.html">[OAI-implementers] OAI validation problem
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#913">[ date ]</a>
+              <a href="thread.html#913">[ thread ]</a>
+              <a href="subject.html#913">[ subject ]</a>
+              <a href="author.html#913">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

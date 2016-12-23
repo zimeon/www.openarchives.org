@@ -1,0 +1,3578 @@
+From d.stowell at ucl.ac.uk  Wed Feb  2 05:17:50 2005
+From: d.stowell at ucl.ac.uk (Dan Stowell)
+Date: Wed Feb  2 05:18:01 2005
+Subject: [OAI-implementers] How many records should typically be returned
+	over OAI-PMH?
+Message-ID: <5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+
+Hi,
+
+I'm implementing OAI-PMH and at first I decided that my system could easily 
+return 2000 records in a single OAI-PMH request. Unfortunately the "OAI 
+Repository Explorer" doesn't seem to be able to cope with that much data 
+since it ended up having timeout and too-much-data errors.
+
+I've now reduced that number to 500 and my repository now validates 
+happily. But is there a rule of thumb for how many records it's "polite" to 
+return, or how many a typical OAI-PMH harvester "expects" to have to deal with?
+
+Thanks
+Dan
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Dan Stowell
+Faculty Information Support Officer (Life Sciences), UCL
+http://www.ucl.ac.uk/is/fiso/lifesciences/
+
+Room B07A, Drayton House, 30 Gordon Street, London
+Phone: +44 (0)20 7679 5472      (within UCL: dial 25472)
+Email: d.stowell@ucl.ac.uk
+
+
+From badenh at cs.mu.OZ.AU  Wed Feb  2 05:51:15 2005
+From: badenh at cs.mu.OZ.AU (Baden Hughes)
+Date: Wed Feb  2 05:51:20 2005
+Subject: [OAI-implementers] How many records should typically be returned
+	over OAI-PMH?
+In-Reply-To: <5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+References: <5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+Message-ID: <Pine.GSO.4.61.0502022149080.17263@mulga.cs.mu.OZ.AU>
+
+
+OAI-PMH has a flow control mechanism [1], which, if followed, allows the 
+use of a resumptionToken for handling larger data sets. This is widely 
+implemented in OAI tools.
+
+[1] http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#FlowControl
+
+Baden
+
+On Wed, 2 Feb 2005, Dan Stowell wrote:
+
+> Hi,
+>
+> I'm implementing OAI-PMH and at first I decided that my system could easily 
+> return 2000 records in a single OAI-PMH request. Unfortunately the "OAI 
+> Repository Explorer" doesn't seem to be able to cope with that much data 
+> since it ended up having timeout and too-much-data errors.
+>
+> I've now reduced that number to 500 and my repository now validates happily. 
+> But is there a rule of thumb for how many records it's "polite" to return, or 
+> how many a typical OAI-PMH harvester "expects" to have to deal with?
+>
+> Thanks
+> Dan
+>
+> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> Dan Stowell
+> Faculty Information Support Officer (Life Sciences), UCL
+> http://www.ucl.ac.uk/is/fiso/lifesciences/
+>
+> Room B07A, Drayton House, 30 Gordon Street, London
+> Phone: +44 (0)20 7679 5472      (within UCL: dial 25472)
+> Email: d.stowell@ucl.ac.uk
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From d.stowell at ucl.ac.uk  Wed Feb  2 06:26:39 2005
+From: d.stowell at ucl.ac.uk (Dan Stowell)
+Date: Wed Feb  2 06:27:00 2005
+Subject: [OAI-implementers] How many records should typically be
+	returned over OAI-PMH?
+In-Reply-To: <Pine.GSO.4.61.0502022149080.17263@mulga.cs.mu.OZ.AU>
+References: <5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+Message-ID: <5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+
+Thanks - but yes, I'm aware of the resumptionToken - I just wanted to know 
+whether there's a de facto standard for how many records to return in a 
+single response, before giving the resumptionToken.
+
+Best,
+Dan
+
+
+At 21:51 02/02/2005 +1100, Baden Hughes wrote:
+
+>OAI-PMH has a flow control mechanism [1], which, if followed, allows the 
+>use of a resumptionToken for handling larger data sets. This is widely 
+>implemented in OAI tools.
+>
+>[1] http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#FlowControl
+>
+>Baden
+>
+>On Wed, 2 Feb 2005, Dan Stowell wrote:
+>
+>>Hi,
+>>
+>>I'm implementing OAI-PMH and at first I decided that my system could 
+>>easily return 2000 records in a single OAI-PMH request. Unfortunately the 
+>>"OAI Repository Explorer" doesn't seem to be able to cope with that much 
+>>data since it ended up having timeout and too-much-data errors.
+>>
+>>I've now reduced that number to 500 and my repository now validates 
+>>happily. But is there a rule of thumb for how many records it's "polite" 
+>>to return, or how many a typical OAI-PMH harvester "expects" to have to 
+>>deal with?
+>>
+>>Thanks
+>>Dan
+>>
+>>~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>Dan Stowell
+>>Faculty Information Support Officer (Life Sciences), UCL
+>>http://www.ucl.ac.uk/is/fiso/lifesciences/
+>>
+>>Room B07A, Drayton House, 30 Gordon Street, London
+>>Phone: +44 (0)20 7679 5472      (within UCL: dial 25472)
+>>Email: d.stowell@ucl.ac.uk
+>>
+>>
+>>_______________________________________________
+>>OAI-implementers mailing list
+>>List information, archives, preferences and to unsubscribe:
+>>http://www.openarchives.org/mailman/listinfo/oai-implementers
+
+
+From tajoli at cilea.it  Wed Feb  2 06:51:51 2005
+From: tajoli at cilea.it (Zeno Tajoli)
+Date: Wed Feb  2 06:52:11 2005
+Subject: [OAI-implementers] How many records should typically be	returned
+	over OAI-PMH?
+In-Reply-To: <5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+References: <5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+Message-ID: <6.1.2.0.0.20050202125031.01ecdec0@mail.cilea.it>
+
+Hi,
+
+At 12.26 02/02/2005, Dan Stowell wrote:
+>Thanks - but yes, I'm aware of the resumptionToken - I just wanted to know 
+>whether there's a de facto standard for how many records to return in a 
+>single response, before giving the resumptionToken.
+
+as I know the de fact standard is 100 records.
+
+Bye
+
+
+
+
+Zeno Tajoli
+CILEA - Segrate (MI)
+tajoliAT_SPAM_no_prendiATcilea.it
+(Indirizzo mascherato anti-spam; sostituisci quanto tra AT con @)
+
+
+From hussein at cs.uct.ac.za  Wed Feb  2 07:18:26 2005
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Wed Feb  2 07:18:23 2005
+Subject: [OAI-implementers] How many records should typically be	returned
+	over OAI-PMH?
+In-Reply-To: <5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+References: <5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>	<5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+Message-ID: <4200C512.2060204@cs.uct.ac.za>
+
+hi Dan
+
+i dont think there is a de facto standard ... but i recall some people a 
+while back saying responses should not exceed about 1MB in size because 
+of limitations of popular XML processing tools
+
+if your responses are about that size and the RE does not accept them, 
+let me know and ill increase the limits ...
+
+ttfn,
+----hussein
+
+ps. personally, i think 500 records is fine
+
+
+Dan Stowell wrote:
+
+> Thanks - but yes, I'm aware of the resumptionToken - I just wanted to 
+> know whether there's a de facto standard for how many records to return 
+> in a single response, before giving the resumptionToken.
+> 
+> Best,
+> Dan
+> 
+> 
+> At 21:51 02/02/2005 +1100, Baden Hughes wrote:
+> 
+>> OAI-PMH has a flow control mechanism [1], which, if followed, allows 
+>> the use of a resumptionToken for handling larger data sets. This is 
+>> widely implemented in OAI tools.
+>>
+>> [1] 
+>> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#FlowControl
+>>
+>> Baden
+>>
+>> On Wed, 2 Feb 2005, Dan Stowell wrote:
+>>
+>>> Hi,
+>>>
+>>> I'm implementing OAI-PMH and at first I decided that my system could 
+>>> easily return 2000 records in a single OAI-PMH request. Unfortunately 
+>>> the "OAI Repository Explorer" doesn't seem to be able to cope with 
+>>> that much data since it ended up having timeout and too-much-data 
+>>> errors.
+>>>
+>>> I've now reduced that number to 500 and my repository now validates 
+>>> happily. But is there a rule of thumb for how many records it's 
+>>> "polite" to return, or how many a typical OAI-PMH harvester "expects" 
+>>> to have to deal with?
+>>>
+>>> Thanks
+>>> Dan
+>>>
+>>> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>> Dan Stowell
+>>> Faculty Information Support Officer (Life Sciences), UCL
+>>> http://www.ucl.ac.uk/is/fiso/lifesciences/
+>>>
+>>> Room B07A, Drayton House, 30 Gordon Street, London
+>>> Phone: +44 (0)20 7679 5472      (within UCL: dial 25472)
+>>> Email: d.stowell@ucl.ac.uk
+>>>
+>>>
+>>> _______________________________________________
+>>> OAI-implementers mailing list
+>>> List information, archives, preferences and to unsubscribe:
+>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From d.stowell at ucl.ac.uk  Wed Feb  2 11:27:03 2005
+From: d.stowell at ucl.ac.uk (Dan Stowell)
+Date: Wed Feb  2 11:27:09 2005
+Subject: [OAI-implementers] How many records should typically be
+	returned over OAI-PMH?
+In-Reply-To: <4200C512.2060204@cs.uct.ac.za>
+References: <5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+Message-ID: <5.2.1.1.1.20050202162257.01ef6a38@imap-server.ucl.ac.uk>
+
+Hussein,
+
+Thanks for this - my 500-record responses are about half a megabyte, so 
+that's probably a good size to go with.
+
+(It implies that my 2000-record responses were about 2MB, causing the RE to 
+choke.)
+
+Dan
+
+
+At 14:18 02/02/2005 +0200, you wrote:
+>hi Dan
+>
+>i dont think there is a de facto standard ... but i recall some people a 
+>while back saying responses should not exceed about 1MB in size because of 
+>limitations of popular XML processing tools
+>
+>if your responses are about that size and the RE does not accept them, let 
+>me know and ill increase the limits ...
+>
+>ttfn,
+>----hussein
+>
+>ps. personally, i think 500 records is fine
+
+
+From jenlrile at indiana.edu  Wed Feb  2 11:26:11 2005
+From: jenlrile at indiana.edu (Riley, Jenn)
+Date: Wed Feb  2 11:30:56 2005
+Subject: [OAI-implementers] service provider grouping of metadata elements
+Message-ID: <0560FE30E308454280C10066BBC4554C01AA4FCA@iu-mssg-mbx05.exchange.iu.edu>
+
+Hello all-
+
+I'm part of a group within the Digital Library Federation writing a set
+of Best Practices for shareable metadata via OAI. One of our goals is to
+develop best practices for specific classes of metadata elements, rather
+than writing them for elements in any specific metadata schema (e.g.,
+DC). But first we need to define those classes.
+
+I'd like to ask OAI service providers out there what metadata elements
+you combine together for searching or browsing, in order to help us
+define what higher-level element classes we should be describing. Do
+you, for example, combine dc.creator, dc.contributor, and dc.publisher
+into a single index (And what do you call it?)? Pull temporal values
+from dc.coverage and index them together with dc.date? Put dc.title,
+dc.description, and dc.subject together for a "title"-ish index? What
+combinations do you currently use and what have you considered but don't
+currently implement? If you're harvesting metadata in something other
+than DC, or using something other than DC on your SP back end, we'd be
+interested in hearing about elements you combine from these schemas as
+well. 
+
+Thanks in advance for the feedback - I look forward to seeing what
+people out there are doing.
+
+Jenn
+
+========================
+Jenn Riley
+Metadata Librarian
+Digital Library Program
+Indiana University - Bloomington
+Main Library E170
+(812) 856-5759
+www.dlib.indiana.edu
+
+From editor at e-libro.com  Wed Feb  2 12:40:40 2005
+From: editor at e-libro.com (editor@e-libro.com)
+Date: Wed Feb  2 13:29:19 2005
+Subject: [OAI-implementers] TRES NUEVOS PROGRAMAS:
+Message-ID: <000601c50955$09777120$5a0aa8c0@Eduardo>
+
+Skipped content of type multipart/alternative-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: not available
+Type: image/jpeg
+Size: 2356 bytes
+Desc: not available
+Url : http://openarchives.org/pipermail/oai-implementers/attachments/20050202/e19287da/attachment-0001.jpg
+From simeon at cs.cornell.edu  Wed Feb  2 23:22:18 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Wed Feb  2 23:22:33 2005
+Subject: [OAI-implementers] How many records should typically be returned
+	over OAI-PMH?
+In-Reply-To: <4200C512.2060204@cs.uct.ac.za>
+References: <5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202101334.00997080@imap-server.ucl.ac.uk>
+	<5.2.1.1.1.20050202112523.01dc2e80@imap-server.ucl.ac.uk>
+	<4200C512.2060204@cs.uct.ac.za>
+Message-ID: <Pine.LNX.4.58.0502022318560.8767@dhcp103-124.cs.cornell.edu>
+
+
+I have had arXiv.org's OAI interface sending replies of around 1MB
+(actually up to about 1.5) for some time and no one has told me of any
+problems with the reply size.
+
+Cheers,
+Simeon
+
+
+On Wed, 2 Feb 2005, Hussein Suleman wrote:
+> hi Dan
+>
+> i dont think there is a de facto standard ... but i recall some people a
+> while back saying responses should not exceed about 1MB in size because
+> of limitations of popular XML processing tools
+>
+> if your responses are about that size and the RE does not accept them,
+> let me know and ill increase the limits ...
+>
+> ttfn,
+> ----hussein
+>
+> ps. personally, i think 500 records is fine
+>
+>
+> Dan Stowell wrote:
+>
+> > Thanks - but yes, I'm aware of the resumptionToken - I just wanted to
+> > know whether there's a de facto standard for how many records to return
+> > in a single response, before giving the resumptionToken.
+> >
+> > Best,
+> > Dan
+> >
+> >
+> > At 21:51 02/02/2005 +1100, Baden Hughes wrote:
+> >
+> >> OAI-PMH has a flow control mechanism [1], which, if followed, allows
+> >> the use of a resumptionToken for handling larger data sets. This is
+> >> widely implemented in OAI tools.
+> >>
+> >> [1]
+> >> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#FlowControl
+> >>
+> >> Baden
+> >>
+> >> On Wed, 2 Feb 2005, Dan Stowell wrote:
+> >>
+> >>> Hi,
+> >>>
+> >>> I'm implementing OAI-PMH and at first I decided that my system could
+> >>> easily return 2000 records in a single OAI-PMH request. Unfortunately
+> >>> the "OAI Repository Explorer" doesn't seem to be able to cope with
+> >>> that much data since it ended up having timeout and too-much-data
+> >>> errors.
+> >>>
+> >>> I've now reduced that number to 500 and my repository now validates
+> >>> happily. But is there a rule of thumb for how many records it's
+> >>> "polite" to return, or how many a typical OAI-PMH harvester "expects"
+> >>> to have to deal with?
+> >>>
+> >>> Thanks
+> >>> Dan
+> >>>
+> >>> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >>> Dan Stowell
+> >>> Faculty Information Support Officer (Life Sciences), UCL
+> >>> http://www.ucl.ac.uk/is/fiso/lifesciences/
+> >>>
+> >>> Room B07A, Drayton House, 30 Gordon Street, London
+> >>> Phone: +44 (0)20 7679 5472      (within UCL: dial 25472)
+> >>> Email: d.stowell@ucl.ac.uk
+> >>>
+> >>>
+> >>> _______________________________________________
+> >>> OAI-implementers mailing list
+> >>> List information, archives, preferences and to unsubscribe:
+> >>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+>
+> --
+> =====================================================================
+> hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+> =====================================================================
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From a.powell at ukoln.ac.uk  Thu Feb  3 04:59:10 2005
+From: a.powell at ukoln.ac.uk (Andy Powell)
+Date: Thu Feb  3 04:58:51 2005
+Subject: [OAI-implementers] Re: [Dspace-tech] Google Scholar and OAI (fwd)
+Message-ID: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+
+I'm taking the liberty of copying a message to the dspace-tech list here,
+since I propose the use of the HTML <link> tag and I know that my previous
+suggestions about using this tag on this list have only received a
+luke-warm response! :-)
+
+These suggestions stem from the need for Google robots to auto-discover
+the OAI BASEURL for any given repository.
+
+So I'd be interested in thoughts on my suggestions below - particularly on
+whether we need something like an 'application/oai+xml' MIME type
+registration (to say that the XML conforms to one of the responses in the
+OAI-PMH).
+
+Andy
+--
+Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+http://www.ukoln.ac.uk/ukoln/staff/a.powell/      +44 1225 383933
+Resource Discovery Network http://www.rdn.ac.uk/
+
+---------- Forwarded message ----------
+Date: Thu, 3 Feb 2005 09:35:41 +0000 (GMT Standard Time)
+From: Andy Powell <a.powell@ukoln.ac.uk>
+To: MacKenzie Smith <kenzie@mit.edu>
+Cc: dspace-tech@lists.sourceforge.net, dspace-general@mit.edu,
+     Peter Brantley <peter.brantley@ucop.edu>
+Subject: Re: [Dspace-tech] Google Scholar and OAI
+
+On Wed, 2 Feb 2005, MacKenzie Smith wrote:
+
+> SO, they are interested in evaluating using OAI for this purpose (hooray!)
+> but alas, many of you have changed the default OAI baseurl so they can't
+> find your OAI server. I know that's true, because for the pilot project we
+> did I found 4 different baseurl patterns for 17 DSpace sites... I suggested
+> using a registry like the DSpace wiki or OCLC's for this, but they claim
+> this will not scale to the level of the gazillions of repositories that
+> they hope will exist in the future. They want an approach like robots.txt
+> -- predictable place, same for every repository. I think that sounds
+> reasonable... don't you?
+
+No, not really!  Clearly the 'well known location' approach (like
+robots.txt) works well in many cases, but it is not without problems -
+particularly for those people who want to run repositories on servers
+where they don't have access to create a file (or whatever) at the chosen
+location.
+
+More importantly, I think that any agreements that you (the DSpace
+community) reach with Google need to scale not just to all DSpace users,
+but to those who choose to offer their repositories using other software
+(like eprints.org) and even to those who choose to base their repositories
+on more mainstream technologies like content management systems.
+
+So, I don't think that a 'DSpace well known location' is the right
+approach.  I offer two alternatives, neither of which is particularly well
+thought thru - but these ideas might be a useful basis for further
+refinement?
+
+1) Embed a <link rel="oaipmh" ...> tag into the <head> section of the
+repository home page, linking to the BASEURL of the OAI server for that
+repository (note, there is no requirement that the BASEURL is on the same
+Web server as the repository itself - this is a completely open linking
+mechanism).  E.g.
+
+<link rel="oaipmh" type="application/xml"  title="OAI BASEURL"
+href="http://etheses.nottingham.ac.uk/perl/oai2" />
+
+2) Embed a <link rel="meta" ...> tag into the <head> section of each
+eprint's 'jump-off' page (sorry, my terminology is probably wrong in the
+context of DSpace here), linking to an OAI GetRecord request for the
+metadata about the current eprint.  E.g.
+
+<link rel="meta" type="application/xml" title="OAI/DC Metadata"
+href="http://etheses.nottingham.ac.uk/perl/oai2?verb=GetRecord&metadataPrefix=oai_dc&identifier=oai%3Aetheses.nottingham.ac.uk.OAI2%3A1"
+/>
+
+Option 1 has the advantage of being OAI-specific (but not
+DSpace-specific), i.e. the Google robot (or any other robot for that
+matter) would know that it would have to deal with the OAI protocol at the
+end of a rel="oaipmh" link.
+
+Option 2 has the advantage of being in line with existing conventions
+(e.g. DCMI recommendations) for linking from an HTML page to some metadata
+about that page.  However, it would probably benefit from a more specific
+MIME type, e.g. application/oai+xml, which doesn't exist yet AFAIK.
+
+Given that the 'jump-off' page is generated dynamically by the system (I
+assume) there is no significant overhead with option 2 (in terms of having
+to manually embed lots of link tags).
+
+Clearly, both approaches could be used in tandem.  However, given minimal
+knowledge about the workings of the OAI protocol, it would be possible for
+the Google robots to work out the BASEURL of a repository having seen the
+first of the GetRecord URLs embedded in option 2.  Therefore, option 1
+might be unnecessary if option 2 is being used.
+
+Thoughts?
+
+Andy
+--
+Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+http://www.ukoln.ac.uk/ukoln/staff/a.powell/      +44 1225 383933
+Resource Discovery Network http://www.rdn.ac.uk/
+
+From mln at cs.odu.edu  Sun Feb 13 15:07:22 2005
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Sun Feb 13 15:07:26 2005
+Subject: [OAI-implementers] OAI-PMH baseURL discovery
+In-Reply-To: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+References: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+Message-ID: <Pine.GSO.4.58.0502131503160.4712@tango.cs.odu.edu>
+
+
+(this is in response to Andy's mesg:
+http://www.openarchives.org/pipermail/oai-implementers/2005-February/001407.html)
+
+Drawing from our experience with mod_oai, we see at least 4 possible
+ways for robots to "automatically" discover OAI-PMH baseURLs:
+
+1.  develop a separate file, oaimph.txt, similar in spirit to robots.txt
+
+2.  add to the existing robots.txt file
+
+3.  use HTML link or META tags for robots
+
+4.  use the <friends> component in the Identify response.
+
+We do not prefer #1 - a separate file for robots to check seems unlikely
+to encourage widespread adoption.
+
+We prefer #2 because it injects OAI-PMH into the regular web
+mechanics where it belongs.  Robots already look for this file -
+why not put OAI-PMH statements where they expect to find guidance?
+Similarly, a robots.txt file is easy to install and edit (certainly
+easier than installing most repository software packages), so there
+will be no additional burden on a repository administrator.
+
+#3 can be used in some cases, but it makes an assumption that every
+repository we would like a robot to find has an HTML presence.  #2 and #3
+can be used separately since they address separate use cases.
+
+#4 is important and needs to be reinforced as a way of repositories
+"pointing" to each other.  You can't bootstrap baseURL discovery via
+<friends>, but once a robot knows about a single baseURL, it should be
+able to assemble a list of cooperating repositories.  No new functionality
+is needed for <friends>, but the robot scenario increases the importance
+of its use.
+
+robots.txt
+----------
+
+The "problem" with robots.txt is that the syntax is very simple and is
+focused on telling robots what they can't do and not on what they should
+do.  So in addition to having a line such as:
+
+OAIPMHbaseURL: http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+
+We would like to expand the syntax of the "Disalllow:" tag to include
+alternatives:
+
+Disallow: /citations/ OAIPMHbaseURL:
+http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+
+Where the 2nd line is the alternate access for how to get at the
+information prohibited in the Disallow.  Depending on how robust
+robots are with respect to extended syntax, we could repeat the line
+in case the extended line is not understood:
+
+Disallow: /citations/
+Disallow: /citations/  OAIPMHbaseURL:
+http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+
+HTML Tags for Robots
+--------------------
+
+It would be useful to tie an existing HTML page back to the original
+OAI-PMH repository from which it came, such as:
+
+http://uk.arxiv.org/abs/astro-ph/0502028
+
+having something like:
+
+<META NAME="ROBOTS" OAIPMHbaseURL="http://www.arxiv.org/oai2">
+
+It would also be useful to tie the HTML representation back to
+the structured metadata from which it came:
+
+<META NAME="ROBOTS"
+OAIPMHrecord="http://www.arxiv.org/oai2?verb=GetRecord&metad
+ataPrefix=oai_dc&identifier=oai:arXiv.org:astro-ph/0502028">
+
+<META NAME="ROBOTS"
+OAIPMHrecord="http://www.arxiv.org/oai2?verb=GetRecord&metad
+ataPrefix=oai_marc&identifier=oai:arXiv.org:astro-ph/0502028">
+
+This is similar to inverse of a DC.Identifier field -- instead of mapping
+from structured to un/semi-strucutred, it maps from un/semi-strucutred
+to structured.
+
+comments welcome,
+
+Michael Nelson & Herbert Van de Sompel
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From a.powell at ukoln.ac.uk  Sun Feb 13 16:03:32 2005
+From: a.powell at ukoln.ac.uk (Andy Powell)
+Date: Sun Feb 13 16:03:09 2005
+Subject: [OAI-implementers] OAI-PMH baseURL discovery
+In-Reply-To: <Pine.GSO.4.58.0502131503160.4712@tango.cs.odu.edu>
+References: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+	<Pine.GSO.4.58.0502131503160.4712@tango.cs.odu.edu>
+Message-ID: <Pine.WNT.4.56.0502132051180.-1206601@ulpc-ap-home.bath.ac.uk>
+
+I agree with your conclusion that it is sensible to adopt both approaches
+#2 and #3.
+
+I'm not sure what mechanisms are available for updating the REP though?
+The REP pages are at
+
+http://www.robotstxt.org/wc/robots.html
+
+and the original REP author (I think) is Martijn Koster
+
+http://www.greenhills.co.uk/mak/mak.html
+
+The spec looks very... err... stable?!
+
+I disagree with your implied preference for using <meta> rather than
+<link>.  In this case, we clearly want to provide a link to another
+resource - therefore the semantics of the <link> tag are much more
+appropriate than the semantics of the <meta> tag.
+
+I also suspect that your suggested use of
+
+OAIPMHbaseURL="..."
+
+and
+
+OAIPMHrecord="..."
+
+break the (X)HTML specs (though I haven't checked)?
+
+Andy.
+
+On Sun, 13 Feb 2005, Michael Nelson wrote:
+
+>
+> (this is in response to Andy's mesg:
+> http://www.openarchives.org/pipermail/oai-implementers/2005-February/001407.html)
+>
+> Drawing from our experience with mod_oai, we see at least 4 possible
+> ways for robots to "automatically" discover OAI-PMH baseURLs:
+>
+> 1.  develop a separate file, oaimph.txt, similar in spirit to robots.txt
+>
+> 2.  add to the existing robots.txt file
+>
+> 3.  use HTML link or META tags for robots
+>
+> 4.  use the <friends> component in the Identify response.
+>
+> We do not prefer #1 - a separate file for robots to check seems unlikely
+> to encourage widespread adoption.
+>
+> We prefer #2 because it injects OAI-PMH into the regular web
+> mechanics where it belongs.  Robots already look for this file -
+> why not put OAI-PMH statements where they expect to find guidance?
+> Similarly, a robots.txt file is easy to install and edit (certainly
+> easier than installing most repository software packages), so there
+> will be no additional burden on a repository administrator.
+>
+> #3 can be used in some cases, but it makes an assumption that every
+> repository we would like a robot to find has an HTML presence.  #2 and #3
+> can be used separately since they address separate use cases.
+>
+> #4 is important and needs to be reinforced as a way of repositories
+> "pointing" to each other.  You can't bootstrap baseURL discovery via
+> <friends>, but once a robot knows about a single baseURL, it should be
+> able to assemble a list of cooperating repositories.  No new functionality
+> is needed for <friends>, but the robot scenario increases the importance
+> of its use.
+>
+> robots.txt
+> ----------
+>
+> The "problem" with robots.txt is that the syntax is very simple and is
+> focused on telling robots what they can't do and not on what they should
+> do.  So in addition to having a line such as:
+>
+> OAIPMHbaseURL: http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+>
+> We would like to expand the syntax of the "Disalllow:" tag to include
+> alternatives:
+>
+> Disallow: /citations/ OAIPMHbaseURL:
+> http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+>
+> Where the 2nd line is the alternate access for how to get at the
+> information prohibited in the Disallow.  Depending on how robust
+> robots are with respect to extended syntax, we could repeat the line
+> in case the extended line is not understood:
+>
+> Disallow: /citations/
+> Disallow: /citations/  OAIPMHbaseURL:
+> http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+>
+> HTML Tags for Robots
+> --------------------
+>
+> It would be useful to tie an existing HTML page back to the original
+> OAI-PMH repository from which it came, such as:
+>
+> http://uk.arxiv.org/abs/astro-ph/0502028
+>
+> having something like:
+>
+> <META NAME="ROBOTS" OAIPMHbaseURL="http://www.arxiv.org/oai2">
+>
+> It would also be useful to tie the HTML representation back to
+> the structured metadata from which it came:
+>
+> <META NAME="ROBOTS"
+> OAIPMHrecord="http://www.arxiv.org/oai2?verb=GetRecord&metad
+> ataPrefix=oai_dc&identifier=oai:arXiv.org:astro-ph/0502028">
+>
+> <META NAME="ROBOTS"
+> OAIPMHrecord="http://www.arxiv.org/oai2?verb=GetRecord&metad
+> ataPrefix=oai_marc&identifier=oai:arXiv.org:astro-ph/0502028">
+>
+> This is similar to inverse of a DC.Identifier field -- instead of mapping
+> from structured to un/semi-strucutred, it maps from un/semi-strucutred
+> to structured.
+>
+> comments welcome,
+>
+> Michael Nelson & Herbert Van de Sompel
+>
+> ----
+> Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+> Dept of Computer Science, Old Dominion University, Norfolk VA 23529
+> +1 757 683 6393 +1 757 683 4900 (f)
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+Andy
+--
+Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+http://www.ukoln.ac.uk/ukoln/staff/a.powell/      +44 1225 383933
+Resource Discovery Network http://www.rdn.ac.uk/
+
+From valentine at library.ucsb.edu  Sun Feb 13 16:35:19 2005
+From: valentine at library.ucsb.edu (David Valentine)
+Date: Sun Feb 13 16:35:54 2005
+Subject: [OAI-implementers] OAI-PMH baseURL discovery
+In-Reply-To: <Pine.WNT.4.56.0502132051180.-1206601@ulpc-ap-home.bath.ac.uk>
+References: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+	<Pine.GSO.4.58.0502131503160.4712@tango.cs.odu.edu>
+	<Pine.WNT.4.56.0502132051180.-1206601@ulpc-ap-home.bath.ac.uk>
+Message-ID: <f2dce87cb190341fb5f66437f37f8f0e@library.ucsb.edu>
+
+
+On Feb 13, 2005, at 1:03 PM, Andy Powell wrote:
+
+> I agree with your conclusion that it is sensible to adopt both  
+> approaches
+> #2 and #3.
+>
+> I'm not sure what mechanisms are available for updating the REP though?
+> The REP pages are at
+>
+
+May not need to change, but just restarted, and driven by the community.
+
+Using the last rfc would not break anything, and would allow for the  
+easy specification of the information
+  http://www.robotstxt.org/wc/norobots-rfc.html
+
+Add a standard harvester name, and use the proposed allow extension to  
+specify the path.
+
+     User-agent: OAIPMHbaseURL
+      Allow:   /path_to_oai
+
+The rules should be written so that if your harvester has a user agent  
+which is disallowed, then you should honor that request.
+
+
+> I disagree with your implied preference for using <meta> rather than
+> <link>.  In this case, we clearly want to provide a link to another
+> resource - therefore the semantics of the <link> tag are much more
+> appropriate than the semantics of the <meta> tag.
+>
+> I also suspect that your suggested use of
+>
+> OAIPMHbaseURL="..."
+>
+> and
+>
+> OAIPMHrecord="..."
+>
+> break the (X)HTML specs (though I haven't checked)?
+>
+> Andy.
+>
+> On Sun, 13 Feb 2005, Michael Nelson wrote:
+>
+>>
+>> (this is in response to Andy's mesg:
+>> http://www.openarchives.org/pipermail/oai-implementers/2005-February/ 
+>> 001407.html)
+>>
+>> Drawing from our experience with mod_oai, we see at least 4 possible
+>> ways for robots to "automatically" discover OAI-PMH baseURLs:
+>>
+>> 1.  develop a separate file, oaimph.txt, similar in spirit to  
+>> robots.txt
+>>
+>> 2.  add to the existing robots.txt file
+>>
+>> 3.  use HTML link or META tags for robots
+>>
+>> 4.  use the <friends> component in the Identify response.
+>>
+>> We do not prefer #1 - a separate file for robots to check seems  
+>> unlikely
+>> to encourage widespread adoption.
+>>
+>> We prefer #2 because it injects OAI-PMH into the regular web
+>> mechanics where it belongs.  Robots already look for this file -
+>> why not put OAI-PMH statements where they expect to find guidance?
+>> Similarly, a robots.txt file is easy to install and edit (certainly
+>> easier than installing most repository software packages), so there
+>> will be no additional burden on a repository administrator.
+>>
+>> #3 can be used in some cases, but it makes an assumption that every
+>> repository we would like a robot to find has an HTML presence.  #2  
+>> and #3
+>> can be used separately since they address separate use cases.
+>>
+>> #4 is important and needs to be reinforced as a way of repositories
+>> "pointing" to each other.  You can't bootstrap baseURL discovery via
+>> <friends>, but once a robot knows about a single baseURL, it should be
+>> able to assemble a list of cooperating repositories.  No new  
+>> functionality
+>> is needed for <friends>, but the robot scenario increases the  
+>> importance
+>> of its use.
+>>
+>> robots.txt
+>> ----------
+>>
+>> The "problem" with robots.txt is that the syntax is very simple and is
+>> focused on telling robots what they can't do and not on what they  
+>> should
+>> do.  So in addition to having a line such as:
+>>
+>> OAIPMHbaseURL: http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+>>
+>> We would like to expand the syntax of the "Disalllow:" tag to include
+>> alternatives:
+>>
+>> Disallow: /citations/ OAIPMHbaseURL:
+>> http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+>>
+>> Where the 2nd line is the alternate access for how to get at the
+>> information prohibited in the Disallow.  Depending on how robust
+>> robots are with respect to extended syntax, we could repeat the line
+>> in case the extended line is not understood:
+>>
+>> Disallow: /citations/
+>> Disallow: /citations/  OAIPMHbaseURL:
+>> http://cs1.ist.psu.edu/cgi-bin/oai.cgi
+>>
+>> HTML Tags for Robots
+>> --------------------
+>>
+>> It would be useful to tie an existing HTML page back to the original
+>> OAI-PMH repository from which it came, such as:
+>>
+>> http://uk.arxiv.org/abs/astro-ph/0502028
+>>
+>> having something like:
+>>
+>> <META NAME="ROBOTS" OAIPMHbaseURL="http://www.arxiv.org/oai2">
+>>
+>> It would also be useful to tie the HTML representation back to
+>> the structured metadata from which it came:
+>>
+>> <META NAME="ROBOTS"
+>> OAIPMHrecord="http://www.arxiv.org/oai2?verb=GetRecord&metad
+>> ataPrefix=oai_dc&identifier=oai:arXiv.org:astro-ph/0502028">
+>>
+>> <META NAME="ROBOTS"
+>> OAIPMHrecord="http://www.arxiv.org/oai2?verb=GetRecord&metad
+>> ataPrefix=oai_marc&identifier=oai:arXiv.org:astro-ph/0502028">
+>>
+>> This is similar to inverse of a DC.Identifier field -- instead of  
+>> mapping
+>> from structured to un/semi-strucutred, it maps from un/semi-strucutred
+>> to structured.
+>>
+>> comments welcome,
+>>
+>> Michael Nelson & Herbert Van de Sompel
+>>
+>> ----
+>> Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+>> Dept of Computer Science, Old Dominion University, Norfolk VA 23529
+>> +1 757 683 6393 +1 757 683 4900 (f)
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+>>
+>
+> Andy
+> --
+> Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+> http://www.ukoln.ac.uk/ukoln/staff/a.powell/      +44 1225 383933
+> Resource Discovery Network http://www.rdn.ac.uk/
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+
+From editor at e-libro.com  Mon Feb 14 12:11:58 2005
+From: editor at e-libro.com (editor@e-libro.com)
+Date: Mon Feb 14 12:12:37 2005
+Subject: [OAI-implementers] TRES NUEVOS PROGRAMAS:
+Message-ID: <013b01c512b8$4ab53840$0d00000a@Edunotebook>
+
+Skipped content of type multipart/related-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: eduardo varela.vcf
+Type: text/x-vcard
+Size: 766 bytes
+Desc: not available
+Url : http://openarchives.org/pipermail/oai-implementers/attachments/20050214/0aeb7385/eduardovarela-0001.vcf
+From mln at cs.odu.edu  Mon Feb 14 12:13:13 2005
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Mon Feb 14 12:13:15 2005
+Subject: [OAI-implementers] OAI-PMH baseURL discovery
+In-Reply-To: <Pine.WNT.4.56.0502132051180.-1206601@ulpc-ap-home.bath.ac.uk>
+References: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+	<Pine.GSO.4.58.0502131503160.4712@tango.cs.odu.edu>
+	<Pine.WNT.4.56.0502132051180.-1206601@ulpc-ap-home.bath.ac.uk>
+Message-ID: <Pine.GSO.4.58.0502141151500.8960@tango.cs.odu.edu>
+
+On Sun, 13 Feb 2005, Andy Powell wrote:
+
+> I agree with your conclusion that it is sensible to adopt both approaches
+> #2 and #3.
+>
+
+...
+
+> I disagree with your implied preference for using <meta> rather than
+> <link>.  In this case, we clearly want to provide a link to another
+> resource - therefore the semantics of the <link> tag are much more
+> appropriate than the semantics of the <meta> tag.
+>
+> I also suspect that your suggested use of
+>
+> OAIPMHbaseURL="..."
+>
+> and
+>
+> OAIPMHrecord="..."
+>
+> break the (X)HTML specs (though I haven't checked)?
+
+you are correct -- they do.
+
+re: meta vs. link...  We don't have a strong opinion either way, but I did
+see this:
+
+http://www.w3.org/TR/2004/WD-xhtml2-20040722/mod-meta.html#sec_20.5.
+
+"This element defines a link. Link conveys relationship information that
+may be rendered by user agents in a variety of ways (e.g., a tool-bar with
+a drop-down menu of links)."
+
+I know <link> is not in common use, but it appears like the intention is
+to promote it to interactive user status?  If so, wouldn't that be the
+wrong thing to do with a (for example) GetRecord request?
+
+if we really want to provide robots with a link from html -> OAI-PMH
+metadata, don't we run the risk of exposing OAI-PMH requests to the user?
+
+regards,
+
+Michael & Herbert
+
+>
+> Andy.
+>
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From mln at cs.odu.edu  Mon Feb 14 12:37:06 2005
+From: mln at cs.odu.edu (Michael Nelson)
+Date: Mon Feb 14 12:37:08 2005
+Subject: [OAI-implementers] OAI-PMH baseURL discovery
+In-Reply-To: <f2dce87cb190341fb5f66437f37f8f0e@library.ucsb.edu>
+References: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+	<Pine.GSO.4.58.0502131503160.4712@tango.cs.odu.edu>
+	<Pine.WNT.4.56.0502132051180.-1206601@ulpc-ap-home.bath.ac.uk>
+	<f2dce87cb190341fb5f66437f37f8f0e@library.ucsb.edu>
+Message-ID: <Pine.GSO.4.58.0502141213280.8960@tango.cs.odu.edu>
+
+
+> > I'm not sure what mechanisms are available for updating the REP though?
+> > The REP pages are at
+> >
+>
+> May not need to change, but just restarted, and driven by the community.
+>
+> Using the last rfc would not break anything, and would allow for the
+> easy specification of the information
+>   http://www.robotstxt.org/wc/norobots-rfc.html
+>
+> Add a standard harvester name, and use the proposed allow extension to
+> specify the path.
+>
+>      User-agent: OAIPMHbaseURL
+>       Allow:   /path_to_oai
+>
+> The rules should be written so that if your harvester has a user agent
+> which is disallowed, then you should honor that request.
+
+
+does anyone have any insight in to why this draft did not become an rfc?
+I've poked around a variety of robots.txt files, and I don't see any use
+of "Allow:" -- perhaps I've just missed them?
+
+Either way, the Allow syntax as proposed does not "feel right".  Largely
+due to the limited syntax of the existing robots.txt, the dependence on
+the order of the lines is greatly increased.  Consider a site that has
+content corresponding to 2 different baseURLs:
+
+User-agent: *
+Disallow: /a
+Disallow: /b
+
+It would be nice to bind these relative URIs to their original location,
+something like:
+
+OAI-PMH-baseURL: /a http://foo.org/oai
+OAI-PMH-baseURL: /b http://bar.edu/perl/oai
+
+those localizing the impact of the new syntax: 1 new line vs. a reserved
+word for User-Agent & and a new line (which may have implication outside
+of OAI-PMH).  if we wanted to bind the entire site to a single repo, we
+could just:
+
+OAI-PMH-baseURL: / http://xyz.edu/oai.cgi
+
+regards,
+
+Michael & Herbert
+
+----
+Michael L. Nelson mln@cs.odu.edu http://www.cs.odu.edu/~mln/
+Dept of Computer Science, Old Dominion University, Norfolk VA 23529
++1 757 683 6393 +1 757 683 4900 (f)
+
+From a.powell at ukoln.ac.uk  Mon Feb 14 15:48:19 2005
+From: a.powell at ukoln.ac.uk (Andy Powell)
+Date: Mon Feb 14 15:47:54 2005
+Subject: [OAI-implementers] OAI-PMH baseURL discovery
+In-Reply-To: <Pine.GSO.4.58.0502141151500.8960@tango.cs.odu.edu>
+References: <Pine.WNT.4.56.0502030940060.-1555953@ulpc-ap-home.bath.ac.uk>
+	<Pine.GSO.4.58.0502131503160.4712@tango.cs.odu.edu>
+	<Pine.WNT.4.56.0502132051180.-1206601@ulpc-ap-home.bath.ac.uk>
+	<Pine.GSO.4.58.0502141151500.8960@tango.cs.odu.edu>
+Message-ID: <Pine.WNT.4.56.0502142030090.-1837557@ulpc-ap-home.bath.ac.uk>
+
+On Mon, 14 Feb 2005, Michael Nelson wrote:
+
+> > I disagree with your implied preference for using <meta> rather than
+> > <link>.  In this case, we clearly want to provide a link to another
+> > resource - therefore the semantics of the <link> tag are much more
+> > appropriate than the semantics of the <meta> tag.
+> >
+> > I also suspect that your suggested use of
+> >
+> > OAIPMHbaseURL="..."
+> >
+> > and
+> >
+> > OAIPMHrecord="..."
+> >
+> > break the (X)HTML specs (though I haven't checked)?
+>
+> you are correct -- they do.
+>
+> re: meta vs. link...  We don't have a strong opinion either way, but I did
+> see this:
+>
+> http://www.w3.org/TR/2004/WD-xhtml2-20040722/mod-meta.html#sec_20.5.
+>
+> "This element defines a link. Link conveys relationship information that
+> may be rendered by user agents in a variety of ways (e.g., a tool-bar with
+> a drop-down menu of links)."
+>
+> I know <link> is not in common use, but it appears like the intention is
+> to promote it to interactive user status?  If so, wouldn't that be the
+> wrong thing to do with a (for example) GetRecord request?
+
+Possibly, though I note that the same document also says this in section
+20.2.2
+
+ Note that just because we are using URIs as unique identifiers doesn't
+ mean that navigating to this URI with a web browser would yield anything
+ useful.
+
+which doesn't seem entirely compatible with the section you quote from!
+
+Remember that this document is about XHTML 2.0, which is not finalised.
+
+On the other hand, section 5.19 of
+
+http://www.w3.org/TR/xhtml-modularization/
+
+(which I think is the appropriate W3C recommendation) says
+
+ The Link Module defines an element that can be used to define links to
+ external resources. These resources are often used to augment the user
+ agent's ability to process the associated XHTML document.
+
+which doesn't (to me) imply that the browser should necessarily expect to
+display the <link> to the end user (i.e. "augment" could mean other
+things).  In our case, the 'user agent' is a Web robot, which is being
+'augmented in its ability to process the document' by being pointed to the
+OAI repository (or specific OAI record)  associated with the page.
+
+Having said that, I know that some browsers do display all <link> tags to
+the end-user in some form (e.g. Lynx and Opera I think).  This has
+resulted in a couple of negative comments about one of the DCMI
+recommendations ("Encoding DC metadata in (X)HTML meta and link
+elements").  Dublin Core recommends using a <link> tag to provide the
+namespace URI associated with the "DC." prefix used in <meta> tags like
+
+<meta name="DC.title" content="blah" />
+
+and I know that a couple of people have complained that their browsers
+show them the namespace URI as though it is a clickable link :-(
+
+All in all I'm not sure what is best.  I think that the semantics of
+<link> are appropriate, but given some browser behaviour it may be more
+sensible to use <meta>.
+
+Andy
+--
+Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+http://www.ukoln.ac.uk/ukoln/staff/a.powell/      +44 1225 383933
+Resource Discovery Network http://www.rdn.ac.uk/
+
+From krichel at openlib.org  Tue Feb 15 00:20:34 2005
+From: krichel at openlib.org (Thomas Krichel)
+Date: Tue Feb 15 00:20:09 2005
+Subject: [OAI-implementers] OAI4 first announcement
+Message-ID: <20050215052034.GA10883@openlib.org>
+
+
+  [apologies for cross-posting]
+
+  Mark your calendars!
+
+  The next CERN workshop on Innovations in Scholarly Communication (OAI4)
+  will be held at CERN, Geneva, Switzerland from 20 to 22 October 2005.
+  This will be the latest installment in this highly succesful series
+  that began in 2001. It brings together activists who are at the
+  forefront of scholarly communication change. The organizing
+  committee will be issuing a call for contributions soon. 
+
+  Please distribute this announcement as you see fit. 
+
+
+  Cheers,
+
+  Thomas Krichel                      mailto:krichel@openlib.org
+                               http://wotan.liu.edu/home/krichel
+                             RePEc:per:1965-06-05:thomas_krichel
+
+From simeon at cs.cornell.edu  Wed Feb 16 11:40:54 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Wed Feb 16 11:41:16 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+Message-ID: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+
+
+There has been some interest recently in using OAI-PMH over HTTPS [1]. The
+OAI-PMH specification [2] mentions only operation over HTTP, so I think
+that at present HTTP must be used to conform to the specification (and
+this is enforced by the validation/registration site). The specification
+should be explicit about whether the use of HTTPS is conforming or not.
+
+It would be trivial to extend the specification to permit the use of HTTPS
+as it is just standard HTTP operating over an additional security layer.
+There would be no need to change the semantics or syntax beyond the
+substitution of 'https://' for 'http://'. Permitting HTTPS would have no
+implications for data-providers unless they wished to use the protocol.
+The main implication of permitting HTTPS would be that harvesters would
+have to support HTTPS in addition to HTTP (or else be unable to harvest
+from some data-providers). In many programming environments there are
+libraries that provide seamless support for both HTTPS and HTTP (e.g. in
+Perl, HTTPS comes for free in LWP) but this may not be true in all cases.
+
+Who is using or would like to use HTTPS?
+
+Which harvesters already support HTTPS or could easily do so?
+
+Which harvesters could not easily support HTTPS?
+
+Cheers,
+Simeon
+
+
+[1] http://www.isi.edu/in-notes/rfc2818.txt
+[2] http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#HTTPembedding
+
+----------------------------------------------------------
+Simeon Warner                 Email: simeon@cs.cornell.edu
+Cornell Information Science              Tel: 607-254-8605
+301 College Ave                          Fax: 607-255-5196
+Ithaca, NY 14850-4623, USA
+
+
+From roy.tennant at ucop.edu  Wed Feb 16 11:47:17 2005
+From: roy.tennant at ucop.edu (Roy Tennant)
+Date: Wed Feb 16 11:47:21 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+In-Reply-To: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+References: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+Message-ID: <f728300adfad5dc53a4f5331a703c39c@ucop.edu>
+
+At least two sites are registered at UIUC with HTTPS data providers:
+
+<https://kb.osu.edu/dspace-oai/request?verb=Identify>
+<https://tspace.library.utoronto.ca/tspace-oai?verb=Identify>
+
+both DSpace sites.
+Roy Tennant
+
+On Feb 16, 2005, at 8:40 AM, Simeon Warner wrote:
+
+>
+> There has been some interest recently in using OAI-PMH over HTTPS [1].  
+> The
+> OAI-PMH specification [2] mentions only operation over HTTP, so I think
+> that at present HTTP must be used to conform to the specification (and
+> this is enforced by the validation/registration site). The  
+> specification
+> should be explicit about whether the use of HTTPS is conforming or not.
+>
+> It would be trivial to extend the specification to permit the use of  
+> HTTPS
+> as it is just standard HTTP operating over an additional security  
+> layer.
+> There would be no need to change the semantics or syntax beyond the
+> substitution of 'https://' for 'http://'. Permitting HTTPS would have  
+> no
+> implications for data-providers unless they wished to use the protocol.
+> The main implication of permitting HTTPS would be that harvesters would
+> have to support HTTPS in addition to HTTP (or else be unable to harvest
+> from some data-providers). In many programming environments there are
+> libraries that provide seamless support for both HTTPS and HTTP (e.g.  
+> in
+> Perl, HTTPS comes for free in LWP) but this may not be true in all  
+> cases.
+>
+> Who is using or would like to use HTTPS?
+>
+> Which harvesters already support HTTPS or could easily do so?
+>
+> Which harvesters could not easily support HTTPS?
+>
+> Cheers,
+> Simeon
+>
+>
+> [1] http://www.isi.edu/in-notes/rfc2818.txt
+> [2]  
+> http://www.openarchives.org/OAI/2.0/ 
+> openarchivesprotocol.htm#HTTPembedding
+>
+> ----------------------------------------------------------
+> Simeon Warner                 Email: simeon@cs.cornell.edu
+> Cornell Information Science              Tel: 607-254-8605
+> 301 College Ave                          Fax: 607-255-5196
+> Ithaca, NY 14850-4623, USA
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+
+From khage at umich.edu  Wed Feb 16 16:47:52 2005
+From: khage at umich.edu (Kat Hagedorn)
+Date: Wed Feb 16 16:47:59 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+In-Reply-To: <f728300adfad5dc53a4f5331a703c39c@ucop.edu>
+References: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+	<f728300adfad5dc53a4f5331a703c39c@ucop.edu>
+Message-ID: <Pine.SOL.4.58.0502161643060.11102@asteroids.gpcc.itd.umich.edu>
+
+Until today we didn't have https support. As Simeon says, for perl-based
+harvesters it's a simple matter of incorporating the appropriate perl
+library.
+
+
+On Wed, 16 Feb 2005, Roy Tennant wrote:
+
+> At least two sites are registered at UIUC with HTTPS data providers:
+>
+> <https://kb.osu.edu/dspace-oai/request?verb=Identify>
+> <https://tspace.library.utoronto.ca/tspace-oai?verb=Identify>
+>
+> both DSpace sites.
+> Roy Tennant
+>
+> On Feb 16, 2005, at 8:40 AM, Simeon Warner wrote:
+>
+> >
+> > There has been some interest recently in using OAI-PMH over HTTPS [1].
+> > The
+> > OAI-PMH specification [2] mentions only operation over HTTP, so I think
+> > that at present HTTP must be used to conform to the specification (and
+> > this is enforced by the validation/registration site). The
+> > specification
+> > should be explicit about whether the use of HTTPS is conforming or not.
+> >
+> > It would be trivial to extend the specification to permit the use of
+> > HTTPS
+> > as it is just standard HTTP operating over an additional security
+> > layer.
+> > There would be no need to change the semantics or syntax beyond the
+> > substitution of 'https://' for 'http://'. Permitting HTTPS would have
+> > no
+> > implications for data-providers unless they wished to use the protocol.
+> > The main implication of permitting HTTPS would be that harvesters would
+> > have to support HTTPS in addition to HTTP (or else be unable to harvest
+> > from some data-providers). In many programming environments there are
+> > libraries that provide seamless support for both HTTPS and HTTP (e.g.
+> > in
+> > Perl, HTTPS comes for free in LWP) but this may not be true in all
+> > cases.
+> >
+> > Who is using or would like to use HTTPS?
+> >
+> > Which harvesters already support HTTPS or could easily do so?
+> >
+> > Which harvesters could not easily support HTTPS?
+> >
+> > Cheers,
+> > Simeon
+> >
+> >
+> > [1] http://www.isi.edu/in-notes/rfc2818.txt
+> > [2]
+> > http://www.openarchives.org/OAI/2.0/
+> > openarchivesprotocol.htm#HTTPembedding
+> >
+> > ----------------------------------------------------------
+> > Simeon Warner                 Email: simeon@cs.cornell.edu
+> > Cornell Information Science              Tel: 607-254-8605
+> > 301 College Ave                          Fax: 607-255-5196
+> > Ithaca, NY 14850-4623, USA
+> >
+> >
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >
+> >
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+>
+>
+
+-------------------
+Kat Hagedorn
+OAIster/Metadata Harvesting Librarian
+DLXS Bibliographic Class Coordinator
+DLXS Text Class Collections Co-coordinator
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+
+From hussein at cs.uct.ac.za  Thu Feb 17 04:32:48 2005
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Thu Feb 17 04:32:41 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+In-Reply-To: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+References: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+Message-ID: <421464C0.2010509@cs.uct.ac.za>
+
+ > Which harvesters could not easily support HTTPS?
+
+mine :) anything i distribute is meant to be as "dependency-free" as 
+possible. historically, LWP has not been the easiest module to get 
+working on a variety of architectures, so i don't use it.
+
+if we require every harvester to support HTTPS, this will become the 
+first feature that programmers will need to support through external 
+code libraries. as such we will raise the "low barrier to entry" 
+substantially.
+
+i agree we should explicitly support HTTPS, but not require it.
+
+ttfn,
+----hussein
+
+
+Simeon Warner wrote:
+
+> There has been some interest recently in using OAI-PMH over HTTPS [1]. The
+> OAI-PMH specification [2] mentions only operation over HTTP, so I think
+> that at present HTTP must be used to conform to the specification (and
+> this is enforced by the validation/registration site). The specification
+> should be explicit about whether the use of HTTPS is conforming or not.
+> 
+> It would be trivial to extend the specification to permit the use of HTTPS
+> as it is just standard HTTP operating over an additional security layer.
+> There would be no need to change the semantics or syntax beyond the
+> substitution of 'https://' for 'http://'. Permitting HTTPS would have no
+> implications for data-providers unless they wished to use the protocol.
+> The main implication of permitting HTTPS would be that harvesters would
+> have to support HTTPS in addition to HTTP (or else be unable to harvest
+> from some data-providers). In many programming environments there are
+> libraries that provide seamless support for both HTTPS and HTTP (e.g. in
+> Perl, HTTPS comes for free in LWP) but this may not be true in all cases.
+> 
+> Who is using or would like to use HTTPS?
+> 
+> Which harvesters already support HTTPS or could easily do so?
+> 
+> Which harvesters could not easily support HTTPS?
+> 
+> Cheers,
+> Simeon
+> 
+> 
+> [1] http://www.isi.edu/in-notes/rfc2818.txt
+> [2] http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#HTTPembedding
+> 
+> ----------------------------------------------------------
+> Simeon Warner                 Email: simeon@cs.cornell.edu
+> Cornell Information Science              Tel: 607-254-8605
+> 301 College Ave                          Fax: 607-255-5196
+> Ithaca, NY 14850-4623, USA
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+
+From thabing at uiuc.edu  Thu Feb 17 10:07:08 2005
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Thu Feb 17 10:07:11 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+In-Reply-To: <421464C0.2010509@cs.uct.ac.za>
+References: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+	<421464C0.2010509@cs.uct.ac.za>
+Message-ID: <4214B31C.3020108@uiuc.edu>
+
+Hussein Suleman wrote:
+>  > Which harvesters could not easily support HTTPS?
+> 
+> mine :) anything i distribute is meant to be as "dependency-free" as 
+> possible. historically, LWP has not been the easiest module to get 
+> working on a variety of architectures, so i don't use it.
+> 
+> if we require every harvester to support HTTPS, this will become the 
+> first feature that programmers will need to support through external 
+> code libraries. as such we will raise the "low barrier to entry" 
+> substantially.
+> 
+> i agree we should explicitly support HTTPS, but not require it.
+
+Because of the underlying APIs that we use (WinHTTP and MSXML), the 
+harvester that we use at UIUC supports HTTPS.  I agree with Hussein that 
+harvesters should be explicitly encouraged to support HTTPS, but it 
+should not be a requirement of the protocol.
+
+Maybe some advice on this topic could be added to the "Implementation 
+Guidelines" documents.
+
+Kind regards,
+	Tom Habing
+
+> 
+> ttfn,
+> ----hussein
+> 
+> 
+> Simeon Warner wrote:
+> 
+>> There has been some interest recently in using OAI-PMH over HTTPS [1]. 
+>> The
+>> OAI-PMH specification [2] mentions only operation over HTTP, so I think
+>> that at present HTTP must be used to conform to the specification (and
+>> this is enforced by the validation/registration site). The specification
+>> should be explicit about whether the use of HTTPS is conforming or not.
+>>
+>> It would be trivial to extend the specification to permit the use of 
+>> HTTPS
+>> as it is just standard HTTP operating over an additional security layer.
+>> There would be no need to change the semantics or syntax beyond the
+>> substitution of 'https://' for 'http://'. Permitting HTTPS would have no
+>> implications for data-providers unless they wished to use the protocol.
+>> The main implication of permitting HTTPS would be that harvesters would
+>> have to support HTTPS in addition to HTTP (or else be unable to harvest
+>> from some data-providers). In many programming environments there are
+>> libraries that provide seamless support for both HTTPS and HTTP (e.g. in
+>> Perl, HTTPS comes for free in LWP) but this may not be true in all cases.
+>>
+>> Who is using or would like to use HTTPS?
+>>
+>> Which harvesters already support HTTPS or could easily do so?
+>>
+>> Which harvesters could not easily support HTTPS?
+>>
+>> Cheers,
+>> Simeon
+>>
+>>
+>> [1] http://www.isi.edu/in-notes/rfc2818.txt
+>> [2] 
+>> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#HTTPembedding 
+>>
+>>
+>> ----------------------------------------------------------
+>> Simeon Warner                 Email: simeon@cs.cornell.edu
+>> Cornell Information Science              Tel: 607-254-8605
+>> 301 College Ave                          Fax: 607-255-5196
+>> Ithaca, NY 14850-4623, USA
+>>
+>>
+>> _______________________________________________
+>> OAI-implementers mailing list
+>> List information, archives, preferences and to unsubscribe:
+>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>
+> 
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: thabing.vcf
+Type: text/x-vcard
+Size: 313 bytes
+Desc: not available
+Url : http://openarchives.org/pipermail/oai-implementers/attachments/20050217/acc31331/thabing.vcf
+From Patrick.Hochstenbach at ugent.be  Thu Feb 17 11:06:19 2005
+From: Patrick.Hochstenbach at ugent.be (Patrick Hochstenbach)
+Date: Thu Feb 17 11:06:25 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+In-Reply-To: <4214B31C.3020108@uiuc.edu>
+References: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+	<421464C0.2010509@cs.uct.ac.za> <4214B31C.3020108@uiuc.edu>
+Message-ID: <Pine.LNX.4.61.0502171651350.14467@localhost.localdomain>
+
+
+A related issue: if Static Repository Files would also be accessible via
+HTTPS, then constructing a OAI-PMH Gateway would be problematic because
+gateways URL's don't contain the scheme of the original file location. 
+E.g.
+
+                                   ,-HTTP-OR-HTTPS-?-. 
+http://www.gateway.org/somescript/www.university.edu/sr_file.xml?verb=Identify
+
+I don't know if other types of gateways have the same problems.
+
+Patrick Hochstenbach
+
+On Thu, 17 Feb 2005, Thomas G. Habing wrote:
+
+> Hussein Suleman wrote:
+>>  > Which harvesters could not easily support HTTPS?
+>> 
+>> mine :) anything i distribute is meant to be as "dependency-free" as 
+>> possible. historically, LWP has not been the easiest module to get working 
+>> on a variety of architectures, so i don't use it.
+>> 
+>> if we require every harvester to support HTTPS, this will become the first 
+>> feature that programmers will need to support through external code 
+>> libraries. as such we will raise the "low barrier to entry" substantially.
+>> 
+>> i agree we should explicitly support HTTPS, but not require it.
+>
+> Because of the underlying APIs that we use (WinHTTP and MSXML), the harvester 
+> that we use at UIUC supports HTTPS.  I agree with Hussein that harvesters 
+> should be explicitly encouraged to support HTTPS, but it should not be a 
+> requirement of the protocol.
+>
+> Maybe some advice on this topic could be added to the "Implementation 
+> Guidelines" documents.
+>
+> Kind regards,
+> 	Tom Habing
+>
+>> 
+>> ttfn,
+>> ----hussein
+>> 
+>> 
+>> Simeon Warner wrote:
+>> 
+>>> There has been some interest recently in using OAI-PMH over HTTPS [1]. The
+>>> OAI-PMH specification [2] mentions only operation over HTTP, so I think
+>>> that at present HTTP must be used to conform to the specification (and
+>>> this is enforced by the validation/registration site). The specification
+>>> should be explicit about whether the use of HTTPS is conforming or not.
+>>> 
+>>> It would be trivial to extend the specification to permit the use of HTTPS
+>>> as it is just standard HTTP operating over an additional security layer.
+>>> There would be no need to change the semantics or syntax beyond the
+>>> substitution of 'https://' for 'http://'. Permitting HTTPS would have no
+>>> implications for data-providers unless they wished to use the protocol.
+>>> The main implication of permitting HTTPS would be that harvesters would
+>>> have to support HTTPS in addition to HTTP (or else be unable to harvest
+>>> from some data-providers). In many programming environments there are
+>>> libraries that provide seamless support for both HTTPS and HTTP (e.g. in
+>>> Perl, HTTPS comes for free in LWP) but this may not be true in all cases.
+>>> 
+>>> Who is using or would like to use HTTPS?
+>>> 
+>>> Which harvesters already support HTTPS or could easily do so?
+>>> 
+>>> Which harvesters could not easily support HTTPS?
+>>> 
+>>> Cheers,
+>>> Simeon
+>>> 
+>>> 
+>>> [1] http://www.isi.edu/in-notes/rfc2818.txt
+>>> [2] 
+>>> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#HTTPembedding 
+>>> 
+>>> ----------------------------------------------------------
+>>> Simeon Warner                 Email: simeon@cs.cornell.edu
+>>> Cornell Information Science              Tel: 607-254-8605
+>>> 301 College Ave                          Fax: 607-255-5196
+>>> Ithaca, NY 14850-4623, USA
+>>> 
+>>> 
+>>> _______________________________________________
+>>> OAI-implementers mailing list
+>>> List information, archives, preferences and to unsubscribe:
+>>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>>> 
+>> 
+>
+>
+
+From simeon at cs.cornell.edu  Thu Feb 17 11:21:31 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Thu Feb 17 11:21:39 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+In-Reply-To: <Pine.LNX.4.61.0502171651350.14467@localhost.localdomain>
+References: <Pine.LNX.4.58.0502161134340.23148@dhcp103-124.cs.cornell.edu>
+	<421464C0.2010509@cs.uct.ac.za> <4214B31C.3020108@uiuc.edu>
+	<Pine.LNX.4.61.0502171651350.14467@localhost.localdomain>
+Message-ID: <Pine.LNX.4.58.0502171109250.25581@dhcp103-124.cs.cornell.edu>
+
+
+I don't think this is an issue Patrick. Even if HTTPS is permitted for
+OAI-PMH, the SR spec still only talks about HTTP for the Static Repository
+URL [1] (the XML files). I think it should stay that way; the SR spec is,
+after all, supposed to be the lowest barrier possible. The SRG would, in
+principle, be able to use HTTP or HTTPS for its Static Repository Gateway
+URL [2] although at present that is defined to be a HTTP URL.
+
+I really think that the issue is just about harvesters which, in effect,
+would _have_ to support HTTPS if it were permitted for baseURLs. Note that
+that this isn't something where both are likely to be supported like GET
+and POST. If a repo uses HTTPS and a harvester doesn't support it, then
+that repo will be unharvestable by that harvester.
+
+Cheers,
+Simeon
+
+
+[1] http://www.openarchives.org/OAI/test/guidelines-static-repository.htm#SR_URL
+[2] http://www.openarchives.org/OAI/test/guidelines-static-repository.htm#SRG_URL
+
+
+On Thu, 17 Feb 2005, Patrick Hochstenbach wrote:
+> A related issue: if Static Repository Files would also be accessible via
+> HTTPS, then constructing a OAI-PMH Gateway would be problematic because
+> gateways URL's don't contain the scheme of the original file location.
+> E.g.
+>
+>                                    ,-HTTP-OR-HTTPS-?-.
+> http://www.gateway.org/somescript/www.university.edu/sr_file.xml?verb=Identify
+>
+> I don't know if other types of gateways have the same problems.
+>
+> Patrick Hochstenbach
+>
+> On Thu, 17 Feb 2005, Thomas G. Habing wrote:
+>
+> > Hussein Suleman wrote:
+> >>  > Which harvesters could not easily support HTTPS?
+> >>
+> >> mine :) anything i distribute is meant to be as "dependency-free" as
+> >> possible. historically, LWP has not been the easiest module to get working
+> >> on a variety of architectures, so i don't use it.
+> >>
+> >> if we require every harvester to support HTTPS, this will become the first
+> >> feature that programmers will need to support through external code
+> >> libraries. as such we will raise the "low barrier to entry" substantially.
+> >>
+> >> i agree we should explicitly support HTTPS, but not require it.
+> >
+> > Because of the underlying APIs that we use (WinHTTP and MSXML), the harvester
+> > that we use at UIUC supports HTTPS.  I agree with Hussein that harvesters
+> > should be explicitly encouraged to support HTTPS, but it should not be a
+> > requirement of the protocol.
+> >
+> > Maybe some advice on this topic could be added to the "Implementation
+> > Guidelines" documents.
+> >
+> > Kind regards,
+> > 	Tom Habing
+> >
+> >>
+> >> ttfn,
+> >> ----hussein
+> >>
+> >>
+> >> Simeon Warner wrote:
+> >>
+> >>> There has been some interest recently in using OAI-PMH over HTTPS [1]. The
+> >>> OAI-PMH specification [2] mentions only operation over HTTP, so I think
+> >>> that at present HTTP must be used to conform to the specification (and
+> >>> this is enforced by the validation/registration site). The specification
+> >>> should be explicit about whether the use of HTTPS is conforming or not.
+> >>>
+> >>> It would be trivial to extend the specification to permit the use of HTTPS
+> >>> as it is just standard HTTP operating over an additional security layer.
+> >>> There would be no need to change the semantics or syntax beyond the
+> >>> substitution of 'https://' for 'http://'. Permitting HTTPS would have no
+> >>> implications for data-providers unless they wished to use the protocol.
+> >>> The main implication of permitting HTTPS would be that harvesters would
+> >>> have to support HTTPS in addition to HTTP (or else be unable to harvest
+> >>> from some data-providers). In many programming environments there are
+> >>> libraries that provide seamless support for both HTTPS and HTTP (e.g. in
+> >>> Perl, HTTPS comes for free in LWP) but this may not be true in all cases.
+> >>>
+> >>> Who is using or would like to use HTTPS?
+> >>>
+> >>> Which harvesters already support HTTPS or could easily do so?
+> >>>
+> >>> Which harvesters could not easily support HTTPS?
+> >>>
+> >>> Cheers,
+> >>> Simeon
+> >>>
+> >>>
+> >>> [1] http://www.isi.edu/in-notes/rfc2818.txt
+> >>> [2]
+> >>> http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#HTTPembedding
+> >>>
+> >>> ----------------------------------------------------------
+> >>> Simeon Warner                 Email: simeon@cs.cornell.edu
+> >>> Cornell Information Science              Tel: 607-254-8605
+> >>> 301 College Ave                          Fax: 607-255-5196
+> >>> Ithaca, NY 14850-4623, USA
+> >>>
+> >>>
+> >>> _______________________________________________
+> >>> OAI-implementers mailing list
+> >>> List information, archives, preferences and to unsubscribe:
+> >>> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> >>>
+> >>
+> >
+> >
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From d.stowell at ucl.ac.uk  Fri Feb 18 04:13:13 2005
+From: d.stowell at ucl.ac.uk (Dan Stowell)
+Date: Fri Feb 18 04:13:22 2005
+Subject: [OAI-implementers] Re: Should OAI-PMH over HTTPS be permitted?
+Message-ID: <5.2.1.1.1.20050218090555.00a3f8f8@imap-server.ucl.ac.uk>
+
+I may have missed something here, but what is the *point* of OAI-PMH over 
+HTTPS? Surely any OAI-PMH data is public, so there's no need at all to 
+secure the channel?
+
+I'd agree with the apparent consensus that HTTPS shouldn't be required of a 
+harvester. However, my system ( http://myopia.sf.net ) is written in PHP 
+which automatically includes HTTPS support so it could handle HTTPS with no 
+code changes. (Currently it exposes an OAI interface; I'm developing OAI 
+harvesting ability too.)
+
+Best,
+Dan
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Dan Stowell
+Faculty Information Support Officer (Life Sciences), UCL
+http://www.ucl.ac.uk/is/fiso/lifesciences/
+
+Room B07A, Drayton House, 30 Gordon Street, London
+Phone: +44 (0)20 7679 5472      (within UCL: dial 25472)
+Email: d.stowell@ucl.ac.uk
+
+
+From robert.tansley at hp.com  Fri Feb 18 09:04:24 2005
+From: robert.tansley at hp.com (Tansley, Robert)
+Date: Fri Feb 18 09:05:01 2005
+Subject: [OAI-implementers] Should OAI-PMH over HTTPS be permitted?
+Message-ID: <19ADCC0B9D4CAD4582BB9900BBCE35742A4B53@tayexc13.americas.cpqcorp.net>
+
+> At least two sites are registered at UIUC with HTTPS data providers:
+> 
+> <https://kb.osu.edu/dspace-oai/request?verb=Identify>
+> <https://tspace.library.utoronto.ca/tspace-oai?verb=Identify>
+> 
+> both DSpace sites.
+
+My guess is that there is no real intent behind these sites using https
+-- if you deploy DSpace using Apache HTTPD + Tomcat (a common setup)
+it's easy to just redirect everything to https: including the OAI-PMH
+part.  If it's a problem, I'm sure you can contact the administrators of
+those sites and they'll fix it.
+
+That said, requiring OAI-PMH to be HTTP-based seems rather pointlessly
+limiting to me -- you're instantly excluding any secure use of it.
+OAI-PMH has applications outside of academic institutions wishing their
+metadata to be as widely indexed as possible.
+
+In terms of harvester tools supporting it, if I'm in a situation where I
+need to have OAI-PMH used securely, I don't care -- I don't want just
+anyone to be able to harvest my metadata, so I'll put up with needing
+harvesters that support HTTPS for my application.
+
+So perhaps we need to distinguish between what it means to be compliant
+with OAI-PMH the protocol, and requirements to be part of the network of
+academic/scholarly/"open" repositories and metadata sources that wish to
+be as widely indexed as possible.
+
+ Robert Tansley / Digital Media Systems Programme / HP Labs
+  http://www.hpl.hp.com/personal/Robert_Tansley/
+
+From robert.tansley at hp.com  Fri Feb 18 09:04:24 2005
+From: robert.tansley at hp.com (Tansley, Robert)
+Date: Fri Feb 18 09:05:01 2005
+Subject: [OAI-implementers] OAI-PMH baseURL discovery
+Message-ID: <19ADCC0B9D4CAD4582BB9900BBCE35742A4B54@tayexc13.americas.cpqcorp.net>
+
+Lots of news sites use <link> to inform browsers etc. of an RSS feed,
+e.g. news.bbc.co.uk, slashdot.org, theregister.co.uk, and the
+Mozilla/Firefox browsers use this to allow 'live bookmarks'.  I'm sure
+other tools use them too.
+
+E.g. <link
+href="http://news.bbc.co.uk/rss/newsonline_world_edition/front_page/rss0
+91.xml" rel="alternate" type="application/rss+xml" title="rss" />
+
+This established practice seems pretty consistent with what we're trying
+to do.  I could easily envisage an OAI-PMH Firefox extension that does
+something with this...
+
+ Robert Tansley / Digital Media Systems Programme / HP Labs
+  http://www.hpl.hp.com/personal/Robert_Tansley/
+
+> -----Original Message-----
+> From: oai-implementers-bounces@openarchives.org 
+> [mailto:oai-implementers-bounces@openarchives.org] On Behalf 
+> Of Andy Powell
+> Sent: 14 February 2005 15:48
+> To: Michael Nelson
+> Cc: OAI Implementors
+> Subject: Re: [OAI-implementers] OAI-PMH baseURL discovery
+> 
+> On Mon, 14 Feb 2005, Michael Nelson wrote:
+> 
+> > > I disagree with your implied preference for using <meta> 
+> rather than
+> > > <link>.  In this case, we clearly want to provide a link 
+> to another
+> > > resource - therefore the semantics of the <link> tag are much more
+> > > appropriate than the semantics of the <meta> tag.
+> > >
+> > > I also suspect that your suggested use of
+> > >
+> > > OAIPMHbaseURL="..."
+> > >
+> > > and
+> > >
+> > > OAIPMHrecord="..."
+> > >
+> > > break the (X)HTML specs (though I haven't checked)?
+> >
+> > you are correct -- they do.
+> >
+> > re: meta vs. link...  We don't have a strong opinion either 
+> way, but I did
+> > see this:
+> >
+> > http://www.w3.org/TR/2004/WD-xhtml2-20040722/mod-meta.html#sec_20.5.
+> >
+> > "This element defines a link. Link conveys relationship 
+> information that
+> > may be rendered by user agents in a variety of ways (e.g., 
+> a tool-bar with
+> > a drop-down menu of links)."
+> >
+> > I know <link> is not in common use, but it appears like the 
+> intention is
+> > to promote it to interactive user status?  If so, wouldn't 
+> that be the
+> > wrong thing to do with a (for example) GetRecord request?
+> 
+> Possibly, though I note that the same document also says this 
+> in section
+> 20.2.2
+> 
+>  Note that just because we are using URIs as unique 
+> identifiers doesn't
+>  mean that navigating to this URI with a web browser would 
+> yield anything
+>  useful.
+> 
+> which doesn't seem entirely compatible with the section you 
+> quote from!
+> 
+> Remember that this document is about XHTML 2.0, which is not 
+> finalised.
+> 
+> On the other hand, section 5.19 of
+> 
+> http://www.w3.org/TR/xhtml-modularization/
+> 
+> (which I think is the appropriate W3C recommendation) says
+> 
+>  The Link Module defines an element that can be used to 
+> define links to
+>  external resources. These resources are often used to 
+> augment the user
+>  agent's ability to process the associated XHTML document.
+> 
+> which doesn't (to me) imply that the browser should 
+> necessarily expect to
+> display the <link> to the end user (i.e. "augment" could mean other
+> things).  In our case, the 'user agent' is a Web robot, which is being
+> 'augmented in its ability to process the document' by being 
+> pointed to the
+> OAI repository (or specific OAI record)  associated with the page.
+> 
+> Having said that, I know that some browsers do display all 
+> <link> tags to
+> the end-user in some form (e.g. Lynx and Opera I think).  This has
+> resulted in a couple of negative comments about one of the DCMI
+> recommendations ("Encoding DC metadata in (X)HTML meta and link
+> elements").  Dublin Core recommends using a <link> tag to provide the
+> namespace URI associated with the "DC." prefix used in <meta> 
+> tags like
+> 
+> <meta name="DC.title" content="blah" />
+> 
+> and I know that a couple of people have complained that their browsers
+> show them the namespace URI as though it is a clickable link :-(
+> 
+> All in all I'm not sure what is best.  I think that the semantics of
+> <link> are appropriate, but given some browser behaviour it 
+> may be more
+> sensible to use <meta>.
+> 
+> Andy
+> --
+> Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+> http://www.ukoln.ac.uk/ukoln/staff/a.powell/      +44 1225 383933
+> Resource Discovery Network http://www.rdn.ac.uk/
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> 
+
+From harnad at ecs.soton.ac.uk  Sun Feb 20 13:14:29 2005
+From: harnad at ecs.soton.ac.uk (Stevan Harnad)
+Date: Sun Feb 20 13:14:39 2005
+Subject: [OAI-implementers] Up to 383 OA Archives now,
+	159 of them GNU Eprints
+Message-ID: <Pine.LNX.4.44.0502201750090.28919-100000@login.ecs.soton.ac.uk>
+
+Dear Tim, Kat and OAI-implementers,
+
+Several things.
+
+First, I have done by hand the first imported set of OAI Base URLs
+that Tim imported for me for
+http://archives.eprints.org/eprints.php
+
+
+It was worth the time and effort as not only did the
+archive number rise to 363 and the Eprints subset to 159, but I
+now have a good idea of the kinds of OAI-compliant archives there
+are, and many of them are not relevant to OA: They are sites that have
+merely made themselves OAI-compliant to increase their visibility.
+
+That includes commercial product/service sites and University
+Library catalgues and home pages -- both completely irrelevant
+to OA and its goals (and introducing noise into OA-space:
+Must remember: OAI is much, much wider than OA!).
+
+Second, I would like to import more. What was that first list?
+The UIUC registry (all of it?). 
+http://gita.grainger.uiuc.edu/registry/
+
+What else can we now import.
+
+One obvious one is all of OAIster: I will go over it all by hand
+and remove all the archives that are not full-text OA content.
+(Kat, could we have a file with all the OAIster archives
+URLs and OAI BaseURLs? I can take it from there.)
+
+Third, Tim, I'm not sure why the totals are not tallying in
+the Registry: We have 159 institutional Archives now, but
+your analysis only covers 90 of them: Is that because the rest
+are not in celestial? But than please let us do something about
+that, to get them in!
+
+Also, of the 159 GNU Eprints Archives, only 120 are picked up
+by your analysis: celestial again? Important to maximise 
+celestial's coverage!
+
+Last thing: There are 4 remaining archives in the buffer:
+
+edoc.mpg.de (I have that already, and it says so, but I can't
+remove it from the buffer)
+
+nsdlib.nsdl.cornell.edu -- that might be an important one, but I
+couldn't get a connection to verify it
+
+www.auborn.edu -- that is one of those annoying ones that pop out
+of the buffer automatically: I need a "safe" viewer even for
+the buffer stage, as with such archives I cannot make them "dead"
+as it stand!
+
+www.numdam.org is, like mpg, already in the registry, and it
+tells me so, but it won't let me remove it from the buffer!)
+
+Please import more OAI baseURL lists as soon as you can, 
+especially OAIster
+
+(And any autjomatic checking you can get it to do -- to see
+is we have it already and de-dupe, would sure help minimise
+my time and keystrokes!)
+
+Cheers, Stevan
+
+
+From thabing at uiuc.edu  Mon Feb 21 10:23:44 2005
+From: thabing at uiuc.edu (Thomas G. Habing)
+Date: Mon Feb 21 10:23:56 2005
+Subject: [OAI-implementers] Up to 383 OA Archives now,	159 of them GNU
+	Eprints
+In-Reply-To: <Pine.LNX.4.44.0502201750090.28919-100000@login.ecs.soton.ac.uk>
+References: <Pine.LNX.4.44.0502201750090.28919-100000@login.ecs.soton.ac.uk>
+Message-ID: <4219FD00.6000600@uiuc.edu>
+
+Hi Steven,
+
+The UIUC registry has a couple different groupings of OAI repositories 
+that you might find useful:
+
+   http://gita.grainger.uiuc.edu/registry/ListVirtualColls.asp
+
+The list includes OAIster, Eprints,and others.  The OAIster list is 
+pretty up-to-date since I get a monthly feed from Kat.  However, the 
+others are certainly out-of-date.
+
+We are always willing to share records with other registries, so if 
+there are any sorts of special export formats that might be useful let 
+us know and we could attempt to accommodate.
+
+We are actually starting to collect additional collection-level 
+description for many of these repositories, and would be interested in 
+what data people would find useful.
+
+Kind regards,
+	Tom Habing
+
+
+Stevan Harnad wrote:
+
+> Dear Tim, Kat and OAI-implementers,
+> 
+> Several things.
+> 
+> First, I have done by hand the first imported set of OAI Base URLs
+> that Tim imported for me for
+> http://archives.eprints.org/eprints.php
+> 
+> 
+> It was worth the time and effort as not only did the
+> archive number rise to 363 and the Eprints subset to 159, but I
+> now have a good idea of the kinds of OAI-compliant archives there
+> are, and many of them are not relevant to OA: They are sites that have
+> merely made themselves OAI-compliant to increase their visibility.
+> 
+> That includes commercial product/service sites and University
+> Library catalgues and home pages -- both completely irrelevant
+> to OA and its goals (and introducing noise into OA-space:
+> Must remember: OAI is much, much wider than OA!).
+> 
+> Second, I would like to import more. What was that first list?
+> The UIUC registry (all of it?). 
+> http://gita.grainger.uiuc.edu/registry/
+> 
+> What else can we now import.
+> 
+> One obvious one is all of OAIster: I will go over it all by hand
+> and remove all the archives that are not full-text OA content.
+> (Kat, could we have a file with all the OAIster archives
+> URLs and OAI BaseURLs? I can take it from there.)
+> 
+> Third, Tim, I'm not sure why the totals are not tallying in
+> the Registry: We have 159 institutional Archives now, but
+> your analysis only covers 90 of them: Is that because the rest
+> are not in celestial? But than please let us do something about
+> that, to get them in!
+> 
+> Also, of the 159 GNU Eprints Archives, only 120 are picked up
+> by your analysis: celestial again? Important to maximise 
+> celestial's coverage!
+> 
+> Last thing: There are 4 remaining archives in the buffer:
+> 
+> edoc.mpg.de (I have that already, and it says so, but I can't
+> remove it from the buffer)
+> 
+> nsdlib.nsdl.cornell.edu -- that might be an important one, but I
+> couldn't get a connection to verify it
+> 
+> www.auborn.edu -- that is one of those annoying ones that pop out
+> of the buffer automatically: I need a "safe" viewer even for
+> the buffer stage, as with such archives I cannot make them "dead"
+> as it stand!
+> 
+> www.numdam.org is, like mpg, already in the registry, and it
+> tells me so, but it won't let me remove it from the buffer!)
+> 
+> Please import more OAI baseURL lists as soon as you can, 
+> especially OAIster
+> 
+> (And any autjomatic checking you can get it to do -- to see
+> is we have it already and de-dupe, would sure help minimise
+> my time and keystrokes!)
+> 
+> Cheers, Stevan
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: thabing.vcf
+Type: text/x-vcard
+Size: 313 bytes
+Desc: not available
+Url : http://openarchives.org/pipermail/oai-implementers/attachments/20050221/20a9c2ea/thabing.vcf
+From tajoli at cilea.it  Tue Feb 22 08:23:26 2005
+From: tajoli at cilea.it (Zeno Tajoli)
+Date: Tue Feb 22 08:26:55 2005
+Subject: [OAI-implementers] Patches for Celestial (the Harvester)
+Message-ID: <6.1.2.0.0.20050222142252.01ceb8f8@mail.cilea.it>
+
+Hi to all,
+
+CILEA have done some patches for Celestial, an harvester written in perl.
+Celestial is developed from Tim Brody.
+The patches were written by Alessandro Tugnoli, test and debug was done by 
+Zeno Tajoli.
+
+You can download the code from 
+http://www.aepic.it/docs/celestial/patch_celestial.tar.gz
+
+Thanks for your attention.
+
+Zeno Tajoli
+
+
+
+Zeno Tajoli
+CILEA - Segrate (MI)
+tajoliAT_SPAM_no_prendiATcilea.it
+(Indirizzo mascherato anti-spam; sostituisci quanto tra AT con @)
+
+
+From khage at umich.edu  Mon Feb 21 14:52:37 2005
+From: khage at umich.edu (Kat Hagedorn)
+Date: Tue Feb 22 08:39:29 2005
+Subject: [OAI-implementers] Re: Up to 383 OA Archives now,
+	159 of them GNU Eprints
+In-Reply-To: <Pine.LNX.4.44.0502201750090.28919-100000@login.ecs.soton.ac.uk>
+References: <Pine.LNX.4.44.0502201750090.28919-100000@login.ecs.soton.ac.uk>
+Message-ID: <Pine.SOL.4.58.0502211327290.3508@timepilot.gpcc.itd.umich.edu>
+
+Attached is a text list of the baseURLs we include in OAIster, as of the
+02/04 update. And their associated full repository names, per OAIster.
+
+I'm not sure what you mean by OAIster archive URLs. For each repository,
+you can search in OAISter on the full repository name and get all of the
+records in the repository.
+
+
+On Sun, 20 Feb 2005, Stevan Harnad wrote:
+
+> Dear Tim, Kat and OAI-implementers,
+>
+> Several things.
+>
+> First, I have done by hand the first imported set of OAI Base URLs
+> that Tim imported for me for
+> http://archives.eprints.org/eprints.php
+>
+>
+> It was worth the time and effort as not only did the
+> archive number rise to 363 and the Eprints subset to 159, but I
+> now have a good idea of the kinds of OAI-compliant archives there
+> are, and many of them are not relevant to OA: They are sites that have
+> merely made themselves OAI-compliant to increase their visibility.
+>
+> That includes commercial product/service sites and University
+> Library catalgues and home pages -- both completely irrelevant
+> to OA and its goals (and introducing noise into OA-space:
+> Must remember: OAI is much, much wider than OA!).
+>
+> Second, I would like to import more. What was that first list?
+> The UIUC registry (all of it?).
+> http://gita.grainger.uiuc.edu/registry/
+>
+> What else can we now import.
+>
+> One obvious one is all of OAIster: I will go over it all by hand
+> and remove all the archives that are not full-text OA content.
+> (Kat, could we have a file with all the OAIster archives
+> URLs and OAI BaseURLs? I can take it from there.)
+>
+> Third, Tim, I'm not sure why the totals are not tallying in
+> the Registry: We have 159 institutional Archives now, but
+> your analysis only covers 90 of them: Is that because the rest
+> are not in celestial? But than please let us do something about
+> that, to get them in!
+>
+> Also, of the 159 GNU Eprints Archives, only 120 are picked up
+> by your analysis: celestial again? Important to maximise
+> celestial's coverage!
+>
+> Last thing: There are 4 remaining archives in the buffer:
+>
+> edoc.mpg.de (I have that already, and it says so, but I can't
+> remove it from the buffer)
+>
+> nsdlib.nsdl.cornell.edu -- that might be an important one, but I
+> couldn't get a connection to verify it
+>
+> www.auborn.edu -- that is one of those annoying ones that pop out
+> of the buffer automatically: I need a "safe" viewer even for
+> the buffer stage, as with such archives I cannot make them "dead"
+> as it stand!
+>
+> www.numdam.org is, like mpg, already in the registry, and it
+> tells me so, but it won't let me remove it from the buffer!)
+>
+> Please import more OAI baseURL lists as soon as you can,
+> especially OAIster
+>
+> (And any autjomatic checking you can get it to do -- to see
+> is we have it already and de-dupe, would sure help minimise
+> my time and keystrokes!)
+>
+> Cheers, Stevan
+>
+>
+>
+>
+
+-------------------
+Kat Hagedorn
+OAIster/Metadata Harvesting Librarian
+DLXS Bibliographic Class Coordinator
+DLXS Text Class Collections Co-coordinator
+Digital Library Production Service
+University of Michigan
+
+http://www.oaister.org/
+http://www.dlxs.org/
+email: khage@umich.edu
+phone: 734-615-7618
+-------------- next part --------------
+http://digital.library.upenn.edu/webbin/OAI-celebration	A Celebration of Women Writers
+http://www.language-archives.org/sr/www.language-archives.org/devel/sr/EarlyMandarin.xml	Academia Sinica Tagged Corpus of Early Mandarin Chinese
+http://archives.anlc.uaf.edu/olac/anlc.php	Alaska Native Language Center (ANLC)
+http://www.cstc.org:80/cgi-bin/OAI/CSTC.pl	Computer Science Teaching Center
+http://epub.wu-wien.ac.at/dyn/OAI/oaicgi.pl	ePub-WU OAI Archive, Vienna University of Economics and Business Administration
+http://hofprints.hofstra.edu/perl/oai	HofPrints, Hofstra University Eprint Archive
+http://edu.ioffe.ru/oai/	Ioffe Physics Technical Institute Scientific-Educational Centre
+http://ston.jsc.nasa.gov/collections/TRS/oai	Johnson Technical Reports Server (JTRS), Johnson Space Center, NASA
+http://theses.mit.edu:80/Dienst/Index/2.0/OAI-1.1	Digital Library of MIT Theses
+http://oai.dlib.vt.edu:80/~ncstrlh/cgi-bin/oai.pl	Networked Computer Science Technical Reference Library (NCSTRL) Historical Collection
+http://www.perseus.tufts.edu/cgi-bin/pdataprov	Perseus Digital Library
+http://www.rdn.ac.uk/oai/nph-oai.cgi	Resource Discovery Network
+http://horus.riacs.edu/perl/oai	Research Institute for Advanced Computer Science (RIACS) Eprint Archive
+http://digital.library.upenn.edu/webbin/OAI-sceti	Schoenberg Center for Electronic Text and Image (SCETI)
+http://www.language-archives.org/tools/vida/vida.php4/www.language-archives.org/data/scoil.xml	Survey of California and Other Indian Languages
+http://www.language-archives.org/tools/vida/vida.php4/talkbank.org/metadata/talkbank.xml	TalkBank
+http://www.numismatics.org:80/cgi-bin/oai-file/scripts/oaicgi.cgi	The American Numismatic Society (ANS)
+http://ahousat.library.ubc.ca:80/ETD-db/NDLTD-OAI/oai.pl	The University of British Columbia (UBC) Electronic Theses and Dissertations Archive
+http://preston.dlib.vt.edu:80/perl/edin3.pl	Edinburgh University Library Electronic Thesis and Dissertation Collection
+http://www.davidrumsey.com:8080/oai/servlet/JDBCServer	David Rumsey Historical Map Collection
+http://hray.com:80/usf/oai/oai-file/scripts/oaicgi.cgi	Ackerman Archives
+http://www.bbsonline.org/perl/oai	Behavioral and Brain Sciences (BBS) EPrints Online Archive
+	British Women Romantic Poets (BWRP), University of California, Davis
+	Digital South Asia Library (DSAL)
+http://memory.loc.gov/cgi-bin/oai2_0	Library of Congress American Memory Project
+http://www.ukoln.ac.uk/metadata/ejournals/nph-oai.cgi	UKOLN Experimental OAI Repository
+http://www.lib.unc.edu/cgi-bin/oai/das/das/das/oai.pl	Documenting the American South (DAS)
+http://oai.sunsite.utk.edu/cgi-bin/oai2.cgi	University of Tennessee Knoxville (UTK) SunSITE Repository
+http://www.open-video.org/oai2.0/	OpenVideo Project
+http://www.aim25.ac.uk/cgi-bin/oai/OAI2.0	Archives in London and the M25 Area (AIM25)
+http://edoc.hu-berlin.de/OAI-2.0	Dokumenten- und Publikationsserver der Humboldt-Universitat zu Berlin
+http://naca.larc.nasa.gov/oai2.0/	National Advisory Committee for Aeronautics (NACA) Reports, NASA
+http://www.hti.umich.edu/cgi/b/broker20/broker20/	The University of Michigan, University Library, Digital Library Production Service Collections
+http://arXiv.org/oai2	arXiv.org Eprint Archive
+http://diglib.lib.auburn.edu/cgi-bin/OAI-XMLFile/XMLFile/auburn/oai.pl	Auburn University Digital Library
+http://alcme.oclc.org/xtcat/servlet/OAIHandler	OCLC's Experimental Thesis Catalog (XTCat)
+http://dispute.library.uu.nl/cgi-bin/oai.pl	Institutional Repository of Utrecht University
+http://eprints.unimelb.edu.au/perl/oai2	University of Melbourne ePrints Repository
+http://oai.repec.openlib.org/	Research Papers in Economics (RePEc)
+http://eprints.ecs.soton.ac.uk/perl/oai2	Electronics and Computer Science (ECS) EPrints Database, University of Southampton
+http://ProjectEuclid.org/Dienst	Project Euclid, Cornell University
+http://www.enc.org/oai/2.0/default.pl	Eisenhower National Clearinghouse (ENC)
+http://services.nsdl.org:8080/nsdloai/OAI	The National Science Digital Library (NSDL)
+	Boston College John J. Burns Library Digital Repository
+http://wo.uio.no/as/WebObjects/theses.woa/wa/oai	University of Oslo, Digital Library
+http://citebase.eprints.org/cgi-bin/oai2	CiteBase
+http://www.asdlib.org/oai/oai.php	Analytical Sciences Digital Library (ASDL)
+http://repositories.cdlib.org/cgi/oai2.cgi	University of California eScholarship Repository
+http://eprint.uq.edu.au/perl/oai2	ePrints@UQ
+http://hal.ccsd.cnrs.fr/oai/oai.php	HAL (Hyper Article on Line)
+http://uther.dlib.vt.edu:8080/oaicat/servlet/OAIHandler	Virginia Tech (VT) ImageBase
+http://oai.dlib.indiana.edu/phpoai/oai2.php	Indiana University Digital Library Program
+http://tel.ccsd.cnrs.fr/perl/oai20	Multidisciplinary Thesis Server
+http://eldorado.uni-dortmund.de:8080/rootcollection/cgi/oai2	Elektronisches Dokumenten-, Archivierungs- und Retrievalsystem der Universitat Dortmund (ELDORADO)
+http://www.theses.ulaval.ca:8080/oaicat/servlet/OAIHandler	Collection Memoires et Theses Electroniques, Universite Laval
+http://jeanNicod.ccsd.cnrs.fr/perl/oai20	l'Institut Jean Nicod, Articles en Ligne
+http://edoc.ub.uni-muenchen.de/perl/oai2	Digitale Hochschulschriften der Ludwig-Maximilians-Universitat (LMU) Munchen
+http://www.mundus.ac.uk/cgi-bin/oai/OAI2.0	Mundus: Gateway to Missionary Collections in the UK
+http://epub.ub.uni-muenchen.de/perl/oai2	Elektronischen Publikationen der Universitat Munchen
+http://amsacta.cib.unibo.it/perl/oai2	Almae Matris Studiorum (AMS) Acta, Universita di Bologna
+http://amscampus.cib.unibo.it/perl/oai2	Almae Matris Studiorum (AMS) Campus, Universita di Bologna
+http://amsmisc.cib.unibo.it/perl/oai2	Almae Matris Studiorum (AMS) Miscellanea, Universita di Bologna
+http://iubio.bio.indiana.edu:7780/perl/oai2	IU Bio-Archive
+http://eprints.iisc.ernet.in/perl/oai2	Indian Institute of Science Eprints Archive
+http://eprints.ladark.dkc.jhu.edu/perl/oai2	LADARK iPrints
+http://psycprints.ecs.soton.ac.uk/perl/oai2	Psycoloquy
+http://papyrus.bib.umontreal.ca/perl/oai2	Papyrus, Institutional Eprints Repository, Universite de Montreal
+http://www.orgprints.org/perl/oai2	Organic Eprints
+http://eprints.bath.ac.uk/perl/oai2	ePrints@Bath
+http://eprints.utsc.utoronto.ca/perl/oai2	The University of Toronto at Scarborough (UTSC) Experimental Eprints Archive
+http://eprints.univ-lyon2.fr:8050/perl/oai2	L'Universite Lumie Lyon 2 Archive
+http://diss-epsilon.slu.se/perl/oai2	EPSILON Publishing System for Doctoral and Licentiate's Theses
+http://sammelpunkt.philo.at:8080/perl/oai2	Sammelpunkt, Elektronisch Archivierte Theorie
+http://eprints.may.ie/perl/oai2	National University of Ireland Maynooth (NUIM) Eprint Archive
+http://eprints.aktors.org/perl/oai2	Advanced Knowledge Technologies (AKT) EPrints Archive
+http://www.conoze.com/interfaz/oai/20/	conoZe: Intelligere ut Credas, Credere ut Intelligas
+http://eprints.rclis.org/perl/oai2	E-LIS: E-Prints in Library and Information Science
+http://ndad.ulcc.ac.uk/cgi-bin/oai/OAI2.0	National Digital Archive of Datasets (NDAD)
+http://physnet.physik.uni-oldenburg.de/oai/oai2.php	Physics Documents Worldwide (PhysDoc)
+http://publications.uu.se/portal/OAI	Digitala Vetenskapliga Arkivet (DiVA)
+http://elib.suub.uni-bremen.de/cgi-bin/oai2	State and University Library, Bremen (SUUB)
+http://fred.ccsu.edu:8000/perl/oai2	Central Connecticut State University (CCSU) Digital Archive
+http://eiop.or.at/cgi-bin/oaiserv.pl	European Integration Online Portal (EIOP)
+http://eprints.ens-lsh.fr/perl/oai2	Human Sciences Archive
+http://eprints.fri.uni-lj.si/perl/oai2	ePrints FRI (Fakulteta za Racunalnistvo in Informatiko), Univerze v Ljubljani, Slovenia
+http://www.biomedcentral.com/oai/2.0/	BioMed Central (BMC)
+http://phy043.tours.inra.fr:8080/perl/oai2	Animal Physiology and Livestock Systems Archive, Institut National de la Recherche Agronomique (INRA)
+http://oralhistories.library.caltech.edu/perl/oai2	Caltech Oral Histories
+http://caltecheerl.library.caltech.edu/perl/oai2	Caltech Earthquake Engineering Research Laboratory (EERL) Technical Reports
+http://cav2001.library.caltech.edu/perl/oai2	Fourth International Symposium on Cavitation
+http://caltechlib.library.caltech.edu/perl/oai2	Caltech Library System Papers and Publications
+http://caltechcdstr.library.caltech.edu/perl/oai2	Caltech Control and Dynamical Systems Technical Reports (CDSTR)
+http://caltechparadise.library.caltech.edu/perl/oai2	Caltech Parallel and Distributed Systems Group Technical Reports
+http://caltechcstr.library.caltech.edu/perl/oai2	Caltech Computer Science Technical Reports (CSTR)
+http://www.scielo.br/oai/scielo-oai.php	SciELO (Scientific Electronic Library Online)
+http://archiv.tu-chemnitz.de/cgi-bin/interfaces/oai/oai2.pl	Multimedia Online Archive (MONARCH), Technical University of Chemnitz
+http://www.bsz-bw.de/cgi-bin/oai20_send.pl	Bibliotheksservice-Zentrum Baden-Wurttemberg (BSZ BW), Germany, Virtueller Medienserver
+http://etheses.nottingham.ac.uk/perl/oai2	University of Nottingham eTheses
+http://eprints.biblio.unitn.it/perl/oai	UNITN-eprints
+http://eprints.it.ss.titech.ac.jp/perl/oai	Information Theory Archive of Japan
+http://vifaphys.tib.uni-hannover.de/oai/oai2.php	The Physics Virtual Library
+http://resgenchem15.chem.wisc.edu/spt/SPT--OAI.php	Journal of Chemical Education (JCE) Digital Library
+http://www.ibiblio.org/collection/oai/	Ibiblio Collection Index
+http://aei.pitt.edu/perl/oai2	Archive of European Integration (AEI)
+http://philsci-archive.pitt.edu/perl/oai2	PhilSci Archive
+http://etd.library.pitt.edu/ETD-db/NDLTD-OAI2/oai.pl	University of Pittsburgh Electronic Theses and Dissertations
+http://sdeir.uqac.ca/metadata/oai.asp	Universite du Quebec a Chicoutimi: Documentation Regionale
+http://ntrs.larc.nasa.gov/	NASA Technical Report Server (NTRS)
+http://images.indianahistory.org/cgi-bin/oai.exe	Indiana Historical Society, Digital Image Collections
+http://lu-research.lub.lu.se/php/oai.php	LU:research
+http://cgi.vtt.fi/progs/inf/OAI	VTT Publications Register
+http://repository.ust.hk/dspace-oai/request	Hong Kong University of Science and Technology (HKUST) Institutional Repository
+http://miami.uni-muenster.de/servlets/OAIDataProvider	Munstersches Informations- und Archivsystem fur Multimediale Inhalte
+http://lacito.archivage.vjf.cnrs.fr/servlet/metadata	The Langues et Civilisations a Tradition Orale (LACITO) Archive
+http://etd-submit.etsu.edu/ETD-db/OAI/oai.pl 	ETSU Electronic Thesis and Dissertation Archive
+http://www.dlese.org/oai/provider	Digital Library for Earth System Education (DLESE)
+http://etext.library.adelaide.edu.au/cgi-bin/OAI-lite.pl	eBooks@Adelaide: The University of Adelaide Library Electronic Text Collection
+http://mitizane.ll.chiba-u.jp/cgi-bin/oai/oai2.0	Chiba University Scholarly Repository
+http://ju.nii.ac.jp/cgi-bin/oai/oai2.0	National Institute of Informatics Metadata Database
+http://bioline.utsc.utoronto.ca/perl/oai2	Bioline International EPrints Repository
+http://diglib.lib.utk.edu/cgi/b/broker20/broker20	University of Tennessee (UT) Libraries, Digital Library Center
+http://cadmus.iue.it/oai/	European University Institute (EUI) Online Publications
+http://oai.ub.rub.de/oai/oai2.php	Library of Ruhr-Universitat Bochum, Germany, Dissertation Server
+http://eprint.monash.edu.au/perl/oai2	Monash University ePrint Repository
+http://eprints.nottingham.ac.uk/perl/oai2	University of Nottingham ePrints
+http://infomine.ucr.edu/cgi-bin/OAI-PMH-server	The Infomine Scholarly Internet Resource Collections
+http://caltechasci.library.caltech.edu/perl/oai2	Caltech Accelerated Strategic Computing Initiative (ASCI) Technical Reports
+http://caltechgalcitfm.library.caltech.edu/perl/oai2	Caltech Graduate Aeronautical Laboratories (Fluid Mechanics) Technical Reports
+http://www.infomotions.com/alex/oai/index.pl	Alex Catalogue of Electronic Texts
+http://www.infomotions.com/gallery/oai/index.pl	Infomotions' Image Gallery
+http://www.infomotions.com/musings/oai/index.pl	Infomotions' Musings on Information and Librarianship
+http://eprints.st-andrews.ac.uk/perl/oai2	St. Andrews Eprints
+http://oai.ibict.br/mypoai/oai2.php	Biblioteca Digital de Teses e Dissertacoes (BDTD), Instituto Brasileiro de Informacao em Ciencia e Tecnologia (IBICT)
+http://www.nla.gov.au/apps/oaicat/servlet/OAIHandler	National Library of Australia (NLA) Digital Object Repository
+http://broker10.fcla.edu/cgi/b/broker20/broker20	Florida Center for Library Automation (FCLA) Archive
+https://tspace.library.utoronto.ca/tspace-oai/	T-Space, University of Toronto's Institutional Repository
+http://oai.ethz.ch/oai.asp	ETH (Eidgenossische Technische Hochschule Zurich) E-Collection
+http://etd.gatech.edu/ETD-db/OAI2/oai.pl	Georgia Tech Electronic Thesis and Dissertation Archive
+http://ion.slv.vic.gov.au:8123/oai/slv_oai	State Library of Victoria OAI Repository
+(see repositories dir)	Tesis Doctorals en Xarxa (TDX)
+http://arkham.nap.edu/cgi-bin/OAI-XMLFile/XMLFile/nap/oai.pl	National Academies Press (NAP) OAI MetaData Archive
+http://aux.planetmath.org:80/oai/provider-1.1.pl	PlanetMath
+http://cdpheritage.org:8080/cdp-oai/oai.jsp	Colorado Digitization Project (CDP)
+http://content.wsulibs.wsu.edu/cgi-bin/oai.exe	Digital Manuscripts, Archives, and Special Collections, Washington State University (WSU) Libraries
+http://digital.library.ucla.edu/oai/sheetmusicdp	Archive of Popular American Music (APAM), University of California Los Angeles (UCLA) Music Library
+http://eprints.fizika.org:2101/perl/oai2	fizika.org EPrints Archive
+http://eprints.cs.vt.edu/perl/oai2	Virginia Tech Computer Science (VTCS) Technical Reports
+http://etd-gw.wrlc.org:80/NDLTD-OAI/oai.pl	George Washington University (GWU) Electronic Thesis and Dissertation Archive
+http://etd.library.vanderbilt.edu/ETD-db/NDLTD-OAI/oai.pl	Vanderbilt University Electronic Theses and Dissertations Archive
+http://etheses.uwaterloo.ca/OAI/oai.cfm	University of Waterloo Electronic Theses Repository
+http://images.library.uiuc.edu:8081/cgi-bin/oai.exe	Digital Imaging and Media Technology Initiative, University of Illinois Urbana-Champaign (UIUC) Library
+http://imlsdcc.grainger.uiuc.edu/gateway/oai.asp/www.acnatsci.org/library/collections/imls/nlg/AcadNatSciStatic.xml	American Natural Science in the First Half of the Nineteenth Century, The Academy of Natural Sciences
+http://scholarsbank.uoregon.edu:8080/dspace-oai	University of Oregon Scholar's Bank
+http://library.usask.ca/etd/OAI/oai.pl	University of Saskatchewan Library Electronic Theses and Dissertations
+http://livrefrac.archimedia.fr/admin_oai/oai2.php	Collection Aquitaine, Fonds Regional d'Art Contemporain (FRAC)
+http://oai.dlese.org/avc/provider	Atmospheric Visualization Collection (AVC)
+http://oai.lib.duke.edu:8081/smc/servlet/OAIHandler/	Historic American Sheet Music, Rare Book, Manuscript, and Special Collections Library, Duke University
+http://oai.prel.org/oai.asp	Ethnomathematics Digital Library (EDL)
+http://patriot.lib.byu.edu/cgi-bin/oai.exe	Online Collections at Brigham Young University (BYU)
+http://nsdl.grainger.uiuc.edu/WolframMathworld/oai.asp	Wolfram Research's MathWorld
+http://rea.uninet.edu/ojs/oai/	The Electronic Journal of Autopsy
+http://scholar.lib.vt.edu/theses/OAI2/	Virginia Tech Electronic Thesis and Dissertation (VTETD) Collection
+http://sunzi.lib.hku.hk/cgi-bin/OAI/hkuto.pl	Hong Kong University Theses Online (HKUTO)
+http://trs.nis.nasa.gov/perl/oai2	Marshall Technical Reports Server (MTRS)
+http://www.cshc.ubc.ca/oai/	Centre for the Study of Historical Consciousness, University of British Columbia (UBC)
+http://www.econport.org:8080/econport/oai	EconPort
+http://www.entomotropica.org/ojs/oai/	Entomotropica
+http://www.ethnologue.com/oai2.asp	Ethnologue: Languages of the World
+http://www.ethnologue.com/sil_archives2.asp	SIL (Summer Institute of Linguistics) Language and Culture Archives
+http://www.handels.gu.se/epc/perl/oai2	Electronic Publishing Centre (EPC)
+http://www.hcu.ox.ac.uk/ocs/oai/	Digital Resources for the Humanities (DRH) Conference
+http://www.headline.ac.uk:80/steve/cgi-bin/oai_interface_v0.6.pl	ANGEL Repository Manager Server
+http://www.language-archives.org/sr/www.language-archives.org/devel/sr/acl.xml	Association for Computational Linguistics (ACL) Research Archive
+http://www.language-archives.org/sr/www.language-archives.org/devel/sr/dfki.xml	The Natural Language Software Registry (NLSR)
+http://www.language-archives.org/sr/www.language-archives.org/devel/sr/olac-dicos.xml	Analyse et Traitement Informatique de la Langue Francaise (ATILF) Dictionnaires d'Autrefois
+http://www.language-archives.org/sr/www.language-archives.org/devel/sr/rosetta.xml	The Rosetta Project
+http://www.language-archives.org/sr/www.language-archives.org/devel/sr/thdl-olac.xml	Tibetan and Himalayan Digital Library
+http://www.lib.ncsu.edu:80/ETD-db/oai/oai.pl	North Carolina State University (NCSU) Electronic Thesis and Dissertation Collection
+http://www.math.washington.edu/~ejpecp/ECP/oai/	Electronic Communications in Probability (ECP)
+http://www.math.washington.edu/~ejpecp/oai/	Electronic Journal of Probability (EJP)
+http://www.pkp.ubc.ca/firstnations/conference/oai	Spring Wind Comes: First Nations' Perspectives and Experiences in Research Conference
+http://oai.gwu.edu/perl/oai2	The National Security Archive
+http://eprints.dcu.ie/perl/oai2	Dublin City University (DCU) Eprints Archive
+http://eprints.presidentekennedy.br:9000/perl/oai2	Faculdade Cenecista Presidente Kennedy Eprints
+http://www.pubmedcentral.gov/oai/oai.cgi	PubMed Central (PMC)
+http://psydok.sulb.uni-saarland.de/phpoai/oai2.php	Volltextserver der Virtuellen Fachbibliothek Psychologie (PsyDok), Saarlandische Universitats- und LandesBibliothek (SULB)
+http://etdindividuals.dlib.vt.edu/perl/oai2	Electronic Theses and Dissertations (ETD) Individuals
+http://louisdl.louislibraries.org/cgi-bin/oai.exe	LOUISiana Digital Library (LDL)
+http://repositorium.sdum.uminho.pt/oai/oai	Universidade do Minho RepositoriUM
+http://eprints.cab.unipd.it/perl/oai2	Universita degli Studi di Padova EPrints Archive
+http://aerialphotos.grainger.uiuc.edu/oai.asp	Historic Aerial Photos Imagebase Project, University of Illinois Urbana-Champaign (UIUC)
+http://findingaids.grainger.uiuc.edu/oai.asp	University of Illinois Archives Holdings
+http://nsdl.grainger.uiuc.edu/WolframFunctions/oai.asp	Wolfram Research's Mathematical Functions
+http://eprints.qut.edu.au/perl/oai2	QUT (Queensland University of Technology) ePrints
+http://oai-cwihp.si.edu/perl/oai2	Cold War International History Project (CWIHP), Woodrow Wilson International Center for Scholars
+http://e-prints.unifi.it/perl/oai2	Universita degli Studi di Firenze, E-prints Archive
+http://michiganteacher.net/oai	Michigan Teacher Network (MTN)
+(see repositories dir)	Digital Academic Repository of the Universiteit van Amsterdam (UvA-DARE)
+http://e-prints.alia.org.au/perl/oai2	Australian Library and Information Association (ALIA) E-prints
+http://caltechlessgs.library.caltech.edu/perl/oai2	Caltech Large-Eddy Simulation and Subgrid-Scale (LESSGS) Modeling For Turbulent Mixing and Reactive Flows
+http://ceu.archives.ceu.hu/perl/oai2	Central European University (CEU) Preprint Archive
+http://rss.archives.ceu.hu/perl/oai2	The Open Society Archives (OSA) Research Support Scheme Repository
+http://eprints.csc.warwick.ac.uk/perl/oai2	University of Warwick, Centre for Scientific Computing (CSC) Eprints Server
+http://eprints.cecm.sfu.ca/perl/oai2	Simon Fraser University (SFU) CoLab Document Server
+http://coyote.uwinnipeg.ca/perl/oai2	University of Winnipeg, Coyote Wild West Pre-Prints
+http://eprints.law.duke.edu/perl/oai2	Duke University Law Faculty Scholarship Repository
+http://eprints.dur.ac.uk/perl/oai2	Durham University E-Prints
+http://ejournal.windeng.net/perl/oai2	e-WindEng Journal
+http://clsdemo.caltech.edu/perl/oai2	Engineering and Science Online
+http://eprints.math.sci.hokudai.ac.jp/perl/oai2	Hokkaido University, Department of Mathematics, EPrint Series
+http://eprints.erpanet.org/perl/oai2	ERPAePRINTS
+http://eprints.gla.ac.uk/perl/oai2	Glasgow ePrints Service
+http://gbspapers.library.emory.edu/perl/oai2	Goizueta Business School Paper Series, Emory University
+http://htpprints.yorku.ca/perl/oai2	HTP Prints, the History and Theory of Psychology Eprint Archive
+http://eprints.soton.ac.uk/perl/oai2	e-Prints Soton, University of Southampton
+http://genesis2.jpl.nasa.gov/perl/oai2	GENESIS EPrints
+http://sc111b2.library.yorku.ca/perl/oai2	Journal of the Association for Research on Mothering (JARM), York University
+http://eprints.maths.ox.ac.uk/perl/oai2	The Mathematical Institute Eprints Archive
+http://libeprints.open.ac.uk/perl/oai2	The Open University (OU) Library's Eprints Archive
+http://pubs.cs.uct.ac.za/perl/oai2	University of Cape Town (UCT) Computer Science Research Document Archive
+http://sigpubs.biostr.washington.edu/perl/oai2	Structural Informatics Group, University of Washington (UW-SIG) Eprint Archive 
+http://caltechkhr.library.caltech.edu/ perl/oai2	W. M. Keck Laboratory of Hydraulics and Water Resources Technical Reports
+http://n125.arts.yorku.ca/perl/oai2	York Political Economy (YPE) Archive, York University
+http://pastel.paristech.org/perl/oai2	Grandes Ecoles d'Ingenieurs de Paris (Paris Institute of Technology) Service de Theses en Ligne (PASTEL)
+http://publications.u-paris10.fr/perl/oai2	Universite Paris X (UPX) Nanterre Eprints
+http://cdsweb.cern.ch/oai2d.py	CERN Document Server
+http://critaoi.org/bib/perl/oai2	Litterature CRITique Francophone de l'Afrique Subsaharienne et de l'Ocean Indien (CRITAOI)
+http://iris.sid.inpe.br:1905/col/iconet.com.br/banon/2003/11.21.21.08/doc/oai.cgi	Servico de Informacao e Documentacao (SID), Instituto Nacional de Pesquisas Espaciais (INPE) 
+http://www.doaj.org/oai	Directory of Open Access Journals (DOAJ)
+http://adlibx.athabascau.ca/ADLib/OAI/	Athabasca Digital Library (ADLib) Reading Room
+http://arno.unimaas.nl/oai/dare.cgi	Universiteit Maastricht (UM) Electronic Documents Repository
+(see repositories dir)	Universiteit van Tilburg ARNO Repository
+http://library.wur.nl/oai	Wageningen Yield (WaY)
+http://repository.tudelft.nl/oai	Technische Universiteit Delft (TUDelft) Dissertations
+http://csc000.cscaustria.at/oai/OAI.ASP	Cultural Service Centre (CSC) Austria Repository
+http://dare.ubn.kun.nl/repository/oai	Katholieke Universiteit Nijmegen (KUN) Electronic Publications Repository
+http://dispute.library.uu.nl/cgi-bin/dareoai.pl	Universiteit Utrecht Library Dissertations
+http://dspace.ubvu.vu.nl/dspace-oai	DSpace at Vrije Universiteit Amsterdam
+http://etd.lib.nsysu.edu.tw:80/ETD-db/NDLTD-OAI/oai.pl	Electronic Theses of National Sun Yat-sen University (NSYSU), Taiwan 
+http://mlpa.nottingham.ac.uk/perl/oai2	University of Nottingham Modern Languages Publications Archive
+http://repository.cwi.nl/nwo_oai/cwi/oai	Digital Academic Repository, Centrum voor Wiskunde en Informatica (CWI)
+http://scidok.sulb.uni-saarland.de/phpoai/oai2.php	Wissenschafts-Server (SciDok), Saarlandische Universitats- und LandesBibliothek (SULB)
+http://dspace.library.drexel.edu/dspace-oai	DSpace at Drexel, Electronic Theses and Dissertations
+http://www.gsi.de/~harvest/oai2.php	Gesellschaft fur Schwerionenforschung (GSI)
+http://oai.cdlib.org/	California Digital Library (CDL)
+http://thesis.haverford.edu/perl/oai2	Haverford College Senior Thesis Archive
+http://ex-epsilon.slu.se/perl/oai2	EPSILON Publishing System for Undergraduate Theses
+http://imlsdcc.grainger.uiuc.edu/gateway/oai.asp/www.cl.cam.ac.uk/TechReports/UCAM-CL-TR-OAI-SR.xml	University of Cambridge, Computer Laboratory Technical Reports
+http://eprints.ouls.ox.ac.uk/perl/oai2	Oxford Eprints
+http://espace.lis.curtin.edu.au/perl/oai2	Curtin University of Technology Institutional Repository, espace@Curtin
+http://imlsdcc.grainger.uiuc.edu/gateway/oai.asp/relativity.livingreviews.org/Articles/oai.xml	Living Reviews in Relativity
+http://www.lbd.dcc.ufmg.br/cgi-bin/bdbcomp/oai2/oai.pl	Biblioteca Digital Brasileira de Computacao (BDBComp) Archive
+http://submit.library.lt/ETD-db/NDLTD-OAI/oai.pl	Lithuanian Electronic Theses and Dissertations Archive
+http://dspace.library.cornell.edu:8080/dspace-oai/request	DSpace at Cornell University
+http://spz.socionet.ru/oai/oai.cgi	Socionet Personal Zone (SPZ)
+http://ir.lib.sfu.ca:8080/dspace-oai	Simon Fraser University (SFU) Institutional Repository
+http://oai.humbul.ac.uk/cgi-bin/nph-oai2.cgi	Humbul Humanities Hub
+http://dspace.ucalgary.ca/oai/request	DSpace at the University of Calgary
+http://elib.uni-stuttgart.de/opus/phpoai/oai2.php	Elektronische Hochschulschriften der Universitat Stuttgart, OPUS
+http://www.lib.unc.edu/cgi-bin/oai/mss/OAI-XMLFile/XMLFile/mss/oai.pl	University of North Carolina at Chapel Hill Manuscripts Department
+http://memsic.ccsd.cnrs.fr/perl/oai2	memSIC: Memoires en Sciences de l'Information et de la Communication
+http://ilalive.grainger.uiuc.edu/oai.asp	Illinois Alive
+http://idea.iupui.edu/oai/	IDEA: IUPUI Digital Archive
+http://digital.lib.washington.edu/dspace/oai/	DSpace at The University of Washington
+http://dspace-unipr.cilea.it:8080/dspace-oai/request	DSpace@UNIPR (Universita di Parma)
+http://dspace.anu.edu.au/dspace-oai/request	Australian National University (ANU) DSpace Repository
+http://dspace.lib.cranfield.ac.uk/oai/	QUEprints, Cranfield University
+http://dspace.lib.rochester.edu/oai/	DSpace at the University of Rochester
+http://dspace.library.wisc.edu/dspace-oai/	e-Repository@UW (University of Wisconsin)
+http://drtc.isibang.ac.in/oai/	The Documentation Research and Training Center (DRTC) Librarians' Digital Library (LDL)
+http://www.realiaproject.org/cgi-bin/oai.exe	The REALIA Project
+http://worlddmc.ohiolink.edu/oai/oaiProv	OhioLINK Digital Media Center (DMC)
+http://dspace.msh-alpes.prd.fr/oai/	ALADIN (Acces Libre aux Archives du Depot Institutionnel Numerique), Maison des Sciences de l'Homme-Alpes
+http://imageserver.library.unr.edu/cgi-bin/oai.exe 	University of Nevada Reno Libraries, Online Image Collections
+http://www.ibict.br/cienciadainformacao/oai/index.php	Ciencia da Informacao
+http://stacks.iop.org/Member/oa/2	Institute of Physics (IOP)
+http://archive.ugent.be/oai/	DSpace at UGent
+http://dspace.ub.rug.nl/dspace-oai/	DSpace at the University of Groningen
+http://triptych.brynmawr.edu/cgi-bin/oai.exe	Triptych: The TriCollege Digital Library
+http://fhdd.opus.hbz-nrw.de/phpoai/oai2.php	Digitale Hochschulschriften der Fachhochschule Dusseldorf (FHD)
+http://fhdo.opus.hbz-nrw.de/phpoai/oai2.php	Digitale Hochschulschriften der Fachhochschule Dortmund
+http://fhge.opus.hbz-nrw.de/phpoai/oai2.php	Digitale Hochschulschriften der Fachhochschule Gelsenkirchen
+http://herkules.oulu.fi/OAI/OAI-script.xsql	Oulu University Library Repository
+http://nsdl.lon-capa.org/cgi-bin/OAI-XMLFile/XMLFile/nsdlexport/oai.pl	The LearningOnline Network with a Computer Assisted Personalized Approach (LON-CAPA)
+http://rlbweb.opus.hbz-nrw.de/phpoai/oai2.php	Rheinischen Landesbibliothek (RLB) Webarchiv
+http://saardok.sulb.uni-saarland.de/phpoai/oai2.php	SaarDok (Archivserver fur das Saarland), Saarlandische Universitats- und LandesBibliothek (SULB)
+http://www.citidel.org:80/oai/provider-2.0.pl	CITIDEL (Computing and Information Technology Interactive Digital Educational Library)
+http://www.eerl.org/SPT--OAI.php	electronic Environmental Resources Library (eERL)
+http://archimede.bibl.ulaval.ca:8080/oaicat/OAIHandler	ARCHIMEDE: Systeme de Depot Institutionnel de la Bibliotheque de l'Universite Laval
+http://rlbdok.opus.hbz-nrw.de/phpoai/oai2.php	Rheinischen Landesbibliothek (RLB) Dokumentenserver
+http://nmrlsdli.cdm.oclc.org/cgi-bin/oai.exe	Northeast Massachusetts Digital Library (NMDL)
+http://kdl.kyvl.org/cgi-bin-oai/XMLFile/kydl/oai.pl	Kentuckiana Digital Library
+http://www.ohiolink.edu/etd/oai.php	OhioLINK Electronic Theses and Dissertations Center
+http://collections.lib.uwm.edu/cgi-bin/oai.exe	University of Wisconsin Milwaukee (UWM) Libraries Digital Collections
+http://eprints.comp.utas.edu.au:81/perl/oai2	University of Tasmania ePrints Repository (UTasER)
+http://ecrystals.chem.soton.ac.uk/perl/oai2	Crystal Structure Report Archive, University of Southampton
+http://dspace.mit.edu/oai/request	DSpace at MIT
+http://epubs.cclrc.ac.uk/oai	Council for the Central Laboratory of the Research Councils (CCLRC) ePublication Archive
+http://sherpa.leeds.ac.uk/perl/oai2	White Rose Consortium ePrints Repository
+http://bieson.ub.uni-bielefeld.de/phpoai/oai2.php	BieSOn (Bielefelder Server fur Online-Publikationen), Universitat Bielefeld
+http://cacr.library.caltech.edu/perl/oai2	Caltech Center for Advanced Computing Research (CACR)
+http://biblio-eprints.bo.cnr.it/perl/oai2	Biblioteca dell'Area di Ricerca CNR di Bologna Eprints Server
+http://drum.umd.edu/oai	Digital Repository at the University of Maryland (DRUM)
+http://www.lis.upatras.gr/ebge/oai2/oai2.php	Subject Gateway of Library and Information Services (LIS), University of Patras, Greece
+http://oai.english-heritage.org.uk/oai.asp	English Heritage ViewFinder
+http://www.lis.upatras.gr/kosmopolis/oai2/oai2.php	Kosmopolis, Library and Information Service (LIS), University of Patras, Greece
+http://theses.lub.lu.se/oai-service/scripta/	Lund University Dissertations, Scripta Academica Lundensis
+http://libserv12.princeton.edu/oai/oai.pl	Princeton University Library
+http://eprints.ucl.ac.uk/perl/oai2	University College London (UCL) Eprints
+http://theses.lub.lu.se/oai-service/xerxes/	XERXES, Lund University
+http://cs1.ist.psu.edu/cgi-bin/oai.cgi	CiteSeer Scientific Literature Digital Library
+http://dspace.c3sl.ufpr.br/dspace-oai/request	DSpace at UFPR (Universidade Federal do Parana) 
+http://dici.ibict.br/perl/oai2	Dialogo Cientifico, Ciencia da Informacao
+http://www.ajol.info/oai/	African Journals Online (AJOL)
+http://www.tiemposmodernos.org/oai/index.php	Tiempos Modernos: Revista Electronica de Historia Moderna
+http://multidoc.rediris.es/cdm/oai/	Cuadernos de Documentacion Multimedia (CDM)
+http://www.codebreakers-journal.com/oai/index.php	Code Breakers Journal (CBJ)
+http://www.assembly-journal.com/oai/	Assembly Programming Journal (APJ)
+http://www.auburn.edu/research/litee/jstem/oai/	Journal of STEM (Science, Technology, Engineering and Mathematics) Edcuation: Innovations and Research
+http://139.124.177.94/proxim/oai/	Quatriemes Journees de la Proximite
+http://www.cartapacio.org.ar/oai/index.php 	Cartapacio, Publicacion de la Escuela Superior de Derecho, Universidad Nacional del Centro de la Provincia de Buenos Aires
+http://imlsdcc.grainger.uiuc.edu/gateway/oai.asp/ep.lib.cbs.dk/oai.xml	Copenhagen Business School (CBS) Working Papers
+http://www.kup.at/cgi-bin/OAI/XMLFile/kup/oai.pl	Krause und Pachernegg Medizinische Publikationen Datenbank
+http://bibliotheca.indexdata.dk/index.tkl	Bibliotheca
+http://www.cjc-online.ca/oai/	Canadian Journal of Communication (CJC)
+http://repository.lib.uoguelph.ca/ojs/oai/	Critical Studies in Improvisation / Etudes Critiques en Improvisation
+http://143.106.58.55/revista/oai/	Educacao Tematica Digita
+http://www.numdam.org/numdam-bin/oai	NUMerisation de Documents Anciens Mathematiques (NUMDAM)
+http://oai.lib.uchicago.edu/	University of Chicago Library Metadata Repository
+http://centralfloridamemory.lib.ucf.edu/cgi-bin/oai.exe	Central Florida Memory (CFM)
+http://edoc.tkk.fi/oai/oai2.php	Helsinki University of Technology (HUT) Dissertations
+http://oaidp.library.wisc.edu/oaicat/OAIHandler	University of Wisconsin Digital Collections (UWDC)
+http://oai.pictureaustralia.org:8123/oai/pa_oai	PictureAustralia
+http://www.fontyspublicaties.nl/oai/pub.fontys.nl.cgi	Fontys Hogescholen Publications Database
+http://calvados.c3sl.ufpr.br/sociologia/oai/	Revista de Sociologia e Politica
+http://ci-journal.net/oai/	The Journal of Community Informatics
+http://www.deakin.edu.au/tci/oai/index.php	Transnational Curriculum Inquiry (TCI)
+http://doks.khk.be/eindwerk/oai	Katholieke Hogeschool Kempen (KHK) Electronic Theses and Dissertations
+http://authors.library.caltech.edu/perl/oai2	Caltech Authors
+http://www3.bth.se/servlet/Forskinfo	Blekinge Institute of Technology Electronic Research Archive
+http://errol.oclc.org/orpubs.oclc.org.srw2oai	OCLC Research Publications
+http://oai.bnf.fr/oai2	Gallica: La Bibliotheque Numerique de la Bibliotheque Nationale de France
+http://smartech.gatech.edu:8282/dspace-oai/request	SMARTech: Scholarly Materials and Research at Georgia Tech
+http://www.jelit.org/perl/oai2	JeLit (Journal of eLiteracy)
+http://kuscholarworks.ku.edu/dspace-oai/request	KU ScholarWorks, The University of Kansas
+http://ethesis.inp-toulouse.fr/perl/oai2	Les Theses en Ligne de l'INP
+http://www.refer.nhs.uk/oai-pmh/oai-pmh.asp	Research Findings electronic Register (ReFeR)
+http://www.crcstudio.arts.ualberta.ca/streetprint/XML/oai/	Streetprint: Revolution and Romanticism
+http://content.wisconsinhistory.org/cgi-bin/oai.exe	Wisconsin Historical Society
+http://www.repository.knaw.nl/repository/niwipub/oai	Journal of Computer-Mediated Communication (JCMC)
+http://harvest.lib.uic.edu:8080/oai_fm/oai.jsp	First Monday
+http://etda.libraries.psu.edu/ETD-db/ETD-OAI/etddb/oai.pl	Penn State Electronic Thesis and Dissertation Collection
+http://scout.wisc.edu/Archives/SA--OAI.php	Scout Project Report Archives
+http://www.doaj.org/oai.article	Directory of Open Access Journals (DOAJ) Articles
+http://ejournals.library.vanderbilt.edu/ameriquests/oai/	AmeriQuests
+http://calvados.c3sl.ufpr.br/veterinary/oai/	Archives of Veterinary Science (AVS)
+http://calvados.c3sl.ufpr.br/bcg/oai/	Boletim de Ciencias Geodesicas (BCG)
+http://calvados.c3sl.ufpr.br/geociencias/oai/	Boletim Paranaense de Geociencias (BPG)
+http://calvados.c3sl.ufpr.br/raega/oai/	RA'E GA: O Espaco Geografico em Analise
+http://calvados.c3sl.ufpr.br/reterm/oai/	Revista da Engenharia Termica (RET)
+http://calvados.c3sl.ufpr.br/agraria/oai/	Scientia Agraria
+http://research2.csci.educ.ubc.ca/eprints/perl/oai2	The Public Knowledge Project (PKP) EPrint Archive
+http://content.lib.utah.edu/cgi-bin/oai.exe	University of Utah, J.W. Marriott Library Digitized Collections
+http://www.lib.utexas.edu/oai/oai2.php	The University of Texas at Austin Libraries Repository
+http://txspace.tamu.edu/dspace-oai/request	TxSpace at Texas A&M University Libraries
+http://www.cbmh.ca/perl/oai2	Canadian Bulletin of Medical History / Bulletin Canadien d'Histoire de la Medecine
+http://ecommons.uwinnipeg.ca/perl/oai2	eCommons::Research
+http://eprints.iimk.ac.in/perl/oai2	Indian Institute of Management Kozhikode Scholarship Repository (ePrints@IIMK)
+http://pdc.ceu.hu/perl/oai2	Policy Documentation Center (PDC)
+http://ws.pangaea.de/oai/	PANGAEA: Publishing Network for Geoscientific and Environmental Data
+http://dialnet.unirioja.es/oai/OAIHandler	DIALNET OAI Articles
+http://www.cybertesis.cl:8080/sdx/sdx/oai/uchile/documents	Cybertesis, Universidad de Chile
+http://www.hsdvl.org/oai/oai2.php	Harvard Smithsonian Digital Video Library
+http://oai-dienst.uni-oldenburg.de/oai2/oai2.php	Universitat Oldenburg, Bibliotheks- und Informationssystem (BIS)
+http://ict.udlap.mx:9090/Tales/Oai_tesis	Universidad de las Americas-Puebla (UDLA-P): Digital Theses
+http://joypub.joensuu.fi/OAI/	University of Joensuu Electronic Publications 
+http://doc.rero.ch/oai2d.py	RERO (Library Network of Western Switzerland) Digital Library
+http://oai.co.allenpress.com/oai/biooneonline	BioOne
+http://jbi.nhm.ku.edu/oai/	Biodiversity Informatics
+http://www.jcal.emory.edu/oai/index.php	Journal of Cognitive Affective Learning (JCAL)
+http://sleid.cqu.edu.au/oai/	Studies in Learning, Evaluation, Innovation and Development (SLEID)
+http://pkp.ubc.ca/pocol/oai/	Postcolonial Text
+http://cogprints.org/perl/oai2	CogPrints Archives
+http://edoc.bib.ucl.ac.be:80/DBUnion/ndltd/oaiunion.pl	BICTEL/e E-Prints and Dissertations
+http://etd.caltech.edu:80/ETD-db/OAI/oai	Caltech Electronic Theses and Dissertations
+http://archivesic.ccsd.cnrs.fr/perl/oai20	Archive Ouverte en Sciences de l'Information et de la Communication
+http://oai.collectionscanada.ca/oai/oai.php	Library and Archives Canada Electronic Theses Repository / Centre d'Archives des Theses Electroniques de Bibliotheque et Archives Canada
+http://etd.lsu.edu/OAI/oai.pl	Louisiana State University (LSU) Electronic Thesis and Dissertation Archive
+http://etd.ils.unc.edu/dspace-oai/	DSpace at University of North Carolina (UNC) School of Information and Library Science (SILS)
+http://www.era.lib.ed.ac.uk/dspace-oai	Edinburgh Research Archive (ERA)
+http://www.ub.uni-duisburg.de:8080/cgi-oai2/2/OAI-XMLFile-2.1/XMLFile/DuetT/oai.pl	Duisburger Elektronische Texte (DUETT)
+http://ep.eur.nl/oai/	DSpace at Erasmus University Research Online
+http://dlist.sir.arizona.edu/perl/oai2	Digital Library of Information Science and Technology (DLIST)
+http://eprints.soas.ac.uk/perl/oai2	School of Oriental and African Studies (SOAS) Library Eprints Repository, University of London
+http://eprints.rhul.ac.uk/perl/oai2	Royal Holloway Research Online
+http://repository.upenn.edu/cgi/oai2.cgi	ScholarlyCommons@Penn
+http://calvados.c3sl.ufpr.br/asubterraneas/oai/	Aguas Subterraneas
+http://www.ecologyandsociety.org/oai/	Ecology and Society
+http://calvados.c3sl.ufpr.br/hidrogeologia/oai/	Hidrogeologia
+http://aries.oise.utoronto.ca/highered/oai/	Higher Education Perspectives (HEP)
+http://www.maringamanagement.com.br/oai/index.php	Maringa Management: Revista de Ciencias Empresariais
+http://www.theharrow.com/journal/oai/	The Harrow: Original Works of Fantasy and Horror
+http://dlc.dlib.indiana.edu/perl/oai2	Digital Library of the Commons (DLC)
+http://content.test.denison.edu/cgi-bin/oai.exe	Denison University Collections Online
+http://hsss.slub-dresden.de/oai/OAI-2.0	HochschulSchriftenServer (HSSS) der Sachsische Landesbibliothek Staats- und Universtitatsbibliotek (SLUB) Dresden
+
+From khage at umich.edu  Wed Feb 23 13:50:14 2005
+From: khage at umich.edu (Kat Hagedorn)
+Date: Wed Feb 23 13:50:17 2005
+Subject: [OAI-implementers] Problems with OAI (fwd)
+Message-ID: <Pine.SOL.4.58.0502231349310.25424@mspacman.gpcc.itd.umich.edu>
+
+
+Forwarded on behalf of Daniel Manchego...
+
+---------- Forwarded message ----------
+Date: Wed, 23 Feb 2005 13:16:34 -0500
+From: Daniel Manchego <danielimc@speedy.com.pe>
+To: oaister@umich.edu
+Subject: Problems with OAI
+
+Hello,
+
+I have implemented the OAI in my website, but at the time of making the
+test, it leaves the following error to me:
+
+(30) Testing : GetRecord (invalid_id, oai_dc)
+URL :
+http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php?verb=3DGetRecord&ident
+ifier=3Dinvalid\"id&metadataPrefix=3Doai_dc
+------ Response from Xerces Schema Validation ------
+[Error] re.wWUN2I:7:81: cvc-datatype-valid.1.2.1: 'invalid"id' is not a
+valid value for 'anyURI'.
+[Error] re.wWUN2I:7:81: cvc-attribute.3: The value 'invalid"id' of
+attribute 'identifier' on element 'request' is not valid with respect to
+its type, 'identifierType'.
+/tmp/re.wWUN2I: 745;11;0 ms (4 elems, 7 attrs, 0 spaces, 149 chars)
+------- End of Xerces Schema Validation Report  -------
+------ Start of XML Response ------
+<?xml version=3D"1.0" encoding=3D"UTF-8"?>
+<OAI-PMH xmlns=3D"http://www.openarchives.org/OAI/2.0/"
+         xmlns:xsi=3D"http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation=3D"http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+ <responseDate>2005-02-23T17:38:12Z</responseDate>
+ <request verb=3D"GetRecord" identifier=3D"invalid&quot;id"
+metadataPrefix=3D"oai_dc">http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.
+php</request>
+ <error code=3D"idDoesNotExist">The value &#039;invalidid&#039; of the
+identifier is illegal for this repository.</error>
+</OAI-PMH>
+
+I have been reviewing, but I cannot find the error.
+
+Could you help me, please?
+
+Best Regards.
+
+--
+Daniel Manchego
+Web Administrator
+http://www.ifeanet.org
+INSTITUT FRANCAIS d'ETUDES ANDINES
+Tlf. 4476070 Cel. 93569056
+Lima - Per=FA
+
+
+
+
+From dmanchego at ifeanet.org  Wed Feb 23 14:25:40 2005
+From: dmanchego at ifeanet.org (Daniel Manchego)
+Date: Wed Feb 23 14:18:45 2005
+Subject: [OAI-implementers] I have problems with OAI
+Message-ID: <000d01c519dd$7647c910$0301a8c0@dark>
+
+
+Hello,
+
+I have implemented the OAI in my website, but at the time of making the
+test, it leaves the following error to me:
+
+(30) Testing : GetRecord (invalid_id, oai_dc)
+URL :
+http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php?verb=GetRecord&ident
+ifier=invalid\"id&metadataPrefix=oai_dc
+------ Response from Xerces Schema Validation ------
+[Error] re.wWUN2I:7:81: cvc-datatype-valid.1.2.1: 'invalid"id' is not a
+valid value for 'anyURI'. [Error] re.wWUN2I:7:81: cvc-attribute.3: The
+value 'invalid"id' of attribute 'identifier' on element 'request' is not
+valid with respect to its type, 'identifierType'.
+/tmp/re.wWUN2I: 745;11;0 ms (4 elems, 7 attrs, 0 spaces, 149 chars)
+------- End of Xerces Schema Validation Report  -------
+------ Start of XML Response ------
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+ <responseDate>2005-02-23T17:38:12Z</responseDate>
+ <request verb="GetRecord" identifier="invalid&quot;id"
+metadataPrefix="oai_dc">http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.
+php</request>
+ <error code="idDoesNotExist">The value &#039;invalidid&#039; of the
+identifier is illegal for this repository.</error> </OAI-PMH>
+
+I have been reviewing, but I cannot find the error.
+
+Could you help me, please?
+
+Best Regards.
+
+--
+Daniel Manchego 
+Web Administrator
+http://www.ifeanet.org
+INSTITUT FRANCAIS d'ETUDES ANDINES 
+Tlf. 4476070 Cel. 93569056
+Lima - Per? 
+
+
+From simeon at cs.cornell.edu  Wed Feb 23 14:44:15 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Wed Feb 23 14:44:23 2005
+Subject: [OAI-implementers] I have problems with OAI
+In-Reply-To: <000d01c519dd$7647c910$0301a8c0@dark>
+References: <000d01c519dd$7647c910$0301a8c0@dark>
+Message-ID: <Pine.LNX.4.58.0502231423530.11885@dhcp103-124.cs.cornell.edu>
+
+
+Daniel,
+
+You should not include the illegal identifier in the <request> element.
+The response you quote below is not schema valid because the 'identifier'
+attribute of the <request> element is not a valid value for type 'anyURI'.
+
+The OAI-PMH specification
+[http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#XMLResponse]
+says:
+
+> The rules for generating the request element are as follows:
+>   ...
+>   o In cases where the request that generated this response resulted in
+> a badVerb or badArgument error condition, the repository must return the
+> base URL of the protocol request only. Attributes must not be provided
+> in these cases.
+
+Your response should include a badArgument error since the identifier
+supplied is illegal (not just non-existent). Then the rule above applies
+and your <request> element should be simply:
+
+<request>http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php</request>
+
+Cheers,
+Simeon
+
+
+On Wed, 23 Feb 2005, Daniel Manchego wrote:
+>
+> Hello,
+>
+> I have implemented the OAI in my website, but at the time of making the
+> test, it leaves the following error to me:
+>
+> (30) Testing : GetRecord (invalid_id, oai_dc)
+> URL :
+> http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php?verb=3DGetRecord&iden=
+t
+> ifier=3Dinvalid\"id&metadataPrefix=3Doai_dc
+> ------ Response from Xerces Schema Validation ------
+> [Error] re.wWUN2I:7:81: cvc-datatype-valid.1.2.1: 'invalid"id' is not a
+> valid value for 'anyURI'. [Error] re.wWUN2I:7:81: cvc-attribute.3: The
+> value 'invalid"id' of attribute 'identifier' on element 'request' is not
+> valid with respect to its type, 'identifierType'.
+> /tmp/re.wWUN2I: 745;11;0 ms (4 elems, 7 attrs, 0 spaces, 149 chars)
+> ------- End of Xerces Schema Validation Report  -------
+> ------ Start of XML Response ------
+> <?xml version=3D"1.0" encoding=3D"UTF-8"?>
+> <OAI-PMH xmlns=3D"http://www.openarchives.org/OAI/2.0/"
+>          xmlns:xsi=3D"http://www.w3.org/2001/XMLSchema-instance"
+>          xsi:schemaLocation=3D"http://www.openarchives.org/OAI/2.0/
+>          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>  <responseDate>2005-02-23T17:38:12Z</responseDate>
+>  <request verb=3D"GetRecord" identifier=3D"invalid&quot;id"
+> metadataPrefix=3D"oai_dc">http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2=
+=2E
+> php</request>
+>  <error code=3D"idDoesNotExist">The value &#039;invalidid&#039; of the
+> identifier is illegal for this repository.</error> </OAI-PMH>
+>
+> I have been reviewing, but I cannot find the error.
+>
+> Could you help me, please?
+>
+> Best Regards.
+>
+> --
+> Daniel Manchego
+> Web Administrator
+> http://www.ifeanet.org
+> INSTITUT FRANCAIS d'ETUDES ANDINES
+> Tlf. 4476070 Cel. 93569056
+> Lima - Per=FA
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+
+From simeon at cs.cornell.edu  Wed Feb 23 23:11:28 2005
+From: simeon at cs.cornell.edu (Simeon Warner)
+Date: Wed Feb 23 23:11:37 2005
+Subject: [OAI-implementers] Digital Commons sites and Static Repository
+	registration
+Message-ID: <Pine.LNX.4.58.0502232254530.12594@dhcp103-124.cs.cornell.edu>
+
+
+Just FYI...
+
+Today I noticed a flurry of new data-provider registrations from
+institutional repository sites running the Digital Commons product from
+ProQuest. You can see a number of them on at
+http://www.openarchives.org/Register/BrowseSites with repository names
+"Digital Commons @ ..."
+
+Also, last week saw what I think was the first Static Repository
+data-provider registration: "Archeologia e Calcolatori - Published
+Articles" at baseURL
+http://purl.oclc.org/NET/ugent/lib/srepod/www.progettocaere.rm.cnr.it/databasegestione/A_C_oai_Archive.xml
+which uses Patrick Hochstenbach's gateway at U. Ghent.
+
+Cheers,
+Simeon
+
+
+
+PS. I have no connection with UMI/ProQuest.
+
+
+From roy.tennant at ucop.edu  Wed Feb 23 23:56:32 2005
+From: roy.tennant at ucop.edu (Roy Tennant)
+Date: Wed Feb 23 23:56:38 2005
+Subject: [OAI-implementers] Digital Commons sites and Static Repository
+	registration
+In-Reply-To: <Pine.LNX.4.58.0502232254530.12594@dhcp103-124.cs.cornell.edu>
+References: <Pine.LNX.4.58.0502232254530.12594@dhcp103-124.cs.cornell.edu>
+Message-ID: <1adb796ea046454dab6488585d7d1e4e@ucop.edu>
+
+The "Digital Commons" product from ProQuest is of course the  
+bepress.com system, which has powered the eScholarship Repository  
+<http://repositories.cdlib.org/escholarship/> for nearly three years.  
+The California Digital Library, in fact, worked with bepress to develop  
+a number of the features that now grace the product, including OAI  
+support. As far as I know, it remains the only repository system with a  
+full-featured online peer review system as an integrated part of the  
+product.
+
+On a side note, the eScholarship Repository recently passed the  
+milestone of one million paper downloads (not web page views), and only  
+this week announced a new "postprints" service that enables University  
+of California faculty to upload a selected set of their published  
+articles with a few clicks of the mouse button. Long live institutional  
+repositories!
+Roy Tennant
+California Digital Library
+
+On Feb 23, 2005, at 8:11 PM, Simeon Warner wrote:
+
+>
+> Just FYI...
+>
+> Today I noticed a flurry of new data-provider registrations from
+> institutional repository sites running the Digital Commons product from
+> ProQuest. You can see a number of them on at
+> http://www.openarchives.org/Register/BrowseSites with repository names
+> "Digital Commons @ ..."
+>
+> Also, last week saw what I think was the first Static Repository
+> data-provider registration: "Archeologia e Calcolatori - Published
+> Articles" at baseURL
+> http://purl.oclc.org/NET/ugent/lib/srepod/www.progettocaere.rm.cnr.it/ 
+> databasegestione/A_C_oai_Archive.xml
+> which uses Patrick Hochstenbach's gateway at U. Ghent.
+>
+> Cheers,
+> Simeon
+>
+>
+>
+> PS. I have no connection with UMI/ProQuest.
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+
+From stamer at physnet.physik.uni-oldenburg.de  Fri Feb 25 06:02:19 2005
+From: stamer at physnet.physik.uni-oldenburg.de (Heinrich Stamerjohanns)
+Date: Fri Feb 25 12:16:44 2005
+Subject: [OAI-implementers] I have problems with OAI
+In-Reply-To: <000d01c519dd$7647c910$0301a8c0@dark>
+References: <000d01c519dd$7647c910$0301a8c0@dark>
+Message-ID: <Pine.LNX.4.61.0502251124080.11184@alexandria.physik.uni-oldenburg.de>
+
+On Wed, 23 Feb 2005, Daniel Manchego wrote:
+
+Dear Daniel, 
+
+the problem is that the Protocol suggests to return the identifier in this 
+error case. However the invalid identifier does not match 
+the type oai:identifierType, so the generated XML is invalid.
+ 
+So in fact it is a problem in either the specification or the XML Schema.
+
+Two solutions are possible:
+
+The XML Schema for Validating Responses to OAI-PMH Requests can be fixed
+by just requiring any string and not an oai:identifierType.
+
+OR
+
+fix the file oaidp-util.php with this patch:
+
+oai2-1.5/oai2/oaidp-util.php
+--- phpoai2-1.6/oai2/oaidp-util.php     2005-02-25 11:43:47.155125000 
++0100
++++ phpoai2-1.5/oai2/oaidp-util.php     2004-07-02 17:14:44.000000000 
++0200
+@@ -113,7 +113,7 @@
+                        $code = 'badArgument';
+        }
+
+-       if ($code == 'badVerb' || $code == 'badArgument' || $code == 
+'idDoesNotExist') {
++       if ($code == 'badVerb' || $code == 'badArgument') {
+                $request = $request_err;
+        }
+        $error .= ' <error code="'.xmlstr($code, 'iso8859-1', 
+false).'">'.xmlstr($text, 'iso8859-1', false)."</error>\n";
+
+The last line of 3.2.3 in 
+http://www.openarchives.org/OAI/openarchivesprotocol.html
+should be changed to 
+
+"In cases where the request that generated this response resulted in a 
+badVerb or badArgument or idDoesNotExist error condition, the repository 
+must return the base URL of the protocol request only. 
+Attributes must not be provided in these cases."
+
+I do not think that the data provider has to check the validity of the 
+identifier so returning badArgument does not seem to make sense (and the
+text does not suggest something like that.
+
+Greetings, Heinrich
+
+
+
+
+
+
+> 
+> (30) Testing : GetRecord (invalid_id, oai_dc)
+> URL :
+> http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php?verb=GetRecord&ident
+> ifier=invalid\"id&metadataPrefix=oai_dc
+> ------ Response from Xerces Schema Validation ------
+> [Error] re.wWUN2I:7:81: cvc-datatype-valid.1.2.1: 'invalid"id' is not a
+> valid value for 'anyURI'. [Error] re.wWUN2I:7:81: cvc-attribute.3: The
+> value 'invalid"id' of attribute 'identifier' on element 'request' is not
+> valid with respect to its type, 'identifierType'.
+> /tmp/re.wWUN2I: 745;11;0 ms (4 elems, 7 attrs, 0 spaces, 149 chars)
+> ------- End of Xerces Schema Validation Report  -------
+> ------ Start of XML Response ------
+> <?xml version="1.0" encoding="UTF-8"?>
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+>          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+>          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>  <responseDate>2005-02-23T17:38:12Z</responseDate>
+>  <request verb="GetRecord" identifier="invalid&quot;id"
+> metadataPrefix="oai_dc">http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.
+> php</request>
+>  <error code="idDoesNotExist">The value &#039;invalidid&#039; of the
+> identifier is illegal for this repository.</error> </OAI-PMH>
+> 
+> I have been reviewing, but I cannot find the error.
+
+
+
+> 
+> Could you help me, please?
+> 
+> Best Regards.
+> 
+> --
+> Daniel Manchego 
+> Web Administrator
+> http://www.ifeanet.org
+> INSTITUT FRANCAIS d'ETUDES ANDINES 
+> Tlf. 4476070 Cel. 93569056
+> Lima - Per? 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> 
+
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  stamer@uni-oldenburg.de
+  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+From stamer at physnet.physik.uni-oldenburg.de  Fri Feb 25 06:10:09 2005
+From: stamer at physnet.physik.uni-oldenburg.de (Heinrich Stamerjohanns)
+Date: Fri Feb 25 12:16:57 2005
+Subject: [OAI-implementers] I have problems with OAI
+In-Reply-To: <Pine.LNX.4.58.0502231423530.11885@dhcp103-124.cs.cornell.edu>
+References: <000d01c519dd$7647c910$0301a8c0@dark>
+	<Pine.LNX.4.58.0502231423530.11885@dhcp103-124.cs.cornell.edu>
+Message-ID: <Pine.LNX.4.61.0502251205200.11184@alexandria.physik.uni-oldenburg.de>
+
+On Wed, 23 Feb 2005, Simeon Warner wrote:
+> >   ...
+> >   o In cases where the request that generated this response resulted in
+> > a badVerb or badArgument error condition, the repository must return the
+> > base URL of the protocol request only. Attributes must not be provided
+> > in these cases.
+> 
+> Your response should include a badArgument error since the identifier
+> supplied is illegal (not just non-existent). Then the rule above applies
+> and your <request> element should be simply:
+> 
+
+I just read that the identfier MUST be an URI, so Simeon argument is 
+better. So the identifier has to checked for consistency.., I will send
+something soon.
+
+Heinrich
+  
+
+
+
+
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  stamer@uni-oldenburg.de
+  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+
+
+From stamer at physnet.physik.uni-oldenburg.de  Fri Feb 25 06:58:46 2005
+From: stamer at physnet.physik.uni-oldenburg.de (Heinrich Stamerjohanns)
+Date: Fri Feb 25 12:17:05 2005
+Subject: [OAI-implementers] I have problems with OAI
+In-Reply-To: <000d01c519dd$7647c910$0301a8c0@dark>
+References: <000d01c519dd$7647c910$0301a8c0@dark>
+Message-ID: <Pine.LNX.4.61.0502251257400.18758@alexandria.physik.uni-oldenburg.de>
+
+On Wed, 23 Feb 2005, Daniel Manchego wrote:
+
+Dear Daniel,
+
+please try the attached patch (against 1.5), it will fix your problem.
+
+Greetings, Heinrich
+
+> 
+> Hello,
+> 
+> I have implemented the OAI in my website, but at the time of making the
+> test, it leaves the following error to me:
+> 
+> (30) Testing : GetRecord (invalid_id, oai_dc)
+> URL :
+> http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.php?verb=GetRecord&ident
+> ifier=invalid\"id&metadataPrefix=oai_dc
+> ------ Response from Xerces Schema Validation ------
+> [Error] re.wWUN2I:7:81: cvc-datatype-valid.1.2.1: 'invalid"id' is not a
+> valid value for 'anyURI'. [Error] re.wWUN2I:7:81: cvc-attribute.3: The
+> value 'invalid"id' of attribute 'identifier' on element 'request' is not
+> valid with respect to its type, 'identifierType'.
+> /tmp/re.wWUN2I: 745;11;0 ms (4 elems, 7 attrs, 0 spaces, 149 chars)
+> ------- End of Xerces Schema Validation Report  -------
+> ------ Start of XML Response ------
+> <?xml version="1.0" encoding="UTF-8"?>
+> <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/"
+>          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+>          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+>  <responseDate>2005-02-23T17:38:12Z</responseDate>
+>  <request verb="GetRecord" identifier="invalid&quot;id"
+> metadataPrefix="oai_dc">http://www.ifeanet.org/phpoai2-1.5/php_oai/oai2.
+> php</request>
+>  <error code="idDoesNotExist">The value &#039;invalidid&#039; of the
+> identifier is illegal for this repository.</error> </OAI-PMH>
+> 
+> I have been reviewing, but I cannot find the error.
+> 
+> Could you help me, please?
+> 
+> Best Regards.
+> 
+> --
+> Daniel Manchego 
+> Web Administrator
+> http://www.ifeanet.org
+> INSTITUT FRANCAIS d'ETUDES ANDINES 
+> Tlf. 4476070 Cel. 93569056
+> Lima - Per? 
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+> 
+
+--
+  Dr. Heinrich Stamerjohanns        Tel. +49-441-798-4276
+  Institute for Science Networking  stamer@uni-oldenburg.de
+  University of Oldenburg           http://isn.uni-oldenburg.de/~stamer
+-------------- next part --------------
+diff -u phpoai2-1.5/oai2/getrecord.php phpoai2-1.6/oai2/getrecord.php
+--- phpoai2-1.5/oai2/getrecord.php	2004-07-02 16:35:21.000000000 +0200
++++ phpoai2-1.6/oai2/getrecord.php	2005-02-25 12:53:11.739801679 +0100
+@@ -36,6 +36,9 @@
+ 	switch ($key) { 
+ 		case 'identifier':
+ 			$identifier = $val; 
++			if (!is_valid_uri($identifier)) {
++				$errors .= oai_error('badArgument', $key, $val);
++			}
+ 			break;
+ 
+ 		case  'metadataPrefix':
+@@ -61,11 +64,11 @@
+ } 
+ 
+ // remove the OAI part to get the identifier
++if (!isset($errors)) {
+ $id = str_replace($oaiprefix, '', $identifier); 
+ if ($id == '') {
+ 	$errors .= oai_error('idDoesNotExist', '', $identifier); 
+ }	
+-if (!isset($errors)) {
+ 	$query = selectallQuery($id); 
+ 	$res = $db->query($query);
+ 
+diff -u phpoai2-1.5/oai2/oaidp-util.php phpoai2-1.6/oai2/oaidp-util.php
+--- phpoai2-1.5/oai2/oaidp-util.php	2004-07-02 17:14:44.000000000 +0200
++++ phpoai2-1.6/oai2/oaidp-util.php	2005-02-25 12:56:06.150812504 +0100
+@@ -74,6 +74,9 @@
+ 
+ 		case 'idDoesNotExist' :
+ 			$text = "The value '$value' of the identifier is illegal for this repository.";
++			if (!is_valid_url($value)) {
++				$code = 'badArgument';
++			}
+ 			break;
+ 
+ 		case 'missingArgument' :
+@@ -325,6 +328,10 @@
+ 	else return FALSE;
+ }
+ 
++function is_valid_uri($url)
++{
++         return((bool) preg_match("'^[^:]+:(?:[a-z_0-9-]+[\.]{1})*(?:[a-z_0-9-]+\.)[a-z]{2,3}.*$'i", $url));
++} 
+ 
+ function metadataHeader($prefix)
+ {
+From tdb01r at ecs.soton.ac.uk  Fri Feb 25 16:28:47 2005
+From: tdb01r at ecs.soton.ac.uk (Tim Brody)
+Date: Fri Feb 25 16:29:06 2005
+Subject: [OAI-implementers] Perl oai modules
+Message-ID: <421F988F.7060309@ecs.soton.ac.uk>
+
+Hi all,
+
+I've uploaded a new version of my oai-perl libraries to CPAN, as HTTP-OAI.
+
+These aren't related to Zeno's patches, which I'll eventually integrate 
+into the changes I've made here with Celestial.
+
+Compared to the sourceforge versions (linked from openarchives.org):
+
+- Uses XML::LibXML (DOM 2 API)
+- SAX handler & generator
+- Support for plugable metadata classes, included are Dublin Core, 
+OAI_Eprint and OAI Identifier schemes (so you can access oai_dc using 
+Perl hashes)
+- Support for OAI static repositories
+- Supports OAI versions 1.0 through static 2.0
+- Moved to HTTP::OAI::* (won't clobber existing installations)
+
+An example implementation is included for creating a CGI gateway to a 
+static repository file.
+
+To install:
+perl -MCPAN -e "install HTTP::OAI"
+
+This installs the oai_browser.pl script that allows command-line 
+browsing of OAI repositories.
+
+These modules represent very similar functionality to Ed Summer's 
+Net::OAI::Harvester for harvesting, but with support for constructing 
+OAI responses (the repository side). I hope (!) they are also more 
+resilient to repository weirdness.
+
+I use these libraries with Citebase/Celestial, but are still in 
+development (hence not going into the main CPAN tree yet).
+
+Comments, suggestions welcome!
+
+Tim Brody
+- Citebase Search, http://citebase.eprints.org/
+
+From ehs at pobox.com  Fri Feb 25 16:37:07 2005
+From: ehs at pobox.com (Ed Summers)
+Date: Fri Feb 25 16:37:14 2005
+Subject: [OAI-implementers] Perl oai modules
+In-Reply-To: <421F988F.7060309@ecs.soton.ac.uk>
+References: <421F988F.7060309@ecs.soton.ac.uk>
+Message-ID: <20050225213707.GB14219@chloe.inkdroid.org>
+
+On Fri, Feb 25, 2005 at 09:28:47PM +0000, Tim Brody wrote:
+> These modules represent very similar functionality to Ed Summer's 
+> Net::OAI::Harvester for harvesting, but with support for constructing 
+> OAI responses (the repository side). I hope (!) they are also more 
+> resilient to repository weirdness.
+
+Heh, could you be more specific about the "repository weirdness". Nice
+work by the way.
+
+//Ed
+
+From tdb01r at ecs.soton.ac.uk  Fri Feb 25 20:55:03 2005
+From: tdb01r at ecs.soton.ac.uk (Tim Brody)
+Date: Fri Feb 25 20:55:26 2005
+Subject: [OAI-implementers] Perl oai modules
+In-Reply-To: <20050225213707.GB14219@chloe.inkdroid.org>
+References: <421F988F.7060309@ecs.soton.ac.uk>
+	<20050225213707.GB14219@chloe.inkdroid.org>
+Message-ID: <421FD6F7.6020809@ecs.soton.ac.uk>
+
+Ed Summers wrote:
+> On Fri, Feb 25, 2005 at 09:28:47PM +0000, Tim Brody wrote:
+> 
+>>These modules represent very similar functionality to Ed Summer's 
+>>Net::OAI::Harvester for harvesting, but with support for constructing 
+>>OAI responses (the repository side). I hope (!) they are also more 
+>>resilient to repository weirdness.
+> 
+> Heh, could you be more specific about the "repository weirdness". Nice
+> work by the way.
+
+UTF-8 errors are probably the most common, but I've "developed out" my 
+capability to handle those. Ideally I'd like a PerlIO layer that handles 
+bad UTF-8, otherwise I'm sure Perl5.8's UTF support should be usable to 
+fix bad chars (or spot latin and recode).
+
+A couple of sites have bad baseURLs in their Identify response, which I 
+now check for and ignore - in principle a harvester should follow 
+baseURL like a redirect, but some sites have relative URLs!
+
+One site indexed in Celestial (an OAI1.1) expects the verb as the first 
+argument in the query, so I've added a special case for that.
+
+Another site has a bad implementation of timestamps - it only accepts 
+date+time. So something else to add would be to retry a request with 
+appended to from/until T00:00:00Z (probably application layer rather 
+than API).
+
+I've added support for oai_dc: or dc: prefixed tags in Dublin Core, 
+although I guess I could just check for the namespace.
+
+Other than that; graceful handling of retry-after, redirect, resumption 
+token repetition (to one depth only), and retry-on empty response.
+
+All the best,
+Tim.
+
+From ehs at pobox.com  Sat Feb 26 07:20:48 2005
+From: ehs at pobox.com (Ed Summers)
+Date: Sat Feb 26 07:20:52 2005
+Subject: [OAI-implementers] Perl oai modules
+Message-ID: <20050226122048.GC14219@chloe.inkdroid.org>
+
+On Sat, Feb 26, 2005 at 01:55:03AM +0000, Tim Brody wrote:
+> Other than that; graceful handling of retry-after, redirect, resumption 
+> token repetition (to one depth only), and retry-on empty response.
+
+Nice, thanks for the details. It looks like your harvester handles
+static repositories as well as OAI v1.1 which is a nice bonus. You might
+want to add a listAllRecords(), listAllIdentifiers() which takes some of
+the pain out of handling resumption tokens for people who don't want to
+understand them.
+
+Another difference worth noting is that HTTP::OAI::Harvester will 
+store responses in memory, whereas Net::OAI::Harvester uses object
+serialization and disk. Having objects on disk was a safeguard in case a
+repository decided to return too many records, which in hindsight
+probably never will happen since the server doesn't want to do it either
+:-) The trend nowadays is towards speedier apps that use memory
+more aggressively, so I think your approach makes more sense.
+
+In general your code is a whole lot cleaner than mine, and should be
+faster. Heck it even has a much higher version number :-) I know where to 
+point people when they have questions about Net::OAI::Harvester now.
+
+Best,
+//Ed
+
+From hussein at cs.uct.ac.za  Mon Feb 28 16:59:17 2005
+From: hussein at cs.uct.ac.za (Hussein Suleman)
+Date: Mon Feb 28 16:59:15 2005
+Subject: [OAI-implementers] XMLFile v2.2
+Message-ID: <42239435.3010403@cs.uct.ac.za>
+
+hi
+
+i am releasing v2.2 of XMLFile ... after a very long break ... (my 
+apologies to those who have been waiting for the update)
+
+this is an OAI-PMH data provider module that operates over a set of XML 
+files that contain the metadata. it is meant to require a minimal of 
+effort while retaining all the flexibility of the OAI protocol.
+
+there are some new features - most importantly a lot of the core 
+functionality has been rewritten to be more scalable - and i tested all 
+the samples against the latest RE and OAI Validator tests.
+
+you can find it and more information at:
+
+   http://aim.cs.uct.ac.za/tiki-index.php?page=XMLFile
+
+let me know if you have any problems with it.
+
+ttfn,
+----hussein
+
+-- 
+=====================================================================
+hussein suleman ~ hussein@cs.uct.ac.za ~ http://www.husseinsspace.com
+=====================================================================
+
+

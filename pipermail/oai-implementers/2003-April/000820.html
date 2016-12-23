@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Questions about wrong output due to terrible
+ input
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:simeon%40cs.cornell.edu">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000819.html">
+   <LINK REL="Next"  HREF="000821.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Questions about wrong output due to terrible
+ input
+   </H1>
+    <B>Simeon Warner
+    </B> 
+    <A HREF="mailto:simeon%40cs.cornell.edu"
+       TITLE="[OAI-implementers] Questions about wrong output due to terrible
+ input">simeon@cs.cornell.edu
+       </A><BR>
+    <I>Tue, 1 Apr 2003 10:15:18 -0500 (EST)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000819.html">[OAI-implementers] Questions about wrong output due to terrible input
+</A></li>
+        <LI> Next message: <A HREF="000821.html">[OAI-implementers] implement a repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#820">[ date ]</a>
+              <a href="thread.html#820">[ thread ]</a>
+              <a href="subject.html#820">[ subject ]</a>
+              <a href="author.html#820">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>
+On Tue, 1 Apr 2003, Jozef Kruger wrote:
+&gt;<i> Hi everyone,
+</I>&gt;<i>  
+</I>&gt;<i> just this week someone from my firm tested my OAI implementation and he
+</I>&gt;<i> sent me a report with the results.
+</I>&gt;<i> What he did was give my program some terrible input with things like
+</I>&gt;<i> set=non_existing_made_up_set or from=very_illegal_date
+</I>&gt;<i> The protocol isn't being very specific about the arguments that are
+</I>&gt;<i> returned in the header (in the request node I mean).
+</I>&gt;<i> What I did was just return the the arguments that mattered (for each
+</I>&gt;<i> verb) the way they came in, resulting in invalid output in these cases.
+</I>&gt;<i>  
+</I>&gt;<i> Should I check for each of these if they contain any illegal stuff? If
+</I>&gt;<i> so and I would skip any illegal ones, the output wouldn't match with the
+</I>&gt;<i> input anymore.
+</I>
+See section 3.2 in the protocol spec, bullet point 3.
+
+You must include the arguments of the request as attributes of the
+&lt;request&gt; element of the response if the request did not generate an
+error.
+
+You must NOT include the arguments of the request as attributes of the
+&lt;request&gt; element of the response if the request generated a badVerb or
+badArgument error.
+
+(The spec does not appear to be specific on the case when there is an 
+error or exception which is not badArgument/badVerb. However, that doesn't
+matter for the present discussion because in that case the arguments will
+be schema-valid.)
+
+&gt;<i> You could for example get error code=&quot;noRecordsMatch&quot; due to an illegal
+</I>&gt;<i> date, but in the output you wouldn't see that date anymore.
+</I>&gt;<i>  
+</I>&gt;<i> I think the solution to this kind of problem would be a check before
+</I>&gt;<i> sending the request to the repository. But than again, you just might
+</I>&gt;<i> still be left with illegal input.. so omitting those things in the
+</I>&gt;<i> output looks like the only right solution.
+</I>
+The harvester SHOULD only send sensible parameters but the repository must
+be able to sensibly handle bad requests.
+
+Cheers,
+Simeon.
+
+  
+&gt;<i> Any thoughts on these matters?
+</I>&gt;<i>  
+</I>&gt;<i> cheers,
+</I>&gt;<i> Jozef Kruger (Adlib Information Systems B.V. the Netherlands)
+</I>&gt;<i> 
+</I>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000819.html">[OAI-implementers] Questions about wrong output due to terrible input
+</A></li>
+	<LI> Next message: <A HREF="000821.html">[OAI-implementers] implement a repository
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#820">[ date ]</a>
+              <a href="thread.html#820">[ thread ]</a>
+              <a href="subject.html#820">[ subject ]</a>
+              <a href="author.html#820">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

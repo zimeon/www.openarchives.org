@@ -1,0 +1,285 @@
+From namoet2 at gmail.com  Mon Aug 10 10:39:51 2009
+From: namoet2 at gmail.com (teoman madra)
+Date: Mon Aug 10 10:40:24 2009
+Subject: [OAI-implementers] art today
+Message-ID: <b6eb371f0908100739m37a3822dha3c5b869085e9124@mail.gmail.com>
+
+is experimental and it may be best to photograph
+things more important artistically and as a message, document and aesthetics
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://www.openarchives.org/pipermail/oai-implementers/attachments/20090810/b07ea143/attachment.htm
+From ejgroene at ieee.org  Thu Aug 13 05:07:07 2009
+From: ejgroene at ieee.org (Erik Groeneveld)
+Date: Thu Aug 13 05:07:43 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <C6948D71.28103%khage@umich.edu>
+References: <AcoPlbhLeA73Y14M/02jIoMHSpN1sw==> <C6948D71.28103%khage@umich.edu>
+Message-ID: <aaec99390908130207s715b13d0g8f1ef059fbda0d33@mail.gmail.com>
+
+Well, Kat, there is yet another one, called MERESCO.
+
+It has been developed in the Netherlands by SURF-foundation, SURF-net,
+KennisNet and CQ2. It actually is a larger library of components for
+metadata management (including data normalization, integrated and
+facetted search etc), but one of the earliest set of components
+contains a complete OAI harvester with Web UI.
+
+For general information see http://meresco.com
+
+For the harvester in particular see
+http://meresco.com/page/package_information?package=meresco-harvester
+
+It is all Open Source and actively developed.  SURF-foundation
+organizes a conference on MERESCO September 29th 2009.
+
+
+Best regards,
+Erik
+
+E.J. Groeneveld
+Seek You Too
+twitter, skype: ejgroene
+mobiel: 0624 584 029
+
+
+
+On Tue, Jul 28, 2009 at 17:11, Hagedorn, Kat<khage@umich.edu> wrote:
+> All,
+>
+> This may be a stupid question, but does anyone know of a list of tools used
+> to harvest OAI metadata? I know of ours
+> <http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't
+> able to come up with others by perusing the obvious web sites. Even if
+> there's no list, I'd be interested in individual suggestions.
+>
+> Thanks,
+> ?-Kat
+>
+> -------------------
+> Kat Hagedorn
+> OAIster/Metadata Harvesting Librarian
+> Digital Library Production Service
+> University of Michigan
+>
+> http://www.oaister.org/
+> http://www.dlxs.org/
+> email: khage@umich.edu
+> phone: 734-615-7618
+>
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+>
+
+From jasper at infrae.com  Thu Aug 13 05:29:34 2009
+From: jasper at infrae.com (Jasper Op de Coul)
+Date: Thu Aug 13 05:26:30 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <C6948D71.28103%khage@umich.edu>
+References: <C6948D71.28103%khage@umich.edu>
+Message-ID: <4A83DCFE.3060208@infrae.com>
+
+Hi All,
+
+Since this thread still seems alive, let me post some of the OAI 
+software we've developed.
+
+There's pyoai, which provides a client and server implementation in 
+python. It's been developed in 2003 and quite mature.
+
+http://pypi.python.org/pypi/pyoai/
+
+A simple oai client can be written as follows:
+
+=========
+
+from oaipmh.client import Client
+from oaipmh.metadata import MetadataRegistry
+from lxml import etree
+
+URL = 'http://<some oai feed>'
+
+registry = MetadataRegistry()
+
+class Reader(object):
+     def __call__(self, element):
+         return etree.tostring(element, pretty_print=True, encoding='UTF8')
+
+registry.registerReader('oai_dc', Reader())
+
+client = Client(URL, registry)
+
+for count, record in enumerate(client.listRecords(metadataPrefix='oai_dc')):
+     header = record[0]
+     metadata = record[1] or ''
+     print '%4d: harvested %s, %s bytes' % (count,
+                                            header.identifier(),
+                                            len(metadata))
+
+====
+
+There's also MOAI, which is a server platform that also can harvest oai 
+data. It's also based on pyoai, but overkill if you're just looking for 
+a simple client.
+
+http://moai.infrae.com
+
+Kind Regards,
+Jasper
+
+Hagedorn, Kat wrote:
+> All,
+> 
+> This may be a stupid question, but does anyone know of a list of tools used
+> to harvest OAI metadata? I know of ours
+> <http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I wasn't
+> able to come up with others by perusing the obvious web sites. Even if
+> there's no list, I'd be interested in individual suggestions.
+> 
+> Thanks,
+>  -Kat
+> 
+> -------------------
+> Kat Hagedorn 
+> OAIster/Metadata Harvesting Librarian
+> Digital Library Production Service
+> University of Michigan
+> 
+> http://www.oaister.org/
+> http://www.dlxs.org/
+> email: khage@umich.edu
+> phone: 734-615-7618
+> 
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+> 
+
+
+-- 
+Jasper Op de Coul -- Infrae
+t +31 10 243 7051 -- http://infrae.com
+Hoevestraat 10 3033GC Rotterdam -- The Netherlands
+
+From mjordan at sfu.ca  Thu Aug 13 13:47:15 2009
+From: mjordan at sfu.ca (Mark Jordan)
+Date: Thu Aug 13 13:47:19 2009
+Subject: [OAI-implementers] List of tools used to harvest OAI metadata
+In-Reply-To: <22556999.2979481250185224359.JavaMail.root@jaguar8.sfu.ca>
+Message-ID: <611632129.2982371250185635490.JavaMail.root@jaguar8.sfu.ca>
+
+I'd also like to mention the PKP Metadata Harvester(http://pkp.sfu.ca/harvester),  which provides a extensible, LAMP aggregator/search application against OAI-PMH data providers (inc. static repositories) emitting DC, MODS, MARCXML, and ETDMS.
+
+Mark
+
+Mark Jordan
+Head of Library Systems
+W.A.C. Bennett Library, Simon Fraser University
+Burnaby, British Columbia, V5A 1S6, Canada
+Voice: 778.782.5753 / Fax: 778.782.3023
+mjordan@sfu.ca
+
+----- "Jasper Op de Coul" <jasper@infrae.com> wrote:
+
+> Hi All,
+> 
+> Since this thread still seems alive, let me post some of the OAI 
+> software we've developed.
+> 
+> There's pyoai, which provides a client and server implementation in 
+> python. It's been developed in 2003 and quite mature.
+> 
+> http://pypi.python.org/pypi/pyoai/
+> 
+> A simple oai client can be written as follows:
+> 
+> =========
+> 
+> from oaipmh.client import Client
+> from oaipmh.metadata import MetadataRegistry
+> from lxml import etree
+> 
+> URL = 'http://<some oai feed>'
+> 
+> registry = MetadataRegistry()
+> 
+> class Reader(object):
+>      def __call__(self, element):
+>          return etree.tostring(element, pretty_print=True,
+> encoding='UTF8')
+> 
+> registry.registerReader('oai_dc', Reader())
+> 
+> client = Client(URL, registry)
+> 
+> for count, record in
+> enumerate(client.listRecords(metadataPrefix='oai_dc')):
+>      header = record[0]
+>      metadata = record[1] or ''
+>      print '%4d: harvested %s, %s bytes' % (count,
+>                                             header.identifier(),
+>                                             len(metadata))
+> 
+> ====
+> 
+> There's also MOAI, which is a server platform that also can harvest
+> oai 
+> data. It's also based on pyoai, but overkill if you're just looking
+> for 
+> a simple client.
+> 
+> http://moai.infrae.com
+> 
+> Kind Regards,
+> Jasper
+> 
+> Hagedorn, Kat wrote:
+> > All,
+> > 
+> > This may be a stupid question, but does anyone know of a list of
+> tools used
+> > to harvest OAI metadata? I know of ours
+> > <http://sourceforge.net/projects/umoaitoolkit/>, naturally, but I
+> wasn't
+> > able to come up with others by perusing the obvious web sites. Even
+> if
+> > there's no list, I'd be interested in individual suggestions.
+> > 
+> > Thanks,
+> >  -Kat
+> > 
+> > -------------------
+> > Kat Hagedorn 
+> > OAIster/Metadata Harvesting Librarian
+> > Digital Library Production Service
+> > University of Michigan
+> > 
+> > http://www.oaister.org/
+> > http://www.dlxs.org/
+> > email: khage@umich.edu
+> > phone: 734-615-7618
+> > 
+> > 
+> > _______________________________________________
+> > OAI-implementers mailing list
+> > List information, archives, preferences and to unsubscribe:
+> > http://www.openarchives.org/mailman/listinfo/oai-implementers
+> > 
+> 
+> 
+> -- 
+> Jasper Op de Coul -- Infrae
+> t +31 10 243 7051 -- http://infrae.com
+> Hoevestraat 10 3033GC Rotterdam -- The Netherlands
+> 
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+

@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] hierarchical documents
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:hussein%40cs.uct.ac.za">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="000882.html">
+   <LINK REL="Next"  HREF="000887.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] hierarchical documents
+   </H1>
+    <B>Hussein Suleman
+    </B> 
+    <A HREF="mailto:hussein%40cs.uct.ac.za"
+       TITLE="[OAI-implementers] hierarchical documents">hussein@cs.uct.ac.za
+       </A><BR>
+    <I>Mon, 12 May 2003 11:41:42 +0200</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="000882.html">[OAI-implementers] hierarchical documents
+</A></li>
+        <LI> Next message: <A HREF="000887.html">[OAI-implementers] hierarchical documents
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#886">[ date ]</a>
+              <a href="thread.html#886">[ thread ]</a>
+              <a href="subject.html#886">[ subject ]</a>
+              <a href="author.html#886">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>hi
+
+i haven't seen a &quot;nice&quot; solution to the problem of addressing hierarchy, 
+views and versions all at once. but if we consider the problems 
+independently, there are a few solutions that you can look at for ideas.
+
+my favorite example of hierarchy-encoding is the IMS Content Packaging 
+specification, which makes embedded use of the IMS Metadata 
+Specification (see www.imsglobal.org for details). while the specs show 
+how to encapsulate content hierarchically, alas i don't know of anyone 
+actively exposing such packaged content through OAI-PMH - maybe someone 
+else will comment on this.
+
+for views (such as the slide formats in your example), you could use a 
+metadata format that allowed for a list of simple objects. the CSTC 
+project that i used to work on did this with its native metadata format. 
+go to the following OAI record to see what we did:
+<A HREF="http://www.cstc.org/cgi-bin/OAI/CSTC.pl?verb=GetRecord&metadataPrefix=oai_cstc&identifier=oai:CSTC:4">http://www.cstc.org/cgi-bin/OAI/CSTC.pl?verb=GetRecord&amp;metadataPrefix=oai_cstc&amp;identifier=oai:CSTC:4</A>
+(of course, here the issue is: does a list denote parts or options? if 
+you want to be explicit, you should look at the IMS model.)
+if you look at the same record in DC you will see that we used a &quot;cover 
+page&quot; to bind together the various files to form a single resource.
+
+lastly, for versions, the OAI has a provenance container that allows you 
+to specify the relationship of a metadata record to an older version, 
+from a harvesting perspective. while it doesn't directly apply to 
+versions of the resource, the basic idea is similar ...
+
+so, my take on your example is:
+- the paper and slides could have separate identifiers as the resources 
+are themselves different (or use cover pages to hold them together)
+- you can use &quot;relation&quot; tags (in DC or IMS-MS) to connect them if they 
+are separate
+- instead of using metadata formats (which differentiate among views of 
+the metadata) or sets (which differentiate among categorisations of the 
+resource/metadata), you should use a metadata format with the inherent 
+ability to differentiate among views of the same item
+
+the book example is more complicated and i haven't seen a solution i 
+like yet :) however, the principle i would apply is:
+- expose the most useful granularity of data i.e. if a book is most 
+often used as a single unit, expose it as such ... and similarly for 
+separate chapters.
+
+hope at least some of this makes sense :)
+
+ttfn,
+----hussein
+
+
+Jakob Voss wrote:
+&gt;<i> Hi!
+</I>&gt;<i> 
+</I>&gt;<i> I am relatively new to OAI and going to set up a simple Data Provider
+</I>&gt;<i> for different kind of publications. Many publications consist of
+</I>&gt;<i> different parts in different file formats and publication types but
+</I>&gt;<i> I do not know how to deal with them. For instance:
+</I>&gt;<i> 
+</I>&gt;<i> Title: All about nothing
+</I>&gt;<i> Author: Mr. Smith
+</I>&gt;<i> Files:
+</I>&gt;<i>   Slides
+</I>&gt;<i>     PowerPoint Source: all-about-nothing.slides.ppt
+</I>&gt;<i>     PDF Output:        all-about-nothing.slides.pdf
+</I>&gt;<i>   Paper
+</I>&gt;<i>     OpenOffice Source: all-about-nothing.paper.ooo
+</I>&gt;<i>     RTF Exchange:      all-about-nothing.paper.rtf
+</I>&gt;<i>     PDF Output:        all-about-nothing.paper.pdf
+</I>&gt;<i> 
+</I>&gt;<i> I thought about several possibilities:
+</I>&gt;<i> - All files are one document with several dc:indentifier
+</I>&gt;<i>   for each file (information about type and format is lost)
+</I>&gt;<i> - Each file is one document (much duplication)
+</I>&gt;<i> - Create sets for each publication and type (more sets than
+</I>&gt;<i>   publications)
+</I>&gt;<i> 
+</I>&gt;<i> How do you store information about hierarchical
+</I>&gt;<i> document-relationship? For instance an article (with several
+</I>&gt;<i> versions, types and formats) can be part of a book that
+</I>&gt;<i> is part of a series and so on.
+</I>&gt;<i> 
+</I>&gt;<i> Thanks for your comments!
+</I>&gt;<i> 
+</I>&gt;<i> Jakob Voﬂ
+</I>&gt;<i> 
+</I>&gt;<i> _______________________________________________
+</I>&gt;<i> OAI-implementers mailing list
+</I>&gt;<i> List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> 
+</I>
+
+-- 
+=====================================================================
+hussein suleman ~ <A HREF="mailto:hussein@cs.uct.ac.za">hussein@cs.uct.ac.za</A> ~ <A HREF="http://www.husseinsspace.com">http://www.husseinsspace.com</A>
+=====================================================================
+
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="000882.html">[OAI-implementers] hierarchical documents
+</A></li>
+	<LI> Next message: <A HREF="000887.html">[OAI-implementers] hierarchical documents
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#886">[ date ]</a>
+              <a href="thread.html#886">[ thread ]</a>
+              <a href="subject.html#886">[ subject ]</a>
+              <a href="author.html#886">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

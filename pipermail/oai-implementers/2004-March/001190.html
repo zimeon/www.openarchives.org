@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] Automatically gathering the full-text of
+ eprints
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:a.powell%40ukoln.ac.uk">
+   <META NAME="robots" CONTENT="index,nofollow">
+   
+   <LINK REL="Previous"  HREF="001185.html">
+   <LINK REL="Next"  HREF="001191.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] Automatically gathering the full-text of
+ eprints
+   </H1>
+    <B>Andy Powell
+    </B> 
+    <A HREF="mailto:a.powell%40ukoln.ac.uk"
+       TITLE="[OAI-implementers] Automatically gathering the full-text of
+ eprints">a.powell@ukoln.ac.uk
+       </A><BR>
+    <I>Fri, 19 Mar 2004 16:51:02 +0000 (GMT Standard Time)</I>
+    <P><UL>
+        <LI> Previous message: <A HREF="001185.html">[OAI-implementers] Automatically gathering the full-text of eprints
+</A></li>
+        <LI> Next message: <A HREF="001191.html">[OAI-implementers] Automatically gathering the full-text of eprints
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1190">[ date ]</a>
+              <a href="thread.html#1190">[ thread ]</a>
+              <a href="subject.html#1190">[ subject ]</a>
+              <a href="author.html#1190">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>On Wed, 17 Mar 2004, herbert van de sompel wrote:
+
+&gt;<i> a. The assumption that a harvester knows that something that is in the
+</I>&gt;<i> dc.identifier element of oai_dc points to a - compliant - jump-off page.  There
+</I>&gt;<i> are two problems with this assumption:
+</I>&gt;<i> - lots of things can be in the dc.identifier element both resolvable and
+</I>&gt;<i> unresolvable
+</I>&gt;<i> - lots of things at the end of the thing identified by the content of
+</I>&gt;<i> dc.identifier (if resolvable) will not be compliant jump-off pages
+</I>
+Herbert,
+thanks for the email.  Yes, I completely agree with this analysis.  The
+proposal is a bit of a hack, and we should perhaps have made this clearer
+in the document!
+
+However, I think it is a useful hack :-).  Particularly so in the context
+of our other recommendations for using simple DC to describe eprints.
+Furthermore, I would see it as good practice to embed XHTML &lt;link&gt;
+elements into jump-off pages anyway - irrespective of whether the
+intention is to ease harvesting by robots or not.  So I certainly don't
+see our proposal as causing any harm.
+
+The rest of your email raises some quite significant issues - some of
+which I suspect are not very easy to discuss by email.  I don't propose
+giving a detailed response here, but I would like to note a few issues for
+consideration...
+
+Firstly, your comments about the complexity of the objects being described
+only goes part-way to describing the problem.  The OAI-PMH specification,
+rightly, says very little about the nature of the resources that are
+described by the records exchanged using the protocol.  However,
+particular applications of the protocol do need to be clear about the
+nature of the resources being described.  Furthermore, the complexity of
+the problem is not just about whether the resources being described are
+aggregations of multiple objects.  Part of the complexity arises because
+those those resources/objects fit into a model of the real world that
+spans both 'conceptual' works and specific digital or physical
+'manifestations' of those conceptual works.
+
+Does the oai_dc record that I allow you to harvest describe a conceptual
+work (or expression of a work), an article for example, or does it
+describe one of the particular manifestations of that work, the PDF copy
+of the article for example?
+
+You'll note that I am intentionally using terms from the IFLA FRBR
+(Functional Requirements for Bibliographic Records) model here.
+
+In our guidelines for using simple DC to describe eprints we made the
+explicit decision to reflect the fact that most implementations of eprint
+archives (that we looked at) appeared to be configured to expose oai_dc
+metadata about the 'work' rather than about the particular manifestations
+of the work (though actually, in many cases (even in our own guidelines
+to a certain extent) there is a certain amount of fuzziness going on!).
+
+Unfortunately, there is no real way of indicating in a simple DC record
+that the work (as opposed to the manifestation) is being described - this
+would be difficult even in qualified DC currently, because the current
+DCMI Type vocabulary doesn't allow us to make those distinctions.  But, in
+principle, the DC model is rich enough to handle this complexity - if
+we are prepared to put the effort in to agree how to do it.
+
+But the situation is even more complex than that because it is not clear
+to me where OAI resources and records sit within the Web architectural
+model of 'resources' and 'representations'.  My suspicion is that the FRBR
+'manifestation' is the equivalent of the Web architecture
+'represresentation' of the FRBR 'work' (if you see what I mean!).  The
+oai_dc record (and indeed the jump-off page) is a 'representation' of
+the 'work' (assuming that is what is being described).  But at this point
+we almost certainly need a diagram or two! :-(
+
+OK, so on then to the question about whether the protocol can and/or
+should be used to exchange 'resources' as well as 'metadata' about
+'resources'.
+
+The protocol spec is very explicit in differentiating 'resources' from
+'items' and 'records' and makes it very clear that the protocol be used to
+exchange 'metadata' between services - I'm thinking of section 2.2 in
+particular.  Now, with hindsight, I really wish we'd talked instead about
+'resources' and 'representations' rather than resources, items, records
+and metadata, because that would have given us much more flexibility about
+what we do with the protocol.  But we didn't - and therefore, I think we
+are constrained in terms of what we can do within the semantics of the
+protocol spec.
+
+This is not just to do with the words being used in the spec.  It has to
+do with the entities in the model used by the protocol and the identifiers
+that are assigned to those entities.  An oai-identifier, for exanmple, is
+an identifier of an 'item', not of a 'resource' (in terms of the protocol
+usage of those words).  It seems to me that things are likely to become
+very fuzzy if the 'item' or 'record' suddenly becomes the 'resource' and
+vice versa.
+
+So, based on this, it seems to me that the protocol will 'break' if we
+start using it to carry the 'resource' where the protocol expects to see
+the 'record about the resource'.
+
+Now, your complex example of the METS package or the MPEG-21 DIDL is an
+interesting case - because those things can be used to carry both the
+metadata and the object.  Is a METS package the 'resource' or the 'record'
+in OAI terms?  The answer is that it is somewhere in-between.  I certainly
+accept that the METS package is a 'representation' of a 'resource' - but,
+as I mentioned above, unfortunately we didn't use the words 'resource' and
+'representation' in the protocol spec.  Yes, the complex package can be
+viewed as metadata - but metadata about what - about the 'work' that the
+objects in the package 'represent', or about the particular manifestations
+contained in the package??!
+
+All in all, I think I'm happy with the case where OAI is used to carry the
+METS or DIDL package that contain objects - but I would be much less happy
+with a situation where the OAI-PMH is used to carry individual
+manifestations (an XHTML document for example).  But the fuzziness between
+the package and the item worries me and I'm not sure that we are going to
+be able to tell them apart very easily in all cases.
+
+Enough for now...  I agree with you that much more discussion and thinking
+about these issues is required.  I'm certainly happy (and indeed
+expecting) to be told I'm wrong about any or all of the above! :-)
+
+Regards,
+
+Andy.
+
+&gt;<i> * The scenario as described in the propsoal, in which a single metadata record
+</I>&gt;<i> corresponds with a single &quot;preprint&quot; is only a special case of - future -
+</I>&gt;<i> reality.  Increasingly, objects held in and described by repositories will be
+</I>&gt;<i> &quot;compound&quot; or &quot;complex&quot;, i.e. consisting of multiple datastreams, not just a
+</I>&gt;<i> single &quot;preprint&quot;.  I find that it would be desirable that a solution to get to
+</I>&gt;<i> the content would be able to handle such situations.  The proposed solution
+</I>&gt;<i> could actually accomodate such 'compound' objects, because the mutliple
+</I>&gt;<i> datastreams are linked off the jump-off page.  There is, however, a problem.
+</I>&gt;<i> Let's presume we have a situation in which an object is deposited in an
+</I>&gt;<i> institutional repository that has 2 datastreams, each of which actually has a
+</I>&gt;<i> unique identifier, say a doi or something.  Thinking of a - future -
+</I>&gt;<i> self-archiving scenario and the trend to accord identifiers at finer levels of
+</I>&gt;<i> granularity, this is not unlikely at all.  Now we get 3 things in dc.identifier
+</I>&gt;<i> (2 doi's and a link to a jump-off page), and 2 things in the jump-off page
+</I>&gt;<i> (links to the 2 datastreams).  How do I know which doi goes with which
+</I>&gt;<i> datastream?  Information that - I hope we will all agree - is rather significant.
+</I>&gt;<i>
+</I>&gt;<i> OK.  The point I am trying to make is that the described scenario and its more
+</I>&gt;<i> general problem domain (beyond eprints, and into the realm of objects with
+</I>&gt;<i> multiple datastreams) may call for another approach.  Our research has shown
+</I>&gt;<i> that such an approach can remain 100% OAI-PMH-based if a complex object format
+</I>&gt;<i> such as METS, MPEG-21 DIDL or SCORM is used.  These formats can be &quot;parallel&quot;
+</I>&gt;<i> OAI-PMH &quot;metadata formats&quot; through which harvesters can get to the content
+</I>&gt;<i> without running into issues such as the ones mentioned above.  Content can be
+</I>&gt;<i> embedded in the XML wrappers or pointed at by them.  Identifiers can be
+</I>&gt;<i> unambiguously connected to content.  If content changes, the datstamp of the
+</I>&gt;<i> &quot;conplex&quot; record changes.
+</I>&gt;<i>
+</I>&gt;<i> I anticipate concerns re the overhead of introducing a solution based on a
+</I>&gt;<i> complex object format.  At this point, I would like to say 2 things with this
+</I>&gt;<i> respect:
+</I>&gt;<i>
+</I>&gt;<i> * It took 2 people on my team about 2 days to create a prototype plug-in that
+</I>&gt;<i> enables OAI-PMH harvesting of content from DSpace repositories.  Our plug-in
+</I>&gt;<i> rendered content using the MPEG-21 DIDL XML wrapper format.  Most of the time
+</I>&gt;<i> invested in this plug-in was spent figuring out the DSpace API and a sensible
+</I>&gt;<i> way to map the DSpace data model to the DIDL data model.  The prototype was
+</I>&gt;<i> demonstrated at the DSpace federation meeting, last week.  Although
+</I>&gt;<i> questions/issues did arise in the course of our work, non seemed unsolvable.
+</I>&gt;<i> But it is my impression that the very fast delivery of a prototype indicates the
+</I>&gt;<i> feasibility of the complex format approach.
+</I>&gt;<i>
+</I>&gt;<i> * I would personally be very willing to spend time with the apporpiate
+</I>&gt;<i> representatives of the community - including yourself - to work towards a
+</I>&gt;<i> solution that is future-proof and provides adequate guarantees regarding
+</I>&gt;<i> perceived requirements of a content-harvesting solution.  I would actually
+</I>&gt;<i> prefer that over going for a solution which is attractive at first glance
+</I>&gt;<i> because of its obvious simplicity, but which seems to raise some relevant
+</I>&gt;<i> questions upon closer inspection.
+</I>&gt;<i>
+</I>&gt;<i> To end, I would like to thank you for bringing this topic to the list.  I have
+</I>&gt;<i> had many private email exchanges over the last few months especially with
+</I>&gt;<i> representatives from DARE and DINI about this and related problem domains.  I
+</I>&gt;<i> hope that your mail can be another impulse towards a joint action in this realm.
+</I>&gt;<i>   The problem is very real, and I would love our community to jointly create a
+</I>&gt;<i> really good solution to it.
+</I>&gt;<i>
+</I>&gt;<i> many greetings
+</I>&gt;<i>
+</I>&gt;<i> herbert
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i> Andy Powell wrote:
+</I>&gt;<i>
+</I>&gt;<i> &gt; The JISC-funded ePrints UK project has a requirement to automatically
+</I>&gt;<i> &gt; harvest both metadata and full-text from the eprint archives within UK
+</I>&gt;<i> &gt; academia (and potentially elsewhere).  This is so that we can pass both
+</I>&gt;<i> &gt; metadata and full-text to the various 'enhancement' Web services offered
+</I>&gt;<i> &gt; by our partners.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; <A HREF="http://www.rdn.ac.uk/projects/eprints-uk/">http://www.rdn.ac.uk/projects/eprints-uk/</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; In order for our harvesting robot to be able to do this, it must be able
+</I>&gt;<i> &gt; to reliably (and automatically) determine the correct URL(s) for the
+</I>&gt;<i> &gt; various full-text manifestation(s) (HTML, PDF, RTF, etc.) of each eprint.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Our &quot;Using simple Dublin Core to describe eprints&quot; guidelines are intended
+</I>&gt;<i> &gt; to encourage greater consistency in the metadata that is exposed by eprint
+</I>&gt;<i> &gt; archives using the 'oai_dc' format within the OAI Protocol for Metadata
+</I>&gt;<i> &gt; Harvesting (OAI-PMH).  Somewhat perversely, because we stick rigidly to
+</I>&gt;<i> &gt; the semantics of the DC element set, our guidelines make determining the
+</I>&gt;<i> &gt; URL of each manifestation that is available quite difficult.  (This is
+</I>&gt;<i> &gt; largely a consequence of the 'simple' nature of 'simple DC'!).  In
+</I>&gt;<i> &gt; general, the URL in the &lt;dc:identifier&gt; element of the oai_dc record is
+</I>&gt;<i> &gt; the URL of a jump-off page, rather than a direct link to the full-text.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; We would like to suggest a new proposal for unambiguously embedding the
+</I>&gt;<i> &gt; URL for each manifestation of an eprint into the (X)HTML jump-off page for
+</I>&gt;<i> &gt; that eprint.  Since the jump-off page is generated automatically by the
+</I>&gt;<i> &gt; eprint archive software, doing this shouldn't be too difficult (in fact,
+</I>&gt;<i> &gt; we would hope that archive software, such as eprints.org, will be
+</I>&gt;<i> &gt; configured to do this out of the box).
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; If this proposal is adopted, it will make it much easier to write OAI
+</I>&gt;<i> &gt; service provider software that can reliably gather the full-text of an
+</I>&gt;<i> &gt; eprint, given only the oai_dc record for that eprint.
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; The proposal is at
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; <A HREF="http://www.rdn.ac.uk/projects/eprints-uk/docs/encoding-fulltext-links/">http://www.rdn.ac.uk/projects/eprints-uk/docs/encoding-fulltext-links/</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Comments are welcome,
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt; Andy
+</I>&gt;<i> &gt; --
+</I>&gt;<i> &gt; Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+</I>&gt;<i> &gt; <A HREF="http://www.ukoln.ac.uk/ukoln/staff/a.powell/">http://www.ukoln.ac.uk/ukoln/staff/a.powell/</A>      +44 1225 383933
+</I>&gt;<i> &gt; Resource Discovery Network <A HREF="http://www.rdn.ac.uk/">http://www.rdn.ac.uk/</A>
+</I>&gt;<i> &gt; ECDL 2004, Bath, UK - 12-17 Sept 2004 - <A HREF="http://www.ecdl2004.org/">http://www.ecdl2004.org/</A>
+</I>&gt;<i> &gt; _______________________________________________
+</I>&gt;<i> &gt; OAI-implementers mailing list
+</I>&gt;<i> &gt; List information, archives, preferences and to unsubscribe:
+</I>&gt;<i> &gt; <A HREF="http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers">http://oaisrv.nsdl.cornell.edu/mailman/listinfo/oai-implementers</A>
+</I>&gt;<i> &gt;
+</I>&gt;<i> &gt;
+</I>&gt;<i>
+</I>&gt;<i> --
+</I>&gt;<i> Herbert Van de Sompel
+</I>&gt;<i> digital library research &amp; prototyping
+</I>&gt;<i> Los Alamos National Laboratory - Research Library
+</I>&gt;<i> + 1 (505) 667 1267 / <A HREF="http://lib-www.lanl.gov/~herbertv/">http://lib-www.lanl.gov/~herbertv/</A>
+</I>&gt;<i>
+</I>&gt;<i> &quot;met gestreken jeans de dansvloer penetreren&quot;
+</I>&gt;<i>
+</I>&gt;<i>
+</I>&gt;<i>
+</I>
+Andy
+--
+Distributed Systems, UKOLN, University of Bath, Bath, BA2 7AY, UK
+<A HREF="http://www.ukoln.ac.uk/ukoln/staff/a.powell/">http://www.ukoln.ac.uk/ukoln/staff/a.powell/</A>      +44 1225 383933
+Resource Discovery Network <A HREF="http://www.rdn.ac.uk/">http://www.rdn.ac.uk/</A>
+ECDL 2004, Bath, UK - 12-17 Sept 2004 - <A HREF="http://www.ecdl2004.org/">http://www.ecdl2004.org/</A>
+
+</PRE>
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	<LI> Previous message: <A HREF="001185.html">[OAI-implementers] Automatically gathering the full-text of eprints
+</A></li>
+	<LI> Next message: <A HREF="001191.html">[OAI-implementers] Automatically gathering the full-text of eprints
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#1190">[ date ]</a>
+              <a href="thread.html#1190">[ thread ]</a>
+              <a href="subject.html#1190">[ subject ]</a>
+              <a href="author.html#1190">[ author ]</a>
+         </LI>
+       </UL>
+</body></html>

@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+ <HEAD>
+   <TITLE> [OAI-implementers] harvester guidelines
+   </TITLE>
+   <LINK REL="Index" HREF="index.html" >
+   <LINK REL="made" HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20harvester%20guidelines&In-Reply-To=">
+   <META NAME="robots" CONTENT="index,nofollow">
+   <META http-equiv="Content-Type" content="text/html; charset=us-ascii">
+   
+   <LINK REL="Next"  HREF="002053.html">
+ </HEAD>
+ <BODY BGCOLOR="#ffffff">
+   <H1>[OAI-implementers] harvester guidelines</H1>
+    <B>Jasper Op de Coul</B> 
+    <A HREF="mailto:oai-implementers%40openarchives.org?Subject=%5BOAI-implementers%5D%20harvester%20guidelines&In-Reply-To="
+       TITLE="[OAI-implementers] harvester guidelines">opdecoul at ubib.eur.nl
+       </A><BR>
+    <I>Thu May 26 06:43:31 EDT 2011</I>
+    <P><UL>
+        
+        <LI>Next message: <A HREF="002053.html">[OAI-implementers] harvester guidelines
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2052">[ date ]</a>
+              <a href="thread.html#2052">[ thread ]</a>
+              <a href="subject.html#2052">[ subject ]</a>
+              <a href="author.html#2052">[ author ]</a>
+         </LI>
+       </UL>
+    <HR>  
+<!--beginarticle-->
+<PRE>Hi list,
+
+
+I've been doing some work with OAIPMH harvesters lately, and would like 
+to share some of my experiences on the subject.
+
+When harvesting specific sets with the `set` param, there is an issue 
+that a harvester is not notified when a record is removed from that set.
+
+I think most implementers are aware of this, and it is the biggest hole 
+in the specification.
+
+For example: A specific set is harvested, but at a later time one of the 
+records is no longer part of that set. The record then disappears from 
+the feed, but the harvester is never notified because there is no delete 
+event.
+
+There are several ways to deal with this:
+
+1. Do incremental harvests with the ?set param, then do a full harvest 
+periodically or when someone calls or mails that records are missing.
+This is a common approach but it is no solution to the problem. I think 
+we can and should do better then that.
+
+2. Always do a full harvest with the ?set param. This will put a lot of 
+load on the servers, take lots of time, and is not a very social thing 
+to do. So, not a good option.
+
+3. Use incremental harvests, but never use the ?set param. The client 
+will receive all records and can inspect the SetSpec header manually to 
+see if this record is part of the wanted set. Records that are not part 
+of the wanted set but are in the client database can be removed.
+
+The last option means a lot more housekeeping for the client, but it is 
+the only way for a client to be sure that the data is correct.
+
+Although sets are a very useful feature, the set parameter is basically 
+broken. This should be noted somewhere in the documentation, probably in 
+the harvester guidelines.
+Personally I would be in favour of deprecating the set parameter so we 
+can put a big fat warning explaining this problem.
+
+Another issue that came up recently has to do with incremental 
+harvesting. The harvester guidelines mention that for the value of the 
+from parameter, the `responseDate` should be used, and that it is 
+advisable to overlap by a small additional amount.
+I think it would be better if a harvester does not use the 
+responseDate, but instead uses the latest datestamp of all harvested 
+records.
+
+Consider the following situation:
+
+Someone modifies a document in a database at 4 o'clock.
+An external OAI service gets updated once an hour, so it will have the 
+changes at 5 o'clock. The OAI software will use the modification dates 
+from the database, so at 5 o'clock the modified record is added with a 
+datestamp of 4 o'clock.
+If a harvester comes by at 4:30, that modifed document is not in the OAI 
+feed yet. An hour later at 5:30, the harvester harvests again with a 
+`from` parameter value of 4:30. The harvester will never get the 
+modified document because it was modified earlier then 4:30.
+
+Off course this whole situation is far from ideal, but it could be that 
+there is a gap between the modification date of a resource, and when it 
+gets added to the oai server. This gap can be anything from a few 
+seconds to a few weeks.
+
+If a harvester always uses the latest datestamp of any of the harvested 
+records, you are sure that no records are missed, and you never harvest 
+too much.
+
+I hope this helps implementers build better harvesters. If there is 
+concensus about adding this to the harvester guidelines, I would be 
+willing to write some text for it.
+
+Kind regards,
+Jasper
+
+
+
+-- 
+Jasper Op de Coul -- Erasmus University Rotterdam
+t +31 10 4082922  -- <A HREF="http://eur.nl/ub">http://eur.nl/ub</A>
+Burgemeester Oudlaan 50 3062 PA Rotterdam -- The Netherlands
+
+--------------------------------Disclaimer--------------------------------
+De informatie  verzonden in dit e-mail bericht  inclusief de bijlage(n) is
+vertrouwelijk  en is  uitsluitend  bestemd  voor de geadresseerde  van dit
+bericht. Lees verder: <A HREF="http://www.eur.nl/email-disclaimer">http://www.eur.nl/email-disclaimer</A>
+
+The information in this e-mail message  is confidential and may be legally
+privileged. Read more: <A HREF="http://www.eur.nl/english/email-disclaimer">http://www.eur.nl/english/email-disclaimer</A>
+--------------------------------------------------------------------------
+
+</PRE>
+
+
+<!--endarticle-->
+    <HR>
+    <P><UL>
+        <!--threads-->
+	
+	<LI>Next message: <A HREF="002053.html">[OAI-implementers] harvester guidelines
+</A></li>
+         <LI> <B>Messages sorted by:</B> 
+              <a href="date.html#2052">[ date ]</a>
+              <a href="thread.html#2052">[ thread ]</a>
+              <a href="subject.html#2052">[ subject ]</a>
+              <a href="author.html#2052">[ author ]</a>
+         </LI>
+       </UL>
+
+<hr>
+<a href="http://www.openarchives.org/mailman/listinfo/oai-implementers">More information about the OAI-implementers
+mailing list</a><br>
+</body></html>

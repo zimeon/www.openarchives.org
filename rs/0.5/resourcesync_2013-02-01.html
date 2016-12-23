@@ -1,0 +1,3026 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>ResourceSync Framework Specification</title>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon"/>
+<link rel="stylesheet" href="css/resourcesync.css" type="text/css"/>
+</head>
+
+<body>
+<div id="header">
+  <table class="layout" summary="Logo and ReSync title">
+    <tbody><tr>
+      <td><img alt="NISO logo" src="img/niso_logo.png"/></td>
+      <td><img alt="OAI logo" src="img/OA100.gif" width="100" height="70"/></td>
+      <td class="OREtext">Open Archives Initiative<br />ResourceSync Framework Specification</td>
+      <td><img alt="ReSync logo" src="img/resync_logo.jpg"/></td>
+    </tr>
+  </tbody>
+ </table>
+</div>
+<div id="titleBlock">
+  <h2 class="title">ResourceSync Framework Specification - Beta Draft</h2>
+  <h3 class="subTitle">01 February 2013</h3>
+</div><!--div-titleBlock-->
+<dl>
+  <dt>This version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/0.5/resourcesync">http://www.openarchives.org/rs/0.5/resourcesync</a></dd>
+  <dt>Latest version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/resourcesync">http://www.openarchives.org/rs/resourcesync</a></dd>
+  <dt>Previous version:</dt>
+  <dd><a href="http://www.openarchives.org/rs/0.1/resourcesync">http://www.openarchives.org/rs/0.1/resourcesync</a></dd>
+</dl>
+<dl class="EditorsContributors">
+  <dt>Editors:</dt>
+    <dd>Martin Klein, Robert Sanderson, Herbert Van de Sompel - Los Alamos National Laboratory</dd>
+    <dd>Simeon Warner, Bernhard Haslhofer - Cornell University</dd>
+    <dd>Michael Nelson - Old Dominion University</dd>
+    <dd>Carl Lagoze - University of Michigan</dd>
+</dl>
+
+
+<div class="abstract">
+<h2><a name="abstract"></a>Abstract</h2>
+<p>
+This ResourceSync specification describes a synchronization framework for the web consisting of various capabilities that allow third party systems to remain
+synchronized with a server's evolving resources.
+The capabilities can be combined in a modular manner to meet local or community requirements. 
+The specification also describes how a server can advertise the 
+synchronization capabilities it supports and how third party systems can discover this information. The specification 
+repurposes the document formats defined by the Sitemap protocol and introduces extensions for them.</p>
+</div>
+    
+<div class="abstract">
+<h2><a name="status"></a>Status of this Document</h2>
+<p style="color:red">
+This specification is a beta draft released for public comment. Feedback is most welcome on the <a href="https://groups.google.com/d/forum/resourcesync">ResourceSync Google Group</a>.
+</p>
+<p style="color:red">
+Editors' Note: The current version of this specification only details ZIP as the format to package content. 
+While it is the intention to stick with ZIP as the recommended packaging format, 
+discussions are ongoing regarding the use of other packaging formats.
+</p>
+<p style="color:red">
+Editors' Note: This specification only details pull-based approaches that allow a Destination to remain informed about 
+a Source's evolving resources. Discussions are ongoing about augmenting those with push-based (notification) approaches, for example, 
+based on publish/subscribe technology. These push-based approaches would allow a Source to communicate, among others, 
+the availability of a new Resource List or Resource Dump, the updating of a Change List, the change of a particular resource, etc.
+</p>
+</div>
+
+<div class="toc">
+<h2><a name="contents"></a>Table of Contents</h2>
+<p class="toc">
+
+1. <a href="#Introduction">Introduction</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.1 <a href="#MotivExamples">Motivating Examples</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;1.2 <a href="#NotConv">Notational Conventions</a><br />
+
+2. <a href="#ReSyncBasics">ResourceSync Basics</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.1 <a href="#Walkthrough">Walkthrough</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;2.2 <a href="#Overview">Overview</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2.1 <a href="#SourcePers">Source Perspective</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2.2 <a href="#DestPers">Destination Perspective</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2.3 <a href="#DiscoPers">Discovery Perspective</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.2.4 <a href="#OverviewSum">Overview Summary</a><br />
+
+3. <a href="#DocumentFormats">Sitemap Document Formats</a><br />
+
+4. <a href="#DescResources">Describing Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.1 <a href="#ResourceList">Resource List</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;4.2 <a href="#ResourceListIndex">Resource List Index</a><br />
+
+5. <a href="#PackResources">Packaging Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;5.1 <a href="#ResourceDump">Resource Dump</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1.1 <a href="#ResourceDumpManifest">Resource Dump Manifest</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.1.2 <a href="#ResourceDumpManifestIndex">Resource Dump Manifest Index</a><br />
+
+6. <a href="#DesChanges">Describing Changes</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;6.1 <a href="#ChangeList">Change List</a><br />
+
+7. <a href="#PackChanges">Packaging Changes</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;7.1 <a href="#ChangeDump">Change Dump</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.1.1 <a href="#ChangeDumpManifest">Change Dump Manifest</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;7.1.2 <a href="#ChangeDumpManifestIndex">Change Dump Manifest Index</a><br />
+
+8. <a href="#LinkRelRes">Linking to Related Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.1 <a href="#MirCon">Mirrored Content</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.2 <a href="#AltRep">Alternate Representations</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.3 <a href="#PatchCon">Patching Content</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.4 <a href="#ResMDLinking">Resources and Metadata about Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.5 <a href="#ResVers">Prior Versions of Resources</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;8.6 <a href="#RePub">Republishing Resources</a><br />
+
+9. <a href="#ProvidingHistData">Providing Historical Data</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;9.1 <a href="#ResourceDumpArch">Resource Dump Archives</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;9.2 <a href="#ChangeListArch">Change List Archives</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;9.3 <a href="#ChangeDumpArch">Change Dump Archives</a><br />
+
+10. <a href="#AdvCaps">Advertising Capabilities</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;10.1 <a href="#CapabilityList">Capability List</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;10.2 <a href="#CapabilityListIndex">Capability List Index</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;10.3 <a href="#Discovery">Discovery</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.3.1 <a href="#wellknown">ResourceSync Well-Known URI</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.3.2 <a href="#xhtmllinkEle">X/HTML Link Element</a><br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.3.3 <a href="#HTTPLinkHrds">HTTP Link Header</a><br />
+
+11. <a href="#References">References</a><br />
+</p>
+
+<h3><a name="appendices"></a>Appendices</h3>
+<p class="toc">
+A. <a href="#ElemOv">XML Element Overview</a><br />
+B. <a href="#acknowledgments">Acknowledgements</a><br />
+C. <a href="#Changelog">Change Log</a></p>
+</div>
+
+
+
+<div class="body">
+<h2>1. <a name="Introduction">Introduction</a></h2>
+
+<p>The web is highly dynamic, with resources continuously being created,
+        updated, and deleted. As a result, using resources from a remote
+        server involves the challenge of remaining in step with its changing
+        content. In many cases, there is no need to reflect a
+        server's evolving content perfectly, and therefore well established resource
+        discovery techniques, such as crawling, suffice as an
+        updating mechanism. However, there are significant use cases that
+        require low latency and high accuracy in reflecting a remote server's
+        changing content. These requirements have typically been addressed by
+        ad-hoc technical approaches implemented within a small group of
+        collaborating systems. There have been no widely adopted, web-based
+        approaches.</p>
+
+<p>This <strong>ResourceSync</strong> specification introduces a range
+        of easy to implement capabilities that a server may support in order
+        to enable remote systems to remain more tightly in step with its
+        evolving resources. It also describes how a server can advertise the
+        capabilities it supports. Remote systems can inspect this information
+        to determine how best to remain aligned with the evolving data.</p>
+<p>Each capability provides a different synchronization functionality,
+        such as a list of the server's resources or its recently changed
+        resources, including what the nature of the change was: create,
+        update, or delete. All capabilities are implemented on the basis of the document formats
+        introduced by the <a href="#ref-sitemaps">Sitemap protocol</a>. Capabilities can be combined to achieve varying
+        levels of functionality and hence meet different local or community
+        requirements. This modularity provides flexibility and makes
+        ResourceSync suitable for a broad range of use cases.</p>
+
+<p>
+This document is structured as follows:
+</p>
+<ul>
+  <li>The remainder of this section provides example use cases and introduces some notational conventions.</li>
+  <li><a href="#ReSyncBasics">Section 2. ResourceSync Basics</a> provides a brief overview of the various ResourceSync capabilities.
+Reading this section is advised before continuing on to further technical details.</li>
+    <li><a href="#DocumentFormats">Section 3. Sitemap Document Formats</a> describes the way in which the
+    document formats introduced
+    by the <a href="#ref-sitemaps">Sitemap protocol</a> are used to convey synchronization related information in all ResourceSync capabilities.</li>
+  <li><a href="#DescResources">Section 4. Describing Resources</a>, <a href="#PackResources">Section 5. Packaging Resources</a>,
+  <a href="#DesChanges">Section 6. Describing Changes</a>, <a href="#PackChanges">Section 7. Packaging Changes</a>,
+  <a href="#LinkRelRes">Section 8. Linking to Related Resources</a>, and <a href="#ProvidingHistData">Section 9. Providing Historical Data</a> each provide
+details about capabilities that a server may implement in order to enable remote systems to remain aligned with its evolving data.</li>
+  <li><a href="#AdvCaps">Section 10. Advertising Capabilities</a> describes how a server can advertise the ResourceSync capabilities it supports.</li>
+</ul>
+
+
+<h3>1.1. <a name="MotivExamples"></a>Motivating Examples</h3>
+
+<p>Many projects and services have synchronization needs and have
+        implemented ad hoc solutions. ResourceSync provides a standard
+        synchronization method that will reduce implementation effort and
+        facilitate easier reuse of resources. This section describes motivating
+        examples with differing needs and complexities.</p>
+
+<p>
+        Consider first the case of a website for a small museum collection.
+        The website may contain just a few dozen static web pages. The
+        maintainer can create a <a href="#ResourceList">Resource List</a> of these
+        web pages and expose it to services that leverage ResourceSync.
+</p>
+
+<p>
+        When building services over Linked Data it is often desirable to
+        maintain a local copy of data for improved access and availability.
+        Harvesting can be enabled by publishing a <a href="#ResourceList">Resource List</a>
+        for the Dataset. In many cases resource representations exposed as Linked Data are small and
+        so retrieving them via individual HTTP GET requests is slow because of the
+        large number of round-trips for a small amount of content. 
+        Publishing a <a href="#ResourceDump">Resource Dump</a> that points to content packaged and described in ZIP files makes 
+        this more efficient for the client and less burdensome for the server.
+      Continued synchronization is enabled by recurrently publishing an up-to-date <a
+                href="#ResourceList">Resource List</a> or <a href="#ResourceDump">Resource Dump</a>, or, more efficiently, by publishing a <a
+                href="#ChangeList">Change List</a> that provides information about resource changes only.
+</p>
+
+<p>
+        For many years now, the <a
+                href="http://arxiv.org/">arXiv.org</a> collection of scientific
+        articles has used a custom mirroring solution to propagate resource
+        changes to a set of mirror sites and interacting services on a daily
+        basis. The collection contains about 2.4 million files and there are
+        about 1,600 changes (creates, updates) per day. The mirroring system
+        currently in place uses HTTP with custom change descriptions, and
+        occasionally
+        <a href="http://en.wikipedia.org/wiki/Rsync">rsync</a> to verify the
+        copies and to cope with any errors in the incremental updates. The approach
+        assumes a tight connection between arXiv.org and its mirrors. It
+        would be desirable to have a solution that allows any interested
+        third party systems to accurately synchronize with arXiv.org using
+        commodity software. arXiv.org could publish both metadata records and
+        full-text content as separate web resources with their own URI.
+        Leveraging ResourceSync capabilities including
+        <a href="#ResourceList">Resource Lists</a>, <a href="#ResourceDump">Resource Dumps</a>, <a
+                href="#ChangeList">Change Lists</a>, and <a
+                href="#ChangeDump">Change Dumps</a>, both existing mirrors, such
+        as lanl.arXiv.org, and new parties could remain accurately in sync
+        with the arXiv.org collection.
+        This would extend the openly available metadata sharing capability
+        provided by arXiv.org, currently implemented via
+        <a href="#ref-oaipmh">OAI-PMH</a>, to full-text sharing in a web-friendly fashion.
+</p>
+
+
+<h3>1.2. <a name="NotConv">Notational Conventions</a></h3>
+
+<p>This specification uses the terms "resource", "representation", "request",
+"response", "content negotiation", "client", and "server" as
+described in [<a href="#ref-webarch">Architecture of the World Wide Web</a>].</p>
+
+<p>Throughout this document, the following namespace prefix bindings
+are used:</p>
+
+<a name="tab_1_1"></a>
+<table class="namespace-table" summary="namespaces used in this document">
+ <tbody><tr class="top">
+  <th class="left">Prefix</th><th class="center">Namespace URI</th><th class="right">Description</th>
+ </tr>
+  <tr class="odd">
+  <td class="left"></td><td class="center"><code>http://www.sitemaps.org/schemas/sitemap/0.9</code></td>
+  <td class="right">Sitemap XML elements defined in the <a href="#ref-sitemaps">Sitemap protocol</a></td>
+ </tr>
+ <tr class="even">
+    <td class="left"><code>rs</code></td><td class="center"><code>http://www.openarchives.org/rs/terms/</code></td>
+  <td class="right">Namespace for elements and attributes introduced in this specification</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 1.1: Namespace prefix bindings used in this document</p>
+
+
+<h2>2. <a name="ReSyncBasics">ResourceSync Basics</a></h2>
+
+<p>
+This section provides an overview of the various ResourceSync
+capabilities that a server may support in order to enable remote systems
+to become and remain synchronized with its evolving resources.
+The following terms are introduced:
+</p>
+
+<ul>
+ <li>A <b>Source</b> is a server that hosts resources subject to synchronization.</li>
+ <li>A <b>Destination</b> is a system that synchronizes itself with the Source's resources.</li>
+</ul>
+
+<h3>2.1. <a name="Walkthrough">Walkthrough</a></h3>
+
+<p>
+Let's assume a Source, http://example.com/, that exposes changing content that others would like to remain synchronized with.
+A first step towards making this easy for Destinations is for the Source to publish a <a href="#ResourceList">Resource List</a>
+that conveys the URIs of resources available for synchronization. This Resource List is
+expressed as a Sitemap. As shown in <a href="#ex_2_1_1">Example 2.1</a>, the Source conveys the URI of
+each resource as the value of the
+<code>&lt;loc&gt;</code> child element of a
+<code>&lt;url&gt;</code> element. Note the
+<code>&lt;rs:md&gt;</code> child element of the <code>&lt;urlset&gt;</code>
+root element. It expresses that the Sitemap implements ResourceSync's Resource List capability and conveys
+the datetime of the Resource List's most recent update, allowing a Destination to quickly determine whether
+it has previously processed this specific Resource List.
+</p>
+
+<!--EXAMPLE:ex_2_1_1.xml-->
+<a name="ex_2_1_1"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:md capability=&quot;resourcelist&quot;
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.1: A Resource List</p>
+<!--/EXAMPLE:ex_2_1_1.xml-->
+
+
+<p>
+The Source can provide additional information in the Resource List to
+help the Destination optimize the process of collecting
+content and verifying its accuracy. For example,
+when the Source expresses the datetime of the most recent modification
+for a resource, a Destination can determine whether or not it already
+holds the current version, minimizing the number of HTTP requests it
+needs to issue in order to remain up-to-date. <a href="#ex_2_1_2">Example 2.2</a> shows this information
+conveyed using Sitemap's <code>&lt;lastmod&gt;</code> element.
+When the Source also conveys a hash for a specific bitstream, a Destination can verify whether
+the process of obtaining it was successful.
+<a href="#ex_2_1_2">Example 2.2</a> shows this information conveyed using the <code>hash</code>
+attribute on the <code>&lt;rs:md&gt;</code> element.
+                </p>
+<!--EXAMPLE:ex_2_1_2.xml-->
+<a name="ex_2_1_2"></a>
+<div class="exampleInner">
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:md capability=&quot;resourcelist&quot;
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T13:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T14:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.2: A Resource List with additional information</p>
+<!--/EXAMPLE:ex_2_1_2.xml-->
+
+<p>
+        In order to describe its changing content in a more timely manner, the
+        Source can increase the frequency at which it publishes an up-to-date
+        Resource List. However, changes may be so frequent or the size of the content
+        collection so vast that regularly updating a complete Resource List may
+        be impractical. In such cases, the Source can implement an additional
+        capability that communicates information about changes
+        only. To this end, ResourceSync introduces Change Lists. A Change List
+         lists resources as they change, along with the nature of the
+        change (create, update, or delete) and the time that the change occurred.
+A Destination can recurrently obtain a Change List from the Source,
+inspect the listed changes to discover those it has already acted upon, and process the remaining ones.
+Changes in a Change List are provided in chronological order, making it straightforward for a Destination to determine which
+changes it already processed.
+        The longer that Change Lists are maintained by the Source, the better the odds are for a Destination to catch up
+        on changes it missed because it was offline, for example.
+        </p>
+
+        <p><a href="#ex_2_1_3">Example 2.3</a> shows a Change List. 
+The value of the <code>capability</code> attribute of the <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> makes it clear
+that, this time, the Sitemap is a Change List and not a Resource List.
+        The Change List conveys two
+        resource changes, one being an update and the other a deletion, as can be
+        seen from the value of the <code>change</code> attribute of the
+        <code>&lt;rs:md&gt;</code> element. The example also shows the use of the
+        <code>&lt;lastmod&gt;</code> element to convey the time of the changes. Note that these times are used to
+        order the Change List chronologically.
+</p>
+
+<!--EXAMPLE:ex_2_1_3.xml-->
+<a name="ex_2_1_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2.pdf&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T13:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3.tiff&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T18:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;deleted&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.3: A Change List</p>
+<!--/EXAMPLE:ex_2_1_3.xml-->
+
+<p>A Destination can issue HTTP GET requests against each resource URI listed in a Resource List. For
+large Resource Lists, issuing all of these requests may be cumbersome. Therefore, ResourceSync introduces a
+capability that a Source can use to
+make packaged content available. A Resource Dump, implemented as a Sitemap, contains pointers to packaged content.
+Each content package referenced in a Resource Dump is a ZIP file that contains the Source's bitstreams along with a Resource Dump Manifest
+that describes each. The Resource Dump Manifest itself is also implemented as a Sitemap.
+A Destination can retrieve a Resource Dump, obtain content packages by dereferencing the contained pointers, and unpack the retrieved packages.
+Since the Resource Dump Manifest also lists the URI the Source associates with each bitstream, a Destination is able to achieve
+the same result as obtaining the data by dereferencing the URIs listed in a Resource List.
+<a href="#ex_2_1_4">Example 2.4</a> shows a Resource Dump that points at a single content package. Dereferencing the URI of that package leads to a ZIP file
+that contains the Resource Dump Manifest shown in 
+<a href="#ex_2_1_5">Example 2.5</a>. It indicates that the Source's ZIP file contains two bitstreams.
+The <code>path</code> attribute of the <code>&lt;rs:md&gt;</code> element conveys
+the file path of the bitstream in the ZIP file (the relative file system path where the bitstream
+would reside if the ZIP were unpacked), whereas the <code>&lt;loc&gt;</code> attribute conveys the URI associated with the bitstream at the Source.
+</p>
+
+<!--EXAMPLE:ex_2_1_4.xml-->
+<a name="ex_2_1_4.xml"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:md capability=&quot;resourcedump&quot;
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcedump.zip&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.4: A Resource Dump</p>
+<!--/EXAMPLE:ex_2_1_5.xml-->
+
+<!--EXAMPLE:ex_2_1_5.xml-->
+<a name="ex_2_1_5"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:md capability=&quot;resourcedump-manifest&quot;
+         modified=&quot;2013-01-03T19:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T13:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             path=&quot;/resources/res1&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T14:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e&quot;
+             path=&quot;/resources/res2&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.5: A Resource Dump Manifest detailing the content of a ZIP file</p>
+<!--/EXAMPLE:ex_2_1_5.xml-->
+
+<p>ResourceSync also introduces a Capability List, which is a way for the Source to describe the capabilities it supports.
+<a href="#ex_2_1_6">Example 2.6</a> shows an example of such a description. 
+It indicates that the Source supports the Resource List, Resource Dump, and Change List capabilities and it lists their respective URIs.
+Note the inclusion of a <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> that links to a description of
+the data that the Source makes available.</p>
+
+<p>There are various ways for a Destination to discover a Source's Capability List. The recommended approach
+leverages the well-known URI specification [<a href="#ref-rfc5785">RFC5785</a>] and consists of the Source making the Capability List
+available at <code>/.well-known/resourcesync</code>.</p>
+
+<!--EXAMPLE:ex_2_1_6.xml-->
+<a name="ex_2_1_6"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln href=&quot;http://example.com/info-about-source.xml&quot;/&gt;
+        rel=&quot;describedby&quot;
+        type=&quot;application/xml&quot;/&gt;
+  &lt;rs:md capability=&quot;capabilitylist&quot;
+         modified=&quot;2013-01-02T14:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcelist.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcelist&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcedump.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcedump&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/changelist.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;changelist&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 2.6: A Capability List with the description of the ResourceSync capabilities of a Source</p>
+<!--/EXAMPLE:ex_2_1_6.xml-->
+
+<p>In many cases, there is a need to group the documents described so far. For example,
+the Sitemap protocol prescribes a maximum of 50,000 resources per Sitemap and a Source may easily have more resources
+that are subject to synchronization. In this case, multiple Resource Lists are published as well as a Resource List Index that points
+to each of them. The Resource List Index is expressed using Sitemap's <code>&lt;sitemapindex&gt;</code> document format. Similarly, in
+order to group the current and previous Change Lists, a Change List Archive is published. It too is expressed using
+Sitemap's <code>&lt;sitemapindex&gt;</code> document format. This pattern is used throughout the synchronization framework.
+<a href="#ex_2_1_7">Example 2.7</a> shows a Resource List Index that points at two Resource Lists.</p>
+
+<!--EXAMPLE:ex_2_1_7.xml-->
+<a name="ex_2_1_7"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:md capability=&quot;resourcelist&quot;
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcelist-part2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcelist-part1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 2.7: A Resource List Index expressed using the <code>&lt;sitemapindex&gt;</code> document format</p>
+<!--/EXAMPLE:ex_2_1_7.xml-->
+
+
+<h3>2.2. <a name="Overview">Overview of Synchronization Processes</a></h3>
+
+<p>
+        The previous section provides a concrete walkthrough of some
+        capabilities that a Source can implement and describes how a
+        Destination can leverage those capabilities to remain synchronized with
+        the Source's changing data. This section provides a high-level
+        overview of the various ResourceSync capabilities and shows how
+        these fit in to a Destination's processes aimed at remaining in step
+        with changes.
+</p>
+
+<h4>2.2.1. <a name="SourcePers">Source Perspective</a></h4>
+
+<p>From the perspective of a <b>Source</b>, the ResourceSync
+capabilities that can be supported to enable Destination processes to remain in
+sync with its changing data can be summarized as follows:
+</p>
+
+<p><b>Describing Content</b> - In order to describe its data, a
+        Source can maintain an up-to-date
+        <b>Resource List</b>. A basic Resource List minimally provides the
+        URIs of resources that the Source makes available for synchronization.
+        However, additional information can be added to the Resource List to optimize
+        the Destination's process of obtaining the Source's resources,
+        including the most recent modification time of resources and fixity
+        information such as content-based checksum or hash and length. <a href="#fig_source_perspective">Figure 1</a> shows a Source
+        publishing up-to-date Resource Lists at times t2 and t4. At t4, too many resources need to be listed to fit in a single
+        Resource List and hence multiple Resource Lists are published and grouped in a Resource List Index.
+</p>
+
+<p><b>Packaging Content</b> - In order to make its data available for download,
+a Source can recurrently make an up-to-date <b>Resource Dump</b>
+of its content available. A Resource Dump points at one or more packages, each of which contains bitstreams associated with resources hosted by the Source.
+Each package also contains a <b>Resource Dump Manifest</b> that provides metadata about the bitstreams contained in
+the package, minimally including their associated URI and their file path in the ZIP file.
+<a href="#fig_source_perspective">Figure 1</a> shows that the Source's most recent
+Resource Dump was published at time t3. It also shows the availability of a Resource Dump Archive that additionally points at a
+Resource Dump that was published at time t1.</p>
+
+<p><b>Describing Changes</b> - In order to achieve lower
+synchronization latency and/or to improve transfer efficiency,
+a Source may publish a Change List that provides information about
+changes to its resources. It is up to the Source to decide what the temporal interval is that is
+covered by a Change List, for example, expressing all the changes that occurred during the
+previous hour, the current day, or since the most recent publication of a Resource List. Per resource change,
+a Change List minimally conveys the URI of the changed resource as well as the datetime and
+nature of the change (create, update, delete). Since a Change List is organized on the basis of changes,
+it may list the same resource multiple times, once per change.
+<a href="#fig_source_perspective">Figure 1</a> shows that the Source's most current Change List covers resource changes that occurred between times t8 and t10. 
+It also shows the availability of a Change List Archive that leads to Change Lists that cover prior temporal intervals.
+</p>
+
+<p><b>Packaging Changes</b> - In order to make content changes available for download,
+a Source can publish a <b>Change Dump</b>. A Change Dump points at one or more packages,
+each of which contains bitstreams that correspond to changes that occurred to a Source's resources.
+Each package also contains a <b>Change Dump Manifest</b> that provides metadata about the
+bitstreams provided in the Change Dump. 
+Per bitstream, the Change Dump Manifest minimally includes the associated URI, the datetime when the change that resulted in the
+bitstream occurred, the nature of the change (create, update, delete) and the file path of the bitstream in the ZIP file.
+It is up to a Source to decide the temporal interval covered by a
+Change Dump, for example, covering all the resource changes that occurred during the
+previous hour, the current day, or since the most recent publication
+of a Dump. Since a Change Dump is organized on the basis of changes, the package(s) it points at may contain multiple bitstreams associated with any given
+resource, one per change. <a href="#fig_source_perspective">Figure 1</a> shows that the Source's most current Change Dump covers resource changes
+that occurred between times t9 and t11.
+It also shows the availability of a Change Dump Archive that leads to Change Dumps that cover prior temporal intervals.</p>
+<p><b>Linking to Related Resources</b> - There are several reasons to provide additional links from a resource subject to synchronization to related resources:</p>
+<ul>
+<li><b>Alternate Content Transfer</b> - The default mechanisms by which a Destination obtains
+content for a resource are to issue an HTTP GET against its URI found
+in a Resource List or Change List, or to unpack packages obtained via a Resource Dump or Change Dump. However, additional approaches may also be supported.
+For example, a Source may prefer, for synchronization purposes, that
+content be obtained from a mirror server and hence from a different
+URI. Also, a Source can allow obtaining only the changes that a
+resource underwent, instead of the entire changed resource.
+This may be desirable when the resource size is considerable and/or the
+frequency of changes high. Such an Alternate Content Transfer approach is expressed by means of a link from the resource
+to another resource that makes the content available in an alternate way. It is
+possible that certain Destinations do not understand a specific Alternate Content Transfer approach, in which
+case ignoring the link and dereferencing the resource's URI remains the fallback approach.</li>
+<li><b>Resources and Metadata about Resources</b> - Cases exist where both resources and metadata about resources
+must be synchronized, for example, a collection of scientific publications and metadata describing each.
+From the ResourceSync perspective, both the resource and the metadata about it are regarded as resources with distinct URIs that are subject to
+synchronization.
+Their inter-relationship is expressed by means of links with appropriate relation types.</li>
+<li><b>Prior Versions of Resources</b> - In some cases a Destination requires a copy of each version of a
+resource, not just the most recent one. A Resource Dump Archive can provide this functionality. However, a Source may also support discovery and access to
+prior resource versions through links. Two approaches are provided, one based on linking to resource versions, the other based on linking to
+a TimeGate that supports datetime negotiation to obtain an appropriate temporal version of a resource
+[<a href="#Memento-Draft">Memento Internet Draft</a>].</li>
+</ul>
+
+<p><b>Archived Resource Dumps, Change Lists, and Change Dumps</b> - The Source can make available Resource Dumps, Change Lists, and Change Dumps that were
+published prior to the current ones. To that end, it can publish a Resource Dump Archive, a Change List Archive, and a Change Dump Archive, respectively.
+For example, <a href="#fig_source_perspective">Figure 1</a> shows a Resource Dump Archive that points at the current Resource Dump published at t3
+but also at a prior one published at t1. A Resource Dump Archive allows a Destination to obtain not only the current but also prior versions of a Source's resources.
+Change List Archives and Change Dump Archives allow a Destination to catch up on changes it may have missed, for example, because it went offline.
+</p>
+
+<div class="image">
+<a name="fig_source_perspective"></a>
+<img alt="ReSync Source Perspective" src="img/timeline_source_perspective4.png" width="90%" height="90%"/>
+<p class="caption">Figure 1: ResourceSync Source perspective</p>
+</div>
+
+
+<h4>2.2.2. <a name="DestPers">Destination Perspective</a></h4>
+
+<p>From the perspective of a <b>Destination</b>, three key processes are enabled by the ResourceSync capabilities; <a href="#fig_destination_perspective">Figure 2</a>
+provides an overview:</p>
+
+<p>
+<b>Baseline Synchronization</b> - In order to become synchronized with
+a Source, the Destination must make an initial copy of the Source's data.
+A Destination can obtain the Resource List that conveys the URIs of the Source's resources, and subsequently dereference those URIs one by one.
+A Destination can also obtain a Resource Dump that conveys the URIs of one or more content packages each of which contains bitstreams associated with the Source's resources.
+A Destination can dereference those URIs and subsequently unpack the retrieved content packages, guided by the contained Resource Dump Manifest.
+</p>
+<p>
+<b>Incremental Synchronization</b> - A Destination can remain in
+sync with a Source by repeatedly performing a Baseline Synchronization. To increase efficiency and decrease latency, a
+Source may communicate information about changes to its resources via Change Lists. 
+This allows a Destination to obtain up-to-date content by dereferencing the URIs of newly created and updated resources listed in the Change List.
+It also allows a Destination to remove its copies of deleted resources, if needed.
+A Source can also make a Change Dump available that points at one or more packages,
+each of which contains bitstreams that correspond to changes that occurred to a Source's resources.
+In this case the Destination first obtains the Change Dump, then obtains the package(s) by dereferencing the URI(s) listed in the Change Dump, and
+subsequently unpacks those, guided by the contained Change Dump Manifest.
+In order to allow a Destination to obtain not only the current version of a resource but also prior versions, a Source may provide
+mechanisms to discover and obtain archival copies. These include Resource Dump Archives and Change Dump Archives as well as links to resource versions.
+</p>
+<p>
+<b>Audit</b> - In order to verify whether it is in sync
+with the Source, a Destination must be able to check that the content
+it obtained matches the current resources hosted by the Source both regarding coverage and accuracy. This requires an up-to-date
+list of resources hosted by the Source, which can be compiled on the basis of a Resource List and Change Lists. It also requires these Lists to contain metadata
+per resource that characterizes its most recent state, such
+as last modification time, length, and content-based hash.
+</p>
+
+<div class="image">
+<a name="fig_destination_perspective"></a>
+<img alt="ReSync Destination Perspective" src="img/template_destination_perspective.png" width="60%" height="60%"/>
+<p class="caption">Figure 2: ResourceSync Destination perspective</p>
+</div>
+
+
+<h4>2.2.3. <a name="DiscoPers">Discovery Perspective</a></h4>
+
+<p>In order to advertise the capabilities it supports, a Source publishes a Capability List. Such a list
+has an entry per supported capability, and the URI where the capability can be accessed as well as the capability type is conveyed for each.
+For example, <a href="#fig_capability_list">Figure 3</a> depicts a Capability List for a Source that supports the following capabilities:
+Resource List, Resource Dump, Change List, and Change List Archive. Because these capabilities are conveyed in the same
+Capability List, they uniformely apply to the set of the Source's resources covered by that Capability List.
+For example, if a given resource appears in the Resource List then it must also appear in a Resource Dump and changes
+to the resource must also be reported in the Change List.
+</p>
+
+
+<p>The distinction between a Change List and a Change List Archive is made clear by the use of a <code>&lt;urlset&gt;</code> or a
+<code>&lt;sitemapindex&gt;</code> document, respectively. Each of the Change Lists provides a link with an <code>up</code> relation type pointing
+to the Change List Archive. </p>
+
+<p>
+The Capability List itself is typically made discoverable by a Source by publishing it at the ResourceSync
+well-known URI <code>/.well-known/resourcesync</code>.
+Links with a <code>resourcesync</code> relation type
+in HTML pages or HTTP headers can also be used, in which case the linked Capability List must pertain to the
+resource that provides the link; this means that the resource must be covered by all capabilities listed in that
+Capability List. The various capability documents can also include a link
+with a <code>resourcesync</code> relation type pointing at the Capability List they resort under.</p>
+<div class="image">
+<a name="fig_capability_list"></a>
+<img alt="ResourceSync Capability List" src="img/capability_list4.png" width="60%" height="60%"/>
+<p class="caption">Figure 3: ResourceSync Capability List</p>
+</div>
+
+<h4>2.2.4. <a name="OverviewSum">Overview Summary</a></h4>
+
+<p><a href="#tab_2_1">Table
+        2.1</a> provides a summary of this Overview section. The table lists Destination processes as columns and Source
+        capabilities as rows, with cells indicating the applicability of a
+        capability for a given process.</p>
+
+<!--TABLE:tab_2_1.xml-->
+<a name="tab_2_1"></a>
+<table class="capability-table" summary="Source Capabilities versus
+Destination Processes">
+ <tbody><tr class="top">
+  <th>Source Capabilities</th><th colspan="3">Destination Processes</th>
+ </tr>
+ <tr class="top">
+  <th>&nbsp;</th><th>Baseline Synchronization</th><th>Incremental
+Synchronization</th><th>Audit</th>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#DescResources">Describing Resources</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ResourceList">Resource List</a></td><td class="sync">X</td><td class="sync">&nbsp;</td><td class="audit">X</td>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#PackResources">Packaging Resources</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ResourceDump">Resource Dump</a></td><td class="sync">X</td><td class="sync">&nbsp;</td><td class="audit"></td>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#DesChanges">Describing Changes</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ChangeList">Change List</a></td><td class="sync">&nbsp;</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+  <tr class="odd">
+  <td class="scap"><a href="#PackChanges">Packaging Changes</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ChangeDump">Change Dump</a></td><td class="sync">&nbsp;</td><td class="sync">X</td><td class="audit">&nbsp;</td>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#LinkRelRes">Linking to Related Resources</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#MirCon">Mirrored Content</a></td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#AltRep">Alternate Representations</a></td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#PatchCon">Patching Content</a></td><td class="sync">&nbsp;</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ResMDLinking">Resources and Metadata about Resources</a></td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ResVers">Prior Versions of Resources</a></td><td class="sync"></td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#RePub">Republishing Resources</a></td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+ <tr class="odd">
+  <td class="scap"><a href="#ProvidingHistData">Providing Historical Data</a></td><td colspan="3" class="sync">&nbsp;</td><!--td class="sync">&nbsp;</td><td class="audit">&nbsp;</td-->
+ </tr>
+   <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ResDumpArch">Resource Dump Archive</a></td><td class="sync"></td><td class="sync">X</td><td class="audit">&nbsp;</td>
+ </tr>
+ <tr class="odd">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ChangeListArch">Change List Archive</a></td><td class="sync"></td><td class="sync">X</td><td class="audit">&nbsp;</td>
+ </tr>
+  <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#ChangeDumpArch">Change Dump Archive</a></td><td class="sync"></td><td class="sync">X</td><td class="audit">&nbsp;</td>
+ </tr>
+  <tr class="odd">
+  <td class="scap"><a href="#AdvCaps">Advertising Capabilities</a></td><td colspan="3" class="sync">&nbsp;</td>
+ </tr>
+   <tr class="even">
+  <td class="scap">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#CapabilityList">Capability List</a></td><td class="sync">X</td><td class="sync">X</td><td class="audit">X</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 2.1: Source capabilities versus Destination processes</p>
+<!--/TABLE:tab_2_1.xml-->
+
+
+<h2>3. <a name="DocumentFormats">Sitemap Document Formats</a></h2>
+
+<p>
+In order to convey information pertaining to resources in the ResourceSync framework, the Sitemap
+(root element <code>&lt;urlset&gt;</code>) and Sitemap index (root element <code>&lt;sitemapindex&gt;</code>)
+document formats introduced by the <a href="#ref-sitemaps">Sitemap protocol</a> are used for a variety of purposes.
+The <code>&lt;sitemapindex&gt;</code> document format is used when is it necessary to
+group multiple documents of the <code>&lt;urlset&gt;</code> format.
+</p>
+<p>
+The document formats, as well as their ResourceSync extension elements, are shown in <a href="#tab_3_1">Table 3.1</a>.
+The <code>&lt;rs:md&gt;</code> and <code>&lt;rs:ln&gt;</code> elements are introduced to express metadata and links, respectively.
+Both are in the ResourceSync XML Namespace and can have attributes.
+The attributes defined in this namespace are listed in <a href="#elem_intro_tab">Table 3.2</a> and detailed below.
+The <code>&lt;rs:ln&gt;</code> element as well as several of the ResourceSync attributes are based upon other
+specifications and in those cases inherit the semantics defined there; the &quot;RFC&quot; column of <a href="#elem_intro_tab">Table 3.2</a> refers to those specifications.
+Communities can introduce additional attributes when needed but must use an XML Namespace other than that of ResourceSync.
+</p>
+
+<a name="tab_3_1"></a>
+<table class="elem_intro-table" summary="Sitemap document formats">
+ <tbody><tr class="top">
+  <th>Sitemap</th><th>Sitemap Index</th>
+ </tr>
+  <tr class="even">
+  <td class="left">
+  <pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        <span class="rs">xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;</span>&gt;
+  <span class="rs">&lt;rs:md /&gt;</span>
+  <span class="rs">&lt;rs:ln /&gt;</span>
+  &lt;url&gt;
+      &lt;loc /&gt;
+      &lt;lastmod /&gt;
+      <span class="rs">&lt;rs:md /&gt;</span>
+      <span class="rs">&lt;rs:ln /&gt;</span>
+  &lt;/url&gt;
+  &lt;url&gt;
+      ...
+  &lt;/url&gt;
+&lt;/urlset&gt;
+  </pre>
+  </td>
+  <td class="left">
+  <pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              <span class="rs">xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;</span>&gt;
+  <span class="rs">&lt;rs:md /&gt;</span>
+  <span class="rs">&lt;rs:ln /&gt;</span>
+  &lt;sitemap&gt;
+      &lt;loc /&gt;
+      &lt;lastmod /&gt;
+      <span class="rs">&lt;rs:md /&gt;</span>
+      <span class="rs">&lt;rs:ln /&gt;</span>
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      ...
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+  </pre>
+  </td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 3.1: The Sitemap document formats including the ResourceSync extensions</p>
+
+<p>The overall structure of the ResourceSync documents is as follows:</p>
+<ul>
+<li><code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> - These elements are the root elements of ResourceSync documents; they have one mandatory and one optional child element:
+<ul>
+<li><code>&lt;rs:md&gt;</code> - In this context, the element conveys information about the document itself. Its use is
+mandatory and it has two mandatory attributes:
+<ul>
+<li><code>capability</code> - The value of the attribute conveys the nature of the document, e.g. whether the document is a Resource List, a Change List, a Manifest, etc.
+Defined values are <code>resourcelist</code>, <code>changelist</code>, <code>resourcedump</code>, <code>changedump</code>, <code>resourcedump-manifest</code>,
+<code>changedump-manifest</code>, and <code>capabilitylist</code>.</li>
+<li><code>modified</code> - The value of the attribute is the last modification time of the document, expressed as a <a href="#w3c-datetime">W3C Datetime</a>;
+the use of a complete date and time expressed in UTC using the format
+<code>YYYY-MM-DDThh:mm:ss[.s]Z</code> is recommended.</li>
+</ul></li>
+<li><code>&lt;rs:ln&gt;</code> - An optional and repeatable element used to support discovery of other documents,
+for example, the Source's Capability List or a description of the nature of the Source's data.
+The URI of such a document is provided in a mandatory <code>href</code> attribute. The <code>rel</code> attribute to express a relationship is also mandatory.
+Other attributes can be used, such as <code>type</code> to express the media type of the document.</li>
+<li><code>&lt;url&gt;</code> or <code>&lt;sitemap&gt;</code> - The <code>&lt;urlset&gt;</code> element should have zero or more <code>&lt;url&gt;</code> child elements, and the
+<code>&lt;sitemapindex&gt;</code> element has zero or more <code>&lt;sitemap&gt;</code> child elements. Each such child element is used to convey information about
+a resource that plays a role in the ResourceSync framework. They can have the following child elements:
+<ul>
+<li><code>&lt;loc&gt;</code> - A mandatory element that conveys the URI of the resource that plays a role in the ResourceSync framework.</li>
+<li><code>&lt;lastmod&gt;</code> - An element that conveys the last modification time of the resource with the URI provided in <code>&lt;loc&gt;</code>,
+expressed as a <a href="#w3c-datetime">W3C Datetime</a> as described above.
+Its use is optional in some, and mandatory in other documents.</li>
+<li><code>&lt;changefreq&gt;</code> - An optional element that provides a hint about the change frequency
+of the resource with the URI provided in <code>&lt;loc&gt;</code>. Defined values are <code>always</code>, <code>hourly</code>,
+<code>daily</code>, <code>weekly</code>, <code>monthly</code>, <code>yearly</code>, and <code>never</code>.
+The value <code>always</code> should be used for resources that change each time they are accessed.
+The value <code>never</code> should be used for archived resources.</li>
+<li><code>&lt;rs:md&gt;</code> - In this context, the element conveys metadata pertaining to the resource with the URI provided in <code>&lt;loc&gt;</code>.
+The element is not repeatable, and is mandatory for some documents and optional for others. It can have several attributes and the ones defined in the
+ResourceSync XML Namespace are as follows:
+<ul>
+<li><code>capability</code> - When the attribute is used, its value indicates the nature of
+that resource, e.g. whether it is a Resource List, a Change List, a Change Dump, etc. Defined values are listed in the above
+description of the <code>capability</code> attribute. When the attribute is not used, this signifies that the resource
+is subject to synchronization.</li>
+<li><code>change</code> - The value of the attribute conveys the type of change that a resource underwent. Defined values are 
+<code>created</code>, <code>updated</code>, and <code>deleted</code> to convey the creation, update, and deletion of a resource, respectively. 
+This attribute is used in <a href="#ChangeList">Change Lists</a> and <a href="#ChangeDumpManifest">Change Dump Manifests</a>.</li>
+<li><code>hash</code> - The value of the attribute conveys fixity information for a resource representation returned when the URI in <code>&lt;loc&gt;</code> is dereferenced.
+The attribute value is expressed in the form of a whitespace-delimited list of hash values.
+Each hash value is represented by a hex-encoded digest and is preceeded by a token that identifies the utilized hash algorithm, e.g. <code>md5:</code>, <code>sha-256:</code>.</li>
+<li><code>length</code> - The value of the attribute conveys the content length of a resource representation returned when the URI in <code>&lt;loc&gt;</code> is dereferenced.
+The value of the <code>length</code> attribute should be equal to the value of the <code>Content-Length</code> header in the HTTP response
+and must be computed as defined in <a href="#ref-rfc2616">RFC 2616, Sec. 4.4</a>.
+</li>
+<li><code>path</code> - The attribute is only used in <a href="#ResourceDumpManifest">Resource Dump Manifests</a> and <a href="#ChangeDumpManifest">Change Dump Manifests</a>.
+Its value conveys the file path of the bitstream associated with the URI in <code>&lt;loc&gt;</code> in the ZIP file. That is
+the relative file system path where the bitstream would reside if the ZIP were unpacked.</li>
+<li><code>type</code> - The value of the attribute conveys the media type of a resource representation returned when the URI in <code>&lt;loc&gt;</code> is dereferenced.
+Registered values are listed in the <a href="http://www.iana.org/assignments/media-types/index.html">IESG MIME-Type registry</a>.</li>
+</ul></li>
+<li><code>&lt;rs:ln&gt;</code> - In this context, an optional and repeatable element used to link to resources related to the one with the URI provided in <code>&lt;loc&gt;</code>, such as
+a copy on a mirror site, a prior version of the resource, etc. (see Linking to Related Resources in <a href="#SourcePers">Section 2.2.1</a>).
+It can have several attributes and the ones defined in the ResourceSync XML Namespace are as follows:
+<ul>
+<li><code>href</code> - A mandatory attribute to convey the URI of the related resource.
+</li>
+<li><code>rel</code> - A mandatory attribute to convey the relationship between the resource with the URI in <code>&lt;loc&gt;</code>
+and the one with the URI in <code>href</code>.</li>
+<li><code>hash</code>, <code>length</code>, <code>modified</code>, <code>path</code>, <code>type</code> - Optional 
+attributes with meanings as described above and pertaining to the related resource.</li>
+<li><code>pri</code> - An optional attribute used to express a priority among links with the same relation type.
+The attribute value is an integer between 1 and 999,999, with a lower integer
+indicating a higher priority and the abscence of the attribute indicating a value of 999,999.</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+
+<p><a href="#elem_intro_tab">Table 3.2</a> lists the elements used in ResourceSync documents and for each shows the attributes in the ResourceSync XML Namespace
+that can be used with them. The  &quot;Specification&quot; column refers to the specification where elements or attributes were introduced that
+ResourceSync equivalents are based upon and inherit their semantics from. A mark in the &quot;Representation&quot; column for an attribute indicates that it can only be used when a specific representation of a resource is concerned,
+whereas a mark in the &quot;Resource&quot; column indicates it is usable for a resource in general.</p>
+
+<a name="elem_intro_tab"></a>
+<table class="elem_intro-table">
+ <tbody>
+ <tr class="top">
+  <th class="left">Element/Attribute</th><th>Specification</th><th>Resource</th><th>Representation</th>
+ </tr>
+ <tr class="odd">
+  <td class="left"><b><code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code></b></td><td><a href="#ref-sitemaps">Sitemap protocol</a></td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:md&gt;</code></b></td><td>This specification</td><td></td><td></td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>capability</code></td><td>This specification</td><td></td><td></td>
+ </tr>
+  <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td></td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:ln&gt;</code></b></td><td><a href="#ref-rfc4287">RFC4287</a></td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td></td><td></td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;url&gt;</code> or <code>&lt;sitemap&gt;</code></b></td><td><a href="#ref-sitemaps">Sitemap protocol</a></td><td></td><td></td>
+ </tr>
+  <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;loc&gt;</code></b></td><td><a href="#ref-sitemaps">Sitemap protocol</a></td><td></td><td></td>
+ </tr>
+  <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;lastmod&gt;</code></b></td><td><a href="#ref-sitemaps">Sitemap protocol</a></td><td></td><td></td>
+ </tr>
+   <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;changefreq&gt;</code></b></td><td><a href="#ref-sitemaps">Sitemap protocol</a></td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:md&gt;</code></b></td><td>This specification</td><td></td><td></td>
+ </tr>
+  <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>capability</code></td><td>This specification</td><td></td><td></td>
+ </tr>
+  <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>change</code></td><td>This specification</td><td>X</td><td>X</td>
+ </tr>
+  <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>hash</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>length</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>path</code></td><td>This specification</td><td></td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td></td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:ln&gt;</code></b></td><td>This specification</td><td></td><td></td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>hash</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td></td><td>X</td>
+ </tr>
+  <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>href</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>length</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td></td><td>X</td>
+ </tr>
+  <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>modified</code></td><td><a href="#ref-ale">Atom Link Extensions</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>path</code></td><td>This specification</td><td></td><td>X</td>
+ </tr>
+  <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>rel</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td>X</td><td>X</td>
+ </tr>
+  <tr class="even">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>pri</code></td><td><a href="#ref-rfc6249">RFC6249</a></td><td>X</td><td>X</td>
+ </tr>
+ <tr class="odd">
+  <td class="left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>type</code></td><td><a href="#ref-rfc4287">RFC4287</a></td><td></td><td>X</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table 3.2: Elements and associated attributes defined for the ResourceSync documents</p>
+
+
+<h2>4. <a name="DescResources">Describing Resources</a></h2>
+
+<p>A Source may publish a description of the resources it makes available for synchronization. 
+This information enables a Destination to make an initial copy of some or all of those resources, 
+or to update a local copy to remain synchronized with changes.
+</p>
+
+<h3>4.1. <a name="ResourceList">Resource List</a></h3>
+<p>
+A <b>Resource List</b> is introduced to list and describe the resources that a Source makes available for synchronization.
+It presents a snapshot of a Source's resources at a particular point in time.
+</p>
+<p>
+A Resource List is based on the <code>&lt;urlset&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>resourcelist</code> and it must have a 
+<code>modified</code> attribute that conveys the Resource List's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per resource. This element does not have attributes, but uses
+child elements to convey information about the resource. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the resource.</li>
+  <li>A recommended <code>&lt;lastmod&gt;</code> child element and an optional <code>&lt;changefreq&gt;</code>
+element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>An optional <code>&lt;rs:md&gt;</code> child element provides further metadata about the resource. 
+It can have the attributes <code>hash</code>, <code>length</code>, and <code>type</code>, as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>Optional <code>&lt;rs:ln&gt;</code> child elements link to related resources as detailed in <a href="#LinkRelRes">Section 8</a>.</li>
+ </ul></li>
+</ul>
+<p>
+<a href="#ex_4_1">Example 4.1</a> shows a Resource List with two resources.
+</p>
+
+<a name="ex_4_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln <span class="rs">rel=&quot;resourcesync&quot;</span>
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcelist&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      <span class="rs">&lt;loc&gt;</span>http://example.com/res1<span class="rs">&lt;/loc&gt;</span>
+      <span class="rs">&lt;lastmod&gt;</span>2013-01-02T13:00:00Z<span class="rs">&lt;/lastmod&gt;</span>
+      <span class="rs">&lt;rs:md hash</span>=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             <span class="rs">length</span>=&quot;8876&quot;
+             <span class="rs">type</span>=&quot;text/html&quot;<span class="rs">/&gt;</span>
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T14:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e 
+                   sha-256:854f61290e2e197a11bc91063afce22e43f8ccc655237050ace766adc68dc784&quot;
+             length=&quot;14599&quot;
+             type=&quot;application/pdf&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.1: A Resource List</p>
+
+<h3>4.2. <a name="ResourceListIndex"></a>Resource List Index</h3>
+
+<p>
+The Sitemap protocol has a limit of 50,000 resources per Sitemap. It introduces the Sitemap index to group up to 50,000 Sitemaps thus increasing 
+the limit to 2.5 billion resources. 
+The ResourceSync framework adopts this approach and introduces a <b>Resource List Index</b> that points to up to 50,000 Resource Lists.
+The union of the Resource Lists referred to in the Resource List Index represents the entire set of resources that a Source
+makes available for synchronization. This set of resources, regardless of whether it is conveyed in a single Resource List or in multiple Resource Lists via
+a Resource List Index, represents the state of the Source's data at a particular point in time - the creation time of the Resource List(s).
+</p>
+<p>
+A Resource List Index is based on the <code>&lt;sitemapindex&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;sitemapindex&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>resourcelist</code> and it must have a 
+<code>modified</code> attribute that conveys the Resource List Index's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;sitemap&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> per Resource List. This element does not have attributes, 
+but uses child elements to convey information about the Resource List. The <code>&lt;sitemap&gt;</code> element has the following child elements: 
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Resource List.</li>
+  <li>A recommended <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+ </ul></li>
+</ul>
+<p>
+The Destination can determine whether it has reached a Resource List or a Resource List Index based 
+on whether the root element is <code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> 
+respectively. A Resource List Index is shown in <a href="#ex_4_2">Example 4.2</a>.
+</p>
+
+<a name="ex_4_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcelist&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcelist3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcelist2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcelist1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 4.2: A Resource List Index</p>
+
+<p>
+<a href="#ex_4_2">Example 4.2</a> refers to three Resource Lists identified by:
+</p>
+<ul>
+ <li><code>http://example.com/resourcelist3.xml</code>, and</li>
+ <li><code>http://example.com/resourcelist2.xml</code>, and</li>
+ <li><code>http://example.com/resourcelist1.xml</code>.</li>
+</ul>
+<p>
+<a href="#ex_4_3">Example 4.3</a> shows the content of the Resource List identified by the URI
+<code>http://example.com/resourcelist3.xml</code>. 
+Structurally, it is identical to the Resource List shown in <a href="#ex_4_1">Example 4.1</a> but it contains an additional 
+<code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code>
+that provides a navigational link with the relation type <code>up</code> to the parent Resource List Index 
+shown in <a href="#ex_4_2">Example 4.2</a>.
+This link is meant to ease navigation for Destinations and their adoption is therefore strongly recommended.
+</p>
+<a name="ex_4_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:ln <span class="rs">rel=&quot;up&quot;</span>
+         href=&quot;http://example.com/dataset1/resourcelist-index.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;resourcelist&quot;
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c8753&quot;
+             length=&quot;4385&quot;
+             type=&quot;application/pdf&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res4&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:4556abdf8ebdc9802ac0c6a7402c9881&quot;
+             length=&quot;883&quot;
+             type=&quot;image/png&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 4.3: A Resource List with a navigational link to its parent Resource List Index</p>
+
+
+<h2>5. <a name="PackResources">Packaging Resources</a></h2>
+
+<p>
+In order to provide Destinations with an efficient way to copy a Source's resources using a small number of HTTP requests, 
+a Source may provide packaged bitstreams for its resources.
+</p>
+
+<h3>5.1. <a name="ResourceDump">Resource Dump</a></h3>
+<p>
+A Source can publish a <strong>Resource Dump</strong>, which provides links to packages of the resources' bitstreams.
+Each package is a ZIP file that contains the bitstreams of the Source's resources. 
+The Resource Dump represents the Source's state at a particular point in time.
+It may be used to transfer resources from the Source in bulk, rather than the Destination having to make many separate requests.
+A typical scenario in which a Destination would obtain a Resource Dump is the Baseline Synchronization process.
+</p>
+<p>
+A Resource Dump is based on the <code>&lt;urlset&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>resourcedump</code> and it must have a 
+<code>modified</code> attribute that conveys the Resource Dumps's last modification time.</li>
+ <li> A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per ZIP package. This element does not have attributes, but uses
+child elements to convey information about the package. The <code>&lt;url&gt;</code> element has the following child elements: 
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the package.</li>
+  <li>A recommended <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>A recommended <code>&lt;rs:md&gt;</code> child element with the  <code>type</code> attribute to convey the MIME-Type of the package and
+the <code>length</code> attribute to convey the length of the package. The child element may further have attributes such as 
+<code>hash</code> and <code>type</code>, as described in <a href="#DocumentFormats">Section 3</a>.</li>
+ </ul></li>
+</ul>
+<p>
+Content packages made discoverable by a Resource Dump use the <a href="#zip-file-format">ZIP file format</a>. It is recommended to convey the
+<code>application/zip</code> media type of the ZIP file as well as its length by means of the <code>type</code> and <code>length</code>
+attributes of the <code>&lt;rs:md&gt;</code> child element, respectively.
+<a href="#ex_5_1">Example 5.1</a> shows a Resource Dump document that points to three ZIP files.
+</p>
+
+<a name="ex_5_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcedump&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcedump-part3.zip&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md <span class="rs">type=&quot;application/zip&quot;</span>
+             <span class="rs">length=&quot;4765&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcedump-part2.zip&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md type=&quot;application/zip&quot;
+             length=&quot;9875&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/resourcedump-part1.zip&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md type=&quot;application/zip&quot;
+             length=&quot;2298&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 5.1: A Resource Dump document</p>
+
+
+<h4>5.1.1. <a name="ResourceDumpManifest">Resource Dump Manifest</a></h4>
+<p>
+Each content package referred to from a Resource Dump must contain a <b>Resource Dump Manifest</b>
+file that describes the package's constituent bitstreams. The file must be named <code>manifest.xml</code> and must be located at the top level of the ZIP package.
+</p>
+<p>
+The Resource Dump Manifest is based on the <code>&lt;urlset&gt;</code> format. 
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute with a value of <code>resourcedump-manifest</code> and it must have a 
+<code>modified</code> attribute that conveys the Resource Dump Manifest's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per bitstream. This element does not have attributes, but uses
+child elements to convey information about the bitstream. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI which the Source associates with the bistream.</li>
+  <li>A recommended <code>&lt;lastmod&gt;</code> child element and an optional <code>&lt;changefreq&gt;</code>
+element with semantics as described in <a href="#DocumentFormats">Section 3</a>.
+  </li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element must have a <code>path</code> attribute to convey the location of the bitstream within the package.
+It can further have the attributes <code>hash</code>, <code>length</code>, and <code>type</code>, as described in 
+<a href="#DocumentFormats">Section 3</a>.</li>
+  <li>Optional <code>&lt;rs:ln&gt;</code> child elements link to related resources as detailed in <a href="#LinkRelRes">Section 8</a>.</li>
+ </ul></li>
+</ul>
+<p>
+Providing the URI of the bitstream enables a Destination to achieve the same result as obtaining the data by dereferencing the URIs listed in a Resource List.
+The value of the <code>path</code> attribute is relative to root of the package and it is expressed with a leading slash (/) as demonstrated in 
+<a href="#ex_5_2">Example 5.2</a>.
+</p>
+<a name="ex_5_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcedump-manifest&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T13:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;
+             <span class="rs">path=&quot;/resources/res1&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T14:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e
+                   sha-256:854f61290e2e197a11bc91063afce22e43f8ccc655237050ace766adc68dc784&quot;
+             length=&quot;14599&quot;
+             type=&quot;application/pdf&quot;
+             <span class="rs">path=&quot;/resources/res2&quot;</span>/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 5.2: A Resource Dump Manifest</p>
+
+<h4>5.1.2. <a name="ResourceDumpManifestIndex">Resource Dump Manifest Index</a></h4>
+<p>
+Since a Resource Dump Manifest is implemented as a Sitemap, it cannot
+contain more than 50,000 <code>&lt;url&gt;</code> elements. However, it is sometimes convenient to be able to include more than
+50,000 bitstreams in a single package. This is accommodated by a <b>Resource Dump Manifest Index</b>, based on the <code>&lt;sitemapindex&gt;</code> format.
+</p>
+<p>
+The Resource Dump Manifest Index file must be named <code>manifest.xml</code>.
+It is based on the <code>&lt;sitemapindex&gt;</code> document format. It has the <code>&lt;sitemapindex&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>resourcedump-manifest</code> and it must have a 
+<code>modified</code> attribute that conveys the Resource Dump Manifest Index's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;sitemap&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> per Resource Dump Manifest. This element does not have attributes, 
+but uses child elements to convey information about the Resource Dump Manifest. The <code>&lt;sitemap&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the location of the Resource Dump Manifest within the ZIP package.</li>
+  <li>A recommended <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element must have a <code>path</code> attribute to convey the location of the Resource Dump Manifest within the package.</li>
+ </ul></li>
+</ul>
+<p>Destinations can determine whether a package contains a Resource Dump Manifest or a Resource Dump Manifest Index by inspecting the root element of the 
+<code>manifest.xml</code> file. <a href="#ex_5_3">Example 5.3</a> shows an example of a Resource Dump Manifest Index. 
+</p>
+
+<a name="ex_5_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcedump-manifest&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;/manifests/part3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md path=&quot;/manifests/part3.xml&quot;/&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;/manifests/part2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md path=&quot;/manifests/part2.xml&quot;/&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;/manifests/part1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md path=&quot;/manifests/part1.xml&quot;/&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 5.3: A Resource Dump Manifest Index</p>
+
+
+<h2>6. <a name="DesChanges">Describing Content Changes</a></h2>
+<p>A Source may publish a record of the changes to its content over a period of time.
+This enables Destinations to efficiently follow the changes, and in doing so supports incremental synchronization.
+</p>
+
+<h3>6.1. <a name="ChangeList">Change List</a></h3>
+<p>
+A <b>Change List</b> is a document that contains a description of changes to the resources at a Source.
+Unlike a Resource List, if a resource underwent multiple changes, it will be listed multiple times in the Change List.
+It is up to the Source to determine the frequency with which it publishes or updates Change Lists and also the
+time period that the Change List covers. A Source may choose to publish some number of recent changes, or only the changes from
+the a particular period, such as the last day or week.
+</p>
+<p>
+A Change List is based on the <code>&lt;urlset&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>changelist</code> and it must have a 
+<code>modified</code> attribute that conveys the Change List's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per changed resource. This element does not have attributes, but uses
+child elements to convey information about the changed resource. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the changed resource.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element must have the attribute <code>change</code> to convey the nature of the change. 
+It may take values <code>created</code>, <code>updated</code>, and <code>deleted</code>. 
+It can further have attributes <code>hash</code>, <code>length</code>, and <code>type</code>, as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>Optional <code>&lt;rs:ln&gt;</code> child elements link to related resources as detailed in <a href="#LinkRelRes">Section 8</a>.</li>
+ </ul></li>
+</ul>
+<p>
+The datetime of the resource change can be used by Destinations to determine if it has already been
+processed. A Destination can walk through the Change List until it reaches a datetime before it last requested the Change List, and then start
+processing the new changes in order of their occurrence.  In the same manner as processing a Resource List, the Destination can retrieve a representation
+of the resource by dereferencing its URI.
+</p>
+<p>
+All entries in a Change List must be in chronological order. In particular, the least recently changed resource must be listed at the beginning of the 
+Change List, while the most recently changed resource must be listed at the end of the document.
+This ordering supports Destinations in processing the changes, however, sophisticated Destinations may reorder the Change List to avoid unncessary 
+processing, for example, only process the most recent change to a resource.
+<a href="#ex_6_1">Example 6.1</a> shows the content of a Change List with changes to three resources.
+The example shows one creation, one update, and one deletion and the changes are in chronological order.
+</p>
+<a name="ex_6_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changelist&quot;</span>
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1.html&lt;/loc&gt;
+      &lt;lastmod&gt;<span class="rs">2013-01-02T11:00:00Z</span>&lt;/lastmod&gt;
+      &lt;rs:md <span class="rs">change=&quot;created&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2.pdf&lt;/loc&gt;
+      &lt;lastmod&gt;<span class="rs">2013-01-02T13:00:00Z</span>&lt;/lastmod&gt;
+      &lt;rs:md <span class="rs">change=&quot;updated&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3.tiff&lt;/loc&gt;
+      &lt;lastmod&gt;<span class="rs">2013-01-02T18:00:00Z</span>&lt;/lastmod&gt;
+      &lt;rs:md <span class="rs">change=&quot;deleted&quot;</span>/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>   
+</div>
+<p class="caption">Example 6.1: A Change List describing three resource changes</p>
+
+<p>
+A unique identifier for each change might be useful in some situations. No explicit identity is defined
+in this specification, but the combination of the content in the <code>&lt;loc&gt;</code> and of the <code>&lt;lastmod&gt;</code> elements of
+the <code>&lt;url&gt;</code> element
+is recommended for this purpose. The Source is responsible for providing a sufficiently granular time for the content of the <code>&lt;lastmod&gt;</code> 
+element to ensure that this combination results in a truly unique identifier.
+</p>
+
+<h2>7. <a name="PackChanges">Packaging Changes</a></h2>
+<p>
+In order to reduce the number of requests required to obtain resource changes, a Source may provide packaged bitstreams for changed resources.
+</p>
+
+<h3>7.1. <a name="ChangeDump">Change Dump</a></h3>
+<p>
+To make content changes available for download, a Source can publish <b>Change Dumps</b> that refer to packages of the changed bitstreams.
+Similar to Change Lists, it is up to the Source to determine the time period a Change Dump covers or how many
+bitstreams are contained in each package.
+Each package is a ZIP file that contains bitstreams of the resources after each change.
+</p>
+<p>
+A Change Dump is based on the <code>&lt;urlset&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>changedump</code> and it must have a 
+<code>modified</code> attribute that conveys the Change Dumps's last modification time.</li>
+ <li> A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per ZIP package of changed content. This element does not have attributes, but uses
+child elements to convey information about the package of changed content. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the package.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>A recommended <code>&lt;rs:md&gt;</code> child element with a <code>type</code> attribute to convey the MIME-Type of the package and 
+a <code>length</code> attribute to convey the length of the package. It may further have the attributes <code>hash</code> and <code>type</code>, as described in 
+<a href="#DocumentFormats">Section 3</a>.</li>
+ </ul></li>
+</ul>
+<p>
+Content packages made discoverable by a Change Dump use the <a href="#zip-file-format">ZIP file format</a>. It is recommended to convey the
+<code>application/zip</code> media type of the ZIP file as well as its length by means of the <code>type</code> and <code>length</code>
+attributes of the <code>&lt;rs:md&gt;</code> child element, respectively.
+<a href="#ex_7_1">Example 7.1</a> shows a Change Dump document with three pointers to packages of changed content. 
+</p>
+<a name="ex_7_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changedump&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changedump-part3.zip&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md <span class="rs">type=&quot;application/zip&quot;</span>
+             <span class="rs">length=&quot;3109&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changedump-part2.zip&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md type=&quot;application/zip&quot;
+             length=&quot;6629&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/changedump-part1.zip&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md type=&quot;application/zip&quot;
+             length=&quot;8124&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 7.1: A Change Dump</p>
+
+
+<h4>7.1.1. <a name="ChangeDumpManifest">Change Dump Manifest</a></h4>
+<p>
+Each package of changed content referred to from a Change Dump must contain a <b>Change Dump Manifest</b> file that describes
+the file's constituent bitstreams. The file has to be named <code>manifest.xml</code> and has to be packaged at the top level of the ZIP 
+package.
+Like in a Change List, all entries in a Change Dump Manifest must be in chronological order, meaning the document starts with a reference to
+the least recently changed bitstream and ends with a reference to the most recently changed bitstream.
+</p>
+<p>
+The Change Dump Manifest is based on the <code>&lt;urlset&gt;</code> format. 
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute with a value of <code>changedump-manifest</code> and it must have a 
+<code>modified</code> attribute that conveys the Change Dump Manifest's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per changed bitstream. This element does not have attributes, but uses
+child elements to convey information about the bitstream. The <code>&lt;url&gt;</code> element has the following child elements: 
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI which the Source associates with the changed bistream.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element must have a <code>change</code> attribute to convey the type of change to the resource.
+It may take values <code>created</code>, <code>updated</code>, and <code>deleted</code>. It also must have a <code>path</code> attribute to convey 
+the location of the bitstream within the ZIP package. It can further have the attributes <code>hash</code>, <code>length</code>, and 
+<code>type</code>, as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>Optional <code>&lt;rs:ln&gt;</code> child elements link to related resources as detailed in <a href="#LinkRelRes">Section 8</a>.</li>
+ </ul></li>
+</ul>
+<p>
+Provinding the URI of the changed bitstream enables a Destination to achieve the same result as obtaining the data by dereferencing the URIs 
+listed in a Change List.
+The path is relative to root of the package and it is expressed with a leading slash (/) as demonstrated in <a href="#ex_7_2">Example 7.2</a>.
+</p>
+<p>
+A Change Dump Manifest is shown below. It shows a total of four changes to three resources.
+The resource identified by the URI <code>http://example.com/res1.html</code> is included twice. It was first created and later
+updated, which accounts for the two changes. While the URI in <code>&lt;loc&gt;</code> child element is the same, the <code>path</code> attribute 
+of the <code>&lt;rs:md&gt;</code> child element refers to a different bitstream for each.
+</p>
+
+<a name="ex_7_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changedump-manifest&quot;</span>
+         modified=&quot;2013-01-03T21:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1.html&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-01T05:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;created&quot;
+             hash=&quot;md5:1c1b0e264fa9b7e1e9aa6f9db8d6362b&quot;
+             length=&quot;4339&quot;
+             type=&quot;text/html&quot;
+             <span class="rs">path=&quot;/changes/res1.html&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2.pdf&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-01T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;md5:f906610c3d4aa745cb2b986f25b37c5a
+                   sha-256:f138185cddef488264a0323aee56e7647e89cd7a4d6e45ba28b3be26234a6d09&quot;
+             length=&quot;38297&quot;
+             type=&quot;application/pdf&quot;
+             <span class="rs">path=&quot;/changes/res2.pdf&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res3.tiff&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T11:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;deleted&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1.html&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T14:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;md5:0988647082c8bc51778894a48ec3b576&quot;
+             length=&quot;5426&quot;
+             type=&quot;text/html&quot;
+             <span class="rs">path=&quot;/changes/res1-v2.html&quot;</span>/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 7.2: A Change Dump Manifest</p>
+
+
+<h4>7.1.2. <a name="ChangeDumpManifestIndex">Change Dump Manifest Index</a></h4>
+<p>
+A Change Dump Manifest is based on the <code>&lt;urlset&gt;</code> format which means it can not contain more than 50,000 <code>&lt;url&gt;</code>
+elements. If a Source wishes to package more bitstreams, it must implement a <b>Change Dump Manifest Index</b>.
+The Change Dump Manifest Index file must be named <code>manifest.xml</code> and points to Change Dump Manifests included within the package.
+</p>
+<p>
+A Change Dump Manifest Index is based on the <code>&lt;sitemapindex&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;sitemapindex&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>changedump-manifest</code> and it must have a 
+<code>modified</code> attribute that conveys the Change Dump Manifest Index's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;sitemap&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> per Change Dump Manifest. This element does not have attributes, 
+but uses child elements to convey information about the Change Dump Manifest. The <code>&lt;sitemap&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the location of the Change Dump Manifest within the package.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element must have a <code>path</code> attribute to convey the location of the Change Dump Manifest within the package.</li>
+ </ul></li>
+</ul>
+<p>
+Destinations can determine whether a package contains a Change Dump Manifest or a Change Dump Manifest Index by inspecting the root element of the 
+<code>manifest.xml</code> file. <a href="#ex_7_3">Example 7.3</a> shows a Change Dump Manifest Index pointing to three Change Dump Manifests.
+</p>
+<a name="ex_7_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changedump-manifest&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;/manifests/part3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md path=&quot;/manifests/part3.xml&quot;/&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;/manifests/part2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md path=&quot;/manifests/part2.xml&quot;/&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;/manifests/part1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md path=&quot;/manifests/part1.xml&quot;/&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 7.3: A Change Dump Manifest Index</p>
+
+
+<h2>8. <a name="LinkRelRes">Linking to Related Resources</a></h2>
+<p>
+In order to facilitate alternative approaches to obtain content for a resource that is subject to synchronization, 
+a Source may provide links 
+from that resource to related resources. The following cases are considered, 
+and detailed in the remainder of this section:
+</p>
+<ul>
+ <li>The Source makes the resource content available at a mirror location;</li>
+ <li>The Source provides alternate representations for the resource;</li>
+ <li>The Source details the difference between the current and the previous version of the resource;</li>
+ <li>The Source provides access to prior versions of the resource;</li>
+ <li>A Destination republishes a resource obtained from a Source, makes that republished resource 
+ available for synchronization (i.e. acts as a Source itself), and links to the original resource that it republished.</li>
+</ul>
+
+<p>As usual, the <code>&lt;loc&gt;</code> child element of <code>&lt;url&gt;</code> conveys the URI of the 
+resource that is subject to synchronization. The information about a related resource is provided in a 
+<code>&lt;rs:ln&gt;</code> child element of <code>&lt;url&gt;</code>. The possible attributes for 
+<code>&lt;rs:ln&gt;</code> are described in <a href="#DocumentFormats">Section 3</a>.</p>
+
+<p>
+In case a Destination is not able to adequately interpret the information conveyed in 
+a <code>&lt;rs:ln&gt;</code> element, it should refrain from accessing the related resource and rather 
+use the URI provided in <code>&lt;loc&gt;</code> to retrieve the resource.
+</p>
+
+<h3>8.1. <a name="MirCon">Mirrored Content</a></h3>
+<p>
+In order to reduce the load on its primary access mechanism, a Source may convey one or mirror locations for a resource.  
+A <code>&lt;rs:ln&gt;</code> element
+is introduced to express each mirror location for the resource. This element has the following attributes:</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute with a value of <code>duplicate</code>.</li>
+<li>A mandatory <code>href</code> attribute that conveys the URI of the mirrored resource.</li>
+<li>An optional <code>pri</code> attribute to express a prioritization among multiple mirror locations, each expressed by means of an individual 
+<code>&lt;rs:ln&gt;</code> element. The use of <code>pri</code> is detailed in <a href="#DocumentFormats">Section 3</a>.</li>
+<li>Other attributes are as described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>.</li>
+</ul>
+
+<p>
+<a href="#ex_8_1">Example 8.1</a> shows how a Source conveys information about prioritized mirror locations for a resource.
+Since the three locations conveyed by <code>&lt;rs:ln&gt;</code> elements point to duplicates 
+of the resource specified in 
+<code>&lt;loc&gt;</code>, the values for each of the attributes of <code>&lt;rs:md&gt;</code> are expected 
+to be identical for the resource and its mirrors. Hence, they should be omitted from the <code>&lt;rs:ln&gt;</code> elements.
+The last <code>&lt;rs:ln&gt;</code> element points to a mirror location where the resource is accessible 
+via a protocol other than HTTP as can be seen from the URI scheme. Even though the resources are duplicates, their last modified datetimes may vary.
+</p>
+<a name="ex_8_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T17:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;duplicate&quot;</span>
+             <span class="rs">pri=&quot;1&quot;</span>
+             href=&quot;http://mirror1.example.com/res1&quot;
+             modified=&quot;2013-01-02T18:00:00Z&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;duplicate&quot;</span>
+             <span class="rs">pri=&quot;2&quot;</span>
+             href=&quot;http://mirror2.example.com/res1&quot;
+             modified=&quot;2013-01-02T18:30:00Z&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;duplicate&quot;</span>
+             <span class="rs">pri=&quot;3&quot;</span>
+             href=&quot;gsiftp://gridftp.example.com/res1&quot;
+             modified=&quot;2013-01-02T18:30:00Z&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.1: Mirrored content</p>
+
+
+<h3>8.2. <a name="AltRep">Alternate Representations</a></h3>
+<p>
+A resource may have multiple representations available from different URIs.
+A resource may, for example, be identified by a generic URI such as <code>http://example.com/res1</code>. After performing content 
+negotiation with the server, a client may, for example, obtain the resource's HTML representation available from the specific URI
+<code>http://example.com/res1.html</code>. Another client may ask for and retrieve the PDF representation of the
+resource from the specific URI <code>http://example.com/res1.pdf</code>.
+Which representation a client obtains, can, amongst others, depend on its 
+preferences in terms of media type and language, its geographical location, and its device type.
+</p>
+<p>
+A Source can express that a resource is subject to synchronization by conveying its 
+generic URI in <code>&lt;loc&gt;</code>. In this case, per alternate representation that the Source wants to 
+advertise, a <code>&lt;rs:ln&gt;</code> element is introduced. This element has the following attributes:
+</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute with a value of <code>alternate</code>.</li>
+<li>A mandatory <code>href</code> attribute that conveys the specific URI of the alternate 
+representation of the resource.</li>
+<li>A recommended <code>type</code> attribute that conveys the media type of the 
+alternate representation.</li>
+<li>Other attributes are as described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>.</li>
+</ul>
+
+<p>
+Cases exist in which there is no generic URI for a resource, only specific URIs. 
+This may occur, for example, when a resource has different representations available for different devices. 
+In this case the URI in <code>&lt;loc&gt;</code> will be a specific URI, and 
+<code>&lt;rs:ln&gt;</code> elements with an <code>alternate</code> relation type are still used to refer 
+to alternate representations available from other specific URIs.
+</p>
+<p>
+<a href="#ex_8_2">Example 8.2</a> shows how to promote a generic URI in <code>&lt;loc&gt;</code> 
+while also pointing to alternate representations available from specific URIs, for example, through content 
+negotiation.
+</p>
+<a name="ex_8_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T18:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;alternate&quot;</span>
+             href=&quot;http://example.com/res1.html&quot;
+             modified=&quot;2013-01-02T18:00:00Z&quot;
+             <span class="rs">type=&quot;text/html&quot;</span>/&gt;
+      &lt;rs:ln rel=&quot;alternate&quot;
+             href=&quot;http://example.com/res1.pdf&quot;
+             modified=&quot;2013-01-02T18:00:00Z&quot;
+             <span class="rs">type=&quot;application/pdf&quot;</span>/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.2: Generic URI and alternates with specific URIs</p>
+
+<p>
+In cases where a particular representation is considered the subject of synchronization, 
+its specific URI is provided in  
+<code>&lt;loc&gt;</code>. The associated generic URI, if one exists, can be provided using a 
+<code>&lt;rs:ln&gt;</code> element. This element has the following attributes:
+</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute with a value of <code>canonical</code>.</li>
+<li>A mandatory <code>href</code> attribute that conveys the generic URI associated with the 
+specific URI provided in <code>&lt;loc&gt;</code>.</li>
+<li>Other attributes are as described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>.</li>
+</ul>
+
+<p>
+This approach might be most appropriate for Resource Dump Manifests and Change Dump Manifests 
+that describe bitstreams contained in a ZIP file.
+</p>
+<p>
+<a href="#ex_8_3">Example 8.3</a> shows a Source promoting a specific URI in <code>&lt;loc&gt;</code> 
+while also pointing to the
+resource's generic URI by means of an <code>&lt;rs:ln&gt;</code> element. 
+Metadata pertaining to the representation available from that specific URI is 
+conveyed by means of 
+attributes of the <code>&lt;rs:md&gt;</code> element.
+</p>
+<a name="ex_8_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1.html&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T18:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+      &lt;rs:ln rel=&quot;canonical&quot;
+             href=&quot;http://example.com/res1&quot;
+             modified=&quot;2013-01-02T18:00:00Z&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.3: Specific URI and alternate with generic URI</p>
+
+
+<h3>8.3. <a name="PatchCon">Patching Content</a></h3>
+<p>
+In order to increase the efficiency of updating a resource, a Source may make a description of the changes 
+that the resource underwent available, in addition to the entire changed resource. Especially when frequent minor 
+changes and/or changes to large resources are concerned, such an approach may be attractive. It will, however, 
+require an unambiguous way to describe the changes in such a way that a Destination can construct the most recent 
+version of the resource by appropriately patching the previous version with the description of the changes.
+</p>
+
+<p>
+A Source can express that it makes a description of resource changes available 
+by providing the URI of the resource in <code>&lt;loc&gt;</code>, as usual, and by 
+introducing a <code>&lt;rs:ln&gt;</code> element with the following attributes:
+</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute with a value of <code>http://www.openarchives.org/rs/terms/patch</code>.</li>
+<li>A mandatory <code>href</code> attribute that conveys the URI of the description of the resource changes.</li>
+<li>A mandatory <code>type</code> attribute that conveys the media type of the change description. That media type 
+must be such that it allows to unambiguously apply the described changes to the previous version of the 
+resource to construct the current one.</li>
+<li>Other attributes are as described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>.</li>
+</ul>
+
+
+<p><a href="#ex_8_4">Example 8.4</a> shows a Source that expresses changes that a JSON resource underwent 
+expressed using the <code>application/json-patch</code> media type introduced in
+<a href="#json-patch">JSON Patch</a>. It also shows the Source conveying changes to a large TIFF file 
+using an experimental media type that may, for example, be described in a community specification. A Destination that 
+does not understand the media type should ignore the description of changes and use the URI in <code>&lt;loc&gt;</code> 
+to obtain the most recent version of the resource.
+Another example of a well-specified media type for expressing changes to XML document is 
+<code>application/patch-ops-error+xml</code>, as specified in <a href="#ref-rfc5261">RFC 5261</a>.
+</p>
+<p>
+Expressing resource changes in this manner is only applicable to Change Lists (as in <a href="#ex_8_4">Example 8.4</a>) 
+and Change Dumps.
+When doing so for a Change Dump, the entry in the Change Dump Manifest must have the <code>path</code> attribute 
+for the <code>&lt;rs:ln&gt;</code>
+element that points to the change description that is included in the content package.
+</p>
+<a name="ex_8_4"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res4&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T17:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;sha-256:f4OxZX_x_DFGFDgghgdfb6rtSx-iosjf6735432nklj&quot;
+             length=&quot;56778&quot;/&gt;
+             <span class="rs">type=&quot;application/json&quot;</span>/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;http://www.openarchives.org/rs/terms/patch&quot;</span>
+             href=&quot;http://example.com/res4-json-patch&quot;
+             modified=&quot;2013-01-02T17:00:00Z&quot;
+             hash=&quot;sha-256:y66dER_t_HWEIKpesdkeb7rtSc-ippjf9823742opld&quot;
+             length=&quot;73&quot;
+             <span class="rs">type=&quot;application/json-patch&quot;</span>/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res5-full.tiff&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T18:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;sha-256:f4OxZX_x_FO5LcGBSKHWXfwtSx-j1ncoSt3SABJtkGk&quot;
+             length=&quot;9788456778&quot;
+             <span class="rs">type=&quot;image/tiff&quot;</span>&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;http://www.openarchives.org/rs/terms/patch&quot;</span>
+             href=&quot;http://example.com/res5-diff&quot;
+             modified=&quot;2013-01-02T18:00:00Z&quot;
+             hash=&quot;sha-256:h986gT_t_87HTkjHYE76G558hY-jdfgy76t55sadJUYT&quot;
+             length=&quot;4533&quot;
+             <span class="rs">type=&quot;application/x-tiff-diff&quot;</span>/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.4: A Change List with links to document that detail how to patch resources</p>
+
+
+<h3>8.4. <a name="ResMDLinking">Resources and Metadata about Resources</a></h3>
+<p>
+Cases exist where both resources and metadata about those resources must be synchronized.
+From the ResourceSync perspective, both the resource and the metadata about it are regarded as resources 
+with distinct URIs that are subject to synchronization. As usual, each gets its distinct 
+<code>&lt;url&gt;</code> block and each URI is conveyed in a <code>&lt;loc&gt;</code> child element of the 
+respective block. If required, the inter-relationship between both resources is expressed by means of 
+a <code>&lt;rs:ln&gt;</code> element with appropriate relation types added to each block. 
+The <code>&lt;rs:ln&gt;</code> 
+element has the following attributes:
+</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute. When pointing from a resource to metadata that describes it,
+its value is <code>describedby</code>; when pointing from metadata to the resource described by the metadata, 
+its value is 
+<code>describes</code>.</li>
+<li>A mandatory <code>href</code> attribute. When pointing from a resource to metadata that describes it,
+its value is the URI of the metadata resource; when pointing from metadata to the resource described by it, 
+the value is the URI of the described resource.</li>
+<li>Other attributes are as described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>.</li>
+</ul>
+
+<p>
+<a href="#ex_8_5">Example 8.5</a> shows how a Source can express this inter-relationship between the two resources.
+Since the <code>&lt;rs:ln&gt;</code> child element can contain all optional attributes introduced in
+<a href="#DocumentFormats">Section 3</a>, a Destination can, for example by analyzing the last modification time, determine whether it needs to 
+synchronize with any of the linked resources.
+</p>
+<a name="ex_8_5"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2.pdf&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T18:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;application/pdf&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;describedby&quot;</span>
+             href=&quot;http://example.com/res2_dublin-core_metadata.xml&quot;
+             modified=&quot;2013-01-02T18:00:00Z&quot;
+             type=&quot;application/xml&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res2_dublin-core_metadata.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T19:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md change=&quot;updated&quot;
+             type=&quot;application/xml&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;describes&quot;</span>
+             href=&quot;http://example.com/res2.pdf&quot;
+             modified=&quot;2013-01-02T19:00:00Z&quot;
+             hash=&quot;md5:1e0d5cb8ef6ba40c99b14c0237be735e&quot;
+             length=&quot;14599&quot;
+             type=&quot;application/pdf&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.5: Linking between a resource and metadata about a resource in a Change List</p>
+
+
+<h3>8.5. <a name="ResVers">Prior Versions of Resources</a></h3>
+<p>
+A Source may provide access to prior versions of a resource to allow Destinations to obtain a 
+historical perspective, rather than just remaining synchronized with the most recent version. 
+The approach to do so leverages a common resource versioning paradigm that consists of:
+</p>
+<ul>
+<li>The existence of a time-generic URI from which, at any moment in time, the current representation of the 
+resource is available.</li>
+<li>The existence of a time-specific URI for each resource version, from which a specific temporal version of 
+the resource is available.</li>
+</ul>
+<p>
+When communicating about the resource, its time-generic URI is provided in <code>&lt;loc&gt;</code>.
+</p>
+<p>
+A first approach consists of conveying the time-specific URI of the resource for the moment the communication 
+about it takes place. This is achieved by introducing a <code>&lt;rs:ln&gt;</code> element with 
+the following attributes:
+</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute with a value of <code>memento</code>.</li>
+<li>A mandatory <code>href</code> attribute that conveys the time-specific URI of the resource at the 
+moment of communication. This URI allows a Destination to obtain that specific version during a catch-up 
+operation, for example because it had been offline, even if the resource has meanwhile changed again.</li>
+<li>Other attributes are as described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>. It is recommended 
+to include the last modification and fixity information for both 
+the time-generic and the time-specific URI as doing so unambiguously conveys 
+the tight temporal relationship between both.</li>
+</ul>
+
+<p>
+A second approach consists of pointing to a TimeGate associated with the time-generic resource. A TimeGate
+supports negotiation in the datetime dimension, as introduced in the Memento protocol
+[<a href="#Memento-Draft">Memento Internet Draft</a>], to obtain a version of the
+resource as it existed at a specified moment in time. This allows to obtain 
+the version as it existed at the moment of communication about the resource by using the 
+<code>&lt;lastmod&gt;</code> value for datetime negotiation, but it also allows obtaining other versions 
+by using different datetime values. A pointer to a TimeGate is introduced by using a 
+<code>&lt;rs:ln&gt;</code> element with 
+the following attributes:
+</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute with a value of <code>timegate</code>.</li>
+<li>A mandatory <code>href</code> attribute that conveys the URI of TimeGate associated with the 
+time-generic resource.</li>
+<li>The other attributes described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>
+should not be used as they are meaningless for TimeGates.</li>
+</ul>
+
+<p>
+<a href="#ex_8_6">Example 8.6</a> shows a Change List with a link to a prior version of a resource as well as a link to a Timegate.
+Note that the values of the <code>hash, length,</code> and <code>type</code> attributes are identical between the
+<code>&lt;rs:md&gt;</code> child element and the <code>&lt;rs:ln&gt;</code> child element that points to the prior version.
+</p>
+<a name="ex_8_6"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=&quot;2013-01-03T11:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/res1&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T07:00:00Z&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;
+             change=&quot;updated&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;memento&quot;</span>
+             href=&quot;http://example.com/20130103070000/res1&quot;
+             modified=&quot;2013-01-03T07:00:00Z&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;timegate&quot;</span>
+             href=&quot;http://example.com/timegate/http://example.com/res1&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.6: Links to a resource version and a Memento TimeGate</p>
+
+<h3>8.6. <a name="RePub">Republishing Resources</a></h3>
+<p>
+A special kind of Destination, henceforth called an Aggregator, 
+may retrieve content from a Source, republish it, and in its turn act as a Source for 
+the republished content. In such an Aggregator scenario, it may be important for a Destination that 
+synchronizes with the Aggregator to 
+understand the provenance of the content and to be able to verify its accuracy with the original Source from which the 
+Aggregator obtained content. When communicating about a republished resource, the Aggregator can 
+provide such provenance 
+information by introducing a <code>&lt;rs:ln&gt;</code> element with the following attributes:
+</p>
+<ul>
+<li>A mandatory <code>rel</code> attribute with a value of <code>via</code>.</li>
+<li>A mandatory <code>href</code> attribute that conveys the URI of the resource at the Source from which 
+the Aggregator obtained the content.</li>
+<li>Other attributes are as described for the <code>&lt;rs:ln&gt;</code> child element of 
+<code>&lt;url&gt;</code> in <a href="#DocumentFormats">Section 3</a>.</li>
+</ul>
+
+<p>If a chain of such aggregations takes place, existing <code>via</code> links should be maintained 
+and additional ones should be added in order to allow tracing the entire provenance chain.
+This is shown in examples <a href="#ex_8_7">8.7</a>, <a href="#ex_8_8">8.8</a>, and 
+<a href="#ex_8_9">8.9</a> that illustrate a process that starts with
+an original Source that publishes a Change List. 
+A first Aggregator consumes that Change List, obtains the changed resource and integrates it 
+into its own collection.
+It then publishes its own Change List that includes the description of the change but also 
+gives credit to where the change originated from.
+The cycle repeats as a second Aggregator consumes the Change List from the first. 
+Note the datetimes in all three examples.
+</p>
+
+<a name="ex_8_7"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=<span class="rs">&quot;2013-01-03T11:00:00Z&quot;</span>/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;<span class="rs">http://original.example.com/res1.html</span>&lt;/loc&gt;
+      &lt;lastmod&gt;<span class="rs">2013-01-03T07:00:00Z</span>&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;
+             change=&quot;updated&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.7: An original Source publishes</p>
+
+<p>
+The example below shows a primary Aggregator's Change List that refers to the original Source's resource.
+</p>
+<a name="ex_8_8"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://aggregator1.example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=<span class="rs">&quot;2013-01-03T21:00:00Z&quot;</span>/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;<span class="rs">http://aggregator1.example.com/res1.html</span>&lt;/loc&gt;
+      &lt;lastmod&gt;<span class="rs">2013-01-03T20:00:00Z</span>&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;
+             change=&quot;updated&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;via&quot;</span>
+             href=<span class="rs">&quot;http://original.example.com/res1.html&quot;</span>
+             modified=&quot;2013-01-03T07:00:00Z&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.8: A primary aggregator republishes</p>
+
+<p>
+A second Aggregator obtains the changed resource as it consumes the Change List of the primary Aggregator and republishes its Change List where it adds
+yet another <code>&lt;rs:ln&gt;</code> child element to convey the original Source from its perspective.
+</p>
+<a name="ex_8_9"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://aggregator2.example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md capability=&quot;changelist&quot;
+         modified=<span class="rs">&quot;2013-01-04T15:00:00Z&quot;</span>/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;<span class="rs">http://aggregator2.example.com/res1.html</span>&lt;/loc&gt;
+      &lt;lastmod&gt;<span class="rs">2013-01-04T09:00:00Z</span>&lt;/lastmod&gt;
+      &lt;rs:md hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;
+             change=&quot;updated&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;via&quot;</span>
+             href=<span class="rs">&quot;http://original.example.com/res1.html&quot;</span>
+             modified=&quot;2013-01-03T07:00:00Z&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;/&gt;
+      &lt;rs:ln <span class="rs">rel=&quot;via&quot;</span>
+             href=<span class="rs">&quot;http://aggregator1.example.com/res1.html&quot;</span>
+             modified=&quot;2013-01-03T20:00:00Z&quot;
+             hash=&quot;md5:1584abdf8ebdc9802ac0c6a7402c03b6&quot;
+             length=&quot;8876&quot;
+             type=&quot;text/html&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 8.9: A second aggregator republishes</p>
+
+
+<h2>9. <a name="ProvidingHistData"></a>Providing Historical Data</h2>
+<p>
+In order for a Source to provide historical data, it can implement an <strong>Archive</strong>.
+An Archive is implemented based on the <code>&lt;sitemapindex&gt;</code> format. 
+It points to Sitemaps representing the implementation of the corresponding capability.
+The Resource Dump, Change List, and Change Dump capabilities each can have an archive.
+</p>
+
+<h3>9.1. <a name="ResDumpArch">Resource Dump Archive</a></h3>
+
+<p>
+As part of the regular maintenance of its data, a Source might maintain old Resource Dumps. For a Destination that wishes to compare or
+archive versions of the data over time, access to these Resource Dumps allows the packaged historical data to be downloaded all at once, rather than
+requiring the Source to support access to the individual resource versions, and for the Destination to collect them one at a time.
+</p>
+
+<p>
+As shown in <a href="#fig_source_perspective">Figure 1</a>, a Source can provide a <b>Resource Dump Archive</b>. 
+It not only points to the current Resource Dump but also to previously created and published Resource Dumps.  Each of these Resource Dumps represents 
+a snapshot of the Source's data at a certain point in time - the creation time of the Resource Dump.
+</p>
+<p>
+A Resource Dump Archive is based on the <code>&lt;sitemapindex&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;sitemapindex&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>resourcedump</code> and it must have a 
+<code>modified</code> attribute that conveys the Resource Dump Archive's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;sitemap&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> per Resource Dump. This element does not have attributes, 
+but uses child elements to convey information about the Resource Dump. The <code>&lt;sitemap&gt;</code> element has the following child elements: 
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Resource Dump.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+ </ul></li>
+</ul>
+<p>
+The Destination can determine whether it has reached a Resource Dump or a Resource Dump Archive based on the root element, either
+<code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> respectively.
+</p>
+<p>
+<a href="#ex_9_1">Example 9.1</a> shows a Resource Dump Archive that points to the current Resource Dump <code>http://example.com/resourcedump3.xml</code>
+and two Resource Dumps created in the two previous months. The Resource Dump documents referred to in <a href="#ex_9_1">Example 9.1</a> will have a 
+navigational top level <code>&lt;rs:ln&gt;</code> element with the relation type <code>up</code> (as seen in <a href="#ex_4_3">Example 4.3</a>) that points 
+to the Resource Dump Archive.
+</p>
+<a name="ex_9_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;resourcedump&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcedump3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-11-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcedump2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-12-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/resourcedump1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 9.1: A Resource Dump Archive</p>
+
+
+<h3>9.2. <a name="ChangeListArch">Change List Archive</a></h3>
+<p>
+A Change List describes the changes in a Source's resources over a certain period of time. The Source determines the length of that time interval.
+If a Source wishes to offer Change Lists of prior temporal intervals, it can provide a <b>Change List Archive</b>.
+A Change List Archive refers to individual Change Lists as depicted in <a href="#fig_source_perspective">Figure 1</a>.
+</p>
+<p>
+A Change List Archive is based on the <code>&lt;sitemapindex&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;sitemapindex&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>changelist</code> and it must have a 
+<code>modified</code> attribute that conveys the Change List Archive's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;sitemap&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> per Change List. This element does not have attributes, 
+but uses child elements to convey information about the Change List. The <code>&lt;sitemap&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Change List.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+ </ul></li>
+</ul>
+<p>
+The Destination can determine whether it has reached a Change List or a Change List Archive based on the root element, either
+<code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> respectively.
+All pointers in a Change List Archive must be in chronological order. The associated datetime can be used by Destinations
+to determine if new changes have to be processed.
+</p>
+<p>
+<a href="#ex_9_2">Example 9.2</a> shows a Change List Archive that points to three Change Lists created on consecutive days.
+To ease navigation for Destinations, the Change Lists referred to in the below example will have the top level <code>&lt;rs:ln&gt;</code> element with the relation
+type <code>up</code> that points to the Change List Archive.
+</p>
+<a name="ex_9_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changelist&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/changelist3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-01T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/changelist2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-02T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/changelist1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 9.2: A Change List Archive</p>
+
+
+<h3>9.3. <a name="ChangeDumpArch">Change Dump Archive</a></h3>
+<p>
+If a Source decides to offer Change Dumps of prior temporal intervals, it can provide a <b>Change Dump Archive</b>.
+A Change Dump Archive, as seen in <a href="#fig_source_perspective">Figure 1</a>, points to Change Dumps.
+</p>
+<p>
+A Change Dump Archive is based on the <code>&lt;sitemapindex&gt;</code> document format introduced by the Sitemap protocol. 
+It has the <code>&lt;sitemapindex&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> must have a 
+<code>capability</code> attribute that has a value of <code>changedump</code> and it must have a 
+<code>modified</code> attribute that conveys the Change Dump Archive's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> points to the Capability List with the relation type
+<code>resourcesync</code> (see <a href="#AdvCaps">Section 10</a>).</li>
+ <li>One <code>&lt;sitemap&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> per Change Dump. This element does not have attributes, 
+but uses child elements to convey information about the Change Dump. The <code>&lt;sitemap&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Change Dump.</li>
+  <li>A mandatory <code>&lt;lastmod&gt;</code> child element with semantics as described in <a href="#DocumentFormats">Section 3</a>.</li>
+ </ul></li>
+</ul>
+<p>
+The Destination can determine whether it has reached a Change Dump or a Change Dump Archive based on the root element, either
+<code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> respectively.
+The pointers to Change Dumps need to be in chronological and have an associated last modification time order in order to support Destination in identifying 
+unprocessed Change Dumps.
+</p>
+<p>
+An example for a Change Dump Archive is provided below. It points to three Change Dumps that were created in consecutive weeks.
+The referred Change Dumps will have the top level <code>&lt;rs:ln&gt;</code> element with the relation type <code>up</code> that points to
+the Change Dump Archive.
+</p>
+<a name="ex_9_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;resourcesync&quot;
+         href=&quot;http://example.com/dataset1/capabilitylist.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;changedump&quot;</span>
+         modified=&quot;2013-01-03T09:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/changedump3.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-12-20T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/changedump2.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2012-12-27T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/changedump1.xml&lt;/loc&gt;
+      &lt;lastmod&gt;2013-01-03T09:00:00Z&lt;/lastmod&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 9.3: A Change Dump Archive</p>
+
+
+<h2>10. <a name="AdvCaps"></a>Advertising of Capabilities</h2>
+<p>
+In order to make use of the capabilities that a Source provides, it is first necessary to determine which capabilities are supported and the URIs 
+of the corresponding capability documents.
+In the ResourceSync framework pointers to the component resources that provide the capabilities are included in a document
+that can be made discoverable in various ways, including a well-known URI pattern, HTML or XHTML <code>&lt;link&gt;</code> elements from web pages,
+or HTTP link headers from other resources that are to be synchronized.
+</p>
+
+
+<h3>10.1. <a name="CapabilityList"></a>Capability List</h3>
+
+<p>
+A <b>Capability List</b> is a document that points to component resources that provide the Source's capabilities.
+The four possible capabilities a Source can point to are: <code>resourcelist</code>, <code>resourcedump</code>, <code>changelist</code>, and <code>changedump</code>.
+All values have previously been introduced in <a href="#ex_4_1">Example 4.1</a>, <a href="#ex_5_1">Example 5.1</a>, <a href="#ex_6_1">Example 6.1</a>, and 
+<a href="#ex_7_1">Example 7.1</a>. A Capability list can only contain one entry per capability.
+A set of resources exposed via one capability has to also be exposed via all other capabilities a Source offers. That means a resource can not only be
+exposed by a Resource List, for example, but not by a Change List in the event it undergoes a change. This ensures that a Destination does not have to consume
+all capabilities to perform an Audit but, for example, an up-to-date Resource List is sufficient.
+</p>
+<p>
+The Capability List is based on the <code>&lt;urlset&gt;</code> format. 
+It has the <code>&lt;urlset&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;urlset&gt;</code> must have a 
+<code>capability</code> attribute with a value of <code>capabilitylist</code> and it must have a 
+<code>modified</code> attribute that conveys the Capability List's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;urlset&gt;</code> with the relation type <code>describedby</code>
+points to a document that provides information about the Source offering the capabilities, and its resources, which are subject to synchronization.</li>
+ <li>One <code>&lt;url&gt;</code> child element of <code>&lt;urlset&gt;</code> per capability offered by the Source. This element does not have attributes, but uses
+child elements to convey information about the capabilities. The <code>&lt;url&gt;</code> element has the following child elements:
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the capability document.</li>
+  <li>A mandatory <code>&lt;rs:md&gt;</code> child element must have a <code>capability</code> attribute to convey the type of the linked capability.</li>
+ </ul>
+ </li>
+</ul>
+<p>
+The <code>&lt;lastmod&gt;</code> elements should be omitted from the Capability List unless the Source updates the Capbility List every time 
+it updates one of the capability documents referenced.
+</p>
+<p>
+<a href="#ex_10_1">Example 10.1</a> shows a Capability List where the Source offers four capabilities: a Resource List, a Resource Dump, a Change List, 
+and a Change Dump. A Destination cannot determine from the Capability List whether a Source provides, for example, a Resource List Index or a single Resource List. 
+The capability document must be downloaded and parsed to make this determination.
+</p>
+<a name="ex_10_1"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;urlset xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+        xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;describedby&quot;
+         href=&quot;http://example.com/dataset1/info_about_source.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;capabilitylist&quot;</span>
+         modified=&quot;2013-01-02T14:00:00Z&quot;/&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcelist.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcelist&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/resourcedump.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;resourcedump&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/changelist.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;changelist&quot;/&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+      &lt;loc&gt;http://example.com/dataset1/changedump.xml&lt;/loc&gt;
+      &lt;rs:md capability=&quot;changedump&quot;/&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;
+</pre>
+</div>
+<p class="caption">Example 10.1: A Capability List</p>
+
+
+<h3>10.2. <a name="CapabilityListIndex"></a>Capability List Index</h3>
+<p>
+If a Source wishes to offer more than one Capability List, for example, to split up its resources into different sets, it should implement a 
+<b>Capability List Index</b>. A Capability List Index refers to individual Capability Lists.
+A Source may decide to offer distinct Capability Lists, for example, for content of different MIME-Types, for content tailored towards different Destinations, 
+or with different access control mechanisms.
+</p>
+<p>
+A Capability List Index is based on the <code>&lt;sitemap&gt;</code> format. 
+It has the <code>&lt;sitemap&gt;</code> root element and the following structure:
+</p>
+<ul>
+ <li>The mandatory <code>&lt;rs:md&gt;</code> child element of <code>&lt;sitemap&gt;</code> must have a 
+<code>capability</code> attribute with a value of <code>capabilitylist</code> and it must have a 
+<code>modified</code> attribute that conveys the Capability List Index's last modification time.</li>
+ <li>A recommended <code>&lt;rs:ln&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> with the relation type <code>describedby</code>
+points to a document that provides information about the Source and its Capability Lists.</li>
+ <li>One <code>&lt;sitemap&gt;</code> child element of <code>&lt;sitemapindex&gt;</code> per Capability List offered by the Source. 
+This element does not have attributes, but uses child elements to convey information about the Capability Lists. The <code>&lt;sitemap&gt;</code> element 
+has the following child elements: 
+ <ul>
+  <li>A mandatory <code>&lt;loc&gt;</code> child element provides the URI of the Capability List.</li>
+ </ul>
+ </li>
+</ul>
+<p>
+The <code>&lt;lastmod&gt;</code> child elements should be omitted from the Capability List Index unless the Source updates the Capbility List Index every time
+it updates one of the Capability Lists referenced.
+</p>
+<p>
+<a href="#ex_10_2">Example 10.2</a> shows a Capability List Index with pointers to three different Capability Lists.
+The referred Capability Lists will have a top level <code>&lt;rs:ln&gt;</code> element with the relation type <code>up</code> that points to
+the Capability List Index.
+</p>
+<a name="ex_10_2"></a>
+<div class="exampleInner">
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;sitemapindex xmlns=&quot;http://www.sitemaps.org/schemas/sitemap/0.9&quot;
+              xmlns:rs=&quot;http://www.openarchives.org/rs/terms/&quot;&gt;
+  &lt;rs:ln rel=&quot;describedby&quot;
+         href=&quot;http://example.com/info_about_source.xml&quot;/&gt;
+  &lt;rs:md <span class="rs">capability=&quot;capabilitylist&quot;</span>
+         modified=&quot;2013-01-02T14:00:00Z&quot;/&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/dataset1/capabilitylist.xml&lt;/loc&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/dataset2/capabilitylist.xml&lt;/loc&gt;
+  &lt;/sitemap&gt;
+  &lt;sitemap&gt;
+      &lt;loc&gt;http://example.com/dataset3/capabilitylist.xml&lt;/loc&gt;
+  &lt;/sitemap&gt;
+&lt;/sitemapindex&gt;
+</pre>
+</div>
+<p class="caption">Example 10.2: A Capability List Index</p>
+
+
+<h3>10.3. <a name="Discovery"></a>Discovery</h3>
+<p>This section describes approaches to support discovery of Capability List or Capability List Index documents.</p>
+
+<h4>10.3.1. <a name="wellknown"></a>.well-known URI</h4>
+<p>
+The well-known URI [<a href="#ref-rfc5785">RFC 5785</a>] <code>/.well-known/resourcesync</code> is defined for the ResourceSync framework. 
+When dereferenced, the representation obtained will be either a Capability List document or a Capability List Index, and thus provide a mechanism for 
+Destinations to discover the capabilities offered by the Source without any prior knowledge.
+</p>
+
+<h4>10.3.2. <a name="xhtmllinkEle">X/HTML Link Element</a></h4>
+<p>
+A Capability List can be made discoverable by means of an X/HTML link.
+In order to do so, a <code>&lt;link&gt;</code> element is introduced in the <code>&lt;head&gt;</code> of the HTML page 
+that points to a Capability List.
+This <code>&lt;link&gt;</code> element must have the <code>rel</code> attribute with the value <code>resourcesync</code>.
+The Capability List that is made discoverable in this way must pertain to 
+the resource that provides the link. This means that the resource must be covered by the capabilities listed in the linked Capability List.
+</p>
+<p>
+In case the Source also provides a Capability List Index, it should be made discoverable from this Capability List by means of a  
+<code>&lt;rs:ln&gt;</code> child element of the <code>&lt;urlset&gt;</code> element that has an <code>up</code> relation type.
+</p>
+<p>
+<a href="#ex_10_3">Example 10.3</a> shows the structure of a web page that contains a link to a Capability List.
+</p>
+<a name="ex_10_3"></a>
+<div class="exampleInner">
+<pre>
+&lt;html&gt;
+  &lt;head&gt;
+    <span class="rs">&lt;link rel=&quot;resourcesync&quot;
+          href="http://www.example.com/datasets/capabilitylist.xml"/&gt;</span>
+    ...
+  &lt;/head&gt;
+  &lt;body&gt;...&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+</div>
+<p class="caption">Example 10.3: X/HTML link discovery syntax</p>
+
+
+<h4>10.3.3. <a name="HTTPLinkHrds">HTTP Link Header</a></h4>
+<p>
+A Capability List can be made discoverable by means of an HTTP Link header that can be included with a representation of a resource of any content-type.
+In order to do so, an entry in the HTTP Link header is introduced 
+that has as Target IRI the URI of the Capability List and as relation type <code>resourcesync</code>.
+The Capability List that is made discoverable in this way must pertain to 
+the resource that provides the link. This means that the resource must be covered by the capabilities listed in the linked Capability List.
+</p>
+<p>
+In case the Source also provides a Capability List Index, it should be made discoverable from this Capability List by means of a  
+<code>&lt;rs:ln&gt;</code> child element of the <code>&lt;urlset&gt;</code> element that has an <code>up</code> relation type.
+</p>
+<p>
+<a href="#ex_10_4">Example 10.4</a> contains part of an HTTP response header. It includes an HTTP Link header with the 
+relation type <code>resourcesync</code> to make a Capability List that pertains to the resource that provides the Link discoverable.
+</p>
+<a name="ex_10_4"></a>
+<div class="exampleInner">
+<pre>
+HTTP/1.1 200 OK
+  Date: Thu, 21 Jan 2010 00:02:12 GMT
+  Server: Apache
+  <span class="rs">Link: &lt;http://www.example.com/datasets/capabilitylist.xml&gt;; 
+         rel=&quot;resourcesync&quot;</span>
+  ...
+</pre>
+</div>
+<p class="caption">Example 10.4: HTTP link discovery syntax</p>
+
+
+<h2>11. <a name="References">References</a></h2>
+
+<dl>
+<dt>[<a name="ref-ale" id="ref-ale">Atom Link Extensions</a>]</dt>
+<dd><a href="http://tools.ietf.org/html/draft-snell-atompub-link-extensions-09"><cite>Atom Link Extensions</cite></a>,
+J. Snell, 08 June 2012.</dd>
+
+<dt>[<a name="json-patch" id="json-patch">JSON-Patch</a>]</dt>
+<dd><a href="http://tools.ietf.org/html/draft-ietf-appsawg-json-patch"><cite>JSON Patch</cite></a>,
+P.Bryan, M. Nottingham, Draft, January 2013.</dd>
+
+<dt>[<a name="ref-webarch" id="ref-webarch">Web Architecture</a>]</dt>
+<dd><a href="http://www.w3.org/TR/webarch/"><cite>Architecture of the World Wide Web, Volume One</cite></a>,
+I. Jacobs and N. Walsh, Editors, World Wide Web Consortium, 15 January 2004.</dd>
+
+<dt>[<a name="ref-rfc2616">RFC 2616</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc2616.txt">
+RFC 2616 Hypertext Transfer Protocol -- HTTP/1.1</a></cite>,
+R. Fielding, <i>et al.</i>, June 1999.</dd>
+
+<dt>[<a name="ref-rfc4287">RFC 4287</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc4287.txt">
+RFC 4287: The Atom Syndication Format</a></cite>, 
+M. Nottingham, R. Sayre, December 2005.</dd>
+
+<dt>[<a name="ref-rfc5261">RFC 5261</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc5261.txt">
+RFC 5261: An Extensible Markup Language (XML) Patch Operations Framework Utilizing XML Path Language (XPath) Selectors</a></cite>, 
+J. Urpalainen, September 2008.</dd>
+
+<dt>[<a name="ref-rfc5785">RFC 5785</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc5785.txt">
+RFC 5785: Defining Well-Known Uniform Resource Identifiers (URIs)</a></cite>, 
+M. Nottingham, E. Hammer-Lahav, April 2010.</dd>
+
+<dt>[<a name="ref-rfc5988">RFC 5988</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc5988.txt">
+RFC 5988: Web Linking</a></cite>, 
+M. Nottingham, October 2010.</dd>
+
+<dt>[<a name="ref-rfc6249">RFC 6249</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc6249.txt">
+RFC 6249: Metalink/HTTP: Mirrors and Hashes</a></cite>, 
+A. Bryan, N. McNab, T. Tsujikawa, P. Poeml, H. Nordstrom, June 2011.
+</dd>
+
+<dt>[<a name="ref-rfc6596">RFC 6596</a>]</dt>
+<dd>IETF <cite><a href="http://www.ietf.org/rfc/rfc6596.txt">
+RFC 6596: The Canonical Link Relation</a></cite>, 
+M. Ohye, J. Kupke, April 2012.</dd>
+
+<dt>[<a name="ref-sitemaps">Sitemaps</a>]</dt>
+<dd><cite><a href="http://www.sitemaps.org/protocol.html">Sitemaps XML format and protocol</a></cite>,
+sitemaps.org, 27 February 2008.</dd>
+
+<dt>[<a name="w3c-datetime" id="w3c-datetime">W3C Datetime</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/1998/NOTE-datetime-19980827">Date and Time Formats</a></cite>,
+Misha Wolf, Charles Wicksteed, 15 September 1997.</dd>
+
+<dt>[<a name="ref-oaipmh">The Open Archives Initiative Protocol for Metadata Harvesting</a>]</dt>
+<dd><cite><a href="http://www.openarchives.org/OAI/openarchivesprotocol.html">The Open Archives Initiative Protocol for Metadata Harvesting</a></cite>,
+C. Lagoze, H. Van de Sompel <i>et al.</i>, December 2008</dd>
+
+<dt>[<a name="Memento-Draft" id="Memento-Draft">Memento Internet Draft</a>]</dt>
+<dd><cite><a href="http://www.mementoweb.org/guide/rfc/ID/">Memento Internet Draft</a></cite>,
+H. Van de Sompel, M. L. Nelson, R. D. Sanderson, May 2012</dd>
+
+<dt>[<a name="powder" id="powder">Protocol for Web Description Resources (POWDER): Description Resources</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/powder-dr/">Protocol for Web Description Resources (POWDER): Description Resources</a></cite>,
+P. Archer, K. Smith, A. Perego, September 2009</dd>
+
+<dt>[<a name="describes" id="describes">The 'describes' Link Relation Type</a>]</dt>
+<dd><cite><a href="http://tools.ietf.org/html/draft-wilde-describes-link-02">The 'describes' Link Relation Type</a></cite>,
+E. Wilde, October 2012</dd>
+
+<dt>[<a name="html5" id="html5">HTML 5</a>]</dt>
+<dd><cite><a href="http://www.w3.org/TR/html5/links.html">HTML 5</a></cite>,
+R. Berjon, T. Leithead, E.D. Navara, E. O'Connor, S. Pfeiffer, December 2012</dd>
+
+<dt>[<a name="zip-file-format" id="zip-file-format">.ZIP File Format Specification</a>]</dt>
+<dd><cite><a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">.ZIP File Format Specification</a></cite>,
+PKWARE Inc., September 2012</dd>
+
+</dl>
+
+</div> <!--class="body"-->
+
+<div class="back">
+<div class="body">
+
+<h2><a name="ElemOv"></a>A. XML Element Overview</h2>
+
+<a name="tab_A_1"></a>
+<table class="elements-table">
+ <tbody>
+ <tr class="top">
+  <th class="cap">Capability Attribute Value</th><th class="sec">Section</th>
+ </tr>
+ <tr class="top1">
+   <td colspan="2"><b><code>&lt;urlset&gt;</code></b> or <b><code>&lt;sitemapindex&gt;</code></b></td>
+ </tr>
+ <tr class="top1">
+   <td colspan="2">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:md capability=&quot;...&quot;&gt;</code></b></td>
+ </tr>
+ <tr class="odd">
+   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>resourcelist</code></td>
+<td class="sec">
+<a href="#ResourceList">4.1. Resource List</a><br />
+<a href="#ResourceListIndex">4.2. Resource List Index</a><br />
+</td>
+ </tr>
+ <tr class="even">
+   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>resourcedump</code></td>
+<td class="sec">
+<a href="#ResourceDump">5.1. Resource Dump</a><br />
+<a href="#ResourceDumpArch">9.1. Resource Dump Archive</a><br />
+</td>
+ </tr>
+ <tr class="odd">
+   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>resourcedump-manifest</code></td>
+<td class="sec">
+<a href="#ResourceDumpManifest">5.1.1. Resource Dump Manifest</a><br />
+<a href="#ResourceDumpManifestIndex">5.1.2. Resource Dump Manifest Index</a><br />
+</td>
+ </tr>
+ <tr class="even">
+   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>changelist</code></td>
+<td class="sec">
+<a href="#ChangeList">6.1. Change List</a><br />
+<a href="#ChangeListArch">6.2. Change List Archive</a><br />
+</td>
+ </tr>
+ <tr class="odd">
+   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>changedump</code></td>
+<td class="sec">
+<a href="#ChangeDump">7.1. Change Dump</a><br />
+<a href="#ChangeDumpArch">9.3. Change Dump Archive</a><br />
+</td>
+ </tr>
+ <tr class="even">
+   <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>changedump-manifest</code></td>
+<td class="sec">
+<a href="#ChangeDumpManifest">7.1.1. Change Dump Manifest</a><br />
+<a href="#ChangeDumpManifestIndex">7.1.2. Change Dump Manifest Index</a><br />
+</td>
+ </tr>
+</tbody></table>
+<p class="caption">Table A.1: ResourceSync values for the <code>capability</code> attribute of the <code>&lt;rs:md&gt;</code> child element of the <code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> element</p>
+
+
+<a name="tab_A_2"></a>
+<table class="rel_types-table">
+ <tbody>
+ <tr class="top">
+  <th class="rel">Relation Type</th><th class="spec">Specification</th><th class="ex">Example</th>
+ </tr>
+ <tr class="top1">
+   <td class="rel" colspan="3"><b><code>&lt;urlset&gt;</code></b></td>
+ </tr>
+ <tr class="top1">
+   <td class="rel" colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:ln rel=&quot;...&quot;&gt;</code></b></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>resourcesync</code></td>
+  <td class="spec">This specification</td>
+  <td class="ex"><a href="#ex_4_1">4.1</a> and following<br /></td>
+ </tr>
+ <tr class="even">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>up</code></td>
+  <td class="spec"><a href="#ref-rfc5988">RFC5988</a></td>
+  <td class="ex"><a href="#ex_4_3">4.3</a><br /></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>describedby</code></td>
+  <td class="spec"><a href="#powder">Protocol for Web Description Resources (POWDER): Description Resources</a></td>
+  <td class="ex"><a href="#ex_10_1">10.1</a><br /></td>
+ </tr>
+ <tr class="top1">
+   <td class="rel" colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;url&gt;</code></b></td>
+ </tr>
+ <tr class="top1">
+   <td class="rel" colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:ln rel=&quot;...&quot;&gt;</code></b></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>duplicate</code></td>
+  <td class="spec"><a href="#ref-rfc6249">RFC6249</a></td>
+  <td class="ex"><a href="#ex_8_1">8.1</a><br /></td>
+ </tr>
+ <tr class="even">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>alternate</code></td>
+  <td class="spec"><a href="#html5">HTML 5</a></td>
+  <td class="ex"><a href="#ex_8_2">8.2</a><br /></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>canonical</code></td>
+  <td class="spec"><a href="#ref-rfc6596">RFC6596</a></td>
+  <td class="ex"><a href="#ex_8_3">8.3</a><br /></td>
+ </tr>
+ <tr class="even">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>http://www.openarchives.org/rs/terms/patch</code></td>
+  <td class="spec">This specification</td>
+  <td class="ex"><a href="#ex_8_4">8.4</a><br /></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>describedby</code></td>
+  <td class="spec"><a href="#powder">Protocol for Web Description Resources (POWDER): Description Resources</a></td>
+  <td class="ex"><a href="#ex_8_5">8.5</a><br /></td>
+ </tr>
+ <tr class="even">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>describes</code></td>
+  <td class="spec"><a href="#describes">The 'describes' Link Relation Type</a></td>
+  <td class="ex"><a href="#ex_8_5">8.5</a><br /></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>memento</code></td>
+  <td class="spec"><a href="#Memento-Draft">Memento Internet Draft</a></td>
+  <td class="ex"><a href="#ex_8_6">8.6</a><br /></td>
+ </tr>
+ <tr class="even">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>timegate</code></td>
+  <td class="spec"><a href="#Memento-Draft">Memento Internet Draft</a></td>
+  <td class="ex"><a href="#ex_8_6">8.6</a><br /></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>via</code></td>
+  <td class="spec"><a href="#ref-rfc4287">RFC4287</a></td>
+  <td class="ex"><a href="#ex_8_8">8.8</a>&nbsp;<a href="#ex_8_9">8.9</a><br /></td>
+ </tr>
+ <tr><td colspan="3"></td></tr>
+ <tr class="top1">
+   <td class="rel" colspan="3"><b><code>&lt;sitemapindex&gt;</code></b></td>
+ </tr>
+ <tr class="top1">
+   <td class="rel" colspan="3">&nbsp;&nbsp;&nbsp;&nbsp;<b><code>&lt;rs:ln rel=&quot;...&quot;&gt;</code></b></td>
+ </tr>
+ <tr class="odd">
+  <td class="rel">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<code>describedby</code></td>
+  <td class="spec"><a href="#powder">Protocol for Web Description Resources (POWDER): Description Resources</a></td>
+  <td class="ex"><a href="#ex_10_2">10.2</a><br /></td>
+ </tr>
+</tbody></table>
+<p class="caption">Table A.2: ResourceSync relation types for the <code>&lt;rs:ln&gt;</code> child element of the <code>&lt;urlset&gt;</code> or <code>&lt;sitemapindex&gt;</code> element and of the <code>&lt;rs:ln&gt;</code> child element of the <code>&lt;url&gt;</code> element</p>
+
+
+<h2><a name="acknowledgments"></a>B. Acknowledgements</h2>
+
+<p>This specification is the collaborative work of 
+<a href="http://niso.org/">NISO</a> and the 
+<a href="http://www.openarchives.org/">Open Archives Initiative</a>. 
+Funding for ResourceSync is provided by the 
+<a href="http://www.sloan.org/">Alfred P. Sloan Foundation</a>. 
+UK participation is supported by 
+<a href="http://www.jisc.ac.uk/">Jisc</a>.</p>
+
+<p>
+The names of individual contributors will be listed here when the final specification is released.
+</p>
+
+
+<div class="Changelog">
+<h2><a name="Changelog">C. Change Log</a></h2>
+<table class="Changelog" summary="Change log">
+<tbody><tr>
+ <th>Date</th>
+ <th>Editor</th>
+ <th>Description</th>
+</tr>
+<tr>
+ <td>2012-08-13</td>
+ <td>martin, herbert, simeon, bernhard</td>
+ <td>first alpha spec draft</td>
+</tr>
+<tr>
+ <td>2013-02-01</td>
+ <td>martin, herbert, rob, simeon</td>
+ <td>beta spec draft</td>
+</tr></tbody>
+</table>
+</div>
+
+</div>
+</div>
+    
+<div id="license">
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="img/cc-by-nc-sa-3.0-88x31.png"/></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License</a>.</p>
+</div>
+
+</body>
+</html>
+
+
+

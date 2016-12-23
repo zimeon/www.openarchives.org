@@ -1,0 +1,731 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <title>OAI-PMH Implementation Guidelines - Guidelines for Repository Implementers</title>
+  <style type="text/css">
+    body { color: black; background: white; }
+    code { font-family: "Courier New", Courier, monospace; font-size: 80%; }
+    em { color: black; background: #FF6666; }
+  </style>
+<META content="Open Archives Initiative - Protocol for Metadata Harvesting - v.2.0" name=DC.title>
+<META content="Lagoze, Carl" name=DC.creator>
+<META content="Van de Sompel, Herbert" name=DC.creator>
+<META content="Nelson, Michael" name=DC.creator>
+<META content="Warner, Simeon" name=DC.creator>
+<META content=2002-06-01 name=DC.date>
+</head>
+<body>
+<table summary="Logo and heading" border="0" width="100%">
+<tr>
+<td ALIGN="CENTER" ROWSPAN="2">
+<a href="http://www.openarchives.org"><img alt="OAI logo" src="http://www.openarchives.org/images/OA100.gif" BORDER="0" height="70" width="100" align="BOTTOM" /></a>
+</td>
+<td ALIGN="LEFT" WIDTH="87%">
+<h2>Implementation Guidelines for the Open Archives Initiative Protocol for Metadata Harvesting</h2>
+<h1>-&nbsp;Guidelines for Repository Implementers</h1>
+</td>
+</tr>
+<tr>
+    <td ALIGN="LEFT" WIDTH="87%" height="46"> 
+      <p><b> Protocol Version 2.0 of 2002-06-14<br />
+        Document Version 2002/06/09T16:43:00Z</b><br />
+        <b>http://www.openarchives.org/OAI/2.0/guidelines-repository.htm</b></p>
+      </td>
+</tr>
+</table>
+
+<P><B>Editors</B></P>
+<P> <U>The OAI Executive:</U> <BR />
+  <A href="mailto:lagoze@cs.cornell.edu">Carl Lagoze</A> &lt;<A href="mailto:lagoze@cs.cornell.edu">lagoze@cs.cornell.edu</A>&gt; 
+  -- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A> 
+  <BR />
+  <a href="mailto:herbertv@cs.cornell.edu">Herbert Van de Sompel</a> &lt;<a href="mailto:herbertv@lanl.gov">herbertv@lanl.gov</a>&gt; 
+  -- <a href="http://lib-www.lanl.gov/">Los Alamos National Laboratory - Research 
+  Library </a></P>
+<P>
+<U>From the OAI Technical Committee:</U>
+<BR />
+<A href="mailto:m.l.nelson@larc.nasa.gov">Michael Nelson</A> 
+&lt;<A href="mailto:m.l.nelson@larc.nasa.gov">m.l.nelson@larc.nasa.gov</A>&gt; 
+-- <A href="http://www.larc.nasa.gov/">NASA - Langley Research Center</A>
+<BR />
+<A href="mailto:simeon@cs.cornell.edu">Simeon Warner</A> 
+&lt;<A href="mailto:simeon@cs.cornell.edu">simeon@cs.cornell.edu</A>&gt; 
+-- <A href="http://www.cs.cornell.edu/">Cornell University - Computer Science</A>
+</P>
+
+<p><b>
+This document is one part of the 
+<a href="guidelines.htm">Implementation Guidelines</a> that accompany the 
+<a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm">Open Archives Initiative Protocol for Metadata Harvesting</a> (OAI-PMH).
+</b></p>
+
+<!--END-HEADER-->
+
+<h2>1. Introduction</h2>
+<p>
+The OAI-PMH is designed to provide a low barrier to implementation for 
+repositories. As such, there are many constructs that are optional 
+in the OAI-PMH. This document first lists the requirements for a 
+<a href="#MinimalImplementation">minimal repository implementation</a>
+and then describes best practices relevant for repository implementers 
+and maintainers.
+</p>
+
+<h2>
+<a name="MinimalImplementation">2. Minimal Repository Implementation</a></h2>
+<p>
+It is important to stress that there are many optional concepts in
+the OAI-PMH. The aim is to allow for high fidelity communication
+between repositories and harvesters when available and desirable.
+However, they remain optional for situations when these
+constructs are not needed or implementation would be too difficult.
+A list and discussion of optional features of the OAI-PMH is given below.
+Repository implementers may implement all, some or none of these 
+features.
+</p>
+
+<h3>2.1 Dublin Core and Other Metadata Formats</h3>
+<p>
+Dublin Core (DC) is the resource discovery 
+lingua franca for metadata.  Since all DC fields 
+are optional and repeatable, most repositories should
+have no trouble creating at least a minimal mapping of their native
+metadata to unqualified DC. Repositories are
+not required to store their metadata in DC; DC is something that is
+frequently "converted to", rather than "stored in".  Many repositories 
+store their metadata in some other format, and dynamically convert to DC 
+in response to harvester requests.  Repositories may, of course, choose
+to store DC directly if it is desirable in a particular implementation.
+</p>
+<p>
+Although repositories are strongly encouraged to expose richer, possibly
+community-specific metadata formats, there is no requirement to do so.
+Repository implementers should consider exporting DC the first and most
+important step toward OAI-PMH interoperability. The addition of facilities
+to export other formats may then be added at a later date.
+</p>
+
+<h3>2.2 <code>&lt;about&gt;</code> Containers</h3>
+<p>
+Records in OAI-PMH are particular disseminations of metadata from  
+items in the repository. <code>&lt;about&gt;</code> containers 
+allow the repository to include self-referential metadata about 
+the records themselves.  While this may prove to be an invaluable 
+tool for encoding rights and provenance statements, it is not required.
+It is recommended that implementers defer the use of 
+<code>&lt;about&gt;</code> containers if they are uncertain of 
+their use or ramifications.
+</p>
+
+<h3><a name="MinimalImplementation-Sets">2.3 Sets</a></h3>
+<p>
+Sets provide a method of exposing a partitioning of a repository's
+contents to harvesters.  While this allows for sophisticated harvesting,
+not all harvesters will exploit this capability.  Like non-DC metadata
+formats, sets are most likely to be useful within specific communities.
+It is recommended that implementers defer the implementation of sets
+until there is a particular community-specific situation or deployment 
+scenario that needs sets. Implementation of sets is optional; 
+repository implementers may choose not to implement sets (harvesters
+may also ignore sets).
+</p>
+
+<h3>2.4 Response Compression</h3>
+<p>
+The ability to send compressed responses to harvesters can be a significant
+performance optimization. However, this depends on: 1) harvesters being
+able to accept compressed responses, and 2) sufficiently lengthy responses
+are available to warrant the additional time required to compress and
+uncompress the responses by the repository and harvester, respectively.
+It is recommended that repositories defer the implementation of response
+compression unless they have large collections (e.g., several
+thousand records) and until the time when harvesters widely adopt the
+compression mechanism.
+</p>
+<p>
+All repositories must support <code>identity</code> (uncompressed)
+encoding and must reply with that unless some other recognized 
+encoding is parsed from the <code>Accept-Encoding:</code> header of
+the request.
+</p>
+
+<h3>2.5 Flow Control</h3>
+<p>
+Flow control, through the use of incomplete list responses and 
+<code>resumptionToken</code> elements, is a powerful mechanism that allows a 
+repository to throttle incoming requests from harvesters. 
+However, depending on the repository, this can be one of the more 
+complex parts of the OAI-PMH to implement.
+While there are no definite guidelines regarding the size of a list response
+that should result in an incomplete-list responses, it is reasonable that 
+repositories with less than 1000 items reply with a single complete-list 
+responses (i.e. do not use <code>resumptionToken</code> elements).
+</p>
+
+
+<h2>3. Granularity, <code>datestamp</code> and <code>responseDate</code> values</h2>
+<p>
+The OAI-PMH permits two <code>datestamp</code> granularities:
+days and seconds. All datestamps must be expressed in UTC and therefore
+the day-to-day transition occurs at midnight UTC and not, in general, at 
+the local midnight of the repository. It is expected that most repositories 
+will use the seconds granularity. However, repositories with particular 
+update schedules or based on existing software may choose to use day 
+granularity if that reflects the underlying processes.
+</p>
+<p>
+Regardless of the granularity used, metadata must be available from
+new or modified items during the period of the item's new
+<code>datestamp</code>. If this is not the case then that update may
+be missed by an incremental harvest. For example, if an item is added
+to a repository with <code>datestamp</code> <code>2002-03-01</code>
+and but this shows up in an index created at 
+<code>2002-04-01T02:00Z</code>. Then then an incremental harvest 
+which runs at <code>2002-04-01T01:00Z</code> will miss the update
+from the previous day, and the follow-on harvest specifying 
+<code>from=2002-04-01</code> will also miss the update.
+</p>
+<p>
+The <code>datestamp</code> values used for OAI are for the purpose of 
+incremental harvesting. They should be changed to reflect any change 
+in the item which includes any change to any of the disseminations. 
+For example, even if the underlying master-record within a repository 
+is not changed, a change to the
+way that some formats are generated on the fly should result in updates to
+the datestamps of all items for which that format may be disseminated. One way 
+that this may be implemented internally when building a <code>datestamp</code> 
+index is:
+</p>
+<pre>
+if (internalItemDatestamp > disseminationInterfaceDatestamp) {
+  datestamp = internalItemDatestamp
+} else {
+  datestamp = disseminationInterfaceDatestamp
+}
+</pre>
+<p>
+Harvesters may use the <code>responseDate</code> to obtain the time 
+(expressed in UTC) from the repository's clock corresponding to the start 
+of a list request as a way to implement incremental harvesting. 
+By using the time returned by the repository, harvesters avoid problems 
+with clock skew. It is thus recommended that the <code>responseDate</code> 
+reflect the time of the repository's clock at the start of any database 
+query or search function necessary to answer the list request, rather than 
+when the output is written. This will ensure that, even if the query 
+takes some time, the next incremental harvest will catch any updates 
+which occurred during the query.
+</p>
+
+
+<h2><a name="Sets">4. Sets</a></h2>
+<p>
+Sets provide optional support for selective harvesting. Repositories
+need not implement them (see 
+<a href="#MinimalImplementation-Sets">Minimal Implementation: Sets</a>)
+and harvesters may ignore any set structure that is exposed. 
+</p>
+
+<h3>4.1 Set Hierarchy</h3>
+<p>
+Use of the colon (<code>:</code>) character in <code>setSpec</code> values 
+implies a hierarchy of sets. Repositories that do not implement a 
+hierarchy of sets must not include colons in their <code>setSpec</code> 
+values.
+</p>
+<table summary="Example of hierarchical sets" border="2" width="50%" bgcolor="#CCCCCC">
+<tr><td>
+Example <code>ListSets</code> response:
+<pre>
+&lt;ListSets ...&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;A&lt;/setSpec&gt;
+    &lt;setName&gt;set A&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;A:B&lt;/setSpec&gt;
+    &lt;setName&gt;set A:B&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;B&lt;/setSpec&gt;
+    &lt;setName&gt;set B&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;B:C&lt;/setSpec&gt;
+    &lt;setName&gt;set B:C&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;B:D&lt;/setSpec&gt;
+    &lt;setName&gt;set B:D&lt;/setName&gt;
+  &lt;/set&gt;
+  &lt;set&gt;
+    &lt;setSpec&gt;B:D:E&lt;/setSpec&gt;
+    &lt;setName&gt;set B:D:E&lt;/setName&gt;
+  &lt;/set&gt;
+&lt;/ListSets&gt;
+</pre>
+This response implies the following hierarchy of sets:
+<pre>
+A
+A:B
+B
+B:C
+B:D
+B:D:E
+</pre>
+The sets <code>A:B</code> and <code>B</code> are distinct, however 
+the repeated use of node name <code>B</code> is not recommended because
+it may lead to confusion. If the header for <code>item1</code> is:
+<pre>
+  &lt;header&gt;
+    &lt;identifier&gt;item1&lt;/identifier&gt;
+    &lt;setSpec&gt;A:B&lt;/setSpec&gt;
+    ...
+  &lt;/header&gt;
+</pre>
+then <code>item1</code> is organized in sets 
+<code>A</code> and <code>A:B</code>. 
+If the header for <code>item2</code> is:
+<pre>
+  &lt;header&gt;
+    &lt;identifier&gt;item2&lt;/identifier&gt;
+    &lt;setSpec&gt;A&lt;/setSpec&gt;
+    &lt;setSpec&gt;B:D:E&lt;/setSpec&gt;
+    ...
+  &lt;/header&gt;
+</pre>
+then <code>item2</code> is organized in sets 
+<code>A</code>, <code>B</code>, <code>B:D</code> and <code>B:D:E</code>.
+</td></tr>
+</table>
+
+<h3><a name="setDescription">4.2 Collection and Set Descriptions</a></h3>
+<p>
+Set descriptions may be included in the <code>setDescription</code> of the 
+<code>ListSets</code> response. If sets correspond to some notion of 
+"collections" then this allows collection description. 
+If the whole repository represents one collection then it may be more 
+appropriate to use the <code>description</code> container in the
+<code>Identify</code> response to describe the collection.
+</p>
+<p>
+Communities are able to develop their own collection description XML 
+schemas for use within the <code>description</code> container and 
+<code>setDescription</code> elements. If all that is desired is the ability to
+include an unstructured textual description then it is recommended that 
+repositories use the Dublin Core <code>description</code> element.
+Seven existing schemes are:
+</p>
+<table summary="collection description schemes" width="100%" border="2">
+<tr>
+<td>Dublin Core</td>
+<td>The 15 DCMES elements (unqualified)</td> 
+<td>
+  <a href="http://www.dublincore.org/documents/dces/">http://www.dublincore.org/documents/dces/</a><br />
+  <a href="openarchivesprotocol.htm#dublincore">OAI-PMH: Dubin Core, <code>oai_dc</code></a></td>
+</tr>
+<tr>
+<td>Encoded Archival Description (EAD)</td>
+<td>A standard for encoding archival
+  finding aids. EAD instances used effectively for this purpose would
+  probably be limited to information about the collection as a whole and
+  significant high-level components.</td>
+<td><a href="http://www.loc.gov/ead/">http://www.loc.gov/ead/</a></td>
+</tr>
+<tr> 
+<td>The <code>eprints</code> schema</td>
+<td>A schema for describing eprint archives.</td>
+<td><a href="guidelines-eprints.htm">OAI-PMH Guidelines: <code>eprints</code></a></td>
+</tr>
+<tr>
+<td>RSLP collection description schema</td>
+<td>An application of qualified Dublin
+  Core built on an underlying model of collections and their descriptions. 
+<td><a href="http://www.ukoln.ac.uk/metadata/rslp/schema/">http://www.ukoln.ac.uk/metadata/rslp/schema/</a></td>
+</tr>
+<tr>
+<td>UDDI/WSDL</td>
+<td>The Universal Description Discovery and Integration
+  specification provides a mechanism for describing services on the
+  Internet.</td>
+<td><a href="http://www.uddi.org/">http://www.uddi.org/</a></td>
+</tr>
+<tr>
+<td>MARC21</td>
+<td>Commonly used in library catalogs to describe entire collections
+  in a single record.
+</td>
+<td>
+<a href="http://www.loc.gov/marc/">http://www.loc.gov/marc/</a><br />
+      <a href="guidelines-marcxml.htm">OAI-PMH Guidelines: <code>marcxml</code></a> 
+    </td>
+</tr>
+<tr>
+<td>The <code>branding</code> schema</td>
+<td>A schema for including branding information: icon, link etc.
+</td>
+<td>
+<a href="guidelines-branding.htm">OAI-PMH Guidelines: <code>branding</code></a>
+</td>
+</tr>
+</table>
+<p>
+Note that appropriate XML s may not yet exist for EAD, RSLP and
+UDDI. Also note that mappings between the DC, EAD, RSLP and MARC21 schemas
+are available. 
+</p>
+<p>
+The OAI community is encouraged to track the work of the DCMI Collection
+Description working group, who are planning to develop a simple collection
+description schema based on qualified DC.
+</p>
+
+
+<h2><a name="resumptionToken">5. Incomplete-List Responses and the Use of <code>resumptionToken</code> Elements</a></h2>
+<p>
+The OAI-PMH does not specify the syntax or even suggest an implementation
+strategy for <code>resumptionToken</code> elements.  This is to allow maximum 
+flexibility for individual repositories to adapt this mechanism to their 
+own deployment profile.
+Harvesters are required to treat <code>resumptionToken</code> values 
+as opaque data objects. A repository may choose to make the syntax of a
+<code>resumptionToken</code> obvious, such as:
+</p>
+<pre>
+  &lt;resumptionToken&gt;resultSet=157&amp;nextRange=1001-2000&lt;/resumptionToken&gt;
+</pre>
+<p>
+or may choose to encode the <code>resumptionToken</code> 
+so the syntax is not visible, such as:
+</p>
+<pre>
+  &lt;resumptionToken&gt;9023A210CD007&lt;/resumptionToken&gt;	
+</pre>
+<p>
+The OAI-PMH was designed to provide a mechanism whereby a harvester can 
+incrementally harvest from a repository and not miss any changes 
+(additions, modifications, and deleted reported with <code>deleted</code> 
+status). The implementation of incomplete list responses and 
+<code>resumptionToken</code> elements should not change this. 
+Whether a change is harvested during a particular harvest or on the 
+subsequent harvest is probably not critically important, provided it
+is not missed in the sequence of harvests. 
+For example, consider the case of an item modified during the sequence of 
+requests necessary to complete a <code>ListRecords</code> request. The
+new <code>datestamp</code> will correspond to the time after the start, 
+but before the end, of the sequence of requests. It is 
+quite reasonable for this change to be picked up by the current harvest
+<i>or</i> for it not to be picked up until the following harvest.
+</p>
+<p>
+There are two main implementation strategies that a repository may 
+choose when implementing incomplete-list responses and 
+<code>resumptionToken</code> elements: to encode the state in the
+<code>resumptionToken</code>; or to cache the result set. 
+These approaches are described in the next two sections.
+</p>
+
+<h3>5.1 Encoding State in the <code>resumptionToken</code></h3>
+<p>
+By encoding all state in the <code>resumptionToken</code>, a repository
+can remain stateless. This implementation strategy trades the 
+management overhead required to cache results for possible increased 
+computation time in regenerating the state necessary for the next 
+response. Consider the following example:
+</p>
+<pre>
+  http://an.oai.org/?verb=ListRecords&amp;set=227&amp;from=1999-02-03
+</pre>
+<p>
+A <code>resumptionToken</code> may be similar to (wrapped for clarity):
+</p>
+<pre>
+  &lt;resumptionToken&gt;set=227&amp;from=1999-02-03&amp;until=2002-04-01
+    &amp;range=751-1500&amp;metadataPrefix=oai_dc&lt;/resumptionToken&gt;
+</pre>
+<p> This example is for a <code>ListRecords</code> request and so the <code>resumptionToken</code> 
+  includes the <code>metadataPrefix</code> as part of the state; the <code>metadataPrefix</code> 
+  part would not be required for a <code>ListIdentifiers</code> <code>resumptionToken</code>. 
+  Harvesters may omit either or both of the <code>from</code> and <code>until</code> 
+  arguments to say `from the earliest datestamp' and/or `until the last datestamp'. 
+  It is recommended that any <code>resumptionToken</code> constucted from a request 
+  such as this have at least the part that corresponds to the <code>until</code> 
+  argument filled in with the current repository datestamp. While this will not 
+  avoid the incomplete-list requests including new items with the same datestamp 
+  as the <code>until</code> value (likely if day granularity is used), it will 
+  avoid the incomplete-list requests including new or modified items with later 
+  datestamps. 
+  <p> One way to implement this form of <code>resumptionToken</code> is to encode 
+    the original arguments of the list request and some offset information in 
+    the <code>resumptionToken</code>. When the repository later receives the <code>resumptionToken</code> 
+    it can then repeat the original query to regenerate the state. This may be 
+    computationally expensive. However, there is no cache management overhead 
+    associated with the <code>resumptionToken</code> values. For this reason alone, 
+    it is recommended that unless implementers are comfortable with managing a 
+    cache, repositories should use a scheme whereby all necessary state is encoded 
+    in the <code>resumptionToken</code> values. </p>
+  <p> Note that some additional information may need to be encoded in the <code>resumptionToken</code> 
+    to cope with the case where items move outside the <code>datestamp</code> 
+    range of the initial request before the list request sequence is complete. 
+  </p>
+  <h3>5.2 Caching the Result Set</h3>
+  <p> A repository may cache the results of a harvester's list request and then 
+    return segments of this as incomplete list responses (accessible through further 
+    requests with the appropriate <code>resumptionToken</code> values). A typical 
+    solution would be to encode both a session identifier and a cursor in the 
+    <code>resumptionToken</code>. If harvester issued a request: </p>
+  <pre>
+  http://an.oai.org/?verb=ListRecords&amp;set=227&amp;from=1999-02-03
+</pre>
+  A <code>resumptionToken</code> in the response could look similar to: 
+  <pre>
+  &lt;resumptionToken&gt;searchId=4234&amp;range=751-1500&lt;/resumptionToken&gt;
+</pre>
+  <p> Subsequent requests from the harvester would involve the repository only 
+    sending the next 750 records (for example) from the cached result set. A repository 
+    could also check the result set cache for duplicate searches and if two different 
+    harvesters issued the same request, they could be served from the same cached 
+    result set. Depending on the nature of the repository and the community it 
+    serves, this scenario could turn out to be common, and caching results could 
+    be a significant optimization for the repository. </p>
+  <p> A downside of this approach is that the repository has the additional responsibility 
+    of maintaining and purging the cache. Given the limited amount of knowledge 
+    the OAI community currently has regarding harvesting profiles, it is not known 
+    which cache replacement algorithm would be best for a given repository. The 
+    wide range of repository deployment profiles may make a general recommendation 
+    impossible. </p>
+  <p> Repositories implementing this sort of <code>resumptionToken</code> should 
+    use the <code>expirationDate</code> attribute to indicate how long the <code>resumptionToken</code> 
+    values will remain valid. If only the identifiers are cached for <code>ListRecords</code> 
+    and <code>ListIdentifers</code> requests then it may also be necessary to 
+    check that items have not been deleted or that <code>datestamps</code> have 
+    not moved out of the range of the request by the time that the metadata is 
+    actually disseminated. </p>
+  <h3>5.3 Idempotency of List Requests</h3>
+  <p> The OAI-PMH requires a weak form of idempotency for both complete list requests 
+    and individual incomplete list requests using <code>resumptionToken</code> 
+    arguments: </p>
+  <ul>
+    <li>If there are no changes in the repository then two identical list requests 
+      <b>must</b> return the same result.</li>
+    <li>If there are no changes in the repository then re-issuing the most recent 
+      incomplete list request (using the same, non-expired <code>resumptionToken</code>) 
+      <b>must</b> return the same result. A session identifier cannot be used 
+      as a <code>resumptionToken</code> without additional state information because 
+      it must be possible to re-use a <code>resumptionToken</code> to re-issue 
+      an incomplete list request. It is, however, permitted for repositories to 
+      expire <code>resumptionToken</code> values; the time at which expiration 
+      occurs may be specified in the <code>expirationDate</code> attribute.</li>
+    <li>If there are changes in the repository between two identical list or incomplete 
+      list requests then both responses must include all elements that have not 
+      changed. The implication of this is that individual incomplete list requests 
+      must have the same degree of idempotency as the complete list request.</li>
+    <li>Only the <code>resumptionToken</code> most recently received by a harvester 
+      may be re-issued. The implication for repositories is that they must support 
+      the above idempotency requirement for the most recent incomplete list request 
+      that was answered. They must accept both the most recent <code>resumptionToken</code> 
+      issued and the previous <code>resumptionToken</code> issued.</li>
+  </ul>
+  <p> There are scenarios where different semantics may result from the two implementation 
+    strategies described above. If a repository changes rapidly compared with 
+    the rate at which a harvester issues follow-on requests with <code>resumptionToken</code> 
+    arguments, the two different implementations can yield different results. 
+    Consider a repository that adds <i>N</i> new records midway through a harvester's 
+    session, and these records match the criteria specified in the initial request 
+    (<code>set</code>, <code>timestamp</code>, etc.). Implementations relying 
+    on state stored by the repository are likely to give the results relative 
+    to the time of the initial harvest. Implementations transferring state in 
+    the <code>resumptionToken</code> values are likely to give the results relative 
+    to the time of the last request (of some intermediate time). Sophisticated 
+    implementations of either scheme could accommodate for this difference, but 
+    it is recommended that implementers consider the anticipated accession rate 
+    of the repository and set the optional <code>resumptionToken</code> attribute 
+    <code>expirationDate</code> accordingly. </p>
+  <p> Idempotency of <code>resumptionTokens</code> will aid harvesters in recovering 
+    from the unavoidable error conditions that can occur when harvesting large 
+    repositories (e.g., lost responses, crashed harvesters, etc.). </p>
+  <h3>5.4 Expiration and <code>expirationDate</code></h3>
+  <p> The <code>expirationDate</code> attribute may be used to indicate when a 
+    <code>resumptionToken</code> expires. It is recommended that repositories 
+    use <code>resumptionToken</code> values that remain valid for at least tens 
+    of minutes. </p>
+  <p> If a repository uses <code>resumptionToken</code> values that do not expire, 
+    then the <code>expirationDate</code> attribute should not be used. </p>
+  <p> If, for some reason, a repository cannot continue to complete a request 
+    then it may issue a <code>badResumptionToken</code> (with suitable text explanation 
+    for human readers) to stop the sequence of requests. A harvester would be 
+    expected to start again from the initial list request. </p>
+  <h3>5.5 The <code>completeListSize</code> and <code>cursor</code> attributes</h3>
+  <p> The <code>completeListSize</code> and <code>cursor</code> attributes of 
+    the <code>resumptionToken</code> element may optionally be included to provide 
+    extra information about the size of the result set and the number of results 
+    so far disseminated. </p>
+  <p> The <code>cursor</code> attribute is simply the number of results returned 
+    so far in the complete list response, thus it is always "0" in the first incomplete 
+    list response. It should only be specified if it is consistently used in all 
+    responses. 
+    <p> The <code>completeListSize</code> attribute provides a place where the 
+      estimated number of results in the complete list response may be announced. 
+      This is likely to be used for status monitoring by harvesting software and 
+      implementation is recommended especially in repositories with large numbers 
+      of records. The value of <code>completeListSize</code> can be reliably accurate 
+      only in the case of a system where the result set is cached. In other cases, 
+      it is permissible for repositories to revise the estimate during a list 
+      request sequence. </p>
+    <h2>6. Flow Control and Load Balancing</h2>
+    <p> The related but orthogonal concepts of <i>flow control</i> and <i>load 
+      balancing</i> allow a repository to throttle incoming requests. Flow control, 
+      as available through incomplete lists and <code>resumptionToken</code> elements, 
+      can be viewed as an <i>intra-repository</i> technique, and the semantics 
+      of flow control are defined in the OAI-PMH. Load balancing can be viewed 
+      as an <i>inter-repository</i> technique to redirect the harvesting load 
+      from busy repositories to lightly loaded repositories with the same contents. 
+      Load balancing semantics are not addressed in the OAI-PMH and are expected 
+      to be handled at the transport layer. </p>
+    <p> Both concepts are optional, and both may be used independently or in combination. 
+      It is easy to imagine a scenario in which a harvester is redirected to a 
+      lightly loaded "mirror" repository, and the resulting requests and responses 
+      between that repository and the harvester are throttled through the use 
+      of <code>resumptionToken</code> elements. </p>
+    <h3>6.1 Flow Control</h3>
+    <p> The semantics of <code>resumptionToken</code> elements are defined in 
+      the OAI-PMH, and possible implementation strategies are discussed <a href="#resumptionToken">above</a>. 
+      The rest of this section addresses transport-level flow control methods. 
+    </p>
+    <p> The <a href="http://www.ietf.org/rfc/rfc2616">HTTP protocol</a> defines 
+      a status code of 503 - "Service Unavailable". If a repository is heavily 
+      loaded, instead of processing the request (and returning HTTP status code 
+      200), it can issue a HTTP 503 response with a "Retry-After" header. This 
+      mechanism might also be used to delay requests during database updates or 
+      other short outages. </p>
+    <p> If a repository wants to slow a sequence of requests then it can issue 
+      a HTTP 503 response, which informs the harvester that its request was not 
+      processed and it should wait the specified amount of time before retrying. 
+      At the repository's discretion, it may issue HTTP 403 "Forbidden" responses 
+      to harvesters that do not adhere to the delay specified in the <code>Retry-After</code> 
+      header of the 503 response. A 403 is more punitive than a 503, and should 
+      be issued only in extreme situations. </p>
+    <p> It is recommended that a waterfall model of flow control be adopted, with 
+      repositories moving to the next level only after a harvester appears unresponsive 
+      at the current level: </p>
+    <ol>
+      <li>HTTP status code 200; response to OAI-PMH request, perhaps with a <code>resumptionToken</code>.</li>
+      <li>HTTP status code 503; with the <code>Retry-After</code> header set to 
+        an appropriate value if subsequent request follows too quickly or if the 
+        server is heavily loaded.</li>
+      <li>HTTP status code 403; with an appropriate reason specified if subsequent 
+        requests do not adhere to <code>Retry-After</code> delays.</li>
+    </ol>
+    <h3>6.2 Load Balancing</h3>
+    <p> Although not addressed in the OAI-PMH, it is possible to build hierarchies 
+      of cooperating repositories. Especially popular or heavily loaded repositories 
+      might set up mirror repositories. Load balancing can then be accomplished 
+      through the use of <a href="http://www.ietf.org/rfc/rfc2616">HTTP</a> 302 
+      or 303 status codes, or even through the use of CNAMES in DNS. Load balancing 
+      is powerful, yet subtle. It is recommended that repositories implement load 
+      balancing only when: 1) the canonical repository is clearly overloaded, 
+      and 2) they are comfortable with details of OAI-PMH. </p>
+    <h4>6.2.1 HTTP-Based Load Balancing</h4>
+    <p> For example, consider the request: </p>
+    <pre>
+  http://an.oai.org/?verb=ListRecords&amp;set=227&amp;from=1999-02-03 
+</pre>
+    <p> If <code>an.oai.org</code> is especially busy, it may choose to issue 
+      a 302 with the <code>Location</code> header of: </p>
+    <pre>
+http://another.oai.org/?verb=ListRecords&amp;set=227&amp;from=1999-02-03 
+</pre>
+    <p> Which implies that <code>another.oai.org</code> is a mirror of (or "slave" 
+      to) the canonical <code>an.oai.org</code>. If this request generates an 
+      incomplete list, the successive harvesting requests will be relative to 
+      <code>another.oai.org</code>. However, all future harvesting requests must 
+      be directed to <code>an.oai.org</code>. To this end, if an <code>Identify</code> 
+      request is issued to <code>another.oai.org</code>, the response must contain 
+      <code>an.oai.org</code> in the <code>baseURL</code>. Similarly, the contents 
+      of the <code>request</code> element in the header of the response must be 
+      the <code>baseURL</code> (<code>an.oai.org</code>). </p>
+    <p> Note that <code>another.oai.org</code> is free to load balance as well, 
+      issuing a 302 with the <code>Location</code> header of: </p>
+    <pre>
+http://yetanother.oai.org/?verb=ListRecords&amp;set=227&amp;from=1999-02-03
+</pre>
+    <p> It is up to the implementers to ensure there are no circular redirections 
+      for the harvester. </p>
+    <h4>6.2.2 DNS-Based Load Balancing</h4>
+    <p> A simpler, but slightly less powerful load balancing strategy is to use 
+      a DNS rotor. In this case, <code>an.oai.org</code> might resolve to one 
+      of: <code>a.oai.org</code>, <code>b.oai.org</code> or <code>c.oai.org</code>. 
+      Which presumably all map to physically separate machines. The harvester 
+      resolving the name <code>an.oai.org</code> would randomly receive one of 
+      the addresses and use that address for the harvesting requests. Repositories 
+      wishing to implement this form of load balancing must ensure tight synchronization 
+      between the machines answering the requests. They must also use <code>an.oai.org</code> 
+      for <code>baseURL</code> (in <code>Identify</code> responses) and <code>request</code> 
+      (in response headers). </p>
+    <h2>7. Response Compression</h2>
+    <p> Compression in the OAI-PMH is handled at the <a href="http://www.ietf.org/rfc/rfc2616">HTTP</a> 
+      level, with the added restriction that both repositories and harvesters 
+      must support the <code>identity</code> encoding (no compression). Repositories 
+      <b>should</b> advertise the compression they support in <code>compression</code> 
+      element(s) in the <code>Identify</code> response. </p>
+    <table summary="Example compression request and response sequence" border="2" width="50%" bgcolor="#CCCCCC">
+      <tr>
+        <td> Response from <code>Identify</code>: 
+          <pre>
+&lt;Identify ...&gt;
+  ...
+  &lt;compression&gt;gzip&lt;/compression&gt;
+  ...
+&lt;/Identify&gt;
+</pre>
+          Next request includes: 
+          <pre>
+Accept-encoding: gzip;q=1.0, identity;q=0.5
+</pre>
+          Response then <code>gzip</code> encoded with header: 
+          <pre>
+Content-Encoding: gzip
+</pre>
+        </td>
+      </tr>
+    </table>
+    <p> While compression is optional, it is encouraged to minimize network traffic 
+      involved in lengthy harvests. It is recommended that repositories offer 
+      at least one of the compression types defined in <a href="http://www.ietf.org/rfc/rfc2616">HTTP: 
+      RFC 2616</a> section 3.5 "Content Codings": <code>gzip</code>, <code>compress</code>, 
+      or <code>deflate</code>. </p>
+    <h2>8. Error Handling</h2>
+    <p> Errors are reported using one or more <code>error</code> elements in the 
+      response. Although not required, it is strongly recommended that repository 
+      implementers include detailed and helpful error messages (content of the 
+      <code>error</code> elements) in addition to the mandatory <code>code</code> 
+      attributes. </p>
+    <p> Repositories are permitted to include just a single <code>error</code> 
+      element even if multiple error conditions are identified. However, to aid 
+      debugging, it is recommended that repositories report as many errors as 
+      they identify. Multiple <code>error</code> elements may be used and it is 
+      preferable to separate even multiple errors with the same <code>code</code> 
+      into separate <code>error</code> elements. For example, </p>
+    <pre>
+  &lt;error code="badArgument"&gt;Illegal argument 'arg1'&lt;/error&gt;
+  &lt;error code="badArgument"&gt;Illegal argument 'arg2'&lt;/error&gt;
+</pre>
+    <p> is to be preferred over </p>
+    <pre>
+  &lt;error code="badArgument"&gt;Illegal arguments 'arg1', 'arg2'&lt;/error&gt;
+</pre>
+    <h2><a name="acknowledgements"></a>Acknowledgements</h2>
+    <p> Support for the development of the OAI-PMH and for other Open Archives 
+      Initiative activities comes from the <A href="http://www.diglib.org/">Digital 
+      Library Federation</A>, the <A href="http://www.cni.org/">Coalition for 
+      Networked Information</A>, and from the National Science Foundation through 
+      Grant No. IIS-9817416. Individuals who have played a significant role in 
+      the development of OAI-PMH version 2.0 are <a href="http://www.openarchives.org/OAI/2.0/openarchivesprotocol.htm#acknowledgements">acknowledged 
+      in the protocol document</a>. </p>
+    <h2><a name="DocumentHistory">Document History</a></h2>
+    <p><b>2002-06-14</b>: Release of this document, combined with the release 
+      of OAI-PMH version 2.0. </p>
+    <!--START-FOOTER-->
+</body>
+</html>

@@ -1,0 +1,662 @@
+From jiangeb at clas.ac.cn  Sun Apr  2 04:00:23 2006
+From: jiangeb at clas.ac.cn (=?gb2312?B?amlhbmdlYg==?=)
+Date: Sun Apr  2 04:01:57 2006
+Subject: [OAI-implementers] question about OCLC OAIHarvest
+Message-ID: <442F8497.00007F.11808@app-01>
+
+I have download OCLC's OAIHarvester2 and run test.sh as below according to README.txt, but there are some question
+
+OAIHarvester2 running envircoment is :
+OS : Red Hat Linux 9
+JRE : 1.5
+add some content in the /etc/profile: 
+export JAVA_HOME=/usr/java/jre1.5.0_06
+PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:$JAVA_HOME/lib
+export PATH
+
+First, I run test.sh
+# sh test.sh
+[root@dspace harvester2-0.1.6]# sh test.sh
+Sun Apr 02 15:53:15 CST 2006
+<?xml version="1.0" encoding="UTF-8"?>
+<harvest>
+Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/log4j/Logger
+        at ORG.oclc.oai.harvester2.verb.HarvesterVerb.<clinit>(HarvesterVerb.java:64)
+        at ORG.oclc.oai.harvester2.app.RawWrite.run(RawWrite.java:118)
+        at ORG.oclc.oai.harvester2.app.RawWrite.main(RawWrite.java:67)
+
+Second, I edit test.sh using vi 
+[root@dspace harvester2-0.1.6]# vi test.sh
+#! /bin/tcsh -f
+java -classpath log4j-1.2.12.jar:harvester2.jar ORG.oclc.oai.harvester2.app.RawWrite http://alcme.oclc.org/oaicat/OAIHandler
+
+I found test.sh required log4j-1.2.12.jar but not log4j-1.2.8.jar (there is a log4j-1.2.8.jar in this directory)
+
+Third, I rename log4j-1.2.8.jar as log4j-1.2.12.jar
+# cp log4j-1.2.8.jar log4j-1.2.12.jar
+# sh test.sh 
+Sun Apr 02 15:57:35 CST 2006
+<?xml version="1.0" encoding="UTF-8"?>
+<harvest>
+0 [main] DEBUG ORG.oclc.oai.harvester2.verb.HarvesterVerb  - requestURL=http://alcme.oclc.org/oaicat/OAIHandler?verb=Identify
+806 [main] DEBUG ORG.oclc.oai.harvester2.verb.HarvesterVerb  - responseCode=200
+806 [main] DEBUG ORG.oclc.oai.harvester2.verb.HarvesterVerb  - contentEncoding=gzip
+Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/xpath/XPathAPI
+        at ORG.oclc.oai.harvester2.verb.HarvesterVerb.getSingleString(HarvesterVerb.java:293)
+        at ORG.oclc.oai.harvester2.verb.HarvesterVerb.harvest(HarvesterVerb.java:274)
+        at ORG.oclc.oai.harvester2.verb.HarvesterVerb.<init>(HarvesterVerb.java:195)
+        at ORG.oclc.oai.harvester2.verb.Identify.<init>(Identify.java:53)
+        at ORG.oclc.oai.harvester2.app.RawWrite.run(RawWrite.java:118)
+        at ORG.oclc.oai.harvester2.app.RawWrite.main(RawWrite.java:67)
+
+I didn't know how to deal with these errors. Who can help me ,Watting for your answer.
+
+
+
+
+
+
+
+ 
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060402/2284bf7e/attachment-0001.htm
+From jyoung at oclc.org  Mon Apr  3 09:49:47 2006
+From: jyoung at oclc.org (Young,Jeff (OR))
+Date: Mon Apr  3 09:50:27 2006
+Subject: [OAI-implementers] question about OCLC OAIHarvest
+Message-ID: <D53793AA582576458786FBE27899DB1801EADBF6@OAEXCH2SERVER.oa.oclc.org>
+
+Sorry about that. I updated the distribution to use a consistent log4j
+jar file. As for the missing class org/apache/xapth/XPathAPI, it appears
+these classes were removed from the jre1.5 distribution, so I added new
+jars to the harvester2 distribution to compensate. Grab the latest
+harvester2 distribution from
+http://pubserv.oclc.org/oaiharvester2/jars/dist.html and try it again.
+Let me know if you have further problems.
+
+ 
+
+Jeff
+
+ 
+
+________________________________
+
+From: oai-implementers-bounces@openarchives.org
+[mailto:oai-implementers-bounces@openarchives.org] On Behalf Of jiangeb
+Sent: Sunday, April 02, 2006 4:00 AM
+To: oai-implementers@openarchives.org
+Subject: [OAI-implementers] question about OCLC OAIHarvest
+Importance: High
+
+ 
+
+I have download OCLC's OAIHarvester2 and run test.sh as below according
+to README
+.txt, but there are some question
+
+OAIHarvester2 running envircoment is :
+OS : Red Hat Linux 9
+JRE : 1.5
+add some content in the /etc/profile: 
+export JAVA_HOME=/usr/java/jre1.5.0_06
+PATH=$JAVA_HOME/bin:$PATH
+export CLASSPATH=.:$JAVA_HOME/lib
+export PATH
+
+First, I run test.sh
+# sh test.sh
+[root@dspace harvester2-0.1.6]# sh test.sh
+Sun Apr 02 15:53:15 CST 2006
+<?xml version="1.0" encoding="UTF-8"?>
+<harvest>
+Exception in thread "main" java.lang.NoClassDefFoundError:
+org/apache/log4j/Logge
+r
+        at
+ORG.oclc.oai.harvester2.verb.HarvesterVerb.<clinit>(HarvesterVerb.java
+:64)
+        at ORG.oclc.oai.harvester2.app.RawWrite.run(RawWrite.java:118)
+        at ORG.oclc.oai.harvester2.app.RawWrite.main(RawWrite.java:67)
+
+Second, I edit test.sh using vi 
+[root@dspace harvester2-0.1.6]# vi test.sh
+#! /bin/tcsh -f
+java -classpath log4j-1.2.12.jar:harvester2.jar
+ORG.oclc.oai.harvester2.app.RawWr
+ite http://alcme.oclc.org/oaicat/OAIHandler
+
+I found test.sh required log4j-1.2.12.jar but not log4j-1.2.8.jar (there
+is a log
+4j-1.2.8.jar in this directory)
+
+Third, I rename log4j-1.2.8.jar as log4j-1.2.12.jar
+# cp log4j-1.2.8.jar log4j-1.2.12.jar
+# sh test.sh 
+Sun Apr 02 15:57:35 CST 2006
+<?xml version="1.0" encoding="UTF-8"?>
+<harvest>
+0 [main] DEBUG ORG.oclc.oai.harvester2.verb.HarvesterVerb  -
+requestURL=http://al
+cme.oclc.org/oaicat/OAIHandler?verb=Identify
+806 [main] DEBUG ORG.oclc.oai.harvester2.verb.HarvesterVerb  -
+responseCode=200
+806 [main] DEBUG ORG.oclc.oai.harvester2.verb.HarvesterVerb  -
+contentEncoding=gz
+ip
+Exception in thread "main" java.lang.NoClassDefFoundError:
+org/apache/xpath/XPath
+API
+        at
+ORG.oclc.oai.harvester2.verb.HarvesterVerb.getSingleString(HarvesterVe
+rb.java:293)
+        at
+ORG.oclc.oai.harvester2.verb.HarvesterVerb.harvest(HarvesterVerb.java:
+274)
+        at
+ORG.oclc.oai.harvester2.verb.HarvesterVerb.<init>(HarvesterVerb.java:1
+95)
+        at
+ORG.oclc.oai.harvester2.verb.Identify.<init>(Identify.java:53)
+        at ORG.oclc.oai.harvester2.app.RawWrite.run(RawWrite.java:118)
+        at ORG.oclc.oai.harvester2.app.RawWrite.main(RawWrite.java:67)
+
+I didn't know how to deal with these errors. Who can help me ,Watting
+for your an
+swer.
+
+
+
+
+
+
+
+ 
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060403/107c2c42/attachment.htm
+From rodrigoborgiaoaimp at fastmail.es  Wed Apr 12 17:41:46 2006
+From: rodrigoborgiaoaimp at fastmail.es (Rodrigo)
+Date: Wed Apr 12 17:42:15 2006
+Subject: [OAI-implementers] (no subject)
+Message-ID: <1144878106.27845.258973261@webmail.messagingengine.com>
+
+-- 
+  Rodrigo
+  rodrigoborgiaoaimp@fastmail.es
+
+-- 
+http://www.fastmail.fm - The way an email service should be
+
+
+From rodrigoborgiaoaimp at fastmail.es  Wed Apr 12 17:49:14 2006
+From: rodrigoborgiaoaimp at fastmail.es (Rodrigo)
+Date: Wed Apr 12 17:49:38 2006
+Subject: [OAI-implementers] 
+	Please I need to implement a system, with MARC21.
+Message-ID: <1144878554.28593.258973723@webmail.messagingengine.com>
+
+Hello Friends..
+I am new in the list.
+Please I need to implement a system, with MARC21.
+
+Unload ARC of the list of tools.
+Does there exist other that they recommend to me?
+
+I need help.
+
+Atte.
+
+RB
+LaPaz-Bolivia
+-- 
+  Rodrigo
+  rodrigoborgiaoaimp@fastmail.es
+
+-- 
+http://www.fastmail.fm - Does exactly what it says on the tin
+
+
+From rodrigoborgiaoaimp at fastmail.es  Thu Apr 13 12:31:56 2006
+From: rodrigoborgiaoaimp at fastmail.es (Rodrigo)
+Date: Thu Apr 13 12:32:24 2006
+Subject: [OAI-implementers] help-implementers
+Message-ID: <1144945916.13681.259038433@webmail.messagingengine.com>
+
+Hello Friends..
+I am new in the list.
+Please I need to implement a system, with MARC21.
+
+Unload ARC of the list of tools.
+Does there exist other that they recommend to me?
+
+I need help.
+
+Atte.
+
+RB
+LaPaz-Bolivia
+-- 
+-- 
+  Rodrigo
+  rodrigoborgiaoaimp@fastmail.es
+
+-- 
+http://www.fastmail.fm - A no graphics, no pop-ups email service
+
+
+From dmanchego at ifeanet.org  Thu Apr 13 13:04:13 2006
+From: dmanchego at ifeanet.org (dmanchego@ifeanet.org)
+Date: Thu Apr 13 13:04:50 2006
+Subject: [OAI-implementers] Join Daniel Manchego on Yahoo! Messenger!
+Message-ID: <mailman.14.1144947890.1400.oai-implementers@openarchives.org>
+
+
+Daniel Manchego wants to talk with you using the new Yahoo! Messenger with Voice:
+
+
+
+
+
+Accept the invitation by clicking this link:
+
+http://invite.msg.yahoo.com/invite?op=accept&intl=us&sig=lNwso925pRH3qFAexDjD6vKtzbPkhdUCYkrvZS2L86tJOg.Sm0yBTbI2OjV2jfwfnwPsttsk3qpF3diRf.hhHEAy5WZmtIJvamTAChwTzMHP756X90ap4ojnKJgo19sYoIbte1pkwpsR7eNx4zDP.eQXEaA-
+
+
+With Yahoo! Messenger with Voice, you get:
+
+ Free worldwide PC-to-PC calls.* All you need are speakers and a microphone (or a headset). If no one's there, leave a voicemail!
+
+ Simple photo sharing. It's as easy as dragging-and-dropping pictures right into your instant message window.
+
+ Stealth settings keep you in control. Now you can get in touch on your time, by controlling who sees when you're online.
+
+ So what are you waiting for? It's free. Get Yahoo! Messenger with Voice and start connecting how you want, when you want.
+
+ * Emergency 911 calling services not available on Yahoo! Messenger. Please inform others who use your Yahoo! Messenger they must dial 911 through traditional phone lines or cell carriers. By using Yahoo! Messenger you agree to not use PC-to-PC calling in countries where prohibited. The above features apply to the Windows version of Yahoo! Messenger.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060413/a3492948/attachment.htm
+From rodrigoborgiaoaimp at gmail.com  Tue Apr 18 20:21:46 2006
+From: rodrigoborgiaoaimp at gmail.com (Rodrigo Borgia)
+Date: Tue Apr 18 20:21:48 2006
+Subject: [OAI-implementers] I need help on the implantation of OAI.
+Message-ID: <37457b2b0604181721k7d8bf642v2b23c1f7d6e5acc5@mail.gmail.com>
+
+Hello Friends
+
+I am new in the list, excuses.
+
+I need help on the implantation of OAI.
+
+I found ARC that the list of hardware is.
+
+It can help me with the implementation.
+
+Can anybody indicate me that tool is most recommended?.
+
+Please
+
+Thank you.
+
+Atte.
+Rodrigo
+University of Bolivia
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060418/28e43e23/attachment.htm
+From charper at uoregon.edu  Wed Apr 19 12:04:14 2006
+From: charper at uoregon.edu (Corey Harper)
+Date: Wed Apr 19 12:04:19 2006
+Subject: [OAI-implementers] Metadata Tools for Digital Resource Repositories
+	Workshop
+Message-ID: <44465F7E.2050507@uoregon.edu>
+
+Forwarded on behalf of Jane Greenberg and Thomas Severiens:
+----------------
+
+			JCDL 2006
+**Metadata Tools for Digital Resource Repositories Workshop**
+	Thursday, June 15, 2006, 8:30 a.m.-5:00 p.m.
+
+
+This is an open call to participate in the Metadata Tools for Digital
+Resource Repositories Workshop
+(http://ils.unc.edu/mrc/jcdl_2006_tools_workshop.html) at JCDL:  2006 in
+Chapel Hill, NC, USA.
+
+
+**Workshop Description**
+
+Metadata tools are vital for DLs (digital library) and digital resource
+repository growth. Sharable ontologies and metadata schemas supporting a
+wide range of functions have helped initiate tool development. The DL
+community needs to share developments, knowledge, and evaluation
+methodologies specific to DL metadata tools. This workshop will
+facilitate dialog among people interested in metadata tools including,
+but not limited to users, tool developers, and companies. The workshop
+seeks to improve communication in the DL/metadata tool community and
+advance the state-of-the-art for tools in this environment. Specific
+objectives are to:
+
+1. Communicate challenges and solutions specific DL metadata tools and
+software, including metadata creation, management, preservation,
+display, and retrieval issues.
+
+2. Exhibit a range of tools developed to aid creators, managers, and
+users of information systems, specifically in their work with metadata
+schemas and vocabularies.
+
+3. Foster discussion between software developers, DL leaders, digital
+collection managers and application users.
+
+
+**Participation & Exhibitors Call**
+
+Participation is open for general workshop attendance. We invite users,
+researchers, tool developers and companies. We are also seeking
+participants who plan to exhibit their tools in the Tools Exhibition
+part of the workshop.
+
+Exhibitors need to submit a brief abstract about the functionalities and
+special features of their application to be shared with workshop
+participants.Deadline for submission: May 15, 2006. Notification, May
+20, 2006. Exhibitors should submit a brief abstract about the
+functionalities and special features of their application to Thomas
+Severiens: severiens AT mathematik.uni-osnabrueck.de, or Jane Greenberg:
+janeg AT ils.unc.edu.
+
+
+**Important Dates**
+
+Early registration deadline: May 15, 2006
+Regular registration deadline: May 25, 2006
+Deadline for Exhibitors' Proposals: May 15, 2006
+
+
+**Preliminary Schedule**
+
+The preliminary schedule for the workshop is available at:
+http://ils.unc.edu/mrc/jcdl_2006_tools_workshop_schedule.html
+
+
+**Registration**
+
+You can register at the JCDL website at:
+http://jcdl2006.org/registration/
+
+
+**Workshop logistics**
+
+Date:  Thursday, June 15, 2006
+
+Time:  8:30 a.m. -- 5:00 p.m.
+
+Location:  University of North Carolina at Chapel Hill (Room location to
+be determined)
+
+Registration cost:  ASIST, IEEE or ACM Members:  $140.00; Non-members:
+$200.00; Student Members:  $95.00; Student Non-members:  $120.00; Other:
+$0 (to-be-determined)
+
+
+Workshop Co-Chairs:   Jane Greenberg, Associate Professor and Director,
+Metadata Research Center, School of Information and Library Science,
+University of North Carolina at Chapel Hill, (janeg AT ils.unc.edu), and
+
+Thomas Severiens, Researcher and Project Manager Fachbereich
+Mathematik/Informatik, Universitat Osnabruck, (severiens AT
+mathematik.uni-osnabrueck.de)
+
+
+-- 
+Corey A Harper
+Metadata Librarian - CMET Team Leader
+Metadata and Digital Library Services
+University of Oregon
+541/346.1854
+charper@uoregon.edu
+
+
+-- 
+Corey A Harper
+Metadata Librarian - CMET Team Leader
+Metadata and Digital Library Services
+University of Oregon
+541/346.1854
+charper@uoregon.edu
+
+From rodrigoborgiaoaimp at gmail.com  Fri Apr 21 16:16:34 2006
+From: rodrigoborgiaoaimp at gmail.com (Rodrigo Borgia)
+Date: Fri Apr 21 16:16:36 2006
+Subject: [OAI-implementers] I need help on the implantation of OAI
+Message-ID: <37457b2b0604211316g394d5c95v22203d3846f82ec4@mail.gmail.com>
+
+Hello Friends
+
+I am new in the list, excuses.
+
+I need help on the implantation of OAI.
+
+I found ARC that the list of hardware is.
+
+It can help me with the implementation.
+
+Can anybody indicate me that tool is most recommended?.
+
+Please
+
+Thank you.
+
+Atte.
+Rodrigo
+University of Bolivia
+
+
+
+
+2006/4/21, Rodrigo Borgia <rodrigoborgiaoaimp@gmail.com>:
+Thank you Les Carr
+I need to construct the two, a server of OAI and another service for the
+search in other servers.
+
+A hug to all.
+
+Thank you.
+
+ Atte.
+ Rodrigo
+ University of Bolivia
+
+
+
+
+2006/4/18, Leslie Carr <lac@ecs.soton.ac.uk>:
+What is it that you want to do with OAI?
+
+Do you want to build a repository (archive), or a service which
+analyses data from many repositories?
+--
+Les Carr
+
+
+On 19 Apr 2006, at 01:21, Rodrigo Borgia wrote:
+
+> Hello Friends
+>
+> I am new in the list, excuses.
+>
+> I need help on the implantation of OAI.
+>
+> I found ARC that the list of hardware is.
+>
+> It can help me with the implementation.
+>
+> Can anybody indicate me that tool is most recommended?.
+>
+> Please
+>
+> Thank you.
+>
+> Atte.
+> Rodrigo
+> University of Bolivia
+>
+> _______________________________________________
+> OAI-implementers mailing list
+> List information, archives, preferences and to unsubscribe:
+> http://www.openarchives.org/mailman/listinfo/oai-implementers
+>
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060421/8145f358/attachment.htm
+From chas at uchicago.edu  Fri Apr 21 16:42:15 2006
+From: chas at uchicago.edu (Charles Blair)
+Date: Fri Apr 21 16:42:16 2006
+Subject: [OAI-implementers] I need help on the implantation of OAI
+In-Reply-To: <37457b2b0604211316g394d5c95v22203d3846f82ec4@mail.gmail.com>
+References: <37457b2b0604211316g394d5c95v22203d3846f82ec4@mail.gmail.com>
+Message-ID: <20060421204215.GG3822@jump.lib.uchicago.edu>
+
+On Fri, Apr 21, 2006 at 04:16:34PM -0400, Rodrigo Borgia wrote:
+> Can anybody indicate me that tool is most recommended?.
+
+i'm rewriting an OAI provider in xquery (or maybe ocaml and xquery,
+we'll see, because i won't be doing the ocaml part). if you want it,
+wait. 
+
+
+From ehs at pobox.com  Mon Apr 24 10:31:08 2006
+From: ehs at pobox.com (Edward Summers)
+Date: Mon Apr 24 10:31:14 2006
+Subject: [OAI-implementers] ruby-oai
+Message-ID: <03D5E18B-3E6D-4A87-A605-A13084F9807F@pobox.com>
+
+In case there are any other rubyists on the list I thought they might  
+be interested in ruby-oai [1]. Predictably it allows you to:
+
+   require 'oai'
+   client = OAI::Client.new 'http://www.pubmedcentral.gov/oai/oai.cgi'
+
+   last_check = Date.new(2004,1,1)
+
+   for record in client.list_records :from => last_check
+     puts record.metadata
+   end
+
+In the example record.metadata is actually a REXML::Element object  
+that can be manipulated and written out. The other 5 verbs are  
+supported as well. ruby-oai is available as a gem on rubyforge.org so  
+if you use gems you just need to:
+
+   gem install oai
+
+//Ed
+
+[1] http://textualize.com/ruby-oai
+
+From katy at indiana.edu  Sat Apr 29 22:22:14 2006
+From: katy at indiana.edu (Katy Borner)
+Date: Sat Apr 29 22:22:17 2006
+Subject: [OAI-implementers] Job Opening: SENIOR SYSTEMS ANALYST/DATABASE
+	ADMINISTRATOR
+In-Reply-To: <20060315154336.PDUI9108.eastrmmtao06.cox.net@[172.18.52.8]>
+References: <20060315154336.PDUI9108.eastrmmtao06.cox.net@[172.18.52.8]>
+Message-ID: <44541F56.4010107@indiana.edu>
+
+Dear all,
+We are interested to fill the NSF funded position below with a person 
+that can master mind, specify, and direct the implementation and 
+maintenance of a multi-TB PostgreSQL database of scholarly data. This 
+database will be used to map science on a large scale - you might have 
+seen http://vw.indiana.edu/places&spaces.
+
+A first prototype of the database already exists, see 
+http://iv.slis.indiana.edu/db. My recent paper on "Semantic Association 
+Networks: Using Semantic Web Technology to Improve Scholarly Knowledge 
+and Expertise Management" is relevant and available at 
+http://ella.slis.indiana.edu/~katy/paper/04-chapter11.pdf
+ 
+Salary range is $50k and up. Bloomington is a great place to live.
+Questions are welcome,
+k
+
+
+SENIOR SYSTEMS ANALYST/DATABASE ADMINISTRATOR Library & Information 
+Science (PA12) 
+<http://www.indiana.edu/%7Euhrs/salary/bloomington/paminrates.html>
+Position#: 00029459
+
+Note: This position is funded for three years, with potential for renewal.
+
+The new Cyberinfrastructure for Network Science Center seeks a full-time 
+systems database administrator/systems analyst. This individual will be 
+responsible for the setup and administration of a multi-TB PostgreSQL 
+database and the design and implementation of Plone driven community 
+portals as part of the Network Workbench research and production system, 
+see http://nwb.slis.indiana.edu/.
+
+Qualifications: Bachelor's degree required, Master of Information 
+Science or a master's degree in computer science or an equivalent degree 
+strongly recommended; one to two years database administration 
+experience, prefer three to five years; some supervisory experience in 
+computer setting required. Familiarity with Plone and/or the Zope 
+content management framework; extensive experience with regular 
+expressions, data parsing and cleaning tools, SQL schema design, 
+PostgreSQL stored procedures, and database normalization required. 
+Broad-based, highly technical background including project management 
+experience, systems administration and extensive user interaction 
+necessary; demonstrated problem solving skills; must be able to work 
+independently but cooperate closely with researchers as well as other 
+system administrators, programmers, and support personnel. Strong oral 
+and written communications skills are required. Ability to multitask and 
+prioritize in a complex and dynamic environment; ability to interact and 
+communicate effectively with a wide variety of people. Please include a 
+cover letter and resume with your online application and list the 
+contact information for three references on your resume.
+
+IU is an affirmative action/equal opportunity employment institution.
+Apply online via 
+https://webdb.iu.edu/humanresources/secure/app-new/pa_browse.cfm#00029459
+
+-- 
+Katy Borner, Associate Professor
+Information Science & Cognitive Science
+Indiana University, SLIS
+10th Street & Jordan Avenue     Phone:  (812) 855-3256   Fax: -6166
+Main Library 019                E-mail: katy@indiana.edu
+Bloomington, IN 47405, USA      WWW:    ella.slis.indiana.edu/~katy
+
+Check out the new InfoVis Lab Gallery at
+http://ella.slis.indiana.edu/~katy/gallery/
+
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060429/df75bd31/attachment-0001.htm
+From stracker321 at yahoo.com  Sat Apr 29 22:39:41 2006
+From: stracker321 at yahoo.com (steve racker)
+Date: Sat Apr 29 22:40:14 2006
+Subject: [OAI-implementers] Harvesting- how to efficiently poll?
+Message-ID: <20060430023941.40804.qmail@web38505.mail.mud.yahoo.com>
+
+
+If the granularity of an archive is YYYY-MM-DD and there are
+many records per day, how can one efficiently poll for the
+newest records?  I would have expected there to be a way to
+specify the last seen record and get any newer records, but
+it appears the only method is to first make a request with the
+date then keep requesting on any encountered resumptionTokens.
+when a response is received with no resumptionToken, keep
+it until it expires, then the next poll starts with the date
+again.  Is this correct? That seems to generate much repeated
+data in responses when polling with the last resumptionToken.
+
+		
+---------------------------------
+Yahoo! Messenger with Voice. Make PC-to-Phone Calls to the US (and 30+ countries) for 2?/min or less.
+-------------- next part --------------
+An HTML attachment was scrubbed...
+URL: http://openarchives.org/pipermail/oai-implementers/attachments/20060429/64fed9f5/attachment.htm
