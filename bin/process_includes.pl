@@ -15,6 +15,7 @@ my @files=(
 'ore/documents/index.html',
 'ore/community/index.html',
 'organization/index.html',
+'news/index.html',
     );
 
 foreach my $file (@files) {
