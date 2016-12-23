@@ -4,7 +4,7 @@ Content for the [Open Archives Initiative](http://www.openarchives.org/) website
 
 ## Bug reports and contributing
 
-Please report problems or errors in the website by creating an [issue](https://github.com/zimeon/www.openarchives.org/issues) in this repository, or by [email](http://www.openarchives.org/). Note that much of the content of the website is archival in nature (e.g. old versions of specifications, meeting records, etc.) and these portions will not be updates.
+Please report problems or errors in the website by creating an [issue](https://github.com/zimeon/www.openarchives.org/issues) in this repository, or by [email](http://www.openarchives.org/). Note that much of the content of the website is archival in nature (e.g. old versions of specifications, meeting records, etc.) and these portions will not be updated.
 
 Contribution to the work of the Open Archives Initiative should be made through the communication channels listed for each project. There are links for each on the [website](http://www.openarchives.org/).
 
