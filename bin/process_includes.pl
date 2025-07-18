@@ -73,7 +73,7 @@ sub process_file {
 
 sub title_html {
     my ($title)=@_;
-    
+
     $title =~ s%(Open Archives Initiative)(\s+-\s+|:\s+|\s+)%\1<br />%;  # add line break
 
     my $html = <<END_TITLE_HTML;
@@ -96,7 +96,6 @@ sub title_html {
     <li><a href="https://groups.google.com/d/forum/oai-ore">OAI-ORE group</a></li>
     <li><a href="http://www.openarchives.org/pipermail/oai-general/">OAI-general archives</a></li>
     <li><a href="http://www.openarchives.org/pipermail/oai-implementers/">OAI-PMH implementers archives</a></li>
-    <li><a href="http://www.openarchives.org/Register/BrowseSites">OAI-PMH Data providers</a></li>
     <li><a href="http://www.openarchives.org/service/listproviders.html">OAI-PMH Service providers</a></li>
     <li><a href="/ore/community/">OAI-ORE Community</a></li>
 </ul>
@@ -127,7 +126,7 @@ sub title_html {
 </ul>
 </dd>
 </dl>
- 
+
 <dl>
 <dt onmouseover="javascript:dropDown();"><a href="/">Home</a></dt>
 </dl>
